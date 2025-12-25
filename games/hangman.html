@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Pro - الرجل المشنوق</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <header>
+        <button class="back-btn" onclick="window.location.href='games.html'" title="Tillbaka">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button class="sound-btn" onclick="toggleSound()" title="Ljud">🔊</button>
+        <div class="header-stats">
+            <div class="stat-badge coins" id="coinsBadge">🪙 <span id="coinsValue">100</span></div>
+            <div class="stat-badge streak" id="streakBadge">🔥 <span id="streakValue">0</span></div>
+            <button class="hint-btn" onclick="openStatsModal()" title="Statistik">📊</button>
+        </div>
+    </header>
+
+    <div class="controls-bar">
+        <select class="control-select" id="difficultySelect" onchange="changeDifficulty()" title="Välj svårighetsgrad">
+            <option value="easy">🟢 Lätt / سهل</option>
+            <option value="medium" selected>🟡 Medel / متوسط</option>
+            <option value="hard">🔴 Svår / صعب</option>
+        </select>
+        <select class="control-select" id="categorySelect" onchange="changeCategory()" title="Välj kategori">
+            <option value="all">📚 Alla / الكل</option>
+            <option value="substantiv">📦 Substantiv / أسماء</option>
+            <option value="verb">🏃 Verb / أفعال</option>
+            <option value="adjektiv">🎨 Adjektiv / صفات</option>
+        </select>
+        <button class="daily-btn" id="dailyBtn" onclick="startDailyChallenge()">⭐ Dagens / اليوم</button>
+    </div>
+
+    <div class="game-container">
+        <!-- Lives -->
+        <div class="lives-bar" id="livesBar"></div>
+
+        <!-- Hangman SVG -->
+        <div class="hangman-container">
+            <svg class="hangman-svg" viewBox="0 0 200 200">
+                <!-- Gallows -->
+                <line x1="20" y1="190" x2="100" y2="190" stroke="#64748b" stroke-width="4" />
+                <line x1="60" y1="190" x2="60" y2="20" stroke="#64748b" stroke-width="4" />
+                <line x1="60" y1="20" x2="130" y2="20" stroke="#64748b" stroke-width="4" />
+                <line x1="130" y1="20" x2="130" y2="40" stroke="#64748b" stroke-width="4" />
+                <!-- Hangman Parts -->
+                <circle id="head" class="hangman-part" cx="130" cy="55" r="15" />
+                <!-- Face -->
+                <g id="face" class="face">
+                    <circle id="leftEye" cx="124" cy="52" r="2" fill="currentColor" opacity="0" />
+                    <circle id="rightEye" cx="136" cy="52" r="2" fill="currentColor" opacity="0" />
+                    <path id="mouth" d="M124,60 Q130,65 136,60" fill="none" stroke="currentColor" stroke-width="2"
+                        opacity="0" />
+                </g>
+                <line id="body" class="hangman-part" x1="130" y1="70" x2="130" y2="120" />
+                <line id="leftArm" class="hangman-part" x1="130" y1="85" x2="100" y2="100" />
+                <line id="rightArm" class="hangman-part" x1="130" y1="85" x2="160" y2="100" />
+                <line id="leftLeg" class="hangman-part" x1="130" y1="120" x2="100" y2="160" />
+                <line id="rightLeg" class="hangman-part" x1="130" y1="120" x2="160" y2="160" />
+            </svg>
+        </div>
+
+        <!-- Hint Area -->
+        <div class="hint-area">
+            <div class="main-hint" id="mainHint">🔍 التلميح</div>
+            <span class="category-badge" id="categoryBadge"></span>
+            <div class="extra-hints" id="extraHints">
+                <button class="hint-chip" onclick="useHint('first')">أول حرف <span class="cost">-10🪙</span></button>
+                <button class="hint-chip" onclick="useHint('type')">نوع <span class="cost">-5🪙</span></button>
+                <button class="hint-chip" onclick="useHint('example')">مثال <span class="cost">-20🪙</span></button>
+            </div>
+        </div>
+
+        <!-- Word Display -->
+        <div class="word-display" id="wordDisplay"></div>
+
+        <!-- Keyboard -->
+        <div class="keyboard" id="keyboard"></div>
+    </div>
+
+    <!-- Result Overlay -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <div class="result-text" id="resultText">Bra jobbat!</div>
+        <div class="result-word" id="resultWord"></div>
+        <div class="result-example" id="resultExample"></div>
+        <div class="result-stats">
+            <div class="result-stat">
+                <div class="result-stat-value" id="resultScore">+0</div>
+                <div class="result-stat-label">Poäng</div>
+            </div>
+            <div class="result-stat">
+                <div class="result-stat-value" id="resultStreak">0</div>
+                <div class="result-stat-label">Streak</div>
+            </div>
+        </div>
+        <div class="result-actions">
+            <button class="action-btn primary" onclick="startNewGame()">Nästa ord ➜</button>
+            <button class="action-btn secondary" onclick="learnMore()">📖 Lär mer</button>
+        </div>
+    </div>
+
+    <!-- Confetti -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- Stats Modal -->
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Statistik / الإحصائيات</h2>
+                <button class="modal-close" onclick="closeStatsModal()">×</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value" id="statGamesPlayed">0</div>
+                    <div class="label">Spelade / ألعاب</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statWinRate">0%</div>
+                    <div class="label">Vinster / فوز</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statBestStreak">0</div>
+                    <div class="label">Bästa streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statTotalScore">0</div>
+                    <div class="label">Total poäng</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../src/games/hangman.ts"></script>
+    <!-- <script type="module" src="../src/loader.ts"></script> -->
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

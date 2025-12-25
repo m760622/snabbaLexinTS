@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liknande Ord Pro | المتشابهات - SnabbaLexin</title>
+    <meta name="description"
+        content="Ord som låter lika på svenska och arabiska. كلمات تتشابه في اللفظ والمعنى بين السويدية والعربية.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/cognates.css">
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka" title="رجوع / Tillbaka">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <h1 title="كلمات متشابهة في اللفظ والمعنى">Liknande Ord / المتشابهات</h1>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-chip" title="إجمالي الكلمات المتشابهة / Totalt antal ord">📚 <span id="totalWords">673</span> ord</div>
+        <div class="stat-chip learned" title="الكلمات التي تعلمتها / Ord du lärt dig">✅ <span id="learnedCount">0</span> lärt</div>
+        <div class="stat-chip streak" title="أيام التعلم المتتالية / Dagar i rad">🔥 <span id="streakCount">0</span> streak</div>
+    </div>
+
+    <!-- Mode Tabs - All 4 buttons together -->
+    <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode('browse')" title="تصفح الكلمات / Bläddra bland ord">📖 Bläddra</button>
+        <button class="mode-tab" onclick="switchMode('flashcard')" title="تعلم بالبطاقات / Lär med kort">🎴 Flashcards</button>
+        <button class="mode-tab" onclick="openSavedModal()" title="الكلمات المحفوظة / Sparade ord">⭐ <span id="savedCount">0</span></button>
+        <button class="mode-tab" onclick="startQuiz()" title="اختبر معلوماتك / Testa dina kunskaper">📝 Quiz</button>
+    </div>
+
+    <main>
+        <div class="intro-text">
+            <p>Ord som låter lika på svenska och arabiska. Klicka för att lyssna! 🔊</p>
+        </div>
+
+        <!-- Browse View -->
+        <div class="browse-view" id="browseView">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Sök ord / ابحث...">
+            </div>
+
+            <div class="filter-chips" id="filterChips"></div>
+            <div id="content"></div>
+        </div>
+
+        <!-- Flashcard View -->
+        <div class="flashcard-container" id="flashcardView">
+            <div class="flashcard-progress">
+                <div class="progress-text"><span id="fcCurrent">0</span> / <span id="fcTotal">0</span></div>
+                <div class="progress-bar">
+                    <div class="fill" id="fcProgress"></div>
+                </div>
+            </div>
+
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="fcWord">Hej</div>
+                        <div class="flashcard-hint">Klicka för att vända / اضغط للقلب</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-translation" id="fcTranslation">مرحباً</div>
+                        <div class="flashcard-type" id="fcType">Substantiv</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ Inte än</button>
+                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ Kan det!</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="quiz-modal">
+        <button class="close-modal" onclick="closeQuiz()">×</button>
+        <div class="quiz-container" id="quizContent"></div>
+    </div>
+
+    <!-- Saved Words Modal -->
+    <div id="savedModal" class="saved-modal" onclick="closeSavedModal(event)">
+        <div class="saved-content" onclick="event.stopPropagation()">
+            <div class="saved-header">
+                <h2>⭐ Sparade ord / الكلمات المحفوظة</h2>
+                <button class="close-modal close-modal-static" onclick="closeSavedModal()">×</button>
+            </div>
+            <div class="saved-list" id="savedList">
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../src/learn/cognates.ts"></script>
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

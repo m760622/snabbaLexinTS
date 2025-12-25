@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ord-Regn - SnabbaLexin</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/games-word-rain-CRtYXncp.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/games-utils-HTOXTqfV.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BweZQtgh.css">
+</head>
+
+<body class="game-page-body">
+    <!-- Game Container -->
+    <div id="rainGame" class="active-game-container">
+        <div class="game-header-inner">
+            <button class="game-back-btn" onclick="window.location.href='games.html'" aria-label="Menu / القائمة">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <h3>Ord-Regn / مطر الكلمات</h3>
+        </div>
+        <div class="game-controls-header rain-controls-header mb-4">
+            <div class="score-badge">Poäng: <span id="rainScore">0</span> | ❤️ <span id="rainLives">3</span></div>
+        </div>
+
+        <div class="rain-area">
+            <canvas id="rainCanvas" width="600" height="400"></canvas>
+
+            <div class="rain-input-container rain-input-container-custom">
+                <input type="text" id="rainInput" class="game-input" placeholder="Skriv ordet här / اكتب الكلمة هنا"
+                    disabled autocomplete="off">
+            </div>
+
+            <div class="rain-controls hidden" id="rainControls"></div>
+
+            <button id="startRainBtn" class="start-btn mt-4">Starta / ابدأ</button>
+
+            <!-- Game Over Overlay -->
+            <div id="rainGameOver" class="game-over-overlay hidden">
+                <div class="game-over-content">
+                    <h2>Game Over / انتهت اللعبة</h2>
+                    <p class="final-score">Poäng / النقاط: <span id="rainFinalScore">0</span></p>
+                    <button id="restartRainBtn" class="restart-btn">Spela Igen / العب مجدداً</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initRainGame === 'function') {
+                initRainGame();
+            }
+        });
+    </script>
+</body>
+
+</html>

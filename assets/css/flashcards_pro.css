@@ -1,0 +1,564 @@
+/* Flashcard Pro Styles */
+
+/* Container */
+.fc-container-pro {
+    display: flex;
+    flex-direction: column;
+    /* Ensure vertical stacking */
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    width: 100%;
+    margin: 20px 0;
+    margin-top: 10px;
+    min-height: 360px;
+    /* Increased to accommodate buttons */
+    position: relative;
+}
+
+/* Rating Buttons */
+.fc-rating-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 50;
+    /* Ensure buttons are above card container */
+    pointer-events: auto;
+}
+
+/* Card */
+.fc-card-pro {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    /* Transparent base for the card container itself */
+    background: transparent;
+    border-radius: 24px;
+    /* Shadow moved to faces for glass effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.fc-card-pro:active {
+    transform: scale(0.98);
+}
+
+/* Shimmer Effect for Known Cards */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.fc-card-pro.shimmering .fc-front-pro,
+.fc-card-pro.shimmering .fc-back-pro {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.65) 0%, rgba(30, 41, 59, 0.65) 40%, rgba(255, 255, 255, 0.1) 50%, rgba(30, 41, 59, 0.65) 60%, rgba(30, 41, 59, 0.65) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.fc-card-pro.flipped {
+    transform: rotateY(180deg);
+}
+
+/* Faces */
+.fc-front-pro,
+.fc-back-pro {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
+    border-radius: 24px;
+
+    /* Glassmorphism Styles */
+    background: rgba(30, 41, 59, 0.65);
+    /* Semi-transparent Slate-800 */
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.fc-back-pro {
+    transform: rotateY(180deg);
+    /* Slightly darker gradient for back but still glassy */
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.8));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    /* Blue tint border */
+    justify-content: flex-start;
+    /* Align from top for split view */
+    padding-top: 40px;
+}
+
+/* Split Layout Styles */
+.fc-section-swe,
+.fc-section-arb {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.fc-divider {
+    width: 60%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+    border: none;
+}
+
+/* Dynamic Sizing Classes (applied by TextSizeManager) */
+/* Using ID selector to ensure these override global style.css !important rules */
+#flashcardWord.text-xs {
+    font-size: 1.2rem !important;
+}
+
+#flashcardWord.text-sm {
+    font-size: 1.5rem !important;
+}
+
+#flashcardWord.text-md {
+    font-size: 1.8rem !important;
+}
+
+#flashcardWord.text-lg {
+    font-size: 2.2rem !important;
+}
+
+#flashcardWord.text-xl {
+    font-size: 2.8rem !important;
+}
+
+.fc-word-back {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 700;
+    color: var(--text-main, #fff);
+    margin: 0;
+}
+
+.fc-translation-back {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 700;
+    color: var(--primary, #3B82F6);
+    margin: 0;
+    font-family: var(--font-arabic, sans-serif);
+}
+
+.fc-sentence-back {
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    color: var(--text-secondary, #ccc);
+    font-style: italic;
+    text-align: center;
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    /* Increased opacity for clarity */
+    line-height: 1.5;
+    line-height: 1.5;
+    max-width: 95%;
+}
+
+/* Specific styling for Arabic example to ensure legibility */
+#flashcardExampleArb {
+    font-family: var(--font-arabic, sans-serif);
+    line-height: 1.6;
+}
+
+/* Content & Typography */
+.fc-type-badge {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: var(--text-secondary, #aaa);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fc-word-pro {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    line-height: 1.2;
+    margin: 0 0 10px 0;
+    font-weight: 800;
+    color: var(--text-main, #fff);
+    word-break: break-word;
+    max-width: 100%;
+}
+
+.fc-translation-pro {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    margin: 0 0 15px 0;
+    color: var(--primary, #3B82F6);
+    font-family: var(--font-arabic, sans-serif);
+    font-weight: 700;
+}
+
+.fc-example-pro {
+    font-size: 1rem;
+    color: var(--text-secondary, #ccc);
+    line-height: 1.6;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    width: 100%;
+    text-align: left;
+    /* Hide original example to avoid duplication if cached CSS persists */
+    display: none;
+}
+
+.fc-hint-pro {
+    position: absolute;
+    bottom: 30px;
+    opacity: 0.6;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: bounce 2s infinite;
+}
+
+.fc-speak-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.fc-speak-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations - Back (Flipped to 180deg) */
+.slide-out-right {
+    animation: slideOutRight 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+.slide-out-left {
+    animation: slideOutLeft 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: rotateY(180deg) translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(180deg) translateX(120%) rotate(10deg);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutLeft {
+    0% {
+        transform: rotateY(180deg) translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(180deg) translateX(-120%) rotate(-10deg);
+        opacity: 0;
+    }
+}
+
+/* Animations - Front (0deg) */
+.slide-out-right-front {
+    animation: slideOutRightFront 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+.slide-out-left-front {
+    animation: slideOutLeftFront 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+@keyframes slideOutRightFront {
+    0% {
+        transform: rotateY(0deg) translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(0deg) translateX(120%) rotate(10deg);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutLeftFront {
+    0% {
+        transform: rotateY(0deg) translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(0deg) translateX(-120%) rotate(-10deg);
+        opacity: 0;
+    }
+}
+
+/* Swipe Hint */
+.fc-swipe-hint {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    margin-bottom: 5px;
+    color: var(--text-tertiary, #888);
+    font-size: 0.85rem;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+/* Quick Actions */
+.fc-quick-actions {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    /* hidden by default */
+}
+
+/* Rating Buttons */
+.fc-rating-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.fc-simple-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+
+    /* White Glass Layer */
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+
+    /* Dazzling Edges */
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 0 15px rgba(255, 255, 255, 0.5),
+        /* Outer White Glow */
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    /* Inner Light */
+
+    transition: transform 0.2s, filter 0.2s, box-shadow 0.3s;
+    height: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Shine Animation */
+.fc-simple-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.fc-simple-btn:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.fc-dont-know {
+    /* Keep distinct text color */
+    color: #ff6b6b;
+    text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+}
+
+.fc-know {
+    /* Keep distinct text color */
+    color: #4ade80;
+    text-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
+}
+
+.fc-simple-btn:active {
+    transform: scale(0.95);
+    filter: brightness(1.3);
+}
+
+.fc-btn-icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.fc-btn-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Segmented Progress Bar */
+.fc-progress-segmented {
+    display: flex;
+    gap: 3px;
+    width: 320px;
+    /* Match card width */
+    margin: 0 auto 12px auto;
+    height: 4px;
+    position: relative;
+    z-index: 60;
+}
+
+.fc-progress-segment {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    height: 100%;
+    transition: background 0.3s;
+}
+
+.fc-progress-segment.active {
+    background: #fff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.fc-progress-segment.completed {
+    background: var(--primary, #3B82F6);
+}
+
+.fc-progress-segment.wrong {
+    background: #ef4444;
+    /* Red for mistakes */
+}
+
+.fc-progress-segment.correct {
+    background: #22c55e;
+    /* Green for success */
+}
+
+/* Auto-play Button */
+.fc-autoplay-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-main, #fff);
+    margin-left: 10px;
+    transition: background 0.2s;
+}
+
+.fc-autoplay-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.fc-autoplay-btn.muted {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* =========================================
+   Layout Overrides (Fixing Header & Spacing)
+   Applied here to override games.min.css
+   ========================================= */
+
+/* Fix layout spacing to maximize screen real estate */
+.games-container {
+    padding-top: 0.2rem !important;
+    /* Extremely minimal padding */
+    gap: 0.5rem !important;
+    /* Reduce grid gap */
+}
+
+/* Fix Header alignment and spacing */
+.games-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem !important;
+    /* Create tighter header group */
+    margin-bottom: 0.5rem !important;
+    /* Minimal space below header */
+    justify-content: flex-start !important;
+    /* Override space-between */
+}
+
+/* Ensure title doesn't break layout */
+.games-header h1 {
+    margin: 0;
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    line-height: 1;
+    /* Tighter line height */
+}
+
+/* Reduce spacing for Stats Hero */
+.stats-hero {
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem !important;
+}
+
+/* Reduce spacing for Daily Banner */
+.daily-banner {
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem !important;
+}
+
+/* Reduce Flashcard Container spacing */
+.fc-container-pro {
+    margin-top: 0 !important;
+    /* No extra margin */
+}

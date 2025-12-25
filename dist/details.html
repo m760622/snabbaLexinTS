@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orddetaljer - SnabbaLexin | تفاصيل الكلمة</title>
+    <meta name="description"
+        content="Visa orddetaljer med uttal, böjningar, exempel och synonymer. Svensk-arabiskt lexikon. عرض تفاصيل الكلمة مع النطق والتصريفات والأمثلة.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/details-jyU0ilzM.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/db-TWgxRddZ.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/loader-CKTsN5EW.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-kfGpRYBQ.js">
+  <link rel="modulepreload" crossorigin href="/assets/quiz-stats-txqAuu3g.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
+  <link rel="stylesheet" crossorigin href="/assets/details-C5PyPIbg.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
+</head>
+
+<body>
+    <div id="toast" class="toast-notification"></div>
+
+    <div class="container details-page-container">
+        <header class="details-header details-header-clean">
+            <span class="details-subtitle">Svensk-Arabiskt Lexikon</span>
+            <h1 class="details-title-swedish">Orddetaljer</h1>
+
+            <div class="header-actions">
+                <a href="index.html" class="header-action-btn back-btn-nav" aria-label="Tillbaka / رجوع">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5"></path>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </a>
+
+                <button id="headerAudioBtn" class="header-action-btn" aria-label="Lyssna / استمع">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+
+                <button id="headerFavoriteBtn" class="header-action-btn" aria-label="Favorit / مفضلة">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                        </path>
+                    </svg>
+                </button>
+
+                <button id="headerFlashcardBtn" class="header-action-btn" aria-label="Flashcard Mode / وضع الاختبار"
+                    title="وضع الاختبار">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+
+                <button id="themeToggleBtn" class="header-action-btn" aria-label="Växla tema / تبديل المظهر"
+                    title="تبديل المظهر">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <button id="smartCopyBtn" class="header-action-btn" aria-label="Kopiera / نسخ" title="نسخ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+
+                <button id="headerShareBtn" class="header-action-btn" aria-label="Dela / مشاركة" title="مشاركة">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div id="customActions" class="custom-actions">
+            <div class="local-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Sparad lokalt / محفوظ محلياً
+            </div>
+            <div class="action-buttons">
+                <button id="editBtn" class="edit-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Redigera / تعديل
+                </button>
+                <button id="deleteBtn" class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Ta bort / حذف
+                </button>
+            </div>
+        </div>
+
+        <main id="detailsArea">
+            <div class="placeholder-message">Laddar... / جاري التحميل...</div>
+        </main>
+
+        <div class="back-btn-container">
+            <a href="index.html" class="back-button">Tillbaka till sök / العودة للبحث</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+{
+  "name": "Snabba Lexin - القاموس السويدي",
+  "short_name": "SnabbaLexin",
+  "description": "Svensk-Arabiskt Lexikon / القاموس السويدي العربي - Offline Dictionary",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f4f6",
+  "theme_color": "#3B82F6",
+  "lang": "sv",
+  "dir": "ltr",
+  "categories": [
+    "education",
+    "reference",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "assets/images/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/images/screenshot1.png",
+      "sizes": "1290x2796",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dictionary Search - Ordbok Sök"
+    },
+    {
+      "src": "assets/images/screenshot2.png",
+      "sizes": "1290x2796",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Learning Games - Lärandespel"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "📅 Dagens Ord / كلمة اليوم",
+      "short_name": "Word of Day",
+      "description": "Se dagens ord / شاهد كلمة اليوم",
+      "url": "./index.html#wod",
+      "icons": [
+        {
+          "src": "assets/images/icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "⭐ Favoriter / المفضلات",
+      "short_name": "Favorites",
+      "description": "Visa mina favoritord / عرض كلماتي المفضلة",
+      "url": "./index.html?filter=favorites",
+      "icons": [
+        {
+          "src": "assets/images/icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "🎮 Spela / ألعاب",
+      "short_name": "Games",
+      "description": "Öppna spelzonen / افتح منطقة الألعاب",
+      "url": "./games.html",
+      "icons": [
+        {
+          "src": "assets/images/icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "⚡ Snabbtest / اختبار سريع",
+      "short_name": "Quiz",
+      "description": "Starta ett snabbtest / ابدأ اختبار سريع",
+      "url": "./index.html#quiz",
+      "icons": [
+        {
+          "src": "assets/images/icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

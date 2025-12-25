@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill-in-blank - أكمل الفراغ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/fill_blank.css">
+</head>
+
+<body>
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <header>
+        <button class="back-btn" onclick="window.location.href='games.html'" aria-label="Back / رجوع">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+            title="وضع الموبايل">📱</button>
+        <div class="stats">
+            <div class="stat">✅ <span id="score">0</span></div>
+            <div class="stat">❌ <span id="errors">0</span></div>
+            <div class="stat">📝 <span id="current">1</span>/<span id="total">10</span></div>
+        </div>
+    </header>
+
+    <div class="title-bar">
+        <h1 class="game-title">📝 Fyll i / أكمل الفراغ</h1>
+    </div>
+
+    <div class="game-container">
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+            <div class="sentence" id="sentence">Loading...</div>
+            <div class="translation" id="translation"></div>
+            <div class="options" id="options"></div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback">✅</div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <div class="result-text" id="resultText">Bra jobbat!</div>
+        <div id="resultStats"></div>
+        <button class="play-again-btn" onclick="startNewGame()">Spela igen 🔄</button>
+    </div>
+
+    <script>
+        // Apply saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Toggle Mobile View Function
+        function toggleMobileView() {
+            document.documentElement.classList.toggle('iphone-mode');
+            document.body.classList.toggle('iphone-view');
+            const isActive = document.body.classList.contains('iphone-view');
+            localStorage.setItem('mobileView', isActive ? 'true' : 'false');
+            const btn = document.getElementById('mobileToggle');
+            if (btn) btn.classList.toggle('active', isActive);
+        }
+
+        // Apply mobile view from localStorage
+        if (localStorage.getItem('mobileView') === 'true') {
+            document.documentElement.classList.add('iphone-mode');
+            document.body.classList.add('iphone-view');
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('mobileToggle');
+                if (btn) btn.classList.add('active');
+            });
+        }
+    </script>
+
+    <!-- Dictionary Data -->
+    <script src="/data.js"></script>
+
+    <!-- Game Logic Module -->
+    <script type="module" src="/src/games/fillBlankGame.ts"></script>
+    
+    <!-- PWA -->
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

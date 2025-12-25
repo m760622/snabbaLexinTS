@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Svensk-Arabiskt Lexikon | SnabbaLexin - القاموس السويدي العربي</title>
+    <meta name="description"
+        content="Gratis svensk-arabiskt lexikon med 34000+ ord, uttal, grammatik och lärspel. Offline-stöd för iOS och Android. القاموس السويدي العربي المجاني مع أكثر من 34000 كلمة.">
+    <meta name="keywords"
+        content="svensk arabisk lexikon, svenska ordbok, arabiska ordbok, lär dig svenska, تعلم السويدية, قاموس سويدي عربي">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=3">
+    <link rel="stylesheet" href="assets/css/details-premium.css?v=7">
+    <link rel="stylesheet" href="assets/css/points-style.css?v=premium">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" href="assets/images/icon.svg">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+</head>
+
+<body>
+    <!-- Premium Splash Screen -->
+    <div id="splashScreen" class="splash-screen">
+        <!-- Animated Background Particles -->
+        <div class="splash-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <!-- Animated Gradient Waves -->
+        <div class="splash-waves">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+        </div>
+
+        <div class="splash-content">
+            <!-- Glowing Logo -->
+            <div class="splash-logo-container">
+                <div class="splash-logo-glow"></div>
+                <div class="splash-logo">📚</div>
+            </div>
+
+            <h1 class="splash-title">SnabbaLexin</h1>
+            <p class="splash-subtitle">Svensk-Arabiskt Lexikon<br>القاموس السويدي العربي</p>
+
+            <!-- Stats Badge -->
+            <div class="splash-stats">
+                <span class="stats-icon">📖</span>
+                <span id="splashWordCount">+34,000</span> ord / كلمة
+            </div>
+
+            <!-- Real Progress Bar -->
+            <div class="splash-progress-container">
+                <div class="splash-loader">
+                    <div class="splash-loader-bar" id="splashProgressBar"></div>
+                </div>
+                <div class="splash-progress-text">
+                    <span id="splashStatus">Laddar data...</span>
+                    <span id="splashPercent">0%</span>
+                </div>
+            </div>
+
+            <!-- Rotating Tips -->
+            <div class="splash-tip" id="splashTip">
+                💡 Visste du? Du kan söka på både svenska och arabiska!
+            </div>
+        </div>
+    </div>
+
+
+    <div class="ambient-background">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <!-- Moving spotlights for glass effect -->
+    <div class="bg-spotlight bg-spotlight-1"></div>
+    <div class="bg-spotlight bg-spotlight-2"></div>
+    <div class="bg-spotlight bg-spotlight-3"></div>
+    <div id="toast" class="toast-notification"></div>
+
+    <!-- Offline Status Banner -->
+    <div id="offlineBanner" class="offline-banner hidden">
+        <span class="offline-icon">📡</span>
+        <span>أنت غير متصل بالإنترنت / Du är offline</span>
+    </div>
+
+    <!-- App Update Prompt -->
+    <div id="updatePrompt" class="update-prompt hidden">
+        <div class="update-content">
+            <span class="update-icon">🔄</span>
+            <span class="update-text">تحديث جديد متوفر! / Ny uppdatering tillgänglig!</span>
+            <button id="updateBtn" class="update-btn">تحديث / Uppdatera</button>
+            <button id="dismissUpdate" class="dismiss-btn">×</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <!-- The header-center content has been moved to nav-center -->
+            <!-- Stats moved to search bar -->
+        </header>
+    </div>
+
+    <nav class="top-nav">
+        <div class="nav-left">
+
+            <div class="settings-dropdown settings-dropdown-layout">
+                <button id="settingsBtn" class="theme-toggle" aria-label="Inställningar / الإعدادات">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <button id="mobileViewToggle" class="theme-toggle" aria-label="Mobilvy / عرض الجوال">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+            </button>
+
+            <div id="settingsMenu" class="settings-menu hidden">
+                <!-- Section: Profile / الملف الشخصي -->
+                <a href="profile.html" class="menu-item profile-link" aria-label="Min Profil / ملفي الشخصي">
+                    <span class="icon-box">👤</span>
+                    <span>Min Profil / ملفي</span>
+                </a>
+
+                <!-- Section: Appearance / المظهر -->
+                <div class="settings-section-header">🎨 Utseende</div>
+
+                <button id="themeToggle" class="menu-item" aria-label="Växla tema / تبديل المظهر">
+                    <span class="icon-box">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </span>
+                    <span>Ljus/Mörk</span>
+                </button>
+
+                <div class="menu-item color-theme-selector">
+                    <span class="icon-box">🎨</span>
+                    <select id="colorThemeSelect" aria-label="Färgtema / لون الثيم">
+                        <option value="default">⚪ Standard</option>
+                        <option value="ocean">🌊 Ocean Blue</option>
+                        <option value="sunset">🌅 Sunset Orange</option>
+                        <option value="forest">🌲 Forest Green</option>
+                        <option value="purple">💜 Purple Haze</option>
+                        <option value="rose">🌸 Rose Pink</option>
+                        <option value="midnight">🌙 Midnight Blue</option>
+                        <option value="mint">🍃 Mint Green</option>
+                        <option value="coral">🪸 Coral Red</option>
+                        <option value="neon">⚡ Neon Cyber</option>
+                        <option value="stealth">🖤 Stealth Black</option>
+                        <option value="aurora">🌌 Aurora Night</option>
+                        <option value="ember">🔥 Ember Glow</option>
+                    </select>
+                </div>
+
+                <!-- Section: Sound & Notifications / الصوت والإشعارات -->
+                <div class="settings-section-header">🔔 Ljud & Notiser</div>
+
+                <!-- TTS Speed Control -->
+                <div class="menu-item tts-speed-control">
+                    <span class="icon-box icon-color-purple"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg></span>
+                    <div class="tts-speed-wrapper">
+                        <div class="tts-speed-header">
+                            <span>Uttalshastighet</span>
+                            <span id="ttsSpeedValue" class="tts-speed-badge">85%</span>
+                        </div>
+                        <input type="range" id="ttsSpeedSlider" min="50" max="150" value="85" class="tts-slider"
+                            title="Uttalshastighet / سرعة النطق">
+                        <button id="ttsTestBtn" class="tts-test-btn">🔊 Testa</button>
+                    </div>
+                </div>
+
+                <!-- Reminder Notifications Control -->
+                <div class="menu-item reminder-control">
+                    <span class="icon-box icon-color-amber">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </span>
+                    <div class="reminder-wrapper">
+                        <div class="reminder-header">
+                            <span>Påminnelse</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="reminderToggle"
+                                    title="Påminnelse på/av / التذكير تشغيل/إيقاف">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="reminderTimeContainer" class="reminder-time-container hidden">
+                            <input type="time" id="reminderTime" value="18:00" class="reminder-time-input"
+                                title="Påminnelsetid / وقت التذكير">
+                            <button id="testReminderBtn" class="tts-test-btn">🔔 Testa</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Learning Tools / أدوات التعلم -->
+                <div class="settings-section-header">📚 Lärverktyg</div>
+
+                <button id="showFavoritesBtn" class="menu-item" aria-label="Visa favoriter / عرض المفضلة">
+                    <span class="icon-box icon-color-star"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg></span>
+                    <span>⭐ Mina ord</span>
+                </button>
+
+                <button id="quizBtn" class="menu-item" aria-label="Snabbtest / تحدي السرعة">
+                    <span class="icon-box icon-color-indigo"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg></span>
+                    <span>⚡ Snabbtest</span>
+                </button>
+
+                <button id="favQuizBtn" class="menu-item" aria-label="اختبار المفضلات">
+                    <span class="icon-box icon-color-star"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                        </svg></span>
+                    <span>⭐ Quiz Favoriter</span>
+                </button>
+
+                <button id="flashcardsBtn" class="menu-item" aria-label="Flashcards / بطاقات">
+                    <span class="icon-box icon-color-violet"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="M12 8v8"></path>
+                            <path d="M8 12h8"></path>
+                        </svg></span>
+                    <span>🃏 Flashcards</span>
+                </button>
+
+                <!-- Section: Navigation / التنقل -->
+                <div class="settings-section-header">🧭 Navigation</div>
+
+                <a href="games/games.html" id="gameBtn" class="menu-item" aria-label="Spel / ألعاب">
+                    <span class="icon-box icon-color-blue"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg></span>
+                    <span>🎮 Spel</span>
+                </a>
+
+                <a href="learn/learn.html" class="menu-item" aria-label="Lär dig / تعلم">
+                    <span class="icon-box icon-color-green"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg></span>
+                    <span>📚 Grammatik</span>
+                </a>
+
+                <a href="add.html" class="menu-item" aria-label="Lägg till ord / إضافة كلمة">
+                    <span class="icon-box icon-color-emerald"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg></span>
+                    <span>➕ Lägg till</span>
+                </a>
+
+                <!-- Section: Data / البيانات -->
+                <div class="settings-section-header">💾 Data</div>
+
+                <button id="exportCustom" class="menu-item" aria-label="Exportera">
+                    <span class="icon-box icon-color-cyan"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg></span>
+                    <span>📤 Exportera</span>
+                </button>
+
+                <button id="importCustom" class="menu-item" aria-label="Importera">
+                    <span class="icon-box icon-color-cyan"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg></span>
+                    <span>📥 Importera</span>
+                </button>
+
+                <!-- Section: Info / المعلومات -->
+                <div class="settings-section-header">ℹ️ Info</div>
+
+                <a href="device.html" class="menu-item" aria-label="Device Info / معلومات الجهاز">
+                    <span class="icon-box icon-color-slate"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg></span>
+                    <span>🖥️ Device Info</span>
+                </a>
+
+                <a href="changelog.html" class="menu-item" aria-label="Changelog / سجل التحديثات">
+                    <span class="icon-box icon-color-purple-light"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                            height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg></span>
+                    <span>📋 Changelog</span>
+                </a>
+
+                <div class="settings-version">
+                    <p>SnabbaLexin v2.8.0 &copy; 2024</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="nav-center">
+            <div class="brand-header">
+                <h1 class="brand-title-swe">Snabba Lexin</h1>
+                <h2 class="brand-title-arb">القاموس السريع</h2>
+            </div>
+        </div>
+
+        <div class="nav-right">
+
+            <!-- Progress Stats Badge - Click to open Progress Modal -->
+            <div class="progress-stats-badge cursor-pointer" id="progressBadge" role="button" tabindex="0"
+                aria-label="اضغط لعرض التقدم / Klicka för framsteg"
+                onclick="var m=document.getElementById('progressModal'); if(m) { m.classList.remove('hidden'); m.style.display='flex'; }">
+                <span class="progress-stat" title="الكلمات اليوم / Ord idag">
+                    <span class="stat-icon">📖</span>
+                    <span id="dailyWordsCount">0</span>
+                </span>
+                <span class="progress-divider">|</span>
+                <span class="progress-stat" title="سلسلة الأيام / Streak">
+                    <span class="stat-icon">🔥</span>
+                    <span id="currentStreak">0</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Hidden elements kept for functionality -->
+        <button id="installApp" class="hidden" title="Installera appen / تثبيت التطبيق"></button>
+        <input type="file" id="importCustomFile" accept=".json" class="hidden"
+            title="Importera anpassade ord / استيراد كلمات مخصصة">
+        <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
+    </nav>
+
+        </div>
+    </nav>
+
+
+
+    </div>
+    <!-- <h3>Snabba Lexin</h3> -->
+    <!-- <p class="subtitle">Svensk-Arabiskt Lexikon / القاموس السويدي العربي</p> -->
+
+    <!-- Flashcard Inline Container (moved above search bar) -->
+    <div class="container container-flashcard-inline">
+        <div id="flashcardInlineContainer" class="game-container flashcard-inline hidden">
+            <div class="quiz-header-compact">
+                <div class="flashcard-progress-inline">
+                    <span id="flashcardCurrentInline">1</span>/<span id="flashcardTotalInline">10</span>
+                </div>
+                <h2>🃏 Flashcards</h2>
+                <div class="quiz-header-right">
+                    <span class="flashcard-stats-inline">
+                        ✅ <span id="fcCorrectInline">0</span>
+                    </span>
+                    <button id="closeFlashcardInline" class="close-btn">&times;</button>
+                </div>
+            </div>
+            <div class="flashcard-body-inline">
+                <div class="flashcard-container-inline">
+                    <div class="flashcard-inline-card" id="flashcardInline">
+                        <div class="flashcard-face flashcard-front-inline">
+                            <span class="flashcard-text-inline" id="flashcardFrontInline">Hej</span>
+                            <span class="flashcard-hint-inline">Tryck för att vända / اضغط للقلب</span>
+                            <button class="flashcard-speak-btn-inline" id="flashcardSpeakFrontInline">🔊</button>
+                        </div>
+                        <div class="flashcard-face flashcard-back-inline">
+                            <span class="flashcard-text-inline" id="flashcardBackInline">مرحبا</span>
+                            <button class="flashcard-speak-btn-inline" id="flashcardSpeakBtnInline">🔊</button>
+                        </div>
+                    </div>
+                    <!-- Favorite Button - Always Visible -->
+                    <button class="flashcard-fav-btn" id="flashcardFavBtn"
+                        title="Lägg till favorit / أضف للمفضلة">❤️</button>
+                </div>
+
+
+                <div class="flashcard-controls-inline hidden" id="flashcardControlsInline">
+                    <button class="fc-btn-inline fc-again" data-quality="0">
+                        <span class="fc-emoji">😅</span>
+                        <span class="fc-label">Igen</span>
+                    </button>
+                    <button class="fc-btn-inline fc-hard" data-quality="2">
+                        <span class="fc-emoji">🤔</span>
+                        <span class="fc-label">Svårt</span>
+                    </button>
+                    <button class="fc-btn-inline fc-good" data-quality="4">
+                        <span class="fc-emoji">👍</span>
+                        <span class="fc-label">Bra</span>
+                    </button>
+                    <button class="fc-btn-inline fc-easy" data-quality="5">
+                        <span class="fc-emoji">🌟</span>
+                        <span class="fc-label">Lätt</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sticky-header">
+
+        <div class="search-container">
+            <div class="search-row">
+                <div class="search-wrapper">
+
+
+
+                    <input type="text" id="searchInput" placeholder="Sök ord / ابحث عن كلمة..." autocomplete="off"
+                        autocorrect="off" spellcheck="false">
+                    <button id="clearSearch" class="clear-btn hidden" aria-label="Rensa / مسح">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    <!-- New Result Count Badge -->
+                    <span id="resultCount" class="search-result-badge">0</span>
+
+                    <button id="voiceSearchBtn" class="voice-search-btn" aria-label="Röstinmatning / البحث الصوتي"
+                        aria-pressed="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <button id="filterToggleBtn" class="filter-toggle-btn" aria-label="Filter">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="filterChipsContainer" class="filter-chips-container hidden">
+                <!-- Filter Mode Dropdown (Styled as Chip) -->
+                <div class="select-chip-wrapper">
+                    <select id="filterModeSelect" class="chip-select" aria-label="Välj sökläge">
+                        <option value="start">Börjar</option>
+                        <option value="end">Slutar</option>
+                        <option value="favorites">❤️ Favoriter</option>
+                        <option value="known">✓ Kan / أعرفها</option>
+                        <option value="learning">📚 Lär mig / أتعلمها</option>
+                        <option value="review">⟳ Repetera / أراجعها</option>
+                        <option value="all">Alla</option>
+                        <option value="exact">Exakt</option>
+                        <option value="synonym">Betydelse</option>
+                    </select>
+                    <span class="chip-arrow">▼</span>
+                </div>
+
+                <!-- Sort Dropdown (Styled as Chip) -->
+                <div class="select-chip-wrapper">
+                    <span class="chip-label">Sortering:</span>
+                    <select id="sortSelect" class="chip-select" aria-label="Sortera">
+                        <option value="relevance">Relevans</option>
+                        <option value="richness">Mest info</option>
+                        <option value="alpha_asc">A-Ö</option>
+                        <option value="alpha_desc">Ö-A</option>
+                        <option value="last_char">Sista bokstav</option>
+                    </select>
+                    <span class="chip-arrow">▼</span>
+                </div>
+
+                <!-- Type Dropdown (Styled as Chip) -->
+                <div class="select-chip-wrapper">
+                    <span class="chip-label">Typ:</span>
+                    <select id="typeSelect" class="chip-select" aria-label="Filtrera typ">
+                        <option value="all">Alla</option>
+                        <option value="subst">Substantiv</option>
+                        <option value="verb">Verb</option>
+                        <option value="adj">Adjektiv</option>
+                        <option value="adv">Adverb</option>
+                        <option value="prep">Preposition</option>
+                    </select>
+                    <span class="chip-arrow">▼</span>
+                </div>
+
+                <!-- Topic Category Dropdown -->
+                <div class="select-chip-wrapper">
+                    <span class="chip-label">🏷️</span>
+                    <select id="categorySelect" class="chip-select" aria-label="Kategori">
+                        <option value="all">Ämnen</option>
+                        <option value="food">🍽️ Mat</option>
+                        <option value="work">💼 Arbete</option>
+                        <option value="health">🏥 Hälsa</option>
+                        <option value="family">👨‍👩‍👧 Familj</option>
+                        <option value="travel">✈️ Resa</option>
+                        <option value="school">📚 Skola</option>
+                        <option value="home">🏠 Hem</option>
+                        <option value="nature">🌳 Natur</option>
+                    </select>
+                    <span class="chip-arrow">▼</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </header>
+
+    <!-- شريط الاختصارات السريعة - يظهر دائماً -->
+    <div class="quick-actions-bar">
+        <button class="quick-action-btn hidden" id="quickWodBtn" title="كلمة اليوم / Dagens Ord">
+            <span class="quick-label">Ord</span>
+        </button>
+        <a href="games/games.html" class="quick-action-btn" title="ألعاب / Spel">
+            <span class="quick-label">Spel</span>
+        </a>
+        <a href="learn/learn.html" class="quick-action-btn" title="تعلم / Lär">
+            <span class="quick-label">Lär</span>
+        </a>
+        <button class="quick-action-btn" id="quickFavBtn" title="مفضلة / Favoriter">
+            <span class="quick-label">Favoriter</span>
+        </button>
+        <button class="quick-action-btn" id="quickQuizBtn" title="اختبار / Quiz">
+            <span class="quick-label">Quiz</span>
+        </button>
+    </div>
+
+    <!-- Landing Page Content - Everything that shows when NOT searching -->
+    <div id="landingPageContent">
+        <!-- شريط التقدم اليومي -->
+        <div class="daily-progress-bar" id="dailyProgressBar">
+            <div class="progress-info">
+                <span class="progress-label">📖 Dagens mål / هدف اليوم</span>
+                <span class="progress-count"><span id="dailyProgressCount">0</span> / 10</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="dailyProgressFill"></div>
+            </div>
+        </div>
+
+        <!-- بطاقة التحدي اليومي -->
+        <div class="daily-challenge-card" id="dailyChallengeCard">
+            <div class="challenge-header">
+                <div class="challenge-left">
+                    <div class="challenge-icon-wrapper">
+                        <span class="challenge-icon">🎯</span>
+                    </div>
+                    <span class="challenge-title">Daglig Utmaning</span>
+                </div>
+                <!-- Points Badge next to flame area -->
+                <div class="challenge-points">
+                    <span class="points-value">+50</span>
+                    <span class="points-label">XP</span>
+                </div>
+            </div>
+            <p class="challenge-text hidden" id="challengeText">Lär dig 5 nya ord idag!</p>
+            <div class="challenge-progress-container premium-bar">
+                <div class="challenge-progress-row">
+                    <div class="challenge-progress-track">
+                        <div class="challenge-progress-fill glow-effect" id="challengeProgressBar">
+                        </div>
+                    </div>
+                    <button class="challenge-progress-count" id="challengeProgressText"
+                        title="تقدمك / Din framsteg">0/5</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Container (Inline) - Enhanced Professional Version -->
+        <div class="container container-quiz-inline">
+            <div id="quizInlineContainer" class="game-container hidden">
+                <!-- Header with Mode, Score, Timer -->
+                <div class="quiz-header-compact">
+                    <div class="quiz-header-left">
+                        <h2>Snabbtest</h2>
+                        <select id="quizModeSelect" class="mode-select-compact" aria-label="Läge">
+                            <option value="normal">🎯 Normal</option>
+                            <option value="reverse">🔄 Omvänd</option>
+                            <option value="listening">🔊 Lyssna</option>
+                            <option value="timed">⏱️ Tidsutmaning</option>
+                            <option value="favorites">⭐ Favoriter</option>
+                            <option value="weak">🎓 Svåra ord</option>
+                        </select>
+                    </div>
+                    <div class="quiz-header-right">
+                        <div class="quiz-timer" id="quizTimer">10</div>
+                        <div class="quiz-progress-text" id="quizProgressText">1/10</div>
+                        <div class="quiz-score-inline" id="quizScore">0</div>
+                        <button id="quizFavBtn" class="quiz-fav-btn-header" aria-label="Spara / حفظ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <button id="closeQuiz" class="close-btn">&times;</button>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="quiz-progress-bar">
+                    <div id="quizProgress" class="quiz-progress-fill"></div>
+                </div>
+
+                <!-- Quiz Body -->
+                <div class="quiz-body">
+                    <div class="question-card">
+                        <h3 id="quizQuestion">...</h3>
+                        <p id="quizExample" class="quiz-example"></p>
+                    </div>
+                    <div id="quizOptions" class="quiz-options"></div>
+                    <div id="quizFeedback" class="quiz-feedback"></div>
+                    <button id="nextQuestion" class="action-btn primary next-btn-styled">Nästa ➡️</button>
+
+                    <!-- End Screen -->
+                    <div id="quizEndScreen" class="quiz-end-screen hidden">
+                        <div class="end-icon">🎉</div>
+                        <h3 class="end-title">Testet avslutat!</h3>
+                        <div class="end-score">
+                            <span class="end-score-value" id="endScoreValue">0</span>
+                            <span class="end-score-total">/ 10</span>
+                        </div>
+                        <p class="end-message" id="endMessage">Bra jobbat!</p>
+                        <div id="endStats" class="end-stats"></div>
+                        <button id="restartQuiz" class="action-btn primary">Spela igen 🔄</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main id="resultsArea">
+            <!-- Word of the Day -->
+            <div id="wordOfTheDay" class="word-of-day-card hidden">
+                <div class="wod-header">
+                    <div class="wod-title-col">
+                        <span>📅 Dagens Ord</span>
+                        <button id="wodTTSBtn" class="wod-action-btn wod-tts-btn"
+                            aria-label="Lyssna / استمع">🔊</button>
+                    </div>
+                    <div class="wod-header-actions">
+                        <span class="wod-type-badge"></span>
+
+                        <button id="wodDetailsBtn" class="wod-action-btn" aria-label="Se detaljer / التفاصيل">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <polyline points="9 21 3 21 3 15"></polyline>
+                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            </svg>
+                        </button>
+                        <button id="wodLoopBtn" class="wod-action-btn" aria-label="Ny mening / جملة جديدة">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+                            </svg>
+                        </button>
+                        <button id="wodFavBtn" class="wod-action-btn" aria-label="Spara / حفظ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="wod-content">
+                    <div class="wod-main-words">
+                        <div class="wod-swe" title="اضغط للاستماع / Klicka för att lyssna"></div>
+                        <div class="wod-arb"></div>
+                    </div>
+
+                    <!-- Forms Preview Section -->
+                    <div class="wod-forms-preview hidden">
+                        <div class="preview-label">
+                            <span class="preview-icon">𔕤</span>
+                            <span>Böjningar / تصريفات</span>
+                        </div>
+                        <div class="wod-forms-chips"></div>
+                    </div>
+
+                    <!-- Definition Section - Bilingual -->
+                    <div class="wod-definitions-preview">
+                        <div class="wod-def-preview hidden">
+                            <div class="preview-label">
+                                <span class="preview-icon">📖</span>
+                                <span>Definition (Svenska)</span>
+                            </div>
+                            <div class="wod-def-text wod-def-swe"></div>
+                        </div>
+                        <div class="wod-def-arb-preview hidden">
+                            <div class="preview-label">
+                                <span class="preview-icon">📘</span>
+                                <span>التعريف (عربي)</span>
+                            </div>
+                            <div class="wod-def-text wod-def-arb-text" dir="rtl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Example Section - Bilingual -->
+                    <div class="wod-examples-preview">
+                        <div class="wod-example-preview hidden">
+                            <div class="preview-label">
+                                <span class="preview-icon">💡</span>
+                                <span>Exempel (Svenska)</span>
+                            </div>
+                            <div class="wod-example-text wod-ex-swe"></div>
+                        </div>
+                        <div class="wod-example-arb-preview hidden">
+                            <div class="preview-label">
+                                <span class="preview-icon">✨</span>
+                                <span>مثال (عربي)</span>
+                            </div>
+                            <div class="wod-example-text wod-ex-arb" dir="rtl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Idiom Section - Bilingual -->
+                    <div class="wod-idioms-preview">
+                        <div class="wod-idiom-preview hidden">
+                            <div class="preview-label">
+                                <span class="preview-icon">💬</span>
+                                <span>Uttryck / تعبير</span>
+                            </div>
+                            <div class="wod-idiom-swe"></div>
+                            <div class="wod-idiom-arb" dir="rtl"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State / History -->
+            <div id="emptyState" class="placeholder-message">
+                Börja skriva för att söka / ابدأ الكتابة للبحث
+            </div>
+        </main>
+    </div><!-- End of #landingPageContent -->
+
+    <!-- Search Results Container (Initially Hidden) - Outside landing content -->
+    <div id="searchResults" class="results-grid"></div>
+
+
+    <!-- PWA Install Prompt -->
+    <div id="pwa-install-prompt" class="pwa-prompt hidden">
+        <div class="pwa-content">
+            <p>Installera appen för bättre upplevelse! / قم بتثبيت التطبيق لتجربة أفضل</p>
+            <div class="pwa-buttons">
+                <button id="pwa-install-btn" class="pwa-btn primary">Install / تثبيت</button>
+                <button id="pwa-later-btn" class="pwa-btn secondary">Later / لاحقاً</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="iosInstallPrompt" class="ios-prompt hidden">
+        <div class="ios-prompt-content">
+            <p>För att installera appen: Tryck på <img
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDdlZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgM3YxMm0wIDBsLTQtNG00IDRsNCA0TTQgMjBoMTYiLz48L3N2Zz4="
+                    alt="Share" class="inline-icon-img"> och välj <strong>"Lägg till på
+                    hemskärmen"</strong></p>
+            <p dir="rtl">لتثبيت التطبيق: اضغط على <img
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDdlZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgM3YxMm0wIDBsLTQtNG00IDRsNCA0TTQgMjBoMTYiLz48L3N2Zz4="
+                    alt="Share" class="inline-icon-img"> واختر <strong>"إضافة إلى الشاشة
+                    الرئيسية"</strong></p>
+            <button id="closeIosPrompt">OK</button>
+        </div>
+    </div>
+
+    <!-- Word of the Day Modal -->
+
+    <div id="wodModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Dagens Ord</h2>
+                <button id="closeWod" class="close-btn">&times;</button>
+            </div>
+            <div class="wod-modal-body">
+                <!-- Content injected via JS -->
+                <div id="wodModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Dashboard Modal -->
+    <div id="progressModal" class="modal progress-modal hidden">
+        <div class="modal-content progress-modal-content">
+            <div class="modal-header progress-modal-header">
+                <h2>📊 Min Progress / تقدمي</h2>
+                <button id="closeProgress" class="close-btn">&times;</button>
+            </div>
+            <div class="progress-modal-body">
+                <!-- Daily Progress Ring Section -->
+                <div class="progress-section daily-progress-section">
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-ring-bg" stroke-width="10" fill="transparent" r="50" cx="60"
+                                cy="60" />
+                            <circle class="progress-ring-circle" stroke-width="10" fill="transparent" r="50" cx="60"
+                                cy="60" stroke-dasharray="314.159" stroke-dashoffset="314.159" />
+                        </svg>
+                        <div class="progress-ring-text">
+                            <span class="progress-ring-value" id="progressRingValue">0</span>
+                            <span class="progress-ring-goal">/<span id="progressRingGoal">10</span></span>
+                        </div>
+                    </div>
+                    <div class="daily-progress-info">
+                        <h3>Dagens mål / هدف اليوم 🎯</h3>
+                        <p class="progress-subtitle" id="dailyProgressStatus">Fortsätt läsa! / استمر!</p>
+                        <div class="goal-adjuster">
+                            <label for="dailyGoalInput">Ändra mål:</label>
+                            <input type="number" id="dailyGoalInput" min="1" max="100" value="10">
+                            <button id="saveGoalBtn" class="mini-btn">💾</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Progress Section -->
+                <div class="progress-section weekly-progress-section">
+                    <h4>🎯 Veckomål / هدف الأسبوع</h4>
+                    <div class="weekly-progress-bar">
+                        <div class="weekly-progress-fill" id="weeklyProgressFill"></div>
+                    </div>
+                    <div class="weekly-progress-info">
+                        <span class="weekly-progress-text">
+                            <span id="weeklyProgressCurrent">0</span>/<span id="weeklyProgressGoal">50</span> ord
+                        </span>
+                        <span class="weekly-progress-percent" id="weeklyProgressPercent">0%</span>
+                    </div>
+                    <div class="goal-adjuster weekly-goal-adjuster">
+                        <label for="weeklyGoalInput">Veckomål:</label>
+                        <input type="number" id="weeklyGoalInput" min="10" max="500" value="50">
+                        <button id="saveWeeklyGoalBtn" class="mini-btn">💾</button>
+                    </div>
+                </div>
+
+                <!-- Streak Section -->
+                <div class="progress-section streak-section">
+                    <div class="streak-card">
+                        <span class="streak-icon">🔥</span>
+                        <div class="streak-info">
+                            <span class="streak-value" id="modalStreak">0</span>
+                            <span class="streak-label">dagars streak / سلسلة</span>
+                        </div>
+                    </div>
+                    <div class="streak-card">
+                        <span class="streak-icon">👑</span>
+                        <div class="streak-info">
+                            <span class="streak-value" id="modalLongestStreak">0</span>
+                            <span class="streak-label">längsta / الأطول</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Chart (7 days) -->
+                <div class="progress-section activity-section">
+                    <h4>📈 Veckoaktivitet / نشاط الأسبوع</h4>
+                    <div class="activity-chart" id="activityChart">
+                        <!-- Bars will be injected by JS -->
+                    </div>
+                    <div class="activity-legend">
+                        <span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="progress-section stats-section">
+                    <h4>📊 Statistik / الإحصائيات</h4>
+                    <!-- Daily Challenges -->
+                    <section class="challenges-section challenges-section-styled">
+                        <div class="challenges-card-styled">
+                            <h3><i class="fas fa-tasks"></i> Dagens
+                                Utmaningar / تحديات اليوم</h3>
+                            <div id="challengesList" class="challenges-list-styled">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="games-grid">
+                        <div class="stat-card">
+                            <span class="stat-icon">📖</span>
+                            <span class="stat-value" id="statUniqueWords">0</span>
+                            <span class="stat-label">Unika ord</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🔍</span>
+                            <span class="stat-value" id="statSearches">0</span>
+                            <span class="stat-label">Sökningar</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🎮</span>
+                            <span class="stat-value" id="statGames">0</span>
+                            <span class="stat-label">Spel</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🔊</span>
+                            <span class="stat-value" id="statTTS">0</span>
+                            <span class="stat-label">Uttal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="progress-section achievements-section">
+                    <h4>🏆 Prestationer / الإنجازات <span id="achievementCount">(0/0)</span></h4>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Achievement badges will be injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Share Button -->
+                <div class="progress-section share-section">
+                    <button id="shareProgressBtn" class="share-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Dela min progress / شارك تقدمي
+                    </button>
+                </div>
+
+                <!-- Export/Import Section -->
+                <div class="progress-section export-section">
+                    <h4>📁 Säkerhetskopia / نسخة احتياطية</h4>
+                    <div class="export-buttons">
+                        <button id="exportDataBtn" class="export-btn"
+                            onclick="if(typeof ExportManager !== 'undefined') ExportManager.exportToJSON();">
+                            📥 Exportera data
+                        </button>
+                        <label class="import-btn">
+                            📤 Importera data
+                            <input type="file" id="importDataFile" accept=".json" class="hidden"
+                                onchange="if(typeof ExportManager !== 'undefined' && this.files[0]) ExportManager.importFromJSON(this.files[0]);">
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcards Modal -->
+    <div id="flashcardModal" class="modal flashcard-modal hidden">
+        <div class="modal-content flashcard-modal-content">
+            <div class="flashcard-header">
+                <div class="flashcard-progress">
+                    <span id="flashcardCurrent">1</span>/<span id="flashcardTotal">10</span>
+                </div>
+                <h2>🃏 Flashcards</h2>
+                <button id="closeFlashcard" class="close-btn">&times;</button>
+            </div>
+
+            <div class="flashcard-body">
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard">
+                        <div class="flashcard-face flashcard-front">
+                            <span class="flashcard-text" id="flashcardFront">Hej</span>
+                            <span class="flashcard-hint">Tryck för att vända / اضغط للقلب</span>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <span class="flashcard-text" id="flashcardBack">مرحبا</span>
+                            <button class="flashcard-speak-btn" id="flashcardSpeakBtn">🔊</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flashcard-controls hidden" id="flashcardControls">
+                    <button class="fc-btn fc-again" data-quality="0">
+                        <span class="fc-emoji">😅</span>
+                        <span class="fc-label">Igen / مرة أخرى</span>
+                    </button>
+                    <button class="fc-btn fc-hard" data-quality="2">
+                        <span class="fc-emoji">🤔</span>
+                        <span class="fc-label">Svårt / صعب</span>
+                    </button>
+                    <button class="fc-btn fc-good" data-quality="4">
+                        <span class="fc-emoji">👍</span>
+                        <span class="fc-label">Bra / جيد</span>
+                    </button>
+                    <button class="fc-btn fc-easy" data-quality="5">
+                        <span class="fc-emoji">🌟</span>
+                        <span class="fc-label">Lätt / سهل</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flashcard-stats">
+                <span>📖 <span id="fcReviewedCount">0</span> granskade</span>
+                <span>✅ <span id="fcCorrectCount">0</span> rätt</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Modal -->
+    <div id="onboardingModal" class="onboarding-overlay hidden">
+        <div class="onboarding-container">
+            <button class="onboarding-skip" id="skipOnboarding">Hoppa över ❯</button>
+
+            <div class="onboarding-slides" id="onboardingSlides">
+                <!-- Slide 1 -->
+                <div class="onboarding-slide active" data-slide="0">
+                    <div class="slide-icon">👋</div>
+                    <h2>Välkommen till SnabbaLexin!</h2>
+                    <h3>أهلاً بك في سنابا ليكسين!</h3>
+                    <p>Din kompis för att lära dig svenska</p>
+                    <p dir="rtl">رفيقك في تعلم اللغة السويدية</p>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="onboarding-slide" data-slide="1">
+                    <div class="slide-icon">🔍</div>
+                    <h2>Sök ord snabbt</h2>
+                    <h3>ابحث عن الكلمات بسرعة</h3>
+                    <p>Sök på svenska eller arabiska för översättningar</p>
+                    <p dir="rtl">ابحث بالسويدية أو العربية للترجمة</p>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="onboarding-slide" data-slide="2">
+                    <div class="slide-icon">🎮</div>
+                    <h2>Lär dig med spel</h2>
+                    <h3>تعلم من خلال الألعاب</h3>
+                    <p>17 olika spel för att öva på orden</p>
+                    <p dir="rtl">17 لعبة مختلفة للتدرب على الكلمات</p>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="onboarding-slide" data-slide="3">
+                    <div class="slide-icon">⭐</div>
+                    <h2>Spara dina favoriter</h2>
+                    <h3>احفظ كلماتك المفضلة</h3>
+                    <p>Klicka på hjärtat för att spara ord</p>
+                    <p dir="rtl">اضغط على القلب لحفظ الكلمات</p>
+                </div>
+            </div>
+
+            <div class="onboarding-dots" id="onboardingDots">
+                <span class="dot active" data-dot="0"></span>
+                <span class="dot" data-dot="1"></span>
+                <span class="dot" data-dot="2"></span>
+                <span class="dot" data-dot="3"></span>
+            </div>
+
+            <div class="onboarding-nav">
+                <button class="onboarding-btn secondary visibility-hidden" id="prevSlide">⟵ Tillbaka</button>
+                <button class="onboarding-btn primary" id="nextSlide">Nästa ⟶</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module" src="/src/app.ts"></script>
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

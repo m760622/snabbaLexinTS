@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lär dig Svenska Grammatik | تعلم قواعد السويدية - SnabbaLexin</title>
+    <meta name="description"
+        content="Lär dig svensk grammatik: ordföljd, verb, pronomen, adjektiv med quiz och övningar. Anpassat för arabisktalande.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/learn-N8UlnSx5.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/db-TWgxRddZ.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/loader-CKTsN5EW.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-kfGpRYBQ.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
+  <link rel="stylesheet" crossorigin href="/assets/learn-Cm52NvHr.css">
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='../index.html'" aria-label="Tillbaka" title="Tillbaka">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()">📱</button>
+        <h1>Lär dig Svenska / تعلم السويدية</h1>
+    </header>
+
+    <!-- Progress Hero -->
+    <div class="progress-hero">
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="value" id="streakCount">0</div>
+                <div class="label">🔥 Dagar</div>
+            </div>
+            <div class="hero-stat">
+                <div class="value" id="totalXP">0</div>
+                <div class="label">⭐ XP</div>
+            </div>
+            <div class="hero-stat">
+                <div class="value" id="completedCount">0</div>
+                <div class="label">✅ Klara</div>
+            </div>
+        </div>
+        <div class="overall-progress">
+            <div class="fill" id="overallProgress"></div>
+        </div>
+        <div class="progress-text" id="progressText">0% klar / مكتمل</div>
+    </div>
+
+    <!-- Review Banner -->
+    <div class="review-banner hidden" id="reviewBanner" onclick="openReviewSession()">
+        <div class="review-icon">🔄</div>
+        <div class="review-content">
+            <div class="review-title">Dags för repetition! / وقت المراجعة</div>
+            <div class="review-subtitle"><span id="reviewCount">0</span> ord att repetera</div>
+        </div>
+    </div>
+
+    <main>
+        <div class="search-container">
+            <input type="text" id="lessonSearchInput" placeholder="Sök lektioner / ابحث عن درس...">
+        </div>
+
+        <div class="filter-scroll-container">
+            <button class="filter-chip active" data-filter="all">Alla / الكل</button>
+            <button class="filter-chip" data-filter="beginner">🟢 Nybörjare</button>
+            <button class="filter-chip" data-filter="intermediate">🟡 Medel</button>
+            <button class="filter-chip" data-filter="advanced">🔴 Avancerad</button>
+        </div>
+
+        <!-- Special Cards -->
+        <div class="special-section">
+            <div class="section-title">🌟 Snabbspår / الوصول السريع</div>
+            <div class="special-cards">
+                <div class="special-card" onclick="window.location.href='cognates.html'">
+                    <div class="icon">🔤</div>
+                    <div class="title">Liknande Ord</div>
+                    <div class="subtitle">المتشابهات</div>
+                </div>
+                <!-- New Quran Card -->
+                <div class="special-card" onclick="window.location.href='../games/quran.html'">
+                    <div class="icon">📖</div>
+                    <div class="title">Koranord</div>
+                    <div class="subtitle">كلمات القرآن</div>
+                </div>
+                <div class="special-card" onclick="openRandomQuiz()">
+                    <div class="icon">🎲</div>
+                    <div class="title">Slumpmässig Quiz</div>
+                    <div class="subtitle">اختبار عشوائي</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Section -->
+        <div class="section-title">📚 Lektioner / الدروس</div>
+        <div class="lessons-grid" id="lessonsGrid">
+            <!-- Dynamic -->
+        </div>
+    </main>
+
+    <!-- Lesson Modal -->
+    <div id="lessonModal" class="lesson-modal">
+        <div class="modal-header">
+            <button class="close-lesson" onclick="closeLessonModal()">×</button>
+            <h2 id="modalTitle">Lektion</h2>
+        </div>
+
+        <div id="lessonContent" class="lesson-content"></div>
+    </div>
+
+</body>
+
+</html>

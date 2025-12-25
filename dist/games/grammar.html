@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammatik - SnabbaLexin</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/games-grammar-D9ExMpOJ.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/games-utils-HTOXTqfV.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BweZQtgh.css">
+</head>
+
+<body class="grammar-cyber-theme mobile-view-mode">
+    <!-- Animated Cyber Background -->
+    <div class="gr-cyber-bg">
+        <div class="gr-grid-overlay"></div>
+        <div class="gr-particle" style="--delay: 0s; --x: 10%;"></div>
+        <div class="gr-particle" style="--delay: 1s; --x: 25%;"></div>
+        <div class="gr-particle" style="--delay: 2s; --x: 40%;"></div>
+        <div class="gr-particle" style="--delay: 0.5s; --x: 55%;"></div>
+        <div class="gr-particle" style="--delay: 1.5s; --x: 70%;"></div>
+        <div class="gr-particle" style="--delay: 2.5s; --x: 85%;"></div>
+    </div>
+
+    <!-- Premium HUD -->
+    <div class="memory-hud gr-hud">
+        <div class="hud-nav">
+            <button class="hud-btn" onclick="window.location.href='games.html'" aria-label="Tillbaks / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="hud-btn" onclick="toggleMobileView()" aria-label="Mobile View">
+                📱
+            </button>
+        </div>
+        <div class="hud-title">📖 Grammatik</div>
+        <div class="hud-stats">
+            <div class="stat-pill score" title="Poäng / النقاط">
+                <span class="stat-pill-icon">⚡</span>
+                <span class="stat-pill-value" id="grammarScore">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen Title -->
+    <div class="gr-screen-title">
+        <h1>📖 Grammatik / قواعد اللغة</h1>
+    </div>
+
+    <!-- Game Container -->
+    <div id="grammarGame" class="gr-game-container">
+        <!-- Category Filter -->
+        <div class="gr-filter-row">
+            <select id="grammarCategoryFilter" class="gr-filter-select" onchange="startGrammarGame()"
+                title="Grammar Category / فئة القواعد">
+                <option value="all">✓ Alla regler / كل القواعد</option>
+                <option value="word-order">Ordföljd / ترتيب الكلمات</option>
+                <option value="v2-rule">V2-regeln / قاعدة V2</option>
+                <option value="questions">Frågor / الأسئلة</option>
+                <option value="adverbs">Adverb / الظروف</option>
+                <option value="time-manner-place">Tid-Sätt-Plats</option>
+                <option value="bisatser">Bisatser / الجمل التابعة</option>
+                <option value="possessiva">Possessiva / الملكية</option>
+                <option value="prepositioner">Prepositioner / حروف الجر</option>
+                <option value="passiv">Passiv / المبني للمجهول</option>
+                <option value="imperativ">Imperativ / صيغة الأمر</option>
+                <option value="komparativ">Komparativ / التفضيل</option>
+                <option value="subjunktioner">Subjunktioner / أدوات الربط</option>
+            </select>
+        </div>
+
+        <!-- Holographic Hint Card -->
+        <div class="gr-holo-hint" id="grammarHint">
+            <div class="gr-hint-shimmer"></div>
+            <span class="gr-hint-text">...</span>
+        </div>
+
+        <!-- Explanation Card (Hidden initially) -->
+        <div class="gr-explanation-card hidden" id="grammarExplanation">
+            <div class="gr-explanation-content"></div>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="gr-drop-zone" id="grammarDropZone">
+            <div class="gr-drop-placeholder">
+                <span class="gr-drop-icon">⬇️</span>
+                <span>Dra ord hit / اسحب الكلمات هنا</span>
+            </div>
+        </div>
+
+        <!-- Word Bank -->
+        <div class="gr-word-bank" id="grammarWordBank"></div>
+
+        <!-- Feedback -->
+        <div id="grammarFeedback" class="gr-feedback"></div>
+
+        <!-- Controls -->
+        <div class="gr-controls">
+            <button id="grammarShowAnswerBtn" class="gr-btn gr-btn-hint" onclick="showGrammarAnswer()">
+                <span class="btn-icon">👁️</span>
+                <span class="btn-label">Visa Svaret</span>
+            </button>
+            <button id="checkGrammarBtn" class="gr-btn gr-btn-check">
+                <span class="btn-icon">✓</span>
+                <span class="btn-label">Kontrollera</span>
+            </button>
+            <button id="nextGrammarBtn" class="gr-btn gr-btn-next hidden">
+                <span class="btn-icon">➜</span>
+                <span class="btn-label">Nästa</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Celebration Container -->
+    <div id="celebration-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof startGrammarGame === 'function') {
+                startGrammarGame();
+            }
+        });
+    </script>
+</body>
+
+</html>

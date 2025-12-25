@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - SnabbaLexin</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
+    <link rel="apple-touch-icon" href="/assets/icon-IoVpuwm3.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/changelog-D_8OPB6C.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
+  <link rel="stylesheet" crossorigin href="/assets/changelog-BfivJLrR.css">
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Back / رجوع">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()" title="وضع الموبايل"
+            aria-label="Mobile View / وضع الموبايل">📱</button>
+        <h1>Changelog / سجل التحديثات</h1>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h2>📋 Nyheter</h2>
+            <p>Alla uppdateringar och förbättringar</p>
+            <div class="version-badge">v2.9.5</div>
+        </div>
+
+        <div class="timeline">
+            <!-- Version 2.9.5 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.5</div>
+                <div class="timeline-title">Game TypeScript Migration / تحويل الألعاب إلى TypeScript</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>5 games converted:</strong> vowel_game, word_search, block_puzzle, memory, unblock_me</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>HTML size reduced:</strong> 410KB → 97KB (76% reduction)</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Modular architecture:</strong> Inline JS → TypeScript modules</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.9.4 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.4</div>
+                <div class="timeline-title">Data Separation / فصل البيانات</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>wordSearchData.ts:</strong> 21 topics with full word data (130KB)</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>vowelGameData.ts:</strong> 135+ minimal pairs for vowel practice (22KB)</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>TypeScript Interfaces:</strong> WordEntry, Level, Topic, MinimalPair</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.9.3 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.3</div>
+                <div class="timeline-title">TypeScript Type Definitions / تعريفات أنواع TypeScript</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>DictionaryEntry Type:</strong> Added typed tuple for dictionary entries with 11 documented fields</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>DictionaryIndex:</strong> Named constants for accessing dictionary entry fields</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Type Safety:</strong> Full type definitions for main dictionary data structure</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.9.2 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.2</div>
+                <div class="timeline-title">Full HTML to TypeScript Integration / دمج كامل من HTML إلى TypeScript</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>listening.html:</strong> Fully converted - JS embedded replaced with module import</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>fill_blank.html:</strong> Fully converted - JS embedded replaced with module import</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>memory.html:</strong> Added data.js dependency for dictionary access</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>unblock_me.html:</strong> Fixed HTML comment syntax error (Build fix)</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.9.1 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.1</div>
+                <div class="timeline-title">Game Logic Migration to TypeScript / نقل منطق الألعاب إلى TypeScript</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>TypeScript Modules:</strong> Created 7 new TypeScript game modules for better code organization</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Games Converted:</strong> listeningGame, fillBlankGame, memoryGame, unblockMeGame, vowelGame, wordSearchGame, blockPuzzleGame</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Standalone Modules:</strong> Each game file is now a self-contained TypeScript module with proper type definitions</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>Build Stability:</strong> Maintained build stability with temporary exclusions pending full integration</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.9.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">23 Dec 2025</span>
+                <div class="timeline-version">v2.9.0</div>
+                <div class="timeline-title">Code Quality & Data Separation / جودة الكود وفصل البيانات</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Data Separation:</strong> Extracted embedded data from HTML files to TypeScript modules for better maintainability</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Word Search Data:</strong> 21 topics × 10 levels × 5 words = 1,050 words moved to <code>word-search-data.ts</code></span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Vowel Game Data:</strong> 120 minimal pairs (O/Ö, U/Y, A/Ä, Å/O, I/E, I/Y) moved to <code>vowel-data.ts</code></span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>TypeScript Types:</strong> Added type definitions for all game data structures</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>Mobile View:</strong> Consistent iPhone-style frame across all game screens</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.8.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">14 Dec 2025</span>
+                <div class="timeline-version">v2.8.0</div>
+                <div class="timeline-title">New Features & Improvements / ميزات وتحسينات جديدة</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Difficulty Levels:</strong> Lessons are now properly categorized as Beginner,
+                            Intermediate, or Advanced. Added filtering capabilities to the Learn page.</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Progress Tracking:</strong> New stats bar showing Daily Streak 🔥 and XP ✨. Lesson
+                            cards now track completion status.</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>TTS Integration:</strong> Native audio playback for all lesson examples using the
+                            new high-quality TTS system.</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Varied Quizzes:</strong> Introduced new quiz types: Audio (Listen → Select
+                            Meaning) and Reverse (Arabic → Swedish).</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Rewards System:</strong> Earn rewards and track high scores for completing lesson
+                            quizzes.</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>New Content:</strong> Added "Shopping & Groceries" lesson with 50+ new
+                            phrases.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.7.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">14 Dec 2025</span>
+                <div class="timeline-version">v2.7.0</div>
+                <div class="timeline-title">Quiz Feedback & Filter Fix / تغذية راجعة للاختبارات</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Quiz Feedback:</strong> Visuell feedback för rätt/fel svar i quiz</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>Category Filter:</strong> Ämnen-filtret fungerar nu korrekt</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Filter UI:</strong> Kompaktare design, röda pilar</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>CSS Optimering:</strong> Minifierad CSS för snabbare laddning</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Game Error Handling:</strong> Bättre felhantering för spel</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>False Friends:</strong> 80+ nya svenska-arabiska ordpar tillagda</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.6.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">14 Dec 2025</span>
+                <div class="timeline-version">v2.6.0</div>
+                <div class="timeline-title">Professionella förbättringar / تحسينات احترافية</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>PWA Screenshots:</strong> Förbättrad app-installation</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>SEO:</strong> Bättre synlighet i sökmotorer</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Service Worker v4:</strong> Alla sidor fungerar offline</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Cache:</strong> Uppdaterad dataversion för nya funktioner</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>Projektrensning:</strong> Borttog gammla utvecklingsfiler</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.5.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">14 Dec 2024</span>
+                <div class="timeline-version">v2.5.0</div>
+                <div class="timeline-title">Stora förbättringar! / تحسينات كبيرة!</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>IndexedDB Cache:</strong> Snabbare laddning vid upprepade besök</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>90 nya exempel:</strong> 10 exempel per grammatiklektion</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Falska vänner:</strong> Ord som liknar arabiska men har annan betydelse</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Situationsfraser:</strong> På sjukhuset, jobbet och banken</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>TTS förbättrad:</strong> Bättre svenskt uttal på iPhone</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.4.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">13 Dec 2024</span>
+                <div class="timeline-version">v2.4.0</div>
+                <div class="timeline-title">TTS & Spel / النطق والألعاب</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Unified TTS:</strong> Enhetligt tal-system över hela appen</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Progress Dashboard:</strong> Visa din lärningsprogress</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Nya spel:</strong> Ordhjulet, Ordregn och mer</span>
+                    </li>
+                    <li>
+                        <span class="change-type fix">🐛</span>
+                        <span><strong>Flashcards:</strong> Fixade flip-funktionen</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.3.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">12 Dec 2024</span>
+                <div class="timeline-version">v2.3.0</div>
+                <div class="timeline-title">Mobilvy & UI / واجهة الموبايل</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Mobile View:</strong> Simulera iPhone-vy på desktop</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Stage Map:</strong> Visa alla spelsteg</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Design:</strong> Uppdaterade färgteman</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.2.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">11 Dec 2024</span>
+                <div class="timeline-version">v2.2.0</div>
+                <div class="timeline-title">Exempel & Data / أمثلة وبيانات</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>6500+ exempel:</strong> Svenska och arabiska exempelmeningar</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Projektrensning:</strong> Borttog onödiga filer</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.1.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">10 Dec 2024</span>
+                <div class="timeline-version">v2.1.0</div>
+                <div class="timeline-title">Sökfilter / فلاتر البحث</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Ordtypsfilter:</strong> Filtrera verb, substantiv, adjektiv</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Favoriter:</strong> Spara dina favoritord</span>
+                    </li>
+                    <li>
+                        <span class="change-type improvement">🔧</span>
+                        <span><strong>Sökfunktion:</strong> Snabbare och mer exakt</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Version 2.0.0 -->
+            <div class="timeline-item">
+                <span class="timeline-date">9 Dec 2024</span>
+                <div class="timeline-version">v2.0.0</div>
+                <div class="timeline-title">Stor uppdatering! / تحديث كبير!</div>
+                <ul class="change-list">
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Ny design:</strong> Modern och premium UI</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>PWA:</strong> Installera som app på din telefon</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>Offline:</strong> Fungerar utan internet</span>
+                    </li>
+                    <li>
+                        <span class="change-type feature">✨</span>
+                        <span><strong>34 000+ ord:</strong> Stor ordbok</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

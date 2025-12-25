@@ -1,0 +1,1 @@
+import"./modulepreload-polyfill-B5Qt9EMX.js";import"./loader-CKTsN5EW.js";import"./pwa-Bxh5GLjF.js";import"./db-TWgxRddZ.js";import"./utils-B-9iATqE.js";const t=localStorage.getItem("theme")||"dark";document.documentElement.setAttribute("data-theme",t);t==="dark"&&document.body.classList.add("dark-mode");

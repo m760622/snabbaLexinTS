@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Blocks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <button class="back-btn" onclick="window.location.href='games.html'">←</button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+            title="وضع الموبايل">📱</button>
+        <h1>Neon Blocks</h1>
+
+        <div class="score-container">
+            <div class="score-row">
+                <span class="score-label">Best / الأفضل</span>
+                <span class="score-value-small" id="highScore">0</span>
+            </div>
+            <div class="score-row">
+                <span class="score-label">Score / النقاط</span>
+                <span class="score-value" id="score">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="game-container">
+        <div id="timerContainer">⏱️ <span id="timerValue">120</span></div>
+        <canvas id="gameCanvas"></canvas>
+        <button id="rotateBtn" onclick="game.rotateHand()">↻</button>
+
+        <!-- Main Menu -->
+        <div id="mainMenu" class="modal-overlay active">
+            <div class="modal-content modal-content-large">
+                <div class="modal-title">Neon Blocks</div>
+                <p class="modal-subtitle">Select Game Mode / اختر نمط اللعبة</p>
+
+                <div class="mode-grid">
+                    <div class="mode-card" onclick="game.startMode('classic')">
+                        <div class="mode-icon">🧩</div>
+                        <div class="mode-name">Classic</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode('bomb')">
+                        <div class="mode-icon">💣</div>
+                        <div class="mode-name">Bomb Mode</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode('time')">
+                        <div class="mode-icon">⏱️</div>
+                        <div class="mode-name">Time Attack</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode('color')">
+                        <div class="mode-icon">🎨</div>
+                        <div class="mode-name">Color Match</div>
+                    </div>
+                </div>
+
+                <button class="modal-btn secondary" onclick="game.resume()" id="resumeBtn">Resume
+                    / استكمال</button>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="gameOverModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-title">Game Over</div>
+                <div class="score-label">Final Score</div>
+                <div class="final-score" id="finalScore">0</div>
+                <div class="score-label" id="newHighScoreLabel">New High Score!</div>
+                <button class="modal-btn" onclick="game.showMenu()">Menu / القائمة</button>
+                <button class="modal-btn secondary" onclick="game.restart()">Replay / إعادة</button>
+            </div>
+        </div>
+    </div>
+
+        <script type="module" src="../src/games/blockPuzzleGame.ts"></script>
+    <script type="module" src="../src/loader.ts"></script>
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+
+</html>

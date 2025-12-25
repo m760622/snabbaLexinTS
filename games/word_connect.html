@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bokstav Länk - SnabbaLexin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/games.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="wc-cyber-theme mobile-view-mode">
+
+    <!-- Animated Cyber Background -->
+    <div class="wc-cyber-bg">
+        <div class="wc-grid-overlay"></div>
+        <!-- Floating Particles -->
+        <div class="wc-particles" id="wcParticles"></div>
+    </div>
+
+    <!-- Premium HUD - Top Row -->
+    <div class="memory-hud wc-hud">
+        <div class="hud-nav">
+            <button class="hud-btn" onclick="window.location.href='games.html'" aria-label="Tillbaks / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="hud-btn" onclick="toggleMobileView()" aria-label="Mobile View">
+                📱
+            </button>
+            <!-- Title moved here, next to mobile button -->
+            <span class="hud-title-inline">✨ Bokstavlänk | ربط الحروف</span>
+        </div>
+    </div>
+
+    <!-- Stats Row - Separate -->
+    <div class="wc-stats-row">
+
+        <!-- Info Group: Numbers -->
+        <div class="wc-info-group">
+            <div class="stat-pill moves wc-level-btn" title="Nivå / المستوى - اضغط لاختيار المرحلة"
+                onclick="openLevelSelect()">
+                <span class="stat-pill-icon">📶</span>
+                <span class="stat-pill-value" id="wcLevelTitle">1-1</span>
+                <span class="stat-pill-arrow">▼</span>
+            </div>
+
+            <!-- Streak Counter -->
+            <div class="stat-pill wc-streak-pill" title="سلسلة الإجابات / Svit">
+                <span class="stat-pill-icon">🔥</span>
+                <span class="stat-pill-value" id="wcStreakCount">0</span>
+            </div>
+
+            <div class="stat-pill score" title="Mynt / العملات">
+                <span class="stat-pill-icon">💎</span>
+                <span class="stat-pill-value" id="wcCoinCount">0</span>
+            </div>
+        </div>
+
+        <!-- Action Group: Buttons -->
+        <div class="wc-actions-group">
+            <div class="stat-pill wc-clickable-pill wc-stats-btn" title="الإحصائيات / Statistik"
+                onclick="showStatsModal()">
+                <span class="stat-pill-icon">📊</span>
+            </div>
+            <div class="stat-pill wc-clickable-pill wc-achievements-btn" title="الإنجازات / Prestationer"
+                onclick="showAchievementsModal()">
+                <span class="stat-pill-icon">🏆</span>
+            </div>
+            <!-- Sound Toggle -->
+            <div class="stat-pill wc-clickable-pill wc-sound-toggle" title="تشغيل/إيقاف الصوت" onclick="toggleSound()">
+                <span class="stat-pill-icon" id="wcSoundIcon">🔊</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="wc-game-container" id="wcGameContainer">
+
+        <!-- Word Slots Area -->
+        <div class="wc-slots-area" id="wcGridContainer">
+            <!-- JS injects rows here -->
+        </div>
+
+        <!-- Translation Display -->
+        <div id="wcTranslationDisplay" class="wc-translation-display"></div>
+
+        <!-- Current Input Preview (ABOVE wheel) -->
+        <div class="wc-input-preview" id="wcPreviewText"></div>
+
+        <!-- Wheel Interaction Area -->
+        <div class="wc-wheel-container" id="wcWheelContainer">
+            <!-- Canvas لتأثير السحب المضيء -->
+            <canvas id="wcDragTrailCanvas" class="wc-drag-trail-canvas"></canvas>
+            <!-- Pulsing Rings Behind Wheel -->
+            <div class="wc-wheel-ring wc-ring-outer"></div>
+            <div class="wc-wheel-ring wc-ring-inner"></div>
+            <div class="wc-wheel-glow"></div>
+
+            <!-- Hint Button in Center -->
+            <div class="wc-wheel-center-btn premium-glow-btn" onclick="useHint()" title="تلميح / Ledtråd (−10 💎)">
+                <span class="wc-center-icon">💡</span>
+            </div>
+
+            <!-- Wheel (Letter Orbs) -->
+            <div class="wc-letters" id="wcWheel">
+                <!-- JS injects letters here -->
+            </div>
+
+            <!-- تلميح اليد للمبتدئين -->
+            <div class="wc-hand-tutorial" id="wcHandTutorial">
+                <span class="wc-hand-icon">👆</span>
+            </div>
+        </div>
+
+        <!-- Controls removed per user request -->
+
+    </div>
+
+    <!-- Level Complete Modal -->
+    <div id="wcLevelCompleteModal" class="wc-modal-overlay hidden">
+        <div class="wc-modal-content">
+            <div class="wc-celebrate-emoji">🎉</div>
+            <div class="wc-celebrate-title">Bra jobbat!</div>
+            <div class="wc-celebrate-subtitle">أحسنت!</div>
+            <div class="wc-modal-actions">
+                <button class="wc-btn wc-btn-secondary" onclick="window.location.href='games.html'">
+                    🏠 Meny
+                </button>
+                <button class="wc-btn wc-btn-primary" onclick="nextLevel()">
+                    Nästa ➜
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Level Select Modal -->
+    <div id="wcLevelSelectModal" class="wc-modal-overlay hidden">
+        <div class="wc-modal-content wc-level-select-content">
+            <div class="wc-modal-header">
+                <h2>اختر المرحلة</h2>
+                <button class="wc-modal-close" onclick="closeLevelSelect()">✕</button>
+            </div>
+            <div class="wc-level-grid" id="wcLevelGrid">
+                <!-- JS will populate levels here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="wcLibraryModal" class="wc-modal-hidden"></div>
+    <div id="celebration-container"></div>
+
+    <!-- عجلة الحظ اليومية -->
+    <div id="wcDailyWheelModal" class="wc-modal-overlay hidden">
+        <div class="wc-modal-content wc-daily-wheel-content">
+            <div class="wc-daily-wheel-header">
+                <span class="wc-daily-wheel-title">🎰 عجلة الحظ اليومية</span>
+                <span class="wc-daily-wheel-subtitle">Dagligt Lyckohjul</span>
+            </div>
+            <div class="wc-daily-wheel-container">
+                <div class="wc-daily-wheel" id="wcDailyWheel">
+                    <div class="wc-wheel-segment" data-prize="10">💰 10</div>
+                    <div class="wc-wheel-segment" data-prize="25">💎 25</div>
+                    <div class="wc-wheel-segment" data-prize="5">🪙 5</div>
+                    <div class="wc-wheel-segment" data-prize="50">🌟 50</div>
+                    <div class="wc-wheel-segment" data-prize="15">💰 15</div>
+                    <div class="wc-wheel-segment" data-prize="100">🎁 100</div>
+                </div>
+                <div class="wc-wheel-pointer">▼</div>
+            </div>
+            <button class="wc-btn wc-btn-primary wc-spin-btn" id="wcSpinBtn" onclick="spinDailyWheel()">
+                🎲 دوّر العجلة / Snurra
+            </button>
+            <button class="wc-btn wc-btn-secondary wc-close-wheel-btn" onclick="closeDailyWheel()">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+
+    <script type="module" src="../src/games/wordConnectGame.ts"></script>
+
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

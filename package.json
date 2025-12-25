@@ -1,0 +1,27 @@
+{
+  "name": "snabbalexin-web-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "quran.js",
+  "scripts": {
+    "dev": "vite",
+    "dev:host": "vite --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m760622/snabbaLexin-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m760622/snabbaLexin-web/issues"
+  },
+  "homepage": "https://github.com/m760622/snabbaLexin-web#readme",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^5.4.11"
+  }
+}

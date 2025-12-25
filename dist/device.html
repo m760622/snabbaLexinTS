@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info / معلومات الجهاز</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="device.css">
+  <script type="module" crossorigin src="/assets/device-DiNaekbN.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Back / رجوع">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+            title="وضع الموبايل">📱</button>
+        <h1>🖥️ Device Info / معلومات الجهاز</h1>
+    </header>
+
+    <main>
+        <!-- Device Visual -->
+        <div class="device-visual">
+            <div class="device-icon" id="deviceIcon">💻</div>
+            <div class="device-name" id="deviceName">Loading...</div>
+            <div class="device-type" id="deviceType">Detecting device...</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <!-- Browser -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🌐</span>
+                    <span class="stat-label">Webbläsare / المتصفح</span>
+                </div>
+                <div class="stat-value" id="browserInfo">-</div>
+            </div>
+
+            <!-- OS -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">⚙️</span>
+                    <span class="stat-label">Operativsystem / نظام التشغيل</span>
+                </div>
+                <div class="stat-value" id="osInfo">-</div>
+            </div>
+
+            <!-- Screen -->
+            <div class="stat-card screen-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📐</span>
+                    <span class="stat-label">Skärmstorlek / حجم الشاشة</span>
+                </div>
+                <div class="stat-value">
+                    <div class="screen-visual" id="screenVisual">-</div>
+                    <span id="screenInfo">-</span>
+                </div>
+            </div>
+
+            <!-- Pixel Ratio -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔍</span>
+                    <span class="stat-label">Pixel Density / كثافة البكسل</span>
+                </div>
+                <div class="stat-value" id="pixelRatio">-</div>
+            </div>
+
+            <!-- Battery -->
+            <div class="stat-card hidden" id="batteryCard">
+                <div class="stat-header">
+                    <span class="stat-icon">🔋</span>
+                    <span class="stat-label">Batteri / البطارية</span>
+                </div>
+                <div class="battery-visual">
+                    <span class="battery-icon" id="batteryIcon">🔋</span>
+                    <div class="battery-bar">
+                        <div class="battery-fill" id="batteryFill">
+                            <span class="battery-text" id="batteryText">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📶</span>
+                    <span class="stat-label">Nätverk / الشبكة</span>
+                </div>
+                <div class="stat-value">
+                    <div class="network-status">
+                        <span class="network-dot" id="networkDot"></span>
+                        <span id="networkInfo">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🌍</span>
+                    <span class="stat-label">Språk / اللغة</span>
+                </div>
+                <div class="stat-value" id="languageInfo">-</div>
+            </div>
+
+            <!-- Touch Support -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">👆</span>
+                    <span class="stat-label">Touch / اللمس</span>
+                </div>
+                <div class="stat-value">
+                    <span class="touch-indicator" id="touchInfo">-</span>
+                </div>
+            </div>
+
+            <!-- Memory -->
+            <div class="stat-card hidden" id="memoryCard">
+                <div class="stat-header">
+                    <span class="stat-icon">💾</span>
+                    <span class="stat-label">Minne / الذاكرة</span>
+                </div>
+                <div class="stat-value" id="memoryInfo">-</div>
+            </div>
+
+            <!-- CPU Cores -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🧠</span>
+                    <span class="stat-label">CPU Kärnor / نوى المعالج</span>
+                </div>
+                <div class="stat-value" id="cpuInfo">-</div>
+            </div>
+
+            <!-- ADVANCED DATA SECTION -->
+            <div class="section-divider">
+                <span>🔬 Avancerad Data / بيانات متقدمة</span>
+            </div>
+
+            <!-- Timezone -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🕐</span>
+                    <span class="stat-label">Tidszon / المنطقة الزمنية</span>
+                </div>
+                <div class="stat-value" id="timezoneInfo">-</div>
+            </div>
+
+            <!-- Color Depth -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎨</span>
+                    <span class="stat-label">Färgdjup / عمق الألوان</span>
+                </div>
+                <div class="stat-value" id="colorDepthInfo">-</div>
+            </div>
+
+            <!-- Screen Orientation -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔄</span>
+                    <span class="stat-label">Skärmorientering / اتجاه الشاشة</span>
+                </div>
+                <div class="stat-value" id="orientationInfo">-</div>
+            </div>
+
+            <!-- Platform -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💻</span>
+                    <span class="stat-label">Platform / المنصة</span>
+                </div>
+                <div class="stat-value" id="platformInfo">-</div>
+            </div>
+
+            <!-- Vendor -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🏭</span>
+                    <span class="stat-label">Browser Vendor / مصنع المتصفح</span>
+                </div>
+                <div class="stat-value" id="vendorInfo">-</div>
+            </div>
+
+            <!-- Cookies -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🍪</span>
+                    <span class="stat-label">Cookies</span>
+                </div>
+                <div class="stat-value" id="cookiesInfo">-</div>
+            </div>
+
+            <!-- Do Not Track -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🕵️</span>
+                    <span class="stat-label">Do Not Track / عدم التتبع</span>
+                </div>
+                <div class="stat-value" id="dntInfo">-</div>
+            </div>
+
+            <!-- PDF Support -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📄</span>
+                    <span class="stat-label">PDF Viewer / عارض PDF</span>
+                </div>
+                <div class="stat-value" id="pdfInfo">-</div>
+            </div>
+
+            <!-- WebGL -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎮</span>
+                    <span class="stat-label">WebGL Renderer / عارض الرسوميات</span>
+                </div>
+                <div class="stat-value text-sm" id="webglInfo">-</div>
+            </div>
+
+            <!-- Canvas Fingerprint -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🖼️</span>
+                    <span class="stat-label">Canvas Hash / بصمة الرسم</span>
+                </div>
+                <div class="stat-value font-mono-sm" id="canvasInfo">-</div>
+            </div>
+
+            <!-- Audio Context -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔊</span>
+                    <span class="stat-label">Audio Context / سياق الصوت</span>
+                </div>
+                <div class="stat-value" id="audioInfo">-</div>
+            </div>
+
+            <!-- Storage Quota -->
+            <div class="stat-card" id="storageCard">
+                <div class="stat-header">
+                    <span class="stat-icon">📦</span>
+                    <span class="stat-label">Storage Quota / مساحة التخزين</span>
+                </div>
+                <div class="stat-value" id="storageInfo">-</div>
+                <div class="storage-bar">
+                    <div class="storage-fill" id="storageFill"></div>
+                </div>
+            </div>
+
+            <!-- Service Worker -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">⚡</span>
+                    <span class="stat-label">Service Worker</span>
+                </div>
+                <div class="stat-value" id="swInfo">-</div>
+            </div>
+
+            <!-- Notification Permission -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔔</span>
+                    <span class="stat-label">Notifications / الإشعارات</span>
+                </div>
+                <div class="stat-value" id="notifInfo">-</div>
+            </div>
+
+            <!-- Geolocation Permission -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📍</span>
+                    <span class="stat-label">Geolocation / الموقع الجغرافي</span>
+                </div>
+                <div class="stat-value" id="geoInfo">-</div>
+            </div>
+
+            <!-- Plugins Count -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔌</span>
+                    <span class="stat-label">Plugins / الإضافات</span>
+                </div>
+                <div class="stat-value" id="pluginsInfo">-</div>
+            </div>
+
+            <!-- User Agent Hash -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔐</span>
+                    <span class="stat-label">UA Fingerprint / بصمة المتصفح</span>
+                </div>
+                <div class="stat-value stat-value-mono" id="uaHashInfo">-</div>
+            </div>
+
+            <!-- Connection Info -->
+            <div class="stat-card" id="connectionCard">
+                <div class="stat-header">
+                    <span class="stat-icon">🌐</span>
+                    <span class="stat-label">Connection Details / تفاصيل الاتصال</span>
+                </div>
+                <div class="stat-value" id="connectionInfo">-</div>
+            </div>
+
+            <!-- Viewport -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📏</span>
+                    <span class="stat-label">Viewport Size / حجم العرض</span>
+                </div>
+                <div class="stat-value" id="viewportInfo">-</div>
+            </div>
+
+            <!-- Available Screen -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🖥️</span>
+                    <span class="stat-label">Available Screen / الشاشة المتاحة</span>
+                </div>
+                <div class="stat-value" id="availScreenInfo">-</div>
+            </div>
+
+            <!-- Local Storage Size -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💾</span>
+                    <span class="stat-label">LocalStorage Used / التخزين المحلي</span>
+                </div>
+                <div class="stat-value" id="localStorageInfo">-</div>
+            </div>
+
+            <!-- Session Count -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📊</span>
+                    <span class="stat-label">Session Count / عدد الجلسات</span>
+                </div>
+                <div class="stat-value" id="sessionInfo">-</div>
+            </div>
+
+            <!-- WebRTC Support -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎥</span>
+                    <span class="stat-label">WebRTC Support / دعم WebRTC</span>
+                </div>
+                <div class="stat-value" id="webrtcInfo">-</div>
+            </div>
+
+            <!-- Bluetooth -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📶</span>
+                    <span class="stat-label">Bluetooth API</span>
+                </div>
+                <div class="stat-value" id="bluetoothInfo">-</div>
+            </div>
+
+            <!-- USB -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🔌</span>
+                    <span class="stat-label">USB API</span>
+                </div>
+                <div class="stat-value" id="usbInfo">-</div>
+            </div>
+
+            <!-- Gamepad -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎮</span>
+                    <span class="stat-label">Gamepad API</span>
+                </div>
+                <div class="stat-value" id="gamepadInfo">-</div>
+            </div>
+        </div>
+
+        <!-- Refresh Button -->
+        <button class="refresh-btn" onclick="loadDeviceInfo()">
+            <span class="refresh-icon">🔄</span>
+            Uppdatera / تحديث
+        </button>
+
+        <!-- Footer -->
+        <div class="footer-info">
+            <p>Senast uppdaterad / آخر تحديث:</p>
+            <div class="timestamp" id="timestamp">-</div>
+        </div>
+    </main>
+
+</body>
+
+</html>
