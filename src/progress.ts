@@ -222,6 +222,11 @@ export const ProgressManager = {
                 const showToast = (window as any).showToast;
                 if (typeof showToast === 'function') showToast(`🏆 Achievement: ${a.name} ${a.icon}`);
             });
+            // Celebrate with confetti!
+            const Confetti = (window as any).Confetti;
+            if (Confetti && typeof Confetti.celebrate === 'function') {
+                Confetti.celebrate();
+            }
         }
     },
 

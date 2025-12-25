@@ -398,7 +398,7 @@ function updateStreakDisplay(): void {
 // Sound Toggle
 // ========================================
 
-(window as any).toggleSound = function(): void {
+(window as any).toggleSound = function (): void {
     if (typeof soundManager !== 'undefined' && soundManager.toggle) {
         const enabled = soundManager.toggle();
         const iconEl = document.getElementById('wcSoundIcon');
@@ -492,7 +492,7 @@ function performLevelStart(chapter: number, stage: number, gameContainer: HTMLEl
 
         const titleEl = document.getElementById('wcLevelTitle');
         if (titleEl) titleEl.textContent = `Nivå ${chapter}-${stage}`;
-        
+
         const completeModal = document.getElementById('wcLevelCompleteModal');
         if (completeModal) completeModal.style.display = 'none';
 
@@ -539,7 +539,7 @@ function performLevelStart(chapter: number, stage: number, gameContainer: HTMLEl
         }
 
         renderGrid();
-        
+
         wcState.bombActive = false;
         if (wcState.bombInterval) clearInterval(wcState.bombInterval);
 
@@ -624,7 +624,7 @@ function shuffleLetters(word: string): string[] {
     return shuffled;
 }
 
-(window as any).shuffleWheelLetters = function(): void {
+(window as any).shuffleWheelLetters = function (): void {
     if (!wcState.currentLevelData || !wcState.currentLevelData.letters) return;
 
     let arr = [...wcState.currentLevelData.letters];
@@ -671,7 +671,7 @@ function isSubset(word: string, letterMap: Record<string, number>): boolean {
 function renderGrid(): void {
     const gridContainer = document.getElementById('wcGridContainer');
     if (!gridContainer || !wcState.currentLevelData) return;
-    
+
     gridContainer.innerHTML = '';
 
     wcState.currentLevelData.words.forEach(word => {
@@ -692,7 +692,7 @@ function renderGrid(): void {
 function renderWheel(): void {
     const wheelContainer = document.getElementById('wcWheel');
     if (!wheelContainer || !wcState.currentLevelData) return;
-    
+
     wheelContainer.innerHTML = '';
 
     const letters = wcState.currentLevelData.letters;
@@ -788,7 +788,7 @@ function handleInputStart(e: MouseEvent | TouchEvent): void {
     const touch = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : e as MouseEvent;
     const container = document.getElementById('wcWheel');
     if (!container) return;
-    
+
     const rect = container.getBoundingClientRect();
     const scaleX = 286 / rect.width;
     const scaleY = 286 / rect.height;
@@ -837,7 +837,7 @@ function handleInputMove(e: MouseEvent | TouchEvent): void {
 
     const container = document.getElementById('wcWheel');
     if (!container) return;
-    
+
     const rect = container.getBoundingClientRect();
     const scaleX = 286 / rect.width;
     const scaleY = 286 / rect.height;
@@ -934,7 +934,7 @@ function selectNode(el: HTMLElement): void {
     wcState.visitedNodes.push(index);
     wcState.currentInput += char;
     el.classList.add('selected');
-    
+
     const previewEl = document.getElementById('wcPreviewText');
     if (previewEl) previewEl.textContent = wcState.currentInput;
 
@@ -1067,7 +1067,7 @@ function showRewardMessage(text: string, type = 'default'): void {
 
 function validateWord(): void {
     if (!wcState.currentLevelData) return;
-    
+
     const word = wcState.currentInput;
     if (wcState.currentLevelData.words.includes(word)) {
         if (!wcState.foundWords.includes(word)) {
@@ -1215,7 +1215,7 @@ function revealWord(word: string): void {
 
 function checkWin(): void {
     if (!wcState.currentLevelData) return;
-    
+
     if (wcState.foundWords.length === wcState.currentLevelData.words.length) {
         const statusEl = document.getElementById('wcLevelStatus');
         if (statusEl) {
@@ -1305,7 +1305,7 @@ function startLevelCountdown(): void {
     }, 1000);
 }
 
-(window as any).skipToNextLevel = function(): void {
+(window as any).skipToNextLevel = function (): void {
     if (wcState.levelCountdownInterval) {
         clearInterval(wcState.levelCountdownInterval);
     }
@@ -1380,7 +1380,7 @@ function createStarBurst(): void {
 
 function speakWord(text: string, speed?: number): void {
     if (typeof TTSManager !== 'undefined' && TTSManager && typeof TTSManager.speak === 'function') {
-        TTSManager.speak(text, 'sv-SE', { speed: speed });
+        TTSManager.speak(text, 'sv');
     } else if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'sv-SE';

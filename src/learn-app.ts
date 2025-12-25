@@ -1,4 +1,4 @@
-import './loader';
+// Learn page - no dictionary data needed for grammar lessons
 import './utils';
 import { initLearnUI } from './learn-ui';
 
@@ -8,3 +8,4 @@ if (typeof window !== 'undefined') {
         initLearnUI();
     });
 }
+

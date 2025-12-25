@@ -1,4 +1,4 @@
-import './loader';
+// Games menu page - no dictionary data needed for listing games
 import './utils';
 import { initGamesUI } from './games-ui';
 
@@ -8,3 +8,4 @@ if (typeof window !== 'undefined') {
         initGamesUI();
     });
 }
+

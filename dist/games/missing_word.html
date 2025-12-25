@@ -8,11 +8,15 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/games-missing-word-BFMbXO-O.js"></script>
+  <script type="module" crossorigin src="/assets/games-missing-word-BY_NLiRx.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/games-utils-HTOXTqfV.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
-  <link rel="stylesheet" crossorigin href="/assets/games-BweZQtgh.css">
+  <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
+  <link rel="modulepreload" crossorigin href="/assets/games-utils-ByroIWVH.js">
+  <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/loader-BOlof-UD.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-B7MhtUIl.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BP7vN2P2.css">
 </head>
 
 <body class="memory-game-page neon-theme">
@@ -70,7 +74,7 @@
         </div>
 
         <!-- Next Button (Cyber Button) -->
-        <button id="nextQuestionBtn" class="mw-cyber-btn" style="display: none;" onclick="loadMissingWordQuestion()">
+        <button id="nextQuestionBtn" class="mw-cyber-btn hidden" onclick="loadMissingWordQuestion()">
             <span class="btn-text">NÄSTA NIVÅ</span>
             <span class="btn-glitch">➜</span>
         </button>
@@ -81,10 +85,21 @@
     <div id="celebration-container"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof startMissingWordGame === 'function') {
-                startMissingWordGame();
+        // Wait for dictionary data to be loaded before initializing
+        function initMissingWordWhenReady() {
+            if (typeof dictionaryData !== 'undefined' && Array.isArray(dictionaryData) && dictionaryData.length > 0) {
+                if (typeof startMissingWordGame === 'function') {
+                    startMissingWordGame();
+                }
             }
+        }
+
+        // Listen for data loaded event from loader.js
+        window.addEventListener('dictionaryLoaded', initMissingWordWhenReady);
+
+        // Also try on DOMContentLoaded in case data is already cached/loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initMissingWordWhenReady, 100);
         });
     </script>
 </body>

@@ -1,6 +1,7 @@
 import './loader';
 import './utils';
 import './quiz';
+import './confetti';
 import { ThemeManager, GrammarHelper, CategoryHelper, showToast, TextSizeManager } from './utils';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
@@ -114,7 +115,7 @@ export class App {
             if (modeSelect) this.activeFilterMode = modeSelect.value;
             if (typeSelect) this.activeTypeFilter = typeSelect.value;
             if (sortSelect) this.activeSortMethod = sortSelect.value;
-            
+
             const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
             this.performSearch(searchInput?.value || '');
         };
@@ -155,10 +156,10 @@ export class App {
         if (!data) return;
         // Optimization: search index
         this.searchIndex = data.map(row => `${row[2]} ${row[3]}`.toLowerCase());
-        
+
         // Initialize Word of the Day
         this.initWordOfTheDay();
-        
+
         // Initial state: hide results, show landing page
         this.performSearch('');
     }
@@ -175,7 +176,7 @@ export class App {
             const w = data[idx];
             const hasIdiom = (w[9] && w[9].length > 0) || (w[10] && w[10].length > 0);
             const hasExample = w[7] && w[7].split(' ').length > 5;
-            
+
             if (hasIdiom || hasExample) {
                 word = w;
                 break;
@@ -183,10 +184,10 @@ export class App {
             attempts++;
         }
         if (!word) word = data[Math.floor(Math.random() * data.length)];
-        
+
         // Record as studied
         QuizStats.recordStudy(word[0].toString());
-        
+
         this.renderWod(word);
     }
 
@@ -195,11 +196,11 @@ export class App {
         if (!wodCard) return;
 
         wodCard.classList.remove('hidden');
-        
+
         const swe = wodCard.querySelector('.wod-swe');
         const arb = wodCard.querySelector('.wod-arb');
         const typeBadge = wodCard.querySelector('.wod-type-badge');
-        
+
         if (swe) {
             swe.textContent = word[2];
             TextSizeManager.apply(swe as HTMLElement, word[2]);
@@ -243,7 +244,7 @@ export class App {
         if (ttsBtn) {
             ttsBtn.onclick = () => (window as any).TTSManager?.speak(word[2], 'sv');
         }
-        
+
         const detailsBtn = document.getElementById('wodDetailsBtn');
         if (detailsBtn) {
             detailsBtn.onclick = () => window.location.href = `details.html?id=${word[0]}`;
@@ -375,10 +376,10 @@ export class App {
 
         const nextBatch = this.currentResults.slice(this.renderedCount, this.renderedCount + this.BATCH_SIZE);
         const html = nextBatch.map(row => this.createCard(row)).join('');
-        
+
         searchResults.insertAdjacentHTML('beforeend', html);
         this.renderedCount += nextBatch.length;
-        
+
         // Apply dynamic text sizing to newly rendered cards
         TextSizeManager.autoApply();
     }
@@ -389,7 +390,7 @@ export class App {
         const arb = row[3];
         const type = row[1];
         const forms = row[6] || '';
-        
+
         const grammarBadge = GrammarHelper.getBadge(type, forms, swe);
         const category = CategoryHelper.getCategory(type, swe, forms);
         const isFav = FavoritesManager.has(id.toString());
@@ -459,7 +460,7 @@ export class App {
         const todayStats = QuizStats.getTodayStats();
         const totalActivity = todayStats.correct + (todayStats.studied || 0);
         const percent = Math.min(100, (totalActivity / DAILY_GOAL) * 100);
-        
+
         // Update progress bar
         const progressBar = document.getElementById('challengeProgressBar');
         if (progressBar) {
@@ -468,7 +469,7 @@ export class App {
                 progressBar.classList.add('completed');
             }
         }
-        
+
         // Update progress text
         const progressText = document.getElementById('challengeProgressText');
         if (progressText) {
@@ -477,15 +478,15 @@ export class App {
                 progressText.classList.add('completed');
             }
         }
-        
+
         // Update challenge card for completed state
         const card = document.getElementById('dailyChallengeCard');
         if (card && totalActivity >= DAILY_GOAL) {
             card.classList.add('completed');
         }
-        
+
         console.log(`[App] Daily challenge: ${totalActivity}/${DAILY_GOAL} (${percent.toFixed(0)}%)`);
-        
+
         // Ensure the general progress bar is also in sync
         this.updateDailyProgressBar();
     }
@@ -495,19 +496,19 @@ export class App {
         const todayStats = QuizStats.getTodayStats();
         const totalActivity = todayStats.correct + (todayStats.studied || 0);
         const percent = Math.min(100, (totalActivity / DAILY_GOAL) * 100);
-        
+
         // Update the daily progress count
         const progressCount = document.getElementById('dailyProgressCount');
         if (progressCount) {
             progressCount.textContent = totalActivity.toString();
         }
-        
+
         // Update header badge (📖 count)
         const dailyWordsCount = document.getElementById('dailyWordsCount');
         if (dailyWordsCount) {
             dailyWordsCount.textContent = totalActivity.toString();
         }
-        
+
         // Update the progress bar fill
         const progressFill = document.getElementById('dailyProgressFill');
         if (progressFill) {
@@ -516,18 +517,18 @@ export class App {
                 progressFill.classList.add('completed');
             }
         }
-        
+
         // Update progress ring in modal (if open)
         const ringValue = document.getElementById('progressRingValue');
         if (ringValue) {
             ringValue.textContent = totalActivity.toString();
         }
-        
+
         const ringGoal = document.getElementById('progressRingGoal');
         if (ringGoal) {
             ringGoal.textContent = DAILY_GOAL.toString();
         }
-        
+
         // Update progress ring circle (SVG)
         const ringCircle = document.querySelector('.progress-ring-circle') as SVGCircleElement;
         if (ringCircle) {
@@ -535,7 +536,7 @@ export class App {
             const offset = circumference - (percent / 100) * circumference;
             ringCircle.style.strokeDashoffset = offset.toString();
         }
-        
+
         console.log(`[App] Daily progress: ${totalActivity}/${DAILY_GOAL} (${percent.toFixed(0)}%)`);
     }
 }

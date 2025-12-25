@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="assets/css/style.css?v=3">
     <link rel="stylesheet" href="assets/css/details-premium.css?v=7">
     <link rel="stylesheet" href="assets/css/points-style.css?v=premium">
+    <link rel="stylesheet" href="assets/css/mobile-enhancements.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
@@ -131,9 +132,8 @@
             </div>
 
             <button id="mobileViewToggle" class="theme-toggle" aria-label="Mobilvy / عرض الجوال">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                     <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
@@ -374,7 +374,7 @@
                 </a>
 
                 <div class="settings-version">
-                    <p>SnabbaLexin v2.8.0 &copy; 2024</p>
+                    <p>SnabbaLexin v3.0.0 &copy; 2025</p>
                 </div>
             </div>
         </div>
@@ -412,7 +412,7 @@
         <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
     </nav>
 
-        </div>
+    </div>
     </nav>
 
 
@@ -595,18 +595,23 @@
     <!-- شريط الاختصارات السريعة - يظهر دائماً -->
     <div class="quick-actions-bar">
         <button class="quick-action-btn hidden" id="quickWodBtn" title="كلمة اليوم / Dagens Ord">
+            <span class="quick-icon">📅</span>
             <span class="quick-label">Ord</span>
         </button>
         <a href="games/games.html" class="quick-action-btn" title="ألعاب / Spel">
+            <span class="quick-icon">🎮</span>
             <span class="quick-label">Spel</span>
         </a>
         <a href="learn/learn.html" class="quick-action-btn" title="تعلم / Lär">
+            <span class="quick-icon">📚</span>
             <span class="quick-label">Lär</span>
         </a>
         <button class="quick-action-btn" id="quickFavBtn" title="مفضلة / Favoriter">
+            <span class="quick-icon">⭐</span>
             <span class="quick-label">Favoriter</span>
         </button>
         <button class="quick-action-btn" id="quickQuizBtn" title="اختبار / Quiz">
+            <span class="quick-icon">⚡</span>
             <span class="quick-label">Quiz</span>
         </button>
     </div>
@@ -675,13 +680,15 @@
                         <button id="quizFavBtn" class="quiz-fav-btn-header" aria-label="Spara / حفظ">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
                             </svg>
                         </button>
                         <button id="closeQuiz" class="close-btn">&times;</button>
                     </div>
                 </div>
-                
+
                 <!-- Progress Bar -->
                 <div class="quiz-progress-bar">
                     <div id="quizProgress" class="quiz-progress-fill"></div>
@@ -1125,6 +1132,24 @@
                     <p>Klicka på hjärtat för att spara ord</p>
                     <p dir="rtl">اضغط على القلب لحفظ الكلمات</p>
                 </div>
+
+                <!-- Slide 5 - NEW -->
+                <div class="onboarding-slide" data-slide="4">
+                    <div class="slide-icon">🔥</div>
+                    <h2>Håll din streak igång!</h2>
+                    <h3>حافظ على سلسلتك!</h3>
+                    <p>Öva varje dag för att bygga upp din streak</p>
+                    <p dir="rtl">تدرب يومياً لبناء سلسلة الأيام</p>
+                </div>
+
+                <!-- Slide 6 - NEW -->
+                <div class="onboarding-slide" data-slide="5">
+                    <div class="slide-icon">🏆</div>
+                    <h2>Samla prestationer</h2>
+                    <h3>اجمع الإنجازات</h3>
+                    <p>Lås upp badges genom att nå mål</p>
+                    <p dir="rtl">احصل على الشارات بتحقيق الأهداف</p>
+                </div>
             </div>
 
             <div class="onboarding-dots" id="onboardingDots">
@@ -1132,6 +1157,8 @@
                 <span class="dot" data-dot="1"></span>
                 <span class="dot" data-dot="2"></span>
                 <span class="dot" data-dot="3"></span>
+                <span class="dot" data-dot="4"></span>
+                <span class="dot" data-dot="5"></span>
             </div>
 
             <div class="onboarding-nav">

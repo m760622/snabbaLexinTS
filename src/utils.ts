@@ -157,19 +157,19 @@ export function showToast(message: string, durationOrOptions: number | ToastOpti
 export const TextSizeManager = {
     apply(element: HTMLElement, text: string, maxLines: number = 1, baseSize: number = 1.6) {
         if (!element || !text) return;
-        
+
         // Reset to default starting point
         element.style.fontSize = '';
         element.style.display = 'inline-block';
-        element.style.width = 'auto'; 
-        
+        element.style.width = 'auto';
+
         const parent = element.parentElement;
         if (!parent) return;
 
         const maxWidth = parent.offsetWidth || parent.clientWidth;
-        if (maxWidth === 0) return; 
+        if (maxWidth === 0) return;
 
-        let currentSize = baseSize; 
+        let currentSize = baseSize;
         const minSize = 0.70;
         const step = 0.05;
 
@@ -185,25 +185,25 @@ export const TextSizeManager = {
             element.style.width = '100%';
             element.style.display = 'block';
             element.style.fontSize = `${currentSize}rem`;
-            
+
             element.style.lineHeight = '1.4';
-            
+
             while (currentSize > minSize) {
                 const fontSizePx = currentSize * 16;
                 const singleLineHeight = fontSizePx * 1.4;
-                const allowedHeight = singleLineHeight * maxLines + 5; 
-                
+                const allowedHeight = singleLineHeight * maxLines + 5;
+
                 if (element.offsetHeight <= allowedHeight) break;
-                
+
                 currentSize -= step;
                 element.style.fontSize = `${currentSize}rem`;
             }
         }
 
         if (maxLines === 1) {
-            element.style.whiteSpace = ''; 
-            element.style.display = '';    
-            element.style.width = '';      
+            element.style.whiteSpace = '';
+            element.style.display = '';
+            element.style.width = '';
         }
         element.style.lineHeight = currentSize < 1.1 ? '1.2' : '1.4';
     },
@@ -214,16 +214,16 @@ export const TextSizeManager = {
             this.apply(el as HTMLElement, el.textContent || '', maxLines);
         });
     },
-    
+
     // Optimized version: Apply only to elements within a specific container
     applyToContainer(container: HTMLElement | DocumentFragment) {
         if (!container) return;
-        
+
         // For DocumentFragment, we need to handle differently
         const elements = container instanceof DocumentFragment
             ? Array.from(container.querySelectorAll('[data-auto-size]'))
             : container.querySelectorAll('[data-auto-size]');
-            
+
         elements.forEach(el => {
             const maxLines = parseInt((el as HTMLElement).dataset.maxLines || '1');
             this.apply(el as HTMLElement, el.textContent || '', maxLines);
@@ -301,7 +301,9 @@ export const ThemeManager = {
 
 export const MobileViewManager = {
     init() {
-        const isMobileView = localStorage.getItem('mobileView') === 'true';
+        // Default to mobile view if not set (mobile-first approach)
+        const savedValue = localStorage.getItem('mobileView');
+        const isMobileView = savedValue === null ? true : savedValue === 'true';
         this.apply(isMobileView);
     },
 
@@ -313,10 +315,10 @@ export const MobileViewManager = {
             document.documentElement.classList.remove('iphone-mode');
             document.body.classList.remove('iphone-view');
         }
-        
+
         const btn = document.getElementById('mobileToggle') || document.getElementById('mobileViewToggle');
         if (btn) btn.classList.toggle('active', isActive);
-        
+
         localStorage.setItem('mobileView', isActive ? 'true' : 'false');
     },
 
@@ -348,7 +350,7 @@ export const GrammarHelper = {
         if (formsLower.match(/\w+(it|its|ats|ett)[,\s]/) || formsLower.match(/\w+(it|its|ats|ett)$/)) return '<span class="grammar-badge grammar-verb">Gr. 4</span>';
 
         if (wordLower.endsWith('as') && formsLower.match(/\w+ades[,\s]|\w+des[,\s]/)) return '<span class="grammar-badge grammar-verb">Gr. 4</span>';
-        
+
         if (normalizedType.includes('adj')) return '<span class="grammar-badge grammar-adj">Adj</span>';
         if (normalizedType.includes('adverb') || normalizedType === 'adv') return '<span class="grammar-badge grammar-adv">Adv</span>';
 
@@ -383,7 +385,7 @@ export const CategoryHelper = {
         if (normalizedType.includes('prep')) return 'prep';
         if (normalizedType.includes('konj')) return 'conj';
         if (normalizedType.includes('pron')) return 'pronoun';
-        
+
         // Suffix detection for nouns
         if (learnedSuffixes.ett.some(s => wordLower.endsWith(s))) return 'noun';
         if (learnedSuffixes.en.some(s => wordLower.endsWith(s))) return 'noun';

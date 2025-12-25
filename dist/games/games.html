@@ -20,14 +20,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SnabbaLexin">
-  <script type="module" crossorigin src="/assets/games-BrQjpggr.js"></script>
+  <script type="module" crossorigin src="/assets/games-C2McWMEL.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/db-TWgxRddZ.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
-  <link rel="modulepreload" crossorigin href="/assets/loader-CKTsN5EW.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
+  <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
-  <link rel="stylesheet" crossorigin href="/assets/games-BweZQtgh.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-B7MhtUIl.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BP7vN2P2.css">
   <link rel="stylesheet" crossorigin href="/assets/flashcards_pro-E1e2viB9.css">
 </head>
 
@@ -54,10 +54,10 @@
             <h1>Spelzon / منطقة الألعاب</h1>
 
             <!-- SVG Defs for Gradients -->
-            <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+            <svg class="sr-only" aria-hidden="true" focusable="false">
                 <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+                    <stop offset="0%" stop-color="#fbbf24" stop-opacity="1" />
+                    <stop offset="100%" stop-color="#d97706" stop-opacity="1" />
                 </linearGradient>
             </svg>
         </header>
@@ -111,6 +111,26 @@
                 <div class="daily-banner-subtitle">Spela 3 spel för bonus! / العب 3 ألعاب للمكافأة</div>
             </div>
             <div class="daily-banner-progress" id="dailyProgress">0/3</div>
+        </div>
+
+        <!-- Word of the Day Widget -->
+        <div id="wordOfTheDay" class="wotd-container" style="display: none;">
+            <div class="wotd-glow"></div>
+            <div class="wotd-content-wrapper">
+                <div class="wotd-label">
+                    <span class="wotd-badge">Dagens Ord / كلمة اليوم</span>
+                    <button id="wotd-speak-btn" class="wotd-speak-btn" aria-label="Lyssna">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    </button>
+                </div>
+                <div class="wotd-main">
+                    <h2 id="wotd-swedish">Laddar...</h2>
+                    <p id="wotd-arabic">...</p>
+                </div>
+                <div class="wotd-footer">
+                    <p id="wotd-example">Exempel mening kommer här.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Category Filter -->
@@ -255,7 +275,7 @@
 
                 <!-- Word Wheel Card -->
                 <div class="game-card-item" data-game-id="word-wheel" onclick="window.location.href='word_wheel.html'">
-                    <div class="game-icon-circle" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="game-icon-circle grad-amber">
                         <span class="game-emoji">🎡</span>
                     </div>
                     <div class="game-info">
@@ -267,7 +287,7 @@
                 <!-- Word Connect (Bokstav Länk) Card -->
                 <div class="game-card-item" data-game-id="word-connect"
                     onclick="window.location.href='word_connect.html'">
-                    <div class="game-icon-circle" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                    <div class="game-icon-circle grad-indigo">
                         <span class="game-emoji">✨</span>
                     </div>
                     <div class="game-info">

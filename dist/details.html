@@ -12,86 +12,95 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/details-jyU0ilzM.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
+    <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
+  <script type="module" crossorigin src="/assets/details-Dr7j8c6n.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/db-TWgxRddZ.js">
+  <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
+  <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
-  <link rel="modulepreload" crossorigin href="/assets/loader-CKTsN5EW.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-kfGpRYBQ.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-txqAuu3g.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/details-C5PyPIbg.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-BvXTcjQe.css">
+  <link rel="stylesheet" crossorigin href="/assets/details-DvwPNn74.css">
 </head>
 
 <body>
     <div id="toast" class="toast-notification"></div>
 
     <div class="container details-page-container">
-        <header class="details-header details-header-clean">
-            <span class="details-subtitle">Svensk-Arabiskt Lexikon</span>
-            <h1 class="details-title-swedish">Orddetaljer</h1>
-
+        <!-- Sticky Header with Actions + Tabs -->
+        <header class="details-header details-header-sticky">
             <div class="header-actions">
-                <a href="index.html" class="header-action-btn back-btn-nav" aria-label="Tillbaka / رجوع">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                <a href="index.html" class="header-action-btn back-btn-nav" aria-label="Tillbaka">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 12H5"></path>
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </a>
 
-                <button id="headerAudioBtn" class="header-action-btn" aria-label="Lyssna / استمع">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                </button>
+                <div class="header-right-group">
+                    <button id="headerAudioBtn" class="header-action-btn" aria-label="Lyssna">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </button>
+    
+                    <button id="headerFavoriteBtn" class="header-action-btn" aria-label="Favorit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
+                        </svg>
+                    </button>
 
-                <button id="headerFavoriteBtn" class="header-action-btn" aria-label="Favorit / مفضلة">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                        </path>
-                    </svg>
-                </button>
+                    <button id="headerFlashcardBtn" class="header-action-btn" aria-label="Flashcard">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                            <polyline points="17 2 12 7 7 2"></polyline>
+                        </svg>
+                    </button>
 
-                <button id="headerFlashcardBtn" class="header-action-btn" aria-label="Flashcard Mode / وضع الاختبار"
-                    title="وضع الاختبار">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                </button>
+                    <button id="themeToggleBtn" class="header-action-btn" aria-label="Tema">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
 
-                <button id="themeToggleBtn" class="header-action-btn" aria-label="Växla tema / تبديل المظهر"
-                    title="تبديل المظهر">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                </button>
+                    <button id="smartCopyBtn" class="header-action-btn" aria-label="Kopiera">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
 
-                <button id="smartCopyBtn" class="header-action-btn" aria-label="Kopiera / نسخ" title="نسخ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
+                    <button id="headerShareBtn" class="header-action-btn" aria-label="Dela">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
-                <button id="headerShareBtn" class="header-action-btn" aria-label="Dela / مشاركة" title="مشاركة">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="18" cy="5" r="3"></circle>
-                        <circle cx="6" cy="12" r="3"></circle>
-                        <circle cx="18" cy="19" r="3"></circle>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
+            <!-- Tabs inside sticky header -->
+            <div class="details-tabs">
+                <button class="details-tab-btn active" data-tab="info">
+                    <span class="tab-icon">📖</span> Info
+                </button>
+                <button class="details-tab-btn" data-tab="play">
+                    <span class="tab-icon">⚡</span> Interagera
                 </button>
             </div>
         </header>
@@ -104,7 +113,7 @@
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
                     <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
-                Sparad lokalt / محفوظ محلياً
+                Sparad lokalt
             </div>
             <div class="action-buttons">
                 <button id="editBtn" class="edit-btn">
@@ -113,7 +122,7 @@
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
-                    Redigera / تعديل
+                    Redigera
                 </button>
                 <button id="deleteBtn" class="delete-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -121,17 +130,68 @@
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
-                    Ta bort / حذف
+                    Ta bort
                 </button>
             </div>
         </div>
 
-        <main id="detailsArea">
+        <main id="detailsArea" class="tab-content active" data-tab="info">
             <div class="placeholder-message">Laddar... / جاري التحميل...</div>
         </main>
 
+        <!-- Interaction Tab Content -->
+        <div id="interactionTab" class="tab-content" data-tab="play">
+            <!-- Quiz Section (High Priority now) -->
+            <div class="details-section quiz-section premium-glow-section">
+                <h3 class="section-title">
+                    <span class="section-icon">⚡</span> Snabbtest
+                </h3>
+                <div id="miniQuizContainer" class="mini-quiz-card">
+                    <div id="miniQuizQuestion" class="mini-quiz-question"></div>
+                    <div id="miniQuizOptions" class="mini-quiz-options"></div>
+                    <div id="miniQuizFeedback" class="mini-quiz-feedback hidden"></div>
+                </div>
+            </div>
+
+            <!-- Flashcard Mode -->
+            <div class="details-section flashcard-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🃏</span> Flashcard
+                </h3>
+                <div id="flashcardContainer" class="flashcard-container">
+                    <!-- Flashcard will be rendered here -->
+                </div>
+            </div>
+
+            <div class="interaction-grid">
+                <!-- Notes Section -->
+                <div class="details-section notes-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">✍️</span> Anteckningar
+                    </h3>
+                    <div class="notes-container">
+                        <textarea id="wordNotes" placeholder="Skriv anteckningar här..."></textarea>
+                        <div class="notes-actions">
+                            <span id="notesStatus" class="notes-status"></span>
+                            <button id="saveNotesBtn" class="save-notes-btn">Spara</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Words Section -->
+                <div class="details-section related-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🔗</span> Relaterade ord
+                    </h3>
+                    <div id="relatedWordsContainer" class="related-words-grid">
+                        <!-- Related words will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="back-btn-container">
-            <a href="index.html" class="back-button">Tillbaka till sök / العودة للبحث</a>
+            <a href="index.html" class="back-button">Tillbaka</a>
         </div>
     </div>
 

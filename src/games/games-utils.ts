@@ -300,7 +300,10 @@ export function toggleMobileView(): void {
 
 function initMobileView(): void {
     const savedMode = localStorage.getItem('mobileViewMode');
-    if (savedMode === 'true') {
+    // Default to mobile view if not set (mobile-first approach)
+    const isMobile = savedMode === null ? true : savedMode === 'true';
+
+    if (isMobile) {
         document.body.classList.add('mobile-view-mode');
         const btn = document.getElementById('mobileToggle');
         if (btn) {

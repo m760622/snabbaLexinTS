@@ -7,22 +7,25 @@ import { AppConfig } from './config';
  */
 export function initGamesUI() {
     console.log('[GamesUI] Initializing...');
-    
+
+    // Core stats & UI
     loadGamesStats();
     loadDailyChallenge();
     loadGameStars();
     loadLeaderboard();
     setupMobileToggle();
-    loadLeaderboard();
-    setupMobileToggle();
     setupSW();
-    setupTiltEffect();
 
-    // Word of the Day - Wait for dictionary
+    // Defer non-critical operations
+    requestAnimationFrame(() => {
+        setupTiltEffect();
+    });
+
+    // Word of the Day - only if dictionary is available
     if ((window as any).dictionaryData) {
         loadWordOfTheDay();
     } else {
-        window.addEventListener('dictionaryLoaded', () => loadWordOfTheDay());
+        window.addEventListener('dictionaryLoaded', () => loadWordOfTheDay(), { once: true });
     }
 
     // Export functions to global scope for legacy HTML onclick handlers
@@ -37,7 +40,7 @@ function setupMobileToggle() {
     const mobileToggle = document.getElementById('mobileToggle');
     if (mobileToggle) {
         mobileToggle.addEventListener('click', () => {
-             (window as any).MobileViewManager?.toggle();
+            (window as any).MobileViewManager?.toggle();
         });
     }
 }
@@ -63,7 +66,7 @@ function loadGamesStats() {
     const playedEl = document.getElementById('gamesPlayedStat');
     const streakEl = document.getElementById('winStreakStat');
     const scoreEl = document.getElementById('totalScoreStat');
-    
+
     if (playedEl) playedEl.textContent = stats.gamesPlayed || 0;
     if (streakEl) streakEl.textContent = stats.winStreak || 0;
     if (scoreEl) scoreEl.textContent = stats.totalScore || 0;
@@ -162,7 +165,7 @@ function loadGameStars() {
     document.querySelectorAll('.game-stars').forEach(starsEl => {
         const gameId = (starsEl as HTMLElement).dataset.game;
         if (!gameId) return;
-        
+
         const score = gameScores[gameId] || 0;
 
         let stars = 0;
@@ -250,9 +253,9 @@ function loadWordOfTheDay() {
         // Ensure it has an example if possible
         let word = data[randomIndex];
         // Try 10 times to find one with example
-        for(let i=0; i<10; i++) {
-             if (word[AppConfig.COLUMNS.EXAMPLE_SWE]) break;
-             word = data[Math.floor(Math.random() * data.length)];
+        for (let i = 0; i < 10; i++) {
+            if (word[AppConfig.COLUMNS.EXAMPLE_SWE]) break;
+            word = data[Math.floor(Math.random() * data.length)];
         }
 
         storedWOTD = {
@@ -261,7 +264,7 @@ function loadWordOfTheDay() {
         };
         localStorage.setItem('wotd_cache', JSON.stringify(storedWOTD));
     }
-    
+
     const word = storedWOTD.word;
     if (!word) return;
 
@@ -284,7 +287,7 @@ function loadWordOfTheDay() {
             // Visual feedback
             const icon = btn.querySelector('svg');
             if (icon) icon.style.fill = '#fff';
-            setTimeout(() => { if(icon) icon.style.fill = 'none'; }, 1000);
+            setTimeout(() => { if (icon) icon.style.fill = 'none'; }, 1000);
         };
     }
 }
@@ -296,15 +299,15 @@ function setupTiltEffect() {
 
     cards.forEach(card => {
         const el = card as HTMLElement;
-        
+
         el.addEventListener('mousemove', (e: MouseEvent) => {
             const rect = el.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            
+
             // Limit rotation to small angles for elegance
             const rotateX = ((y - centerY) / centerY) * -8;
             const rotateY = ((x - centerX) / centerX) * 8;
