@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="../assets/css/games.css">
     <link rel="stylesheet" href="../assets/css/mobile-enhancements.css">
     <link rel="stylesheet" href="../assets/css/flashcards_pro.css?v=8">
+    <link rel="stylesheet" href="../assets/css/premium-design.css?v=1">
+    <link rel="stylesheet" href="../assets/css/advanced-effects.css?v=1">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
@@ -72,8 +74,28 @@
             </svg>
         </header>
 
-        <!-- Stats Hero -->
-        <div class="stats-hero">
+        <!-- Animated Gradient Mesh Background -->
+        <div class="gradient-mesh-bg"></div>
+
+        <!-- XP Progress Widget -->
+        <div class="xp-widget glass-card" id="xpWidget"
+            style="margin-bottom: 16px; padding: 16px; border-radius: 16px;">
+            <div class="xp-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="xp-level" style="font-weight: 700; color: var(--text-main);">Nivå <span
+                        id="currentLevel">1</span></span>
+                <span class="xp-text" style="font-size: 0.85rem; color: var(--text-secondary);"><span
+                        id="currentXP">0</span>/<span id="xpNeeded">100</span> XP</span>
+            </div>
+            <div class="xp-progress-container">
+                <div class="xp-progress-bar" id="xpProgressBar" style="width: 0%;">
+                    <div class="xp-progress-glow"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Hero with Glass Effect -->
+        <div class="stats-hero glass-effect">
             <div class="stats-hero-inner">
                 <div class="hero-stat">
                     <div class="hero-stat-value" id="gamesPlayedStat">0</div>
@@ -505,6 +527,9 @@
 
     <script type="module" src="/src/games-app.ts"></script>
     <script type="module" src="/src/ui-enhancements.ts"></script>
+    <script type="module" src="/src/premium-features.ts"></script>
+    <script type="module" src="/src/advanced-features.ts"></script>
+    <script type="module" src="/src/fab-menu.ts"></script>
     <script type="module" src="/src/pwa.ts"></script>
 </body>
 

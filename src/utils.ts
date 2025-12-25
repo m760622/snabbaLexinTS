@@ -120,6 +120,9 @@ export function generateEducationalSentence(word: string, translation: string, e
 }
 
 // --- Toast System ---
+// Using unified ToastManager for consistent notifications across all pages
+
+import { ToastManager } from './toast-manager';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'default';
 
@@ -129,27 +132,18 @@ export interface ToastOptions {
 }
 
 export function showToast(message: string, durationOrOptions: number | ToastOptions = 3000) {
-    const toast = document.getElementById('toast') as any;
-    if (!toast) return;
+    let duration = 4000;
+    let type: ToastType = 'success';
 
-    let duration = 3000;
-    let type: ToastType = 'default';
-
-    if (typeof durationOrOptions === 'number') duration = durationOrOptions;
-    else if (typeof durationOrOptions === 'object') {
-        duration = durationOrOptions.duration || 3000;
-        type = durationOrOptions.type || 'default';
+    if (typeof durationOrOptions === 'number') {
+        duration = durationOrOptions;
+    } else if (typeof durationOrOptions === 'object') {
+        duration = durationOrOptions.duration || 4000;
+        type = durationOrOptions.type || 'success';
     }
 
-    const icons: Record<string, string> = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️', default: '' };
-    const icon = icons[type] || '';
-    toast.textContent = icon ? `${icon} ${message}` : message;
-    toast.className = 'toast-notification';
-    if (type !== 'default') toast.classList.add(`toast-${type}`);
-    toast.classList.add('show');
-
-    if (toast.timeoutId) clearTimeout(toast.timeoutId);
-    toast.timeoutId = setTimeout(() => toast.classList.remove('show'), duration);
+    // Use unified ToastManager
+    ToastManager.show(message, { type: type === 'default' ? 'success' : type, duration });
 }
 
 // --- Text Size Manager ---

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inställningar - SnabbaLexin | الإعدادات</title>
+    <meta name="description" content="Anpassa din upplevelse av SnabbaLexin. تخصيص تجربتك في سنابا لكسين.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/settings.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="icon" type="image/svg+xml" href="assets/images/icon.svg">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+</head>
+
+<body class="settings-page">
+    <!-- Animated Background -->
+    <div class="settings-bg">
+        <div class="settings-orb settings-orb-1"></div>
+        <div class="settings-orb settings-orb-2"></div>
+        <div class="settings-orb settings-orb-3"></div>
+        <div class="settings-particles" id="settingsParticles"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification"></div>
+
+    <!-- Main Container -->
+    <div class="settings-container">
+        <!-- Header with Back Button -->
+        <header class="settings-header">
+            <a href="index.html" class="settings-back-btn" aria-label="Tillbaka / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </a>
+            <div class="settings-header-title">
+                <h1>Inställningar</h1>
+                <p>الإعدادات</p>
+            </div>
+            <div class="settings-header-actions">
+                <button id="resetAllBtn" class="settings-reset-btn" title="Återställ / إعادة تعيين">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Profile Card -->
+        <section class="settings-profile-card glass-card">
+            <div class="profile-avatar-wrapper">
+                <div class="profile-avatar" id="profileAvatar">
+                    <span class="avatar-emoji">👤</span>
+                </div>
+                <button class="avatar-edit-btn" id="changeAvatarBtn" title="Ändra avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="profile-info">
+                <h2 class="profile-name" id="profileName">Gäst / زائر</h2>
+                <p class="profile-level">
+                    <span class="level-badge">Nivå <span id="userLevel">1</span></span>
+                    <span class="xp-text"><span id="userXP">0</span> XP</span>
+                </p>
+            </div>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="stat-value" id="totalWords">0</span>
+                    <span class="stat-label">Ord / كلمات</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="stat-value" id="currentStreak">0</span>
+                    <span class="stat-label">Streak / سلسلة</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="stat-value" id="gamesPlayed">0</span>
+                    <span class="stat-label">Spel / ألعاب</span>
+                </div>
+            </div>
+            <div class="profile-progress">
+                <div class="progress-header">
+                    <span>Framsteg till nivå <span id="nextLevel">2</span></span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="levelProgress"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Completion Indicator -->
+        <div class="settings-completion glass-card">
+            <div class="completion-icon">🎯</div>
+            <div class="completion-info">
+                <span class="completion-label">Inställningar klara</span>
+                <span class="completion-value" id="completionPercent">60%</span>
+            </div>
+            <div class="completion-bar-bg">
+                <div class="completion-bar-fill" id="completionProgress" style="width: 60%"></div>
+            </div>
+        </div>
+
+        <!-- Smart Recommendations -->
+        <section class="settings-recommendations glass-card" id="recommendationsSection">
+            <div class="recommendations-header">
+                <span class="rec-icon">💡</span>
+                <span class="rec-title">Rekommenderade inställningar</span>
+            </div>
+            <div class="recommendations-list" id="recommendationsList">
+                <!-- Dynamic recommendations will be added here -->
+            </div>
+        </section>
+
+        <!-- Settings Sections -->
+        <div class="settings-sections">
+
+            <!-- Appearance Section -->
+            <section class="settings-section glass-card" data-section="appearance">
+                <div class="section-header" onclick="toggleSection('appearance')">
+                    <div class="section-icon gradient-purple">🎨</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Utseende</h3>
+                        <p class="section-subtitle">المظهر والثيم</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="appearance-content">
+                    <!-- Dark Mode Toggle -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">🌙</span>
+                            <div class="item-info">
+                                <span class="item-label">Mörkt läge</span>
+                                <span class="item-sublabel">الوضع الداكن</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Mobile View Toggle -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">📱</span>
+                            <div class="item-info">
+                                <span class="item-label">Mobilvy</span>
+                                <span class="item-sublabel">عرض الجوال</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mobileViewToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Color Theme -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">🎨</span>
+                            <div class="item-info">
+                                <span class="item-label">Färgtema</span>
+                                <span class="item-sublabel">لون الثيم</span>
+                            </div>
+                        </div>
+                        <div class="color-themes" id="colorThemes">
+                            <button class="color-btn active" data-theme="default"
+                                style="background: linear-gradient(135deg, #6366f1, #8b5cf6)" title="Standard"></button>
+                            <button class="color-btn" data-theme="ocean"
+                                style="background: linear-gradient(135deg, #0ea5e9, #0284c7)" title="Ocean"></button>
+                            <button class="color-btn" data-theme="sunset"
+                                style="background: linear-gradient(135deg, #f97316, #ea580c)" title="Sunset"></button>
+                            <button class="color-btn" data-theme="forest"
+                                style="background: linear-gradient(135deg, #22c55e, #16a34a)" title="Forest"></button>
+                            <button class="color-btn" data-theme="rose"
+                                style="background: linear-gradient(135deg, #ec4899, #db2777)" title="Rose"></button>
+                            <button class="color-btn" data-theme="neon"
+                                style="background: linear-gradient(135deg, #a855f7, #7c3aed)" title="Neon"></button>
+                        </div>
+                    </div>
+
+                    <!-- Font Size -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">🔤</span>
+                            <div class="item-info">
+                                <span class="item-label">Textstorlek</span>
+                                <span class="item-sublabel">حجم الخط</span>
+                            </div>
+                        </div>
+                        <div class="font-size-control">
+                            <button class="font-btn" data-size="small">A</button>
+                            <button class="font-btn active" data-size="medium">A</button>
+                            <button class="font-btn" data-size="large">A</button>
+                        </div>
+                    </div>
+
+                    <!-- Reduce Motion -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">✨</span>
+                            <div class="item-info">
+                                <span class="item-label">Animationer</span>
+                                <span class="item-sublabel">الحركات والتأثيرات</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animationsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sound & Notifications Section -->
+            <section class="settings-section glass-card" data-section="sound">
+                <div class="section-header" onclick="toggleSection('sound')">
+                    <div class="section-icon gradient-blue">🔔</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Ljud & Notiser</h3>
+                        <p class="section-subtitle">الصوت والإشعارات</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="sound-content">
+                    <!-- Sound Effects -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">🔊</span>
+                            <div class="item-info">
+                                <span class="item-label">Ljudeffekter</span>
+                                <span class="item-sublabel">المؤثرات الصوتية</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="soundEffectsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- TTS Speed -->
+                    <div class="settings-item slider-item">
+                        <div class="item-left">
+                            <span class="item-icon">🗣️</span>
+                            <div class="item-info">
+                                <span class="item-label">Uttalshastighet</span>
+                                <span class="item-sublabel">سرعة النطق</span>
+                            </div>
+                        </div>
+                        <div class="slider-control">
+                            <input type="range" id="ttsSpeedSlider" min="50" max="150" value="85">
+                            <span class="slider-value" id="ttsSpeedValue">85%</span>
+                        </div>
+                    </div>
+
+                    <!-- Test TTS -->
+                    <div class="settings-item center-item">
+                        <button class="test-btn" id="testTTSBtn">
+                            <span>🔊</span> Testa uttal / اختبر النطق
+                        </button>
+                    </div>
+
+                    <!-- Daily Reminder -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">⏰</span>
+                            <div class="item-info">
+                                <span class="item-label">Daglig påminnelse</span>
+                                <span class="item-sublabel">تذكير يومي</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="reminderToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Reminder Time -->
+                    <div class="settings-item" id="reminderTimeItem" style="display: none;">
+                        <div class="item-left">
+                            <span class="item-icon">🕐</span>
+                            <div class="item-info">
+                                <span class="item-label">Påminnelsetid</span>
+                                <span class="item-sublabel">وقت التذكير</span>
+                            </div>
+                        </div>
+                        <input type="time" id="reminderTime" value="18:00" class="time-input">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Tools Section -->
+            <section class="settings-section glass-card" data-section="learning">
+                <div class="section-header" onclick="toggleSection('learning')">
+                    <div class="section-icon gradient-green">📚</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Lärverktyg</h3>
+                        <p class="section-subtitle">أدوات التعلم</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="learning-content">
+                    <!-- Daily Goal -->
+                    <div class="settings-item slider-item">
+                        <div class="item-left">
+                            <span class="item-icon">🎯</span>
+                            <div class="item-info">
+                                <span class="item-label">Dagligt mål</span>
+                                <span class="item-sublabel">الهدف اليومي</span>
+                            </div>
+                        </div>
+                        <div class="goal-selector">
+                            <button class="goal-btn" data-goal="5">5</button>
+                            <button class="goal-btn active" data-goal="10">10</button>
+                            <button class="goal-btn" data-goal="20">20</button>
+                            <button class="goal-btn" data-goal="50">50</button>
+                        </div>
+                    </div>
+
+                    <!-- Auto-Play Audio -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">▶️</span>
+                            <div class="item-info">
+                                <span class="item-label">Auto-spela ljud</span>
+                                <span class="item-sublabel">تشغيل الصوت تلقائياً</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoPlayToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Show Examples -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">💬</span>
+                            <div class="item-info">
+                                <span class="item-label">Visa exempel</span>
+                                <span class="item-sublabel">عرض الأمثلة</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showExamplesToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Focus Mode -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">🧘</span>
+                            <div class="item-info">
+                                <span class="item-label">Fokusläge</span>
+                                <span class="item-sublabel">وضع التركيز</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="focusModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Eye Care -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">👁️</span>
+                            <div class="item-info">
+                                <span class="item-label">Ögonvård</span>
+                                <span class="item-sublabel">حماية العين</span>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="eyeCareToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Navigation Section -->
+            <section class="settings-section glass-card" data-section="navigation">
+                <div class="section-header" onclick="toggleSection('navigation')">
+                    <div class="section-icon gradient-amber">🧭</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Snabbnavgering</h3>
+                        <p class="section-subtitle">التنقل السريع</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="navigation-content">
+                    <div class="quick-links-grid">
+                        <a href="games/games.html" class="quick-link-card">
+                            <span class="quick-link-icon">🎮</span>
+                            <span class="quick-link-label">Spel / ألعاب</span>
+                        </a>
+                        <a href="learn/learn.html" class="quick-link-card">
+                            <span class="quick-link-icon">📖</span>
+                            <span class="quick-link-label">Grammatik</span>
+                        </a>
+                        <a href="profile.html" class="quick-link-card">
+                            <span class="quick-link-icon">👤</span>
+                            <span class="quick-link-label">Min Profil</span>
+                        </a>
+                        <a href="add.html" class="quick-link-card">
+                            <span class="quick-link-icon">➕</span>
+                            <span class="quick-link-label">Lägg till</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data & Privacy Section -->
+            <section class="settings-section glass-card" data-section="data">
+                <div class="section-header" onclick="toggleSection('data')">
+                    <div class="section-icon gradient-cyan">💾</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Data & Sekretess</h3>
+                        <p class="section-subtitle">البيانات والخصوصية</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="data-content">
+                    <!-- Export Data -->
+                    <div class="settings-item clickable" onclick="exportData()">
+                        <div class="item-left">
+                            <span class="item-icon">📤</span>
+                            <div class="item-info">
+                                <span class="item-label">Exportera data</span>
+                                <span class="item-sublabel">تصدير البيانات</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+
+                    <!-- Import Data -->
+                    <div class="settings-item clickable" onclick="document.getElementById('importFile').click()">
+                        <div class="item-left">
+                            <span class="item-icon">📥</span>
+                            <div class="item-info">
+                                <span class="item-label">Importera data</span>
+                                <span class="item-sublabel">استيراد البيانات</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+
+                    <!-- Clear Favorites -->
+                    <div class="settings-item clickable danger" onclick="clearFavorites()">
+                        <div class="item-left">
+                            <span class="item-icon">🗑️</span>
+                            <div class="item-info">
+                                <span class="item-label">Rensa favoriter</span>
+                                <span class="item-sublabel">مسح المفضلة</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+
+                    <!-- Clear All Data -->
+                    <div class="settings-item clickable danger" onclick="clearAllData()">
+                        <div class="item-left">
+                            <span class="item-icon">⚠️</span>
+                            <div class="item-info">
+                                <span class="item-label">Rensa all data</span>
+                                <span class="item-sublabel">مسح جميع البيانات</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+
+                    <!-- Storage Info -->
+                    <div class="storage-info">
+                        <div class="storage-header">
+                            <span>Använt lagringsutrymme</span>
+                            <span id="storageUsed">0 KB</span>
+                        </div>
+                        <div class="storage-bar-bg">
+                            <div class="storage-bar-fill" id="storageBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section class="settings-section glass-card" data-section="about">
+                <div class="section-header" onclick="toggleSection('about')">
+                    <div class="section-icon gradient-rose">ℹ️</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Om SnabbaLexin</h3>
+                        <p class="section-subtitle">حول التطبيق</p>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="about-content">
+                    <!-- Version -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">📱</span>
+                            <div class="item-info">
+                                <span class="item-label">Version</span>
+                                <span class="item-sublabel">الإصدار</span>
+                            </div>
+                        </div>
+                        <span class="version-badge">v3.0.0</span>
+                    </div>
+
+                    <!-- Changelog -->
+                    <a href="changelog.html" class="settings-item clickable">
+                        <div class="item-left">
+                            <span class="item-icon">📋</span>
+                            <div class="item-info">
+                                <span class="item-label">Ändringslogg</span>
+                                <span class="item-sublabel">سجل التغييرات</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+
+                    <!-- Device Info -->
+                    <a href="device.html" class="settings-item clickable">
+                        <div class="item-left">
+                            <span class="item-icon">🖥️</span>
+                            <div class="item-info">
+                                <span class="item-label">Enhetsinformation</span>
+                                <span class="item-sublabel">معلومات الجهاز</span>
+                            </div>
+                        </div>
+                        <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+
+                    <!-- Word Count -->
+                    <div class="settings-item">
+                        <div class="item-left">
+                            <span class="item-icon">📖</span>
+                            <div class="item-info">
+                                <span class="item-label">Ordförråd</span>
+                                <span class="item-sublabel">حجم القاموس</span>
+                            </div>
+                        </div>
+                        <span class="info-badge">+34,000</span>
+                    </div>
+
+                    <!-- Copyright -->
+                    <div class="copyright-info">
+                        <p>SnabbaLexin © 2025</p>
+                        <p>Made with ❤️ for language learners</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Motivational Footer -->
+        <footer class="settings-footer">
+            <div class="motivation-card glass-card">
+                <span class="motivation-icon">💪</span>
+                <p class="motivation-text" id="motivationText">Du gör fantastiska framsteg! Fortsätt lära dig!</p>
+                <p class="motivation-text-ar" id="motivationTextAr">أنت تحقق تقدماً رائعاً! استمر في التعلم!</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Avatar Selection Modal -->
+    <div id="avatarModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeAvatarModal()"></div>
+        <div class="modal-content avatar-modal">
+            <div class="modal-header">
+                <h3>Välj Avatar / اختر الصورة</h3>
+                <button class="modal-close" onclick="closeAvatarModal()">×</button>
+            </div>
+            <div class="avatar-grid" id="avatarGrid">
+                <!-- Avatars will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeConfirmModal()"></div>
+        <div class="modal-content confirm-modal">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <h3 id="confirmTitle">Är du säker?</h3>
+            <p id="confirmMessage">هل أنت متأكد؟</p>
+            <div class="confirm-actions">
+                <button class="btn-secondary" onclick="closeConfirmModal()">Avbryt / إلغاء</button>
+                <button class="btn-danger" id="confirmBtn">Bekräfta / تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/settings.ts"></script>
+</body>
+
+</html>
