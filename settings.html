@@ -43,8 +43,7 @@
                 </svg>
             </a>
             <div class="settings-header-title">
-                <h1>Inställningar</h1>
-                <p>الإعدادات</p>
+                <h1><span class="sv-text">Inställningar</span><span class="ar-text">الإعدادات</span></h1>
             </div>
             <div class="settings-header-actions">
                 <button id="resetAllBtn" class="settings-reset-btn" title="Återställ / إعادة تعيين">
@@ -70,29 +69,36 @@
                 </button>
             </div>
             <div class="profile-info">
-                <h2 class="profile-name" id="profileName">Gäst / زائر</h2>
+                <h2 class="profile-name" id="profileName">
+                    <span class="sv-text">Gäst</span><span class="ar-text">زائر</span>
+                </h2>
                 <p class="profile-level">
-                    <span class="level-badge">Nivå <span id="userLevel">1</span></span>
+                    <span class="level-badge">
+                        <span class="sv-text">Nivå</span><span class="ar-text">المستوى</span>
+                        <span id="userLevel">1</span>
+                    </span>
                     <span class="xp-text"><span id="userXP">0</span> XP</span>
                 </p>
             </div>
             <div class="profile-stats">
                 <div class="profile-stat">
                     <span class="stat-value" id="totalWords">0</span>
-                    <span class="stat-label">Ord / كلمات</span>
+                    <span class="stat-label"><span class="sv-text">Ord</span><span class="ar-text">كلمات</span></span>
                 </div>
                 <div class="profile-stat">
                     <span class="stat-value" id="currentStreak">0</span>
-                    <span class="stat-label">Streak / سلسلة</span>
+                    <span class="stat-label"><span class="sv-text">Streak</span><span
+                            class="ar-text">سلسلة</span></span>
                 </div>
                 <div class="profile-stat">
                     <span class="stat-value" id="gamesPlayed">0</span>
-                    <span class="stat-label">Spel / ألعاب</span>
+                    <span class="stat-label"><span class="sv-text">Spel</span><span class="ar-text">ألعاب</span></span>
                 </div>
             </div>
             <div class="profile-progress">
                 <div class="progress-header">
-                    <span>Framsteg till nivå <span id="nextLevel">2</span></span>
+                    <span><span class="sv-text">Framsteg till nivå</span><span class="ar-text">التقدم إلى مستوى</span>
+                        <span id="nextLevel">2</span></span>
                     <span id="progressPercent">0%</span>
                 </div>
                 <div class="progress-bar-bg">
@@ -105,7 +111,8 @@
         <div class="settings-completion glass-card">
             <div class="completion-icon">🎯</div>
             <div class="completion-info">
-                <span class="completion-label">Inställningar klara</span>
+                <span class="completion-label"><span class="sv-text">Inställningar klara</span><span
+                        class="ar-text">اكتملت الإعدادات</span></span>
                 <span class="completion-value" id="completionPercent">60%</span>
             </div>
             <div class="completion-bar-bg">
@@ -117,7 +124,8 @@
         <section class="settings-recommendations glass-card" id="recommendationsSection">
             <div class="recommendations-header">
                 <span class="rec-icon">💡</span>
-                <span class="rec-title">Rekommenderade inställningar</span>
+                <span class="rec-title"><span class="sv-text">Rekommenderade inställningar</span><span
+                        class="ar-text">إعدادات موصى بها</span></span>
             </div>
             <div class="recommendations-list" id="recommendationsList">
                 <!-- Dynamic recommendations will be added here -->
@@ -132,8 +140,8 @@
                 <div class="section-header" onclick="toggleSection('appearance')">
                     <div class="section-icon gradient-purple">🎨</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Utseende</h3>
-                        <p class="section-subtitle">المظهر والثيم</p>
+                        <h3 class="section-title"><span class="sv-text">Utseende</span><span
+                                class="ar-text">المظهر</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -145,8 +153,8 @@
                         <div class="item-left">
                             <span class="item-icon">🌙</span>
                             <div class="item-info">
-                                <span class="item-label">Mörkt läge</span>
-                                <span class="item-sublabel">الوضع الداكن</span>
+                                <span class="item-name"><span class="sv-text">Mörkt läge</span><span
+                                        class="ar-text">الوضع الداكن</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -160,8 +168,8 @@
                         <div class="item-left">
                             <span class="item-icon">📱</span>
                             <div class="item-info">
-                                <span class="item-label">Mobilvy</span>
-                                <span class="item-sublabel">عرض الجوال</span>
+                                <span class="item-name"><span class="sv-text">Mobilvy</span><span class="ar-text">عرض
+                                        الجوال</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -175,8 +183,8 @@
                         <div class="item-left">
                             <span class="item-icon">🎨</span>
                             <div class="item-info">
-                                <span class="item-label">Färgtema</span>
-                                <span class="item-sublabel">لون الثيم</span>
+                                <span class="item-name"><span class="sv-text">Färgtema</span><span class="ar-text">لون
+                                        الثيم</span></span>
                             </div>
                         </div>
                         <div class="color-themes" id="colorThemes">
@@ -200,8 +208,8 @@
                         <div class="item-left">
                             <span class="item-icon">🔤</span>
                             <div class="item-info">
-                                <span class="item-label">Textstorlek</span>
-                                <span class="item-sublabel">حجم الخط</span>
+                                <span class="item-name"><span class="sv-text">Textstorlek</span><span
+                                        class="ar-text">حجم الخط</span></span>
                             </div>
                         </div>
                         <div class="font-size-control">
@@ -216,14 +224,39 @@
                         <div class="item-left">
                             <span class="item-icon">✨</span>
                             <div class="item-info">
-                                <span class="item-label">Animationer</span>
-                                <span class="item-sublabel">الحركات والتأثيرات</span>
+                                <span class="item-name"><span class="sv-text">Animationer</span><span
+                                        class="ar-text">الحركات</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="animationsToggle" checked>
                             <span class="toggle-slider"></span>
                         </label>
+                    </div>
+
+                    <!-- Language Selector -->
+                    <div class="settings-item language-selector-item">
+                        <div class="item-left">
+                            <span class="item-icon">🌐</span>
+                            <div class="item-info">
+                                <span class="item-name"><span class="sv-text">Språk</span><span
+                                        class="ar-text">اللغة</span></span>
+                            </div>
+                        </div>
+                        <div class="language-selector" id="languageSelector">
+                            <button class="lang-btn" data-lang="sv" title="Svenska">
+                                <span class="lang-flag">🇸🇪</span>
+                                <span class="lang-name">SV</span>
+                            </button>
+                            <button class="lang-btn" data-lang="ar" title="العربية">
+                                <span class="lang-flag">🇸🇦</span>
+                                <span class="lang-name">AR</span>
+                            </button>
+                            <button class="lang-btn active" data-lang="both" title="Båda / كلتا">
+                                <span class="lang-flag">🌍</span>
+                                <span class="lang-name">🔀</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -233,8 +266,8 @@
                 <div class="section-header" onclick="toggleSection('sound')">
                     <div class="section-icon gradient-blue">🔔</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Ljud & Notiser</h3>
-                        <p class="section-subtitle">الصوت والإشعارات</p>
+                        <h3 class="section-title"><span class="sv-text">Ljud & Notiser</span><span class="ar-text">الصوت
+                                والإشعارات</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -246,8 +279,8 @@
                         <div class="item-left">
                             <span class="item-icon">🔊</span>
                             <div class="item-info">
-                                <span class="item-label">Ljudeffekter</span>
-                                <span class="item-sublabel">المؤثرات الصوتية</span>
+                                <span class="item-name"><span class="sv-text">Ljudeffekter</span><span
+                                        class="ar-text">المؤثرات الصوتية</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -261,8 +294,8 @@
                         <div class="item-left">
                             <span class="item-icon">🗣️</span>
                             <div class="item-info">
-                                <span class="item-label">Uttalshastighet</span>
-                                <span class="item-sublabel">سرعة النطق</span>
+                                <span class="item-name"><span class="sv-text">Uttalshastighet</span><span
+                                        class="ar-text">سرعة النطق</span></span>
                             </div>
                         </div>
                         <div class="slider-control">
@@ -274,7 +307,8 @@
                     <!-- Test TTS -->
                     <div class="settings-item center-item">
                         <button class="test-btn" id="testTTSBtn">
-                            <span>🔊</span> Testa uttal / اختبر النطق
+                            <span>🔊</span> <span class="sv-text">Testa uttal</span><span class="ar-text">اختبر
+                                النطق</span>
                         </button>
                     </div>
 
@@ -283,8 +317,8 @@
                         <div class="item-left">
                             <span class="item-icon">⏰</span>
                             <div class="item-info">
-                                <span class="item-label">Daglig påminnelse</span>
-                                <span class="item-sublabel">تذكير يومي</span>
+                                <span class="item-name"><span class="sv-text">Daglig påminnelse</span><span
+                                        class="ar-text">تذكير يومي</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -298,8 +332,8 @@
                         <div class="item-left">
                             <span class="item-icon">🕐</span>
                             <div class="item-info">
-                                <span class="item-label">Påminnelsetid</span>
-                                <span class="item-sublabel">وقت التذكير</span>
+                                <span class="item-name"><span class="sv-text">Påminnelsetid</span><span
+                                        class="ar-text">وقت التذكير</span></span>
                             </div>
                         </div>
                         <input type="time" id="reminderTime" value="18:00" class="time-input">
@@ -312,8 +346,8 @@
                 <div class="section-header" onclick="toggleSection('learning')">
                     <div class="section-icon gradient-green">📚</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Lärverktyg</h3>
-                        <p class="section-subtitle">أدوات التعلم</p>
+                        <h3 class="section-title"><span class="sv-text">Lärverktyg</span><span class="ar-text">أدوات
+                                التعلم</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -325,8 +359,8 @@
                         <div class="item-left">
                             <span class="item-icon">🎯</span>
                             <div class="item-info">
-                                <span class="item-label">Dagligt mål</span>
-                                <span class="item-sublabel">الهدف اليومي</span>
+                                <span class="item-name"><span class="sv-text">Dagligt mål</span><span
+                                        class="ar-text">الهدف اليومي</span></span>
                             </div>
                         </div>
                         <div class="goal-selector">
@@ -342,8 +376,8 @@
                         <div class="item-left">
                             <span class="item-icon">▶️</span>
                             <div class="item-info">
-                                <span class="item-label">Auto-spela ljud</span>
-                                <span class="item-sublabel">تشغيل الصوت تلقائياً</span>
+                                <span class="item-name"><span class="sv-text">Auto-spela ljud</span><span
+                                        class="ar-text">تشغيل الصوت تلقائياً</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -357,8 +391,8 @@
                         <div class="item-left">
                             <span class="item-icon">💬</span>
                             <div class="item-info">
-                                <span class="item-label">Visa exempel</span>
-                                <span class="item-sublabel">عرض الأمثلة</span>
+                                <span class="item-name"><span class="sv-text">Visa exempel</span><span
+                                        class="ar-text">عرض الأمثلة</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -372,8 +406,8 @@
                         <div class="item-left">
                             <span class="item-icon">🧘</span>
                             <div class="item-info">
-                                <span class="item-label">Fokusläge</span>
-                                <span class="item-sublabel">وضع التركيز</span>
+                                <span class="item-name"><span class="sv-text">Fokusläge</span><span class="ar-text">وضع
+                                        التركيز</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -387,8 +421,8 @@
                         <div class="item-left">
                             <span class="item-icon">👁️</span>
                             <div class="item-info">
-                                <span class="item-label">Ögonvård</span>
-                                <span class="item-sublabel">حماية العين</span>
+                                <span class="item-name"><span class="sv-text">Ögonvård</span><span class="ar-text">حماية
+                                        العين</span></span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -404,8 +438,8 @@
                 <div class="section-header" onclick="toggleSection('navigation')">
                     <div class="section-icon gradient-amber">🧭</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Snabbnavgering</h3>
-                        <p class="section-subtitle">التنقل السريع</p>
+                        <h3 class="section-title"><span class="sv-text">Snabbnavigering</span><span
+                                class="ar-text">التنقل السريع</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -415,19 +449,23 @@
                     <div class="quick-links-grid">
                         <a href="games/games.html" class="quick-link-card">
                             <span class="quick-link-icon">🎮</span>
-                            <span class="quick-link-label">Spel / ألعاب</span>
+                            <span class="quick-link-label"><span class="sv-text">Spel</span><span
+                                    class="ar-text">ألعاب</span></span>
                         </a>
                         <a href="learn/learn.html" class="quick-link-card">
                             <span class="quick-link-icon">📖</span>
-                            <span class="quick-link-label">Grammatik</span>
+                            <span class="quick-link-label"><span class="sv-text">Grammatik</span><span
+                                    class="ar-text">القواعد</span></span>
                         </a>
                         <a href="profile.html" class="quick-link-card">
                             <span class="quick-link-icon">👤</span>
-                            <span class="quick-link-label">Min Profil</span>
+                            <span class="quick-link-label"><span class="sv-text">Min Profil</span><span
+                                    class="ar-text">ملفي</span></span>
                         </a>
                         <a href="add.html" class="quick-link-card">
                             <span class="quick-link-icon">➕</span>
-                            <span class="quick-link-label">Lägg till</span>
+                            <span class="quick-link-label"><span class="sv-text">Lägg till</span><span
+                                    class="ar-text">إضافة</span></span>
                         </a>
                     </div>
                 </div>
@@ -438,8 +476,8 @@
                 <div class="section-header" onclick="toggleSection('data')">
                     <div class="section-icon gradient-cyan">💾</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Data & Sekretess</h3>
-                        <p class="section-subtitle">البيانات والخصوصية</p>
+                        <h3 class="section-title"><span class="sv-text">Data & Sekretess</span><span
+                                class="ar-text">البيانات والخصوصية</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -451,8 +489,8 @@
                         <div class="item-left">
                             <span class="item-icon">📤</span>
                             <div class="item-info">
-                                <span class="item-label">Exportera data</span>
-                                <span class="item-sublabel">تصدير البيانات</span>
+                                <span class="item-name"><span class="sv-text">Exportera data</span><span
+                                        class="ar-text">تصدير البيانات</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -465,8 +503,8 @@
                         <div class="item-left">
                             <span class="item-icon">📥</span>
                             <div class="item-info">
-                                <span class="item-label">Importera data</span>
-                                <span class="item-sublabel">استيراد البيانات</span>
+                                <span class="item-name"><span class="sv-text">Importera data</span><span
+                                        class="ar-text">استيراد البيانات</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -480,8 +518,8 @@
                         <div class="item-left">
                             <span class="item-icon">🗑️</span>
                             <div class="item-info">
-                                <span class="item-label">Rensa favoriter</span>
-                                <span class="item-sublabel">مسح المفضلة</span>
+                                <span class="item-name"><span class="sv-text">Rensa favoriter</span><span
+                                        class="ar-text">مسح المفضلة</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -494,8 +532,8 @@
                         <div class="item-left">
                             <span class="item-icon">⚠️</span>
                             <div class="item-info">
-                                <span class="item-label">Rensa all data</span>
-                                <span class="item-sublabel">مسح جميع البيانات</span>
+                                <span class="item-name"><span class="sv-text">Rensa all data</span><span
+                                        class="ar-text">مسح جميع البيانات</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -506,7 +544,8 @@
                     <!-- Storage Info -->
                     <div class="storage-info">
                         <div class="storage-header">
-                            <span>Använt lagringsutrymme</span>
+                            <span><span class="sv-text">Använt lagringsutrymme</span><span class="ar-text">المساحة
+                                    المستخدمة</span></span>
                             <span id="storageUsed">0 KB</span>
                         </div>
                         <div class="storage-bar-bg">
@@ -521,8 +560,8 @@
                 <div class="section-header" onclick="toggleSection('about')">
                     <div class="section-icon gradient-rose">ℹ️</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title">Om SnabbaLexin</h3>
-                        <p class="section-subtitle">حول التطبيق</p>
+                        <h3 class="section-title"><span class="sv-text">Om SnabbaLexin</span><span class="ar-text">حول
+                                التطبيق</span></h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -534,8 +573,8 @@
                         <div class="item-left">
                             <span class="item-icon">📱</span>
                             <div class="item-info">
-                                <span class="item-label">Version</span>
-                                <span class="item-sublabel">الإصدار</span>
+                                <span class="item-name"><span class="sv-text">Version</span><span
+                                        class="ar-text">الإصدار</span></span>
                             </div>
                         </div>
                         <span class="version-badge">v3.0.0</span>
@@ -546,8 +585,8 @@
                         <div class="item-left">
                             <span class="item-icon">📋</span>
                             <div class="item-info">
-                                <span class="item-label">Ändringslogg</span>
-                                <span class="item-sublabel">سجل التغييرات</span>
+                                <span class="item-name"><span class="sv-text">Ändringslogg</span><span
+                                        class="ar-text">سجل التغييرات</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -560,8 +599,8 @@
                         <div class="item-left">
                             <span class="item-icon">🖥️</span>
                             <div class="item-info">
-                                <span class="item-label">Enhetsinformation</span>
-                                <span class="item-sublabel">معلومات الجهاز</span>
+                                <span class="item-name"><span class="sv-text">Enhetsinformation</span><span
+                                        class="ar-text">معلومات الجهاز</span></span>
                             </div>
                         </div>
                         <svg class="item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -574,8 +613,8 @@
                         <div class="item-left">
                             <span class="item-icon">📖</span>
                             <div class="item-info">
-                                <span class="item-label">Ordförråd</span>
-                                <span class="item-sublabel">حجم القاموس</span>
+                                <span class="item-name"><span class="sv-text">Ordförråd</span><span class="ar-text">حجم
+                                        القاموس</span></span>
                             </div>
                         </div>
                         <span class="info-badge">+34,000</span>
@@ -584,7 +623,8 @@
                     <!-- Copyright -->
                     <div class="copyright-info">
                         <p>SnabbaLexin © 2025</p>
-                        <p>Made with ❤️ for language learners</p>
+                        <p><span class="sv-text">Made with ❤️ for language learners</span><span class="ar-text">صنع بحب
+                                ❤️ لمتعلمي اللغات</span></p>
                     </div>
                 </div>
             </section>
@@ -594,8 +634,8 @@
         <footer class="settings-footer">
             <div class="motivation-card glass-card">
                 <span class="motivation-icon">💪</span>
-                <p class="motivation-text" id="motivationText">Du gör fantastiska framsteg! Fortsätt lära dig!</p>
-                <p class="motivation-text-ar" id="motivationTextAr">أنت تحقق تقدماً رائعاً! استمر في التعلم!</p>
+                <p class="motivation-text"><span class="sv-text">Du gör fantastiska framsteg! Fortsätt lära
+                        dig!</span><span class="ar-text">أنت تحقق تقدماً رائعاً! استمر في التعلم!</span></p>
             </div>
         </footer>
     </div>
@@ -605,7 +645,7 @@
         <div class="modal-backdrop" onclick="closeAvatarModal()"></div>
         <div class="modal-content avatar-modal">
             <div class="modal-header">
-                <h3>Välj Avatar / اختر الصورة</h3>
+                <h3><span class="sv-text">Välj Avatar</span><span class="ar-text">اختر الصورة</span></h3>
                 <button class="modal-close" onclick="closeAvatarModal()">×</button>
             </div>
             <div class="avatar-grid" id="avatarGrid">
@@ -619,11 +659,14 @@
         <div class="modal-backdrop" onclick="closeConfirmModal()"></div>
         <div class="modal-content confirm-modal">
             <div class="confirm-icon" id="confirmIcon">⚠️</div>
-            <h3 id="confirmTitle">Är du säker?</h3>
-            <p id="confirmMessage">هل أنت متأكد؟</p>
+            <h3 id="confirmTitle"><span class="sv-text">Är du säker?</span><span class="ar-text">هل أنت متأكد؟</span>
+            </h3>
+            <p id="confirmMessage"></p>
             <div class="confirm-actions">
-                <button class="btn-secondary" onclick="closeConfirmModal()">Avbryt / إلغاء</button>
-                <button class="btn-danger" id="confirmBtn">Bekräfta / تأكيد</button>
+                <button class="btn-secondary" onclick="closeConfirmModal()"><span class="sv-text">Avbryt</span><span
+                        class="ar-text">إلغاء</span></button>
+                <button class="btn-danger" id="confirmBtn"><span class="sv-text">Bekräfta</span><span
+                        class="ar-text">تأكيد</span></button>
             </div>
         </div>
     </div>

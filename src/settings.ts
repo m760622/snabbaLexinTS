@@ -6,7 +6,7 @@
  */
 
 import { ToastManager } from './toast-manager';
-
+import { LanguageManager, t, Language } from './i18n';
 
 // ============================================================
 // TYPES
@@ -259,7 +259,7 @@ const UIController = {
                 document.documentElement.style.setProperty('--settings-text', '#1e293b');
             }
 
-            showToast(checked ? '🌙 Mörkt läge aktiverat' : '☀️ Ljust läge aktiverat');
+            showToast(checked ? '🌙 ' + t('toast.darkModeOn') : '☀️ ' + t('toast.darkModeOff'));
         });
 
         // Mobile View Toggle
@@ -267,7 +267,7 @@ const UIController = {
             const checked = (e.target as HTMLInputElement).checked;
             document.body.classList.toggle('mobile-view', checked);
             localStorage.setItem('mobileView', String(checked));
-            showToast(checked ? '📱 Mobilvy aktiverad' : '🖥️ Skrivbordsvy aktiverad');
+            showToast(checked ? '📱 ' + t('toast.mobileOn') : '🖥️ ' + t('toast.mobileOff'));
         });
 
         // Color Theme
@@ -278,7 +278,7 @@ const UIController = {
                 const theme = btn.getAttribute('data-theme') || 'default';
                 SettingsManager.update('colorTheme', theme);
                 document.body.setAttribute('data-theme', theme);
-                showToast(`🎨 Tema ändrat till ${theme}`);
+                showToast(`🎨 ${t('settings.themeChanged')} ${theme}`);
             });
         });
 
@@ -290,7 +290,7 @@ const UIController = {
                 const size = btn.getAttribute('data-size') || 'medium';
                 SettingsManager.update('fontSize', size);
                 document.documentElement.style.fontSize = size === 'small' ? '14px' : size === 'large' ? '18px' : '16px';
-                showToast('🔤 Textstorlek ändrad');
+                showToast('🔤 ' + t('toast.fontChanged'));
             });
         });
 
@@ -299,7 +299,35 @@ const UIController = {
             const checked = (e.target as HTMLInputElement).checked;
             SettingsManager.update('animations', checked);
             document.body.classList.toggle('reduce-motion', !checked);
-            showToast(checked ? '✨ Animationer på' : '✨ Animationer av');
+            showToast(checked ? '✨ ' + t('toast.animationsOn') : '✨ ' + t('toast.animationsOff'));
+        });
+
+        // Language Selector
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update UI
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Get selected language
+                const lang = btn.getAttribute('data-lang') as Language;
+
+                // Apply language change
+                LanguageManager.setLanguage(lang);
+
+                const toastMessages: Record<Language, string> = {
+                    'sv': '🇸🇪 ' + t('toast.langSv'),
+                    'ar': '🇸🇦 ' + t('toast.langAr'),
+                    'both': '🌍 ' + t('toast.langBoth')
+                };
+                showToast(toastMessages[lang]);
+            });
+        });
+
+        // Load saved language on init
+        const savedLang = LanguageManager.getLanguage();
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-lang') === savedLang);
         });
 
         // Sound Effects
@@ -307,7 +335,7 @@ const UIController = {
             const checked = (e.target as HTMLInputElement).checked;
             SettingsManager.update('soundEffects', checked);
             localStorage.setItem('soundEnabled', String(checked));
-            showToast(checked ? '🔊 Ljud på' : '🔇 Ljud av');
+            showToast(checked ? '🔊 ' + t('toast.soundOn') : '🔇 ' + t('toast.soundOff'));
         });
 
         // TTS Speed
@@ -338,14 +366,14 @@ const UIController = {
             if (reminderTimeItem) {
                 reminderTimeItem.style.display = checked ? 'flex' : 'none';
             }
-            showToast(checked ? '⏰ Påminnelse aktiverad' : '⏰ Påminnelse avaktiverad');
+            showToast(checked ? '⏰ ' + t('settings.reminderOn') : '⏰ ' + t('settings.reminderOff'));
         });
 
         // Reminder Time
         document.getElementById('reminderTime')?.addEventListener('change', (e) => {
             const value = (e.target as HTMLInputElement).value;
             SettingsManager.update('reminderTime', value);
-            showToast(`⏰ Påminnelsetid: ${value}`);
+            showToast(`⏰ ${t('settings.reminderTimeSet')} ${value}`);
         });
 
         // Daily Goal
@@ -355,7 +383,7 @@ const UIController = {
                 btn.classList.add('active');
                 const goal = parseInt(btn.getAttribute('data-goal') || '10');
                 SettingsManager.update('dailyGoal', goal);
-                showToast(`🎯 Dagligt mål: ${goal} ord`);
+                showToast(`🎯 ${t('settings.dailyGoalSet')} ${goal} ${t('settings.words')}`);
             });
         });
 
@@ -363,14 +391,14 @@ const UIController = {
         document.getElementById('autoPlayToggle')?.addEventListener('change', (e) => {
             const checked = (e.target as HTMLInputElement).checked;
             SettingsManager.update('autoPlay', checked);
-            showToast(checked ? '▶️ Auto-spela på' : '▶️ Auto-spela av');
+            showToast(checked ? '▶️ ' + t('settings.autoPlayOn') : '▶️ ' + t('settings.autoPlayOff'));
         });
 
         // Show Examples
         document.getElementById('showExamplesToggle')?.addEventListener('change', (e) => {
             const checked = (e.target as HTMLInputElement).checked;
             SettingsManager.update('showExamples', checked);
-            showToast(checked ? '💬 Exempel visas' : '💬 Exempel döljs');
+            showToast(checked ? '💬 ' + t('settings.examplesOn') : '💬 ' + t('settings.examplesOff'));
         });
 
         // Focus Mode
@@ -379,7 +407,7 @@ const UIController = {
             SettingsManager.update('focusMode', checked);
             document.body.classList.toggle('focus-mode', checked);
             localStorage.setItem('focusMode', String(checked));
-            showToast(checked ? '🧘 Fokusläge aktiverat' : '🧘 Fokusläge avaktiverat');
+            showToast(checked ? '🧘 ' + t('settings.focusOn') : '🧘 ' + t('settings.focusOff'));
         });
 
         // Eye Care
@@ -388,7 +416,7 @@ const UIController = {
             SettingsManager.update('eyeCare', checked);
             document.body.classList.toggle('eye-care-mode', checked);
             localStorage.setItem('eyeCareMode', String(checked));
-            showToast(checked ? '👁️ Ögonvård aktiverad' : '👁️ Ögonvård avaktiverad');
+            showToast(checked ? '👁️ ' + t('settings.eyeCareOn') : '👁️ ' + t('settings.eyeCareOff'));
         });
 
         // Change Avatar
@@ -401,8 +429,8 @@ const UIController = {
         document.getElementById('resetAllBtn')?.addEventListener('click', () => {
             showConfirmModal(
                 '⚠️',
-                'Återställ inställningar?',
-                'Alla inställningar kommer återställas till standard.',
+                t('settings.resetTitle'),
+                t('settings.resetMsg'),
                 () => {
                     SettingsManager.save(SettingsManager.defaults);
                     location.reload();
@@ -426,10 +454,10 @@ const UIController = {
                         if (data.progress) {
                             localStorage.setItem('userProgress', JSON.stringify(data.progress));
                         }
-                        showToast('✅ Data importerad!');
+                        showToast('✅ ' + t('settings.dataImported'));
                         setTimeout(() => location.reload(), 1000);
                     } catch (err) {
-                        showToast('❌ Fel vid import', 'error');
+                        showToast('❌ ' + t('settings.importError'), 'error');
                     }
                 };
                 reader.readAsText(file);
@@ -439,29 +467,35 @@ const UIController = {
 
     setupRecommendations(): void {
         const settings = SettingsManager.get();
-        const recommendations: { icon: string; text: string; action: string }[] = [];
+        const recommendations: { icon: string; textSv: string; textAr: string; actionSv: string; actionAr: string }[] = [];
 
         if (!settings.soundEffects) {
             recommendations.push({
                 icon: '🔊',
-                text: 'Aktivera ljud för bättre inlärning',
-                action: 'Aktivera'
+                textSv: 'Aktivera ljud för bättre inlärning',
+                textAr: 'فعّل الصوت لتعلم أفضل',
+                actionSv: 'Aktivera',
+                actionAr: 'تفعيل'
             });
         }
 
         if (!settings.reminderEnabled) {
             recommendations.push({
                 icon: '⏰',
-                text: 'Sätt en daglig påminnelse',
-                action: 'Aktivera'
+                textSv: 'Sätt en daglig påminnelse',
+                textAr: 'ضبط تذكير يومي',
+                actionSv: 'Aktivera',
+                actionAr: 'تفعيل'
             });
         }
 
         if (settings.dailyGoal < 10) {
             recommendations.push({
                 icon: '🎯',
-                text: 'Öka ditt dagliga mål för snabbare framsteg',
-                action: 'Ändra'
+                textSv: 'Öka ditt dagliga mål för snabbare framsteg',
+                textAr: 'زيادة هدفك اليومي لتقدم أسرع',
+                actionSv: 'Ändra',
+                actionAr: 'تغيير'
             });
         }
 
@@ -477,8 +511,8 @@ const UIController = {
             container.innerHTML = recommendations.map(rec => `
                 <div class="recommendation-item">
                     <div class="rec-item-icon">${rec.icon}</div>
-                    <div class="rec-item-text">${rec.text}</div>
-                    <span class="rec-item-action">${rec.action}</span>
+                    <div class="rec-item-text"><span class="sv-text">${rec.textSv}</span><span class="ar-text">${rec.textAr}</span></div>
+                    <span class="rec-item-action"><span class="sv-text">${rec.actionSv}</span><span class="ar-text">${rec.actionAr}</span></span>
                 </div>
             `).join('');
         }
@@ -532,7 +566,7 @@ const UIController = {
                     btn.classList.add('selected');
 
                     closeAvatarModal();
-                    showToast('✅ Avatar ändrad!');
+                    showToast('✅ ' + t('settings.avatarChanged'));
                 });
             });
         }
@@ -619,17 +653,17 @@ function exportData(): void {
     a.download = `snabbalexin-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast('✅ Data exporterad!');
+    showToast('✅ ' + t('settings.dataExported'));
 }
 
 function clearFavorites(): void {
     showConfirmModal(
         '🗑️',
-        'Rensa favoriter?',
-        'Alla sparade favoriter kommer tas bort.',
+        t('settings.clearFavTitle'),
+        t('settings.clearFavMsg'),
         () => {
             localStorage.removeItem('favorites');
-            showToast('✅ Favoriter rensade');
+            showToast('✅ ' + t('settings.favoritesCleared'));
         }
     );
 }
@@ -637,11 +671,11 @@ function clearFavorites(): void {
 function clearAllData(): void {
     showConfirmModal(
         '⚠️',
-        'Rensa ALL data?',
-        'Detta går inte att ångra! Alla favoriter, framsteg och inställningar kommer raderas.',
+        t('settings.clearAllTitle'),
+        t('settings.clearAllMsg'),
         () => {
             localStorage.clear();
-            showToast('✅ All data rensad');
+            showToast('✅ ' + t('settings.allDataCleared'));
             setTimeout(() => location.reload(), 1000);
         }
     );

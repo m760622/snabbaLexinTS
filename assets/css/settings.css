@@ -559,6 +559,38 @@
     font-size: 1rem;
     font-weight: 600;
     margin: 0;
+    /* Ensure text is always visible even when one language span is hidden */
+    min-height: 1.2em;
+}
+
+/* Fix for section titles - ensure proper display in all language modes */
+.section-title .sv-text,
+.section-title .ar-text {
+    display: inline !important;
+}
+
+/* Override hide rules for section titles in Arabic mode - hide Swedish */
+body.lang-ar .section-title .sv-text {
+    display: none !important;
+}
+
+body.lang-ar .section-title .ar-text {
+    display: inline !important;
+}
+
+/* Override hide rules for section titles in Swedish mode - hide Arabic */
+body.lang-sv .section-title .ar-text {
+    display: none !important;
+}
+
+body.lang-sv .section-title .sv-text {
+    display: inline !important;
+}
+
+/* Both languages mode - show both */
+body.lang-both .section-title .sv-text,
+body.lang-both .section-title .ar-text {
+    display: inline !important;
 }
 
 .section-subtitle {
@@ -1182,6 +1214,236 @@
 .btn-danger:hover {
     background: #dc2626;
     transform: translateY(-2px);
+}
+
+/* ============================================================
+   LANGUAGE SELECTOR
+   ============================================================ */
+.language-selector {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.lang-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    min-width: 50px;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--settings-text-secondary);
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--settings-text);
+}
+
+.lang-btn.active {
+    background: linear-gradient(135deg, var(--settings-primary), var(--settings-secondary));
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(85, 88, 184, 0.3);
+}
+
+.lang-flag {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.lang-name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   LANGUAGE-SPECIFIC DISPLAY RULES
+   ============================================================ */
+
+/* Swedish Only Mode - Hide Arabic sublabels */
+body.lang-sv .item-sublabel:not(.language-selector *),
+body.lang-sv .section-subtitle {
+    display: none !important;
+}
+
+/* Arabic Only Mode - Hide Swedish, show Arabic only */
+body.lang-ar .item-label:not(.language-selector *) {
+    display: none !important;
+}
+
+body.lang-ar .item-sublabel:not(.language-selector *),
+body.lang-ar .section-subtitle {
+    display: block !important;
+    font-size: 1rem !important;
+    color: var(--settings-text) !important;
+    opacity: 1 !important;
+    font-weight: 500;
+}
+
+body.lang-ar .item-info .item-sublabel:not(.language-selector *) {
+    margin-top: 0;
+}
+
+body.lang-ar .section-title-wrapper .section-subtitle {
+    font-size: 1.1rem !important;
+    margin-top: 0;
+}
+
+/* Both Languages Mode - Show everything (default) */
+body.lang-both .item-label,
+body.lang-both .item-sublabel,
+body.lang-both .section-title,
+body.lang-both .section-subtitle {
+    display: block !important;
+}
+
+/* Language Selector - Always show all buttons */
+.language-selector,
+.language-selector .lang-btn,
+.language-selector .lang-flag,
+.language-selector .lang-name {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* ============================================================
+   RTL SUPPORT - Arabic Language Mode
+   ============================================================ */
+body.rtl,
+html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+}
+
+body.rtl .settings-header {
+    flex-direction: row-reverse;
+}
+
+body.rtl .settings-back-btn svg {
+    transform: rotate(180deg);
+}
+
+body.rtl .section-header {
+    flex-direction: row-reverse;
+}
+
+body.rtl .section-title-wrapper {
+    text-align: right;
+}
+
+body.rtl .section-arrow {
+    transform: rotate(180deg);
+}
+
+body.rtl .settings-section.expanded .section-arrow {
+    transform: rotate(0deg);
+}
+
+body.rtl .settings-item {
+    flex-direction: row-reverse;
+}
+
+body.rtl .item-left {
+    flex-direction: row-reverse;
+}
+
+body.rtl .item-info {
+    text-align: right;
+}
+
+body.rtl .item-arrow {
+    transform: rotate(180deg);
+}
+
+body.rtl .color-themes,
+body.rtl .font-size-control,
+body.rtl .goal-selector,
+body.rtl .language-selector {
+    flex-direction: row-reverse;
+}
+
+body.rtl .slider-control {
+    flex-direction: row-reverse;
+}
+
+body.rtl .toggle-switch {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+body.rtl .profile-stats {
+    flex-direction: row-reverse;
+}
+
+body.rtl .quick-links-grid {
+    direction: rtl;
+}
+
+body.rtl .quick-link-card {
+    text-align: center;
+}
+
+body.rtl .settings-completion {
+    flex-direction: row-reverse;
+}
+
+body.rtl .completion-bar-fill,
+body.rtl .progress-bar-fill {
+    transform-origin: right;
+}
+
+body.rtl .recommendations-header {
+    flex-direction: row-reverse;
+}
+
+body.rtl .recommendation-item {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+body.rtl .motivation-card {
+    text-align: center;
+}
+
+/* RTL for toast notifications */
+body.rtl .toast-container {
+    direction: rtl;
+}
+
+body.rtl .toast-item {
+    flex-direction: row-reverse;
+    padding: 14px 18px 14px 44px;
+}
+
+body.rtl .toast-close {
+    right: auto;
+    left: 10px;
+}
+
+body.rtl .toast-progress {
+    transform-origin: right;
+}
+
+/* RTL responsive adjustments */
+@media (max-width: 480px) {
+    body.rtl .toast-item {
+        padding: 12px 14px 12px 40px;
+    }
+
+    body.rtl .toast-close {
+        left: 8px;
+    }
 }
 
 /* ============================================================

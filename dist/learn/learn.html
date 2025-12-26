@@ -14,17 +14,21 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/learn-Df5kwsrI.js"></script>
+  <script type="module" crossorigin src="/assets/learn-DxuizVNI.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-CIWjEN3D.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
   <link rel="stylesheet" crossorigin href="/assets/learn-Xea-MdpJ.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
 </head>
 
 <body>
     <header>
-        <button class="back-btn" onclick="window.location.href='../index.html'" aria-label="Tillbaka" title="Tillbaka">
+        <button class="back-btn" onclick="window.location.href='../index.html'" aria-label="Tillbaka / رجوع"
+            title="Tillbaka / رجوع">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -32,7 +36,7 @@
             </svg>
         </button>
         <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()">📱</button>
-        <h1>Lär dig Svenska / تعلم السويدية</h1>
+        <h1><span class="sv-text">Lär dig Svenska</span><span class="ar-text">تعلم السويدية</span></h1>
     </header>
 
     <!-- Progress Hero -->
@@ -40,7 +44,7 @@
         <div class="hero-stats">
             <div class="hero-stat">
                 <div class="value" id="streakCount">0</div>
-                <div class="label">🔥 Dagar</div>
+                <div class="label">🔥 <span class="sv-text">Dagar</span><span class="ar-text">أيام</span></div>
             </div>
             <div class="hero-stat">
                 <div class="value" id="totalXP">0</div>
@@ -48,61 +52,70 @@
             </div>
             <div class="hero-stat">
                 <div class="value" id="completedCount">0</div>
-                <div class="label">✅ Klara</div>
+                <div class="label">✅ <span class="sv-text">Klara</span><span class="ar-text">مكتمل</span></div>
             </div>
         </div>
         <div class="overall-progress">
             <div class="fill" id="overallProgress"></div>
         </div>
-        <div class="progress-text" id="progressText">0% klar / مكتمل</div>
+        <div class="progress-text" id="progressText">0% <span class="sv-text">klar</span><span
+                class="ar-text">مكتمل</span></div>
     </div>
 
     <!-- Review Banner -->
     <div class="review-banner hidden" id="reviewBanner" onclick="openReviewSession()">
         <div class="review-icon">🔄</div>
         <div class="review-content">
-            <div class="review-title">Dags för repetition! / وقت المراجعة</div>
-            <div class="review-subtitle"><span id="reviewCount">0</span> ord att repetera</div>
+            <div class="review-title"><span class="sv-text">Dags för repetition!</span><span class="ar-text">وقت
+                    المراجعة!</span></div>
+            <div class="review-subtitle"><span id="reviewCount">0</span> <span class="sv-text">ord att
+                    repetera</span><span class="ar-text">كلمات للمراجعة</span></div>
         </div>
     </div>
 
     <main>
         <div class="search-container">
-            <input type="text" id="lessonSearchInput" placeholder="Sök lektioner / ابحث عن درس...">
+            <input type="text" id="lessonSearchInput" placeholder="Sök lektioner / ابحث عن درس..."
+                data-i18n-placeholder="learn.searchPlaceholder">
         </div>
 
         <div class="filter-scroll-container">
-            <button class="filter-chip active" data-filter="all">Alla / الكل</button>
-            <button class="filter-chip" data-filter="beginner">🟢 Nybörjare</button>
-            <button class="filter-chip" data-filter="intermediate">🟡 Medel</button>
-            <button class="filter-chip" data-filter="advanced">🔴 Avancerad</button>
+            <button class="filter-chip active" data-filter="all"><span class="sv-text">Alla</span><span
+                    class="ar-text">الكل</span></button>
+            <button class="filter-chip" data-filter="beginner">🟢 <span class="sv-text">Nybörjare</span><span
+                    class="ar-text">مبتدئ</span></button>
+            <button class="filter-chip" data-filter="intermediate">🟡 <span class="sv-text">Medel</span><span
+                    class="ar-text">متوسط</span></button>
+            <button class="filter-chip" data-filter="advanced">🔴 <span class="sv-text">Avancerad</span><span
+                    class="ar-text">متقدم</span></button>
         </div>
 
         <!-- Special Cards -->
         <div class="special-section">
-            <div class="section-title">🌟 Snabbspår / الوصول السريع</div>
+            <div class="section-title">🌟 <span class="sv-text">Snabbspår</span><span class="ar-text">الوصول
+                    السريع</span></div>
             <div class="special-cards">
                 <div class="special-card" onclick="window.location.href='cognates.html'">
                     <div class="icon">🔤</div>
-                    <div class="title">Liknande Ord</div>
-                    <div class="subtitle">المتشابهات</div>
+                    <div class="title"><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span>
+                    </div>
                 </div>
                 <!-- New Quran Card -->
                 <div class="special-card" onclick="window.location.href='../games/quran.html'">
                     <div class="icon">📖</div>
-                    <div class="title">Koranord</div>
-                    <div class="subtitle">كلمات القرآن</div>
+                    <div class="title"><span class="sv-text">Koranord</span><span class="ar-text">كلمات القرآن</span>
+                    </div>
                 </div>
                 <div class="special-card" onclick="openRandomQuiz()">
                     <div class="icon">🎲</div>
-                    <div class="title">Slumpmässig Quiz</div>
-                    <div class="subtitle">اختبار عشوائي</div>
+                    <div class="title"><span class="sv-text">Slumpmässig Quiz</span><span class="ar-text">اختبار
+                            عشوائي</span></div>
                 </div>
             </div>
         </div>
 
         <!-- Lessons Section -->
-        <div class="section-title">📚 Lektioner / الدروس</div>
+        <div class="section-title">📚 <span class="sv-text">Lektioner</span><span class="ar-text">الدروس</span></div>
         <div class="lessons-grid" id="lessonsGrid">
             <!-- Dynamic -->
         </div>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lägg till ord - Snabba Lexin</title>
+    <title><span class="sv-text">Lägg till ord</span><span class="ar-text">إضافة كلمة</span> - Snabba Lexin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -27,80 +27,108 @@
                     </svg>
                 </a>
             </div>
-            <h1>Lägg till ord</h1>
-            <p class="subtitle">إضافة كلمة جديدة</p>
+            <h1>
+                <span class="sv-text">Lägg till ord</span>
+                <span class="ar-text">إضافة كلمة</span>
+            </h1>
         </header>
 
         <main>
             <form id="addWordForm" class="add-form">
                 <div class="form-group">
-                    <label for="swe">Svenska / السويدية *</label>
-                    <input type="text" id="swe" required placeholder="T.ex. Bok">
+                    <label for="swe">
+                        <span class="sv-text">Svenska</span>
+                        <span class="ar-text">السويدية</span> *
+                    </label>
+                    <input type="text" id="swe" required placeholder="T.ex. Bok / مثلاً: كتاب">
                 </div>
 
                 <div class="form-group">
-                    <label for="arb">Arabiska / العربية *</label>
-                    <input type="text" id="arb" required placeholder="مثلاً: كتاب" dir="rtl">
+                    <label for="arb">
+                        <span class="sv-text">Arabiska</span>
+                        <span class="ar-text">العربية</span> *
+                    </label>
+                    <input type="text" id="arb" required placeholder="مثلاً: كتاب / T.ex. Bok" dir="rtl">
                 </div>
 
                 <div class="form-group">
-                    <label for="type">Ordklass / نوع الكلمة</label>
+                    <label for="type">
+                        <span class="sv-text">Ordklass</span>
+                        <span class="ar-text">نوع الكلمة</span>
+                    </label>
                     <select id="type">
-                        <option value="">Välj ordklass / اختر نوع الكلمة</option>
+                        <option value="">
+                            <span class="sv-text">Välj ordklass</span> / <span class="ar-text">اختر نوع الكلمة</span>
+                        </option>
                         <optgroup label="Grammatik / قواعد">
-                            <option value="Substantiv">Substantiv (Ism)</option>
-                            <option value="Verb">Verb (Fi'l)</option>
-                            <option value="Adjektiv">Adjektiv (Sifa)</option>
-                            <option value="Adverb">Adverb (Zarf)</option>
-                            <option value="Preposition">Preposition (Harf jarr)</option>
-                            <option value="Pronomen">Pronomen (Damir)</option>
-                            <option value="Konjunktion">Konjunktion (Harf atf)</option>
-                            <option value="Interjektion">Interjektion</option>
-                            <option value="Räkning">Räkneord</option>
-                            <option value="Förkortning">Förkortning</option>
-                            <option value="Förled">Förled</option>
-                            <option value="Efterled">Efterled</option>
+                            <option value="Substantiv">Substantiv (Ism) / اسم</option>
+                            <option value="Verb">Verb (Fi'l) / فعل</option>
+                            <option value="Adjektiv">Adjektiv (Sifa) / صفة</option>
+                            <option value="Adverb">Adverb (Zarf) / ظرف</option>
+                            <option value="Preposition">Preposition (Harf jarr) / حرف جر</option>
+                            <option value="Pronomen">Pronomen (Damir) / ضمير</option>
+                            <option value="Konjunktion">Konjunktion (Harf atf) / حرف عطف</option>
+                            <option value="Interjektion">Interjektion / صيغة تعجب</option>
+                            <option value="Räkning">Räkneord / اسم عدد</option>
+                            <option value="Förkortning">Förkortning / اختصار</option>
+                            <option value="Förled">Förled / سابقة</option>
+                            <option value="Efterled">Efterled / لاحقة</option>
                         </optgroup>
                         <optgroup label="Ämnesområden / مجالات">
-                            <option value="Medicin">Medicin</option>
-                            <option value="Juridik">Juridik</option>
-                            <option value="Bygg">Bygg</option>
-                            <option value="Samhälle">Samhälle</option>
-                            <option value="Militär">Militär</option>
-                            <option value="Religion">Religion</option>
-                            <option value="Tandvård">Tandvård</option>
+                            <option value="Medicin">Medicin / طب</option>
+                            <option value="Juridik">Juridik / قانون</option>
+                            <option value="Bygg">Bygg / بناء</option>
+                            <option value="Samhälle">Samhälle / مجتمع</option>
+                            <option value="Militär">Militär / عسكري</option>
+                            <option value="Religion">Religion / دين</option>
+                            <option value="Tandvård">Tandvård / طب أسنان</option>
                             <option value="HBTQ">HBTQ</option>
-                            <option value="Ekobrott">Ekobrott</option>
-                            <option value="Teknik">Teknik</option>
-                            <option value="Utbildning">Utbildning</option>
-                            <option value="Arbetsmarknad">Arbetsmarknad</option>
+                            <option value="Ekobrott">Ekobrott / جرائم اقتصادية</option>
+                            <option value="Teknik">Teknik / تقنية</option>
+                            <option value="Utbildning">Utbildning / تعليم</option>
+                            <option value="Arbetsmarknad">Arbetsmarknad / سوق العمل</option>
                         </optgroup>
                         <option value="Annat">Annat / أخرى</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="sweDef">Definition (Svenska)</label>
-                    <textarea id="sweDef" rows="2"></textarea>
+                    <label for="sweDef">
+                        <span class="sv-text">Definition (Svenska)</span>
+                        <span class="ar-text">التعريف (السويدية)</span>
+                    </label>
+                    <textarea id="sweDef" rows="2" placeholder="Beskriv ordet på svenska..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="arbDef">Definition (Arabiska)</label>
-                    <textarea id="arbDef" rows="2" dir="rtl"></textarea>
+                    <label for="arbDef">
+                        <span class="sv-text">Definition (Arabiska)</span>
+                        <span class="ar-text">التعريف (العربية)</span>
+                    </label>
+                    <textarea id="arbDef" rows="2" dir="rtl" placeholder="اشرح الكلمة بالعربية..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="exSwe">Exempel (Svenska)</label>
-                    <input type="text" id="exSwe">
+                    <label for="exSwe">
+                        <span class="sv-text">Exempel (Svenska)</span>
+                        <span class="ar-text">مثال (السويدية)</span>
+                    </label>
+                    <input type="text" id="exSwe" placeholder="Använd ordet i en mening...">
                 </div>
 
                 <div class="form-group">
-                    <label for="exArb">Exempel (Arabiska)</label>
-                    <input type="text" id="exArb" dir="rtl">
+                    <label for="exArb">
+                        <span class="sv-text">Exempel (Arabiska)</span>
+                        <span class="ar-text">مثال (العربية)</span>
+                    </label>
+                    <input type="text" id="exArb" dir="rtl" placeholder="استخدم الكلمة في جملة...">
                 </div>
 
                 <div class="live-preview-container" id="livePreview">
-                    <p class="preview-label">Förhandsvisning / معاينة</p>
+                    <p class="preview-label">
+                        <span class="sv-text">Förhandsvisning</span>
+                        <span class="ar-text">معاينة</span>
+                    </p>
                     <div class="card compact-card shadow-sm">
                         <div class="card-header">
                             <div class="word-header-group">
@@ -114,7 +142,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Spara / حفظ</button>
+                <button type="submit" class="submit-btn">
+                    <span class="sv-text">Spara</span>
+                    <span class="ar-text">حفظ</span>
+                </button>
             </form>
         </main>
     </div>

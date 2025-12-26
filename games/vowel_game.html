@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Svenska Vokaler - المتشابهات الصوتية</title>
+    <title>Vokalspel / لعبة الحروف - SnabbaLexin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -28,9 +28,12 @@
         <div class="orb orb-1 start-orb-large"></div>
         <h1 class="start-title">Svenska Vokaler<br><span class="start-subtitle">تحدي
                 الأصوات السويدية</span></h1>
-        <button class="start-btn" onclick="startGame()">Börja Spela ▶</button>
-        <button class="daily-btn" id="dailyBtn" onclick="startDailyChallenge()">🌟 Dagens Utmaning</button>
-        <button class="audio-btn" onclick="startAudioMode()">🔊 Ljudläge</button>
+        <button class="start-btn" onclick="startGame()"><span class="sv-text">Börja Spela</span><span
+                class="ar-text">ابدأ اللعب</span> ▶</button>
+        <button class="daily-btn" id="dailyBtn" onclick="startDailyChallenge()">🌟 <span class="sv-text">Dagens
+                Utmaning</span><span class="ar-text">تحدي اليوم</span></button>
+        <button class="audio-btn" onclick="startAudioMode()">🔊 <span class="sv-text">Ljudläge</span><span
+                class="ar-text">وضع الصوت</span></button>
         <p class="start-hint">Turn on sound 🔊</p>
     </div>
 
@@ -58,7 +61,8 @@
     </header>
 
     <div class="title-bar">
-        <h1 class="game-title">🔤 Vokalspel / لعبة الحروف المتحركة</h1>
+        <h1 class="game-title">🔤 <span class="sv-text">Vokalspel</span><span class="ar-text">لعبة الحروف
+                المتحركة</span></h1>
     </div>
 
     <div class="game-container">
@@ -137,14 +141,16 @@
         </div>
 
         <div id="endScreen" class="end-screen">
-            <h1 id="endTitle">Grattis! 👑</h1>
-            <p id="endMessage">Du klarade spelet!</p>
+            <h1 id="endTitle"><span class="sv-text">Grattis!</span><span class="ar-text">مبروك!</span> 👑</h1>
+            <p id="endMessage"><span class="sv-text">Du klarade spelet!</span><span class="ar-text">أتممت اللعبة!</span>
+            </p>
             <div class="end-score" id="finalScore"></div>
-            <button class="restart-btn" onclick="location.reload()">Spela igen</button>
+            <button class="restart-btn" onclick="location.reload()"><span class="sv-text">Spela igen</span><span
+                    class="ar-text">العب مرة أخرى</span></button>
         </div>
     </div>
 
-        <script type="module" src="../src/games/vowelGame.ts"></script>
+    <script type="module" src="../src/games/vowelGame.ts"></script>
 
     <script type="module" src="/src/pwa.ts"></script>
 </body>

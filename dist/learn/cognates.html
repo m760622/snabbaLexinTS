@@ -12,44 +12,53 @@
     <link
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/cognates-D9bj6yHH.js"></script>
+  <script type="module" crossorigin src="/assets/cognates-B8xLBfTs.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
   <link rel="stylesheet" crossorigin href="/assets/cognates-eQy_dw2w.css">
 </head>
 
 <body>
     <header>
-        <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka" title="رجوع / Tillbaka">
+        <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
+            title="Tillbaka / رجوع">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <h1 title="كلمات متشابهة في اللفظ والمعنى">Liknande Ord / المتشابهات</h1>
+        <h1><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span></h1>
     </header>
 
     <!-- Stats Bar -->
     <div class="stats-bar">
-        <div class="stat-chip" title="إجمالي الكلمات المتشابهة / Totalt antal ord">📚 <span id="totalWords">673</span> ord</div>
-        <div class="stat-chip learned" title="الكلمات التي تعلمتها / Ord du lärt dig">✅ <span id="learnedCount">0</span> lärt</div>
-        <div class="stat-chip streak" title="أيام التعلم المتتالية / Dagar i rad">🔥 <span id="streakCount">0</span> streak</div>
+        <div class="stat-chip">📚 <span id="totalWords">673</span> <span class="sv-text">ord</span><span
+                class="ar-text">كلمة</span></div>
+        <div class="stat-chip learned">✅ <span id="learnedCount">0</span> <span class="sv-text">lärt</span><span
+                class="ar-text">متعلم</span></div>
+        <div class="stat-chip streak">🔥 <span id="streakCount">0</span> <span class="sv-text">streak</span><span
+                class="ar-text">سلسلة</span></div>
     </div>
 
-    <!-- Mode Tabs - All 4 buttons together -->
+    <!-- Mode Tabs -->
     <div class="mode-tabs">
-        <button class="mode-tab active" onclick="switchMode('browse')" title="تصفح الكلمات / Bläddra bland ord">📖 Bläddra</button>
-        <button class="mode-tab" onclick="switchMode('flashcard')" title="تعلم بالبطاقات / Lär med kort">🎴 Flashcards</button>
-        <button class="mode-tab" onclick="openSavedModal()" title="الكلمات المحفوظة / Sparade ord">⭐ <span id="savedCount">0</span></button>
-        <button class="mode-tab" onclick="startQuiz()" title="اختبر معلوماتك / Testa dina kunskaper">📝 Quiz</button>
+        <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
+                class="ar-text">تصفح</span></button>
+        <button class="mode-tab" onclick="switchMode('flashcard')">🂴 <span class="sv-text">Flashcards</span><span
+                class="ar-text">بطاقات</span></button>
+        <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
+        <button class="mode-tab" onclick="startQuiz()">📝 <span class="sv-text">Quiz</span><span
+                class="ar-text">اختبار</span></button>
     </div>
 
     <main>
         <div class="intro-text">
-            <p>Ord som låter lika på svenska och arabiska. Klicka för att lyssna! 🔊</p>
+            <p><span class="sv-text">Ord som låter lika på svenska och arabiska. Klicka för att lyssna!</span><span
+                    class="ar-text">كلمات متشابهة بين السويدية والعربية. اضغط للاستماع!</span> 🔊</p>
         </div>
 
         <!-- Browse View -->
@@ -75,7 +84,8 @@
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
                         <div class="flashcard-word" id="fcWord">Hej</div>
-                        <div class="flashcard-hint">Klicka för att vända / اضغط للقلب</div>
+                        <div class="flashcard-hint"><span class="sv-text">Klicka för att vända</span><span
+                                class="ar-text">اضغط للقلب</span></div>
                     </div>
                     <div class="flashcard-back">
                         <div class="flashcard-translation" id="fcTranslation">مرحباً</div>
@@ -85,8 +95,10 @@
             </div>
 
             <div class="flashcard-controls">
-                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ Inte än</button>
-                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ Kan det!</button>
+                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ <span class="sv-text">Inte
+                        än</span><span class="ar-text">ليس بعد</span></button>
+                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ <span class="sv-text">Kan
+                        det!</span><span class="ar-text">أعرفها!</span></button>
             </div>
         </div>
     </main>
@@ -101,11 +113,10 @@
     <div id="savedModal" class="saved-modal" onclick="closeSavedModal(event)">
         <div class="saved-content" onclick="event.stopPropagation()">
             <div class="saved-header">
-                <h2>⭐ Sparade ord / الكلمات المحفوظة</h2>
+                <h2>⭐ <span class="sv-text">Sparade ord</span><span class="ar-text">الكلمات المحفوظة</span></h2>
                 <button class="close-modal close-modal-static" onclick="closeSavedModal()">×</button>
             </div>
             <div class="saved-list" id="savedList">
-                </p>
             </div>
         </div>
     </div>

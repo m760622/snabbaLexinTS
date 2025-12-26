@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Search - Svenska</title>
+    <title>Neon Search / البحث - SnabbaLexin</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&display=swap"
         rel="stylesheet">
@@ -19,7 +19,8 @@
             <button class="back-btn" onclick="window.location.href='games.html'">←</button>
             <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
                 title="وضع الموبايل">📱</button>
-            <h1 class="game-title">Neon Search</h1>
+            <h1 class="game-title"><span class="sv-text">Neon Search</span><span class="ar-text">البحث عن الكلمات</span>
+            </h1>
         </div>
 
 
@@ -34,7 +35,8 @@
 
             <button id="prev-level-btn" class="nav-arrow-btn" onclick="game.prevLevel()">❮</button>
             <div id="level-badge-container" class="level-badge level-badge-clickable" onclick="game.showNavigation()">
-                Nivå <span id="level-display">1</span></div>
+                <span class="sv-text">Nivå</span><span class="ar-text">المستوى</span> <span id="level-display">1</span>
+            </div>
             <button id="next-level-btn" class="nav-arrow-btn" onclick="game.nextLevel()">❯</button>
 
             <div id="score-container">
@@ -162,8 +164,9 @@
     <!-- Level Complete Modal -->
     <div id="level-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 class="level-complete-title">Nivå Klar! 🎉</h2>
-            <p>Bra jobbat!</p>
+            <h2 class="level-complete-title"><span class="sv-text">Nivå Klar!</span><span class="ar-text">اكتمل
+                    المستوى!</span> 🎉</h2>
+            <p><span class="sv-text">Bra jobbat!</span><span class="ar-text">أحسنت!</span></p>
             <button class="modal-btn" onclick="game.nextLevel()">Nästa Nivå / التالي</button>
             <button class="btn-exit-modern" onclick="game.showNavigation()">Levels / المستويات</button>
         </div>
@@ -172,8 +175,10 @@
     <!-- Game Complete Modal -->
     <div id="game-complete-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 class="level-complete-title">Grattis! 🏆</h2>
-            <p>Du har klarat alla nivåer i detta ämne!</p>
+            <h2 class="level-complete-title"><span class="sv-text">Grattis!</span><span class="ar-text">مبروك!</span> 🏆
+            </h2>
+            <p><span class="sv-text">Du har klarat alla nivåer i detta ämne!</span><span class="ar-text">لقد أكملت جميع
+                    المستويات!</span></p>
             <button class="modal-btn" onclick="game.showNavigation()">Välj nytt ämne / اختر موضوعاً جديداً</button>
         </div>
     </div>
@@ -182,13 +187,13 @@
     <div id="game-over-modal" class="modal-overlay">
         <div class="modal-content">
             <h2 class="level-complete-title game-over-title">Game Over ⏳</h2>
-            <p>Tiden är slut!</p>
+            <p><span class="sv-text">Tiden är slut!</span><span class="ar-text">انتهى الوقت!</span></p>
             <button class="modal-btn" onclick="game.restartLevel()">Try Again / حاول مجدداً</button>
             <button class="btn-exit-modern" onclick="game.showNavigation()">Exit / خروج</button>
         </div>
     </div>
 
-        <script type="module" src="../src/games/wordSearchGame.ts"></script>
+    <script type="module" src="../src/games/wordSearchGame.ts"></script>
 
     <script type="module" src="/src/pwa.ts"></script>
 </body>

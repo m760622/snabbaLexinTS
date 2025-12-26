@@ -74,14 +74,14 @@ export function init() {
 function switchMode(mode: string) {
     // currentMode = mode; // Removed unused assignment
     document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-    
+
     // Use currentTarget if event exists, or find by mode
     const target = (window.event?.target as HTMLElement) || document.querySelector(`.mode-tab[onclick*="${mode}"]`);
     if (target) target.classList.add('active');
 
     const browseView = document.getElementById('browseView');
     const flashcardView = document.getElementById('flashcardView');
-    
+
     if (browseView) browseView.classList.toggle('hidden', mode !== 'browse');
     if (flashcardView) flashcardView.classList.toggle('active', mode === 'flashcard');
 
@@ -124,11 +124,11 @@ function handleSearch(e: InputEvent | { target: HTMLInputElement }) {
 function renderFilterChips() {
     const container = document.getElementById('filterChips');
     if (!container) return;
-    
+
     const categories = ['all', ...new Set(cognatesData.map((c: CognateEntry) => c.category || 'Övrigt'))];
     container.innerHTML = categories.map((cat: string) => `
         <button class="chip ${cat === 'all' ? 'active' : ''}" onclick="filterByCategory('${cat}')">
-            ${cat === 'all' ? '🌐 Alla' : (categoryIcons[cat] || '📌') + ' ' + cat}
+            ${cat === 'all' ? '🌐 <span class="sv-text">Alla</span><span class="ar-text">الكل</span>' : (categoryIcons[cat] || '📌') + ' ' + cat}
         </button>
     `).join('');
 }
@@ -136,10 +136,10 @@ function renderFilterChips() {
 function filterByCategory(cat: string) {
     currentFilter = cat;
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    
+
     const target = (window.event?.target as HTMLElement);
     if (target) target.classList.add('active');
-    
+
     const searchInput = document.getElementById('searchInput') as HTMLInputElement;
     handleSearch({ target: searchInput });
 }
@@ -149,7 +149,7 @@ function renderContent(data: CognateEntry[]) {
     if (!container) return;
 
     if (data.length === 0) {
-        container.innerHTML = '<div class="empty-state">Inga ord hittades / لا توجد نتائج</div>';
+        container.innerHTML = '<div class="empty-state"><span class="sv-text">Inga ord hittades</span><span class="ar-text">لا توجد نتائج</span></div>';
         return;
     }
 
@@ -190,7 +190,7 @@ function renderContent(data: CognateEntry[]) {
             </div>`;
     }
     container.innerHTML = html;
-    
+
     // Apply dynamic sizing to rendered cards
     TextSizeManager.autoApply();
 }
@@ -221,7 +221,7 @@ function openSavedModal() {
     if (!list) return;
 
     if (savedWords.length === 0) {
-        list.innerHTML = '<p class="empty-state saved-empty">Inga sparade ord ännu / لا توجد كلمات محفوظة</p>';
+        list.innerHTML = '<p class="empty-state saved-empty"><span class="sv-text">Inga sparade ord ännu</span><span class="ar-text">لا توجد كلمات محفوظة</span></p>';
     } else {
         list.innerHTML = savedWords.map(word => {
             const item = cognatesData.find((c: CognateEntry) => c.swe === word);
@@ -316,11 +316,11 @@ function finishFlashcards() {
         flashcardView.innerHTML = `
             <div class="result-container">
                 <div class="result-icon">${percent >= 70 ? '🎉' : '📚'}</div>
-                <div class="result-title">${percent >= 70 ? 'Bra jobbat!' : 'Fortsätt öva!'}</div>
-                <div class="result-score">${fcKnown} / ${fcCards.length} ord (${percent}%)</div>
+                <div class="result-title">${percent >= 70 ? '<span class="sv-text">Bra jobbat!</span><span class="ar-text">أحسنت!</span>' : '<span class="sv-text">Fortsätt öva!</span><span class="ar-text">واصل التمرين!</span>'}</div>
+                <div class="result-score">${fcKnown} / ${fcCards.length} <span class="sv-text">ord</span><span class="ar-text">كلمة</span> (${percent}%)</div>
                 <div class="result-actions">
-                    <button class="result-btn primary" onclick="location.reload()">🔄 Igen</button>
-                    <button class="result-btn secondary" onclick="switchMode('browse')">← Tillbaka</button>
+                    <button class="result-btn primary" onclick="location.reload()">🔄 <span class="sv-text">Igen</span><span class="ar-text">مرة أخرى</span></button>
+                    <button class="result-btn secondary" onclick="switchMode('browse')">← <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span></button>
                 </div>
             </div>`;
     }
@@ -330,7 +330,7 @@ function finishFlashcards() {
 function startQuiz() {
     let pool = currentFilter === 'all' ? cognatesData : cognatesData.filter((c: CognateEntry) => c.category === currentFilter);
     if (pool.length < 4) {
-        alert('Inte tillräckligt med ord!');
+        alert('توجد كلمات غير كافية! / Inte tillräckligt med ord!');
         return;
     }
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
@@ -358,20 +358,20 @@ function renderQuizTypeSelector() {
 
     quizContent.innerHTML = `
         <div class="quiz-header">
-            <h2>Välj Quiz-typ / اختر نوع الاختبار</h2>
+            <h2><span class="sv-text">Välj Quiz-typ</span><span class="ar-text">اختر نوع الاختبار</span></h2>
         </div>
         <div class="quiz-type-selector quiz-type-selector-col">
             <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('normal')">
-                🇸🇪→🇸🇦 Svenska → Arabiska
+                🇸🇪→🇸🇦 <span class="sv-text">Svenska → Arabiska</span><span class="ar-text">سويدي → عربي</span>
             </button>
             <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('reverse')">
-                🇸🇦→🇸🇪 Arabiska → Svenska
+                🇸🇦→🇸🇪 <span class="sv-text">Arabiska → Svenska</span><span class="ar-text">عربي → سويدي</span>
             </button>
             <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('audio')">
-                🔊 Lyssna → Välj
+                🔊 <span class="sv-text">Lyssna → Välj</span><span class="ar-text">استمع → اختر</span>
             </button>
             <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('write')">
-                ✍️ Skriv svaret
+                ✍️ <span class="sv-text">Skriv svaret</span><span class="ar-text">اكتب الإجابة</span>
             </button>
         </div>`;
 }
@@ -391,7 +391,7 @@ function renderQuizQuestion() {
 
     let html = `
         <div class="quiz-header">
-            <h2>Fråga ${quizState.index + 1} / ${total}</h2>
+            <h2><span class="sv-text">Fråga</span><span class="ar-text">سؤال</span> ${quizState.index + 1} / ${total}</h2>
             <div class="progress-bar">
                 <div class="fill" style="width: ${(quizState.index / total) * 100}%"></div>
             </div>
@@ -402,7 +402,7 @@ function renderQuizQuestion() {
         const options = [q.arb, ...wrongOptions.map(c => c.arb)].sort(() => 0.5 - Math.random());
         html += `
             <div class="question-text">${q.swe}</div>
-            <div class="question-hint">Välj rätt arabisk översättning / اختر الترجمة</div>
+            <div class="question-hint"><span class="sv-text">Välj rätt arabisk översättning</span><span class="ar-text">اختر الترجمة الصحيحة</span></div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn arb" data-correct="${opt === q.arb}"
                     onclick="checkAnswer(this, ${opt === q.arb})">${opt}</button>`).join('')}
@@ -411,7 +411,7 @@ function renderQuizQuestion() {
         const options = [q.swe, ...wrongOptions.map(c => c.swe)].sort(() => 0.5 - Math.random());
         html += `
             <div class="question-text arabic-font">${q.arb}</div>
-            <div class="question-hint">Välj rätt svenskt ord / اختر الكلمة السويدية</div>
+            <div class="question-hint"><span class="sv-text">Välj rätt svenskt ord</span><span class="ar-text">اختر الكلمة السويدية</span></div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn" data-correct="${opt === q.swe}"
                     onclick="checkAnswer(this, ${opt === q.swe})">${opt}</button>`).join('')}
@@ -419,8 +419,8 @@ function renderQuizQuestion() {
     } else if (quizType === 'audio') {
         const options = [q.arb, ...wrongOptions.map(c => c.arb)].sort(() => 0.5 - Math.random());
         html += `
-            <div class="question-text"><button class="action-btn" onclick="playTTS('${q.swe.replace(/'/g, "\\'")}')">🔊 Lyssna</button></div>
-            <div class="question-hint">Vad hörde du? / ماذا سمعت؟</div>
+            <div class="question-text"><button class="action-btn" onclick="playTTS('${q.swe.replace(/'/g, "\\'")}')">🔊 <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span></button></div>
+            <div class="question-hint"><span class="sv-text">Vad hörde du?</span><span class="ar-text">ماذا سمعت؟</span></div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn arb" data-correct="${opt === q.arb}"
                     onclick="checkAnswer(this, ${opt === q.arb})">${opt}</button>`).join('')}
@@ -429,14 +429,14 @@ function renderQuizQuestion() {
     } else if (quizType === 'write') {
         html += `
             <div class="question-text">${q.swe}</div>
-            <div class="question-hint">Skriv den arabiska översättningen / اكتب الترجمة</div>
+            <div class="question-hint"><span class="sv-text">Skriv den arabiska översättningen</span><span class="ar-text">اكتب الترجمة العربية</span></div>
             <input type="text" class="writing-input" id="writeAnswer" placeholder="اكتب هنا..." dir="rtl">
-            <button class="submit-btn" onclick="checkWrittenAnswer('${q.arb.replace(/'/g, "\\'")}')">Kontrollera / تحقق</button>`;
+            <button class="submit-btn" onclick="checkWrittenAnswer('${q.arb.replace(/'/g, "\\'")}')"><span class="sv-text">Kontrollera</span><span class="ar-text">تحقق</span></button>`;
     }
 
     html += `<div class="feedback" id="feedback"></div>
         </div>`;
-    
+
     const quizContent = document.getElementById('quizContent');
     if (quizContent) {
         quizContent.innerHTML = html;
@@ -477,10 +477,10 @@ function showFeedback(isCorrect: boolean, correctAnswer: string | null = null) {
     if (isCorrect) {
         quizState.score++;
         feedback.className = 'feedback show correct';
-        feedback.innerHTML = '✅ Rätt! / صحيح!';
+        feedback.innerHTML = '✅ <span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span>';
     } else {
         feedback.className = 'feedback show wrong';
-        feedback.innerHTML = `❌ Fel! ${correctAnswer ? 'Rätt: ' + correctAnswer : ''}`;
+        feedback.innerHTML = `❌ <span class="sv-text">Fel!</span><span class="ar-text">خطأ!</span> ${correctAnswer ? '<span class="sv-text">Rätt:</span><span class="ar-text">الصحيح:</span> ' + correctAnswer : ''}`;
     }
 
     setTimeout(() => {
@@ -509,11 +509,11 @@ function showQuizResults() {
         quizContent.innerHTML = `
             <div class="result-container">
                 <div class="result-icon">${passed ? '🎉' : '😕'}</div>
-                <div class="result-title">${passed ? 'Grattis! / مبروك!' : 'Försök igen'}</div>
-                <div class="result-score">${score} / ${total} rätt (${percent}%)</div>
+                <div class="result-title">${passed ? '<span class="sv-text">Grattis!</span><span class="ar-text">مبروك!</span>' : '<span class="sv-text">Försök igen</span><span class="ar-text">حاول مرة أخرى</span>'}</div>
+                <div class="result-score">${score} / ${total} <span class="sv-text">rätt</span><span class="ar-text">صحيح</span> (${percent}%)</div>
                 <div class="result-actions">
-                    <button class="result-btn primary" onclick="startQuiz()">🔄 Gör om</button>
-                    <button class="result-btn secondary" onclick="closeQuiz()">← Tillbaka</button>
+                    <button class="result-btn primary" onclick="startQuiz()">🔄 <span class="sv-text">Gör om</span><span class="ar-text">أعد</span></button>
+                    <button class="result-btn secondary" onclick="closeQuiz()">← <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span></button>
                 </div>
             </div>`;
     }

@@ -2,6 +2,7 @@ import { showToast, TextSizeManager } from './utils';
 import { lessonsData } from './learn/lessonsData';
 import { Lesson } from './types';
 import { TTSManager } from './tts';
+import { t, LanguageManager } from './i18n';
 
 /**
  * UI Logic for the Learning section
@@ -42,7 +43,7 @@ export function initLearnUI() {
     (window as any).closeLessonModal = () => elements.lessonModal?.classList.remove('active');
     (window as any).startLessonQuiz = (id: string) => startLessonQuiz(id, state, elements);
     (window as any).openRandomQuiz = () => openRandomQuiz(state, elements);
-    (window as any).openReviewSession = () => showToast('Repetition kommer snart! / قريباً!');
+    (window as any).openReviewSession = () => showToast(t('learn.reviewTime'));
     (window as any).checkQuizAnswer = (btn: HTMLButtonElement, isCorrect: boolean) => checkQuizAnswer(btn, isCorrect, state, elements);
     (window as any).speakText = (text: string, lang: string) => speakText(text, lang);
 
@@ -101,7 +102,11 @@ function updateProgressUI(state: any, elements: any) {
     const totalLessonsCount = lessonsData.length;
     const progress = totalLessonsCount > 0 ? Math.round((state.completedLessons.length / totalLessonsCount) * 100) : 0;
     if (elements.overallProgress) elements.overallProgress.style.width = progress + '%';
-    if (elements.progressText) elements.progressText.textContent = `${progress}% klar / مكتمل`;
+    if (elements.progressText) {
+        const lang = LanguageManager.getLanguage();
+        const completeText = lang === 'sv' ? 'klar' : lang === 'ar' ? 'مكتمل' : 'klar / مكتمل';
+        elements.progressText.innerHTML = `${progress}% ${completeText}`;
+    }
 }
 
 function addXP(amount: number, state: any, elements: any) {
@@ -112,7 +117,7 @@ function addXP(amount: number, state: any, elements: any) {
 
 function renderLessons(state: any, elements: any) {
     if (!elements.lessonsGrid) return;
-    
+
     elements.lessonsGrid.innerHTML = lessonsData.map((lesson: Lesson) => {
         const isCompleted = state.completedLessons.includes(lesson.id);
         const progress = state.lessonProgress[lesson.id] || 0;
@@ -123,15 +128,14 @@ function renderLessons(state: any, elements: any) {
                 ${isCompleted ? '<div class="lesson-badge">✓</div>' : ''}
                 <div class="lesson-icon">${getIconForLesson(lesson.id)}</div>
                 <div class="lesson-info">
-                    <div class="lesson-title" data-auto-size>${lesson.title}</div>
-                    <div class="lesson-subtitle" data-auto-size>${getSubtitleForLesson(lesson.id)}</div>
+                    <div class="lesson-title" data-auto-size>${getTitleForLesson(lesson.id)}</div>
                     <div class="lesson-desc" data-auto-size>${getDescForLesson(lesson.id)}</div>
                 </div>
                 <span class="level-badge ${levelClass}">${getLevelLabel(levelClass)}</span>
                 <div class="lesson-progress"><div class="fill" style="width: ${progress}%"></div></div>
             </div>`;
     }).join('');
-    
+
     // Apply sizing to cards
     TextSizeManager.autoApply();
 }
@@ -144,7 +148,7 @@ function filterLessons(_state: any, elements: any) {
     document.querySelectorAll('.lesson-card').forEach((card, index) => {
         const lesson = lessonsData[index];
         if (!lesson) return;
-        
+
         const matchesSearch = lesson.title.toLowerCase().includes(searchTerm) ||
             getSubtitleForLesson(lesson.id).toLowerCase().includes(searchTerm);
         const matchesFilter = activeFilter === 'all' || lesson.level === activeFilter;
@@ -162,41 +166,90 @@ function getIconForLesson(id: string) {
     return icons[id] || '📚';
 }
 
-function getSubtitleForLesson(id: string) {
-    const subs: Record<string, string> = {
-        wordOrder: 'ترتيب الجملة - قاعدة V2', pronouns: 'الضمائر الشخصية', verbs: 'الأفعال والأزمنة',
-        adjectives: 'الصفات', prepositions: 'حروف الجر', gender: 'المذكر والمؤنث',
-        questions: 'الأسئلة والنفي', numbers: 'الأرقام والوقت', phrases: 'عبارات شائعة',
-        falseFriends: 'أصدقاء مخادعون', hospital: 'في المستشفى', work: 'في العمل',
-        bank: 'في البنك', mistakes: 'أخطاء شائعة', airport: 'في المطار', onlineShopping: 'التسوق عبر الإنترنت'
+function getTitleForLesson(id: string) {
+    const titles: Record<string, { sv: string; ar: string }> = {
+        wordOrder: { sv: 'Ordföljd - V2-regeln', ar: 'ترتيب الجملة - قاعدة V2' },
+        pronouns: { sv: 'Pronomen', ar: 'الضمائر' },
+        verbs: { sv: 'Verb och tempus', ar: 'الأفعال والأزمنة' },
+        adjectives: { sv: 'Adjektiv', ar: 'الصفات' },
+        prepositions: { sv: 'Prepositioner', ar: 'حروف الجر' },
+        gender: { sv: 'Genus (en/ett)', ar: 'المذكر والمؤنث' },
+        questions: { sv: 'Frågor och nekande', ar: 'الأسئلة والنفي' },
+        numbers: { sv: 'Siffror och tid', ar: 'الأرقام والوقت' },
+        phrases: { sv: 'Vanliga fraser', ar: 'عبارات شائعة' },
+        falseFriends: { sv: 'Falska vänner', ar: 'أصدقاء مخادعون' },
+        hospital: { sv: 'På sjukhuset', ar: 'في المستشفى' },
+        work: { sv: 'På jobbet', ar: 'في العمل' },
+        bank: { sv: 'På banken', ar: 'في البنك' },
+        mistakes: { sv: 'Vanliga misstag', ar: 'أخطاء شائعة' },
+        airport: { sv: 'På flygplatsen', ar: 'في المطار' },
+        onlineShopping: { sv: 'Näthandel', ar: 'التسوق عبر الإنترنت' }
     };
-    return subs[id] || '';
+    const title = titles[id];
+    if (!title) return id;
+    return `<span class="sv-text">${title.sv}</span><span class="ar-text">${title.ar}</span>`;
+}
+
+function getSubtitleForLesson(id: string) {
+    const lang = LanguageManager.getLanguage();
+    const subs: Record<string, { sv: string; ar: string }> = {
+        wordOrder: { sv: 'Meningsbyggnad - V2-regeln', ar: 'ترتيب الجملة - قاعدة V2' },
+        pronouns: { sv: 'Personliga pronomen', ar: 'الضمائر الشخصية' },
+        verbs: { sv: 'Verb och tempus', ar: 'الأفعال والأزمنة' },
+        adjectives: { sv: 'Adjektiv', ar: 'الصفات' },
+        prepositions: { sv: 'Prepositioner', ar: 'حروف الجر' },
+        gender: { sv: 'Genus (en/ett)', ar: 'المذكر والمؤنث' },
+        questions: { sv: 'Frågor och nekande', ar: 'الأسئلة والنفي' },
+        numbers: { sv: 'Siffror och tid', ar: 'الأرقام والوقت' },
+        phrases: { sv: 'Vanliga fraser', ar: 'عبارات شائعة' },
+        falseFriends: { sv: 'Falska vänner', ar: 'أصدقاء مخادعون' },
+        hospital: { sv: 'På sjukhuset', ar: 'في المستشفى' },
+        work: { sv: 'På jobbet', ar: 'في العمل' },
+        bank: { sv: 'På banken', ar: 'في البنك' },
+        mistakes: { sv: 'Vanliga misstag', ar: 'أخطاء شائعة' },
+        airport: { sv: 'På flygplatsen', ar: 'في المطار' },
+        onlineShopping: { sv: 'Näthandel', ar: 'التسوق عبر الإنترنت' }
+    };
+    const sub = subs[id];
+    if (!sub) return '';
+    if (lang === 'sv') return sub.sv;
+    if (lang === 'ar') return sub.ar;
+    return `${sub.sv} | ${sub.ar}`;
 }
 
 function getDescForLesson(id: string) {
-    const descs: Record<string, string> = {
-        wordOrder: 'Lär dig hur svenska meningar är uppbyggda och den viktiga V2-regeln.',
-        pronouns: 'Personliga pronomen: jag, du, han, hon, vi, ni, de',
-        verbs: 'Presens, preteritum, perfekt och futurum',
-        adjectives: 'Hur adjektiv böjs: en stor bil, ett stort hus',
-        prepositions: 'i, på, till, från, med, utan, för, av...',
-        gender: 'Genus i svenska: en bok, ett bord',
-        questions: 'Hur man ställer frågor och säger nej på svenska',
-        numbers: '1-100, klockan, dagar och månader',
-        phrases: 'Hälsningar, artighetsfraser och vardagsuttryck',
-        falseFriends: 'Ord som liknar arabiska men har annan betydelse',
-        hospital: 'Fraser och ord du behöver på vårdcentralen',
-        work: 'Vanliga uttryck på arbetsplatsen',
-        bank: 'Ord och fraser för bankärenden',
-        mistakes: 'Typiska fel som arabisktalande gör',
-        airport: 'Incheckning, säkerhetskontroll, ombord',
-        onlineShopping: 'Beställa, betala, leverans och retur'
+    const lang = LanguageManager.getLanguage();
+    const descs: Record<string, { sv: string; ar: string }> = {
+        wordOrder: { sv: 'Lär dig hur svenska meningar är uppbyggda och den viktiga V2-regeln.', ar: 'تعلم كيف تُبنى الجمل السويدية وقاعدة V2 المهمة.' },
+        pronouns: { sv: 'Personliga pronomen: jag, du, han, hon, vi, ni, de', ar: 'الضمائر الشخصية: أنا، أنت، هو، هي، نحن، أنتم، هم' },
+        verbs: { sv: 'Presens, preteritum, perfekt och futurum', ar: 'المضارع، الماضي، التام والمستقبل' },
+        adjectives: { sv: 'Hur adjektiv böjs: en stor bil, ett stort hus', ar: 'كيف تُصرّف الصفات: سيارة كبيرة، بيت كبير' },
+        prepositions: { sv: 'i, på, till, från, med, utan, för, av...', ar: 'في، على، إلى، من، مع، بدون، لـ، من...' },
+        gender: { sv: 'Genus i svenska: en bok, ett bord', ar: 'الجنس في السويدية: كتاب (en)، طاولة (ett)' },
+        questions: { sv: 'Hur man ställer frågor och säger nej på svenska', ar: 'كيف تطرح أسئلة وتقول لا بالسويدية' },
+        numbers: { sv: '1-100, klockan, dagar och månader', ar: '1-100، الساعة، الأيام والشهور' },
+        phrases: { sv: 'Hälsningar, artighetsfraser och vardagsuttryck', ar: 'التحيات، عبارات المجاملة والتعابير اليومية' },
+        falseFriends: { sv: 'Ord som liknar arabiska men har annan betydelse', ar: 'كلمات تشبه العربية لكن لها معنى مختلف' },
+        hospital: { sv: 'Fraser och ord du behöver på vårdcentralen', ar: 'عبارات وكلمات تحتاجها في المركز الصحي' },
+        work: { sv: 'Vanliga uttryck på arbetsplatsen', ar: 'تعبيرات شائعة في مكان العمل' },
+        bank: { sv: 'Ord och fraser för bankärenden', ar: 'كلمات وعبارات للمعاملات البنكية' },
+        mistakes: { sv: 'Typiska fel som arabisktalande gör', ar: 'أخطاء شائعة يرتكبها الناطقون بالعربية' },
+        airport: { sv: 'Incheckning, säkerhetskontroll, ombord', ar: 'تسجيل الوصول، التفتيش الأمني، على متن الطائرة' },
+        onlineShopping: { sv: 'Beställa, betala, leverans och retur', ar: 'الطلب، الدفع، التوصيل والإرجاع' }
     };
-    return descs[id] || '';
+    const desc = descs[id];
+    if (!desc) return '';
+    if (lang === 'sv') return desc.sv;
+    if (lang === 'ar') return desc.ar;
+    return `${desc.sv} | ${desc.ar}`;
 }
 
 function getLevelLabel(level: string) {
-    const labels: Record<string, string> = { beginner: 'نبتدئ', intermediate: 'متوسط', advanced: 'متقدم' };
+    const labels: Record<string, string> = {
+        beginner: '<span class="sv-text">Nybörjare</span><span class="ar-text">مبتدئ</span>',
+        intermediate: '<span class="sv-text">Medel</span><span class="ar-text">متوسط</span>',
+        advanced: '<span class="sv-text">Avancerad</span><span class="ar-text">متقدم</span>'
+    };
     return labels[level] || '';
 }
 
@@ -232,7 +285,7 @@ function openLesson(id: string, state: any, elements: any) {
     html += `
         <div class="lesson-completion">
             <button class="quiz-start-btn" onclick="startLessonQuiz('${id}')">
-                📝 Testa dig / اختبر نفسك
+                📝 <span class="sv-text">Testa dig</span><span class="ar-text">اختبر نفسك</span>
             </button>
         </div>`;
 
@@ -274,7 +327,7 @@ function startLessonQuiz(lessonId: string, state: any, elements: any) {
     });
 
     if (allExamples.length < 4) {
-        showToast('Inte tillräckligt med exempel för quiz! / لا توجد أمثلة كافية');
+        showToast(t('learn.noExamples'));
         return;
     }
 
@@ -301,7 +354,7 @@ function renderQuizQuestion(state: any, elements: any) {
     const html = `
         <div class="quiz-container">
             <div class="quiz-header">
-                <h2>Fråga ${state.currentQuiz.index + 1} / ${total}</h2>
+                <h2>${t('learn.question')} ${state.currentQuiz.index + 1} / ${total}</h2>
                 <div class="progress-bar"><div style="width: ${(state.currentQuiz.index / total) * 100}%"></div></div>
             </div>
             <div class="question-card">
@@ -340,9 +393,9 @@ function checkQuizAnswer(btn: HTMLButtonElement, isCorrect: boolean, state: any,
     if (feedback) {
         if (isCorrect) {
             state.currentQuiz.score++;
-            feedback.innerHTML = '<div class="answer-feedback feedback-correct-box">✅ Rätt! / صحيح!</div>';
+            feedback.innerHTML = '<div class="answer-feedback feedback-correct-box">✅ <span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span></div>';
         } else {
-            feedback.innerHTML = '<div class="answer-feedback feedback-wrong-box">❌ Fel! / خطأ!</div>';
+            feedback.innerHTML = '<div class="answer-feedback feedback-wrong-box">❌ <span class="sv-text">Fel!</span><span class="ar-text">خطأ!</span></div>';
         }
     }
 
@@ -377,12 +430,12 @@ function showQuizResults(state: any, elements: any) {
     const html = `
         <div class="quiz-results">
             <div class="result-icon">${passed ? '🎉' : '📚'}</div>
-            <h2>${passed ? 'Grattis! / مبروك!' : 'Fortsätt öva!'}</h2>
-            <p>${score} / ${total} rätt (${percent}%)</p>
+            <h2>${passed ? '<span class="sv-text">Grattis!</span><span class="ar-text">مبروك!</span>' : '<span class="sv-text">Fortsätt öva!</span><span class="ar-text">واصل التمرين!</span>'}</h2>
+            <p>${score} / ${total} <span class="sv-text">rätt</span><span class="ar-text">صحيح</span> (${percent}%)</p>
             <p style="color: var(--primary);">+${passed ? 50 : 10} XP</p>
             <div class="result-actions">
-                <button class="result-btn success" onclick="closeLessonModal()">Fortsätt</button>
-                <button class="result-btn retry" onclick="startLessonQuiz('${state.currentQuiz.lessonId}')">Försök igen</button>
+                <button class="result-btn success" onclick="closeLessonModal()"><span class="sv-text">Fortsätt</span><span class="ar-text">متابعة</span></button>
+                <button class="result-btn retry" onclick="startLessonQuiz('${state.currentQuiz.lessonId}')"><span class="sv-text">Försök igen</span><span class="ar-text">حاول مرة أخرى</span></button>
             </div>
         </div>`;
 
@@ -409,7 +462,7 @@ function openRandomQuiz(state: any, elements: any) {
     });
 
     if (validLessons.length === 0) {
-        showToast('Inga lektioner tillgängliga / لا توجد دروس متاحة');
+        showToast(t('learn.noLessons'));
         return;
     }
 

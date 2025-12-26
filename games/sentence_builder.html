@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bygg Meningen - SnabbaLexin</title>
+    <title>Bygg Meningen / بناء الجملة - SnabbaLexin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/games.css">
     <link
@@ -29,7 +29,7 @@
             </button>
         </div>
 
-        <div class="hud-title">Bygg Meningen</div>
+        <div class="hud-title"><span class="sv-text">Bygg Meningen</span><span class="ar-text">بناء الجملة</span></div>
 
         <div class="hud-stats">
             <div class="stat-pill score" title="Poäng / النقاط">
@@ -40,20 +40,22 @@
     </div>
 
     <!-- Holographic Title -->
-    <div class="memory-holo-title">Bygg Meningen / بناء الجملة</div>
+    <div class="memory-holo-title"><span class="sv-text">Bygg Meningen</span><span class="ar-text">بناء الجملة</span>
+    </div>
 
     <!-- Game Container -->
     <div id="sentenceGame" class="sentence-game-container">
         <!-- Hint Card -->
         <div class="sentence-hint-card">
-            <div class="hint-label">Översättning / الترجمة</div>
+            <div class="hint-label"><span class="sv-text">Översättning</span><span class="ar-text">الترجمة</span></div>
             <div class="game-hint large" id="sentenceHint">...</div>
         </div>
 
         <!-- Drop Zone (Magnetic Board) -->
         <div class="sentence-board-area">
             <div class="sentence-drop-zone premium" id="sentenceDropZone">
-                <div class="drop-placeholder">Dra ord hit / اسحب الكلمات هنا</div>
+                <div class="drop-placeholder"><span class="sv-text">Dra ord hit</span><span class="ar-text">اسحب الكلمات
+                        هنا</span></div>
             </div>
         </div>
 
@@ -65,14 +67,13 @@
 
         <div class="game-controls-row">
             <button id="sentenceShowAnswerBtn" class="game-btn secondary-btn" onclick="showSentenceAnswer()">
-                👁️ Visa Svaret
+                👁️ <span class="sv-text">Visa Svaret</span><span class="ar-text">اعرض الجواب</span>
             </button>
             <button id="checkSentenceBtn" class="game-btn primary-btn">
-                ✅ Klar
+                ✅ <span class="sv-text">Klar</span><span class="ar-text">تم</span>
             </button>
-            <button id="nextSentenceBtn" class="game-btn primary-btn hidden"
-                onclick="startSentenceGame()">
-                Nästa ➜
+            <button id="nextSentenceBtn" class="game-btn primary-btn hidden" onclick="startSentenceGame()">
+                <span class="sv-text">Nästa</span><span class="ar-text">التالي</span> ➜
             </button>
         </div>
     </div>

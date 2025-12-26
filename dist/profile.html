@@ -11,24 +11,28 @@
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="manifest" href="/assets/manifest-mLlvNCWw.json">
+    <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/profile-BNAAMc7L.js"></script>
+  <script type="module" crossorigin src="/assets/profile-C0Hq5mrJ.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-CIWjEN3D.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
   <link rel="stylesheet" crossorigin href="/assets/profile-CRgyJNe_.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
 </head>
 
 <body>
     <header>
-        <button class="back-btn" onclick="window.history.back()" aria-label="Tillbaka" title="Tillbaka">
+        <button class="back-btn" onclick="window.history.back()" aria-label="Tillbaka / رجوع" title="Tillbaka / رجوع">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <h1>Min Profil / ملفي الشخصي</h1>
+        <h1><span class="sv-text">Min Profil</span><span class="ar-text">ملفي الشخصي</span></h1>
         <div class="header-spacer"></div>
     </header>
 
@@ -36,19 +40,20 @@
         <!-- Profile Hero -->
         <div class="profile-hero">
             <div class="avatar">🎓</div>
-            <h2 id="userName">Inlärare</h2>
-            <div class="level-badge" id="userLevel">🌟 Nivå 1 - Nybörjare</div>
+            <h2 id="userName"><span class="sv-text">Inlärare</span><span class="ar-text">المتعلم</span></h2>
+            <div class="level-badge" id="userLevel">🌟 <span class="sv-text">Nivå 1 - Nybörjare</span><span
+                    class="ar-text">المستوى 1 - مبتدئ</span></div>
         </div>
 
         <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value" id="streakValue">0</div>
-                <div class="stat-label">🔥 Dagar / أيام</div>
+                <div class="stat-label">🔥 <span class="sv-text">Dagar</span><span class="ar-text">أيام</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="wordsValue">0</div>
-                <div class="stat-label">📖 Ord / كلمات</div>
+                <div class="stat-label">📖 <span class="sv-text">Ord</span><span class="ar-text">كلمات</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="xpValue">0</div>
@@ -58,18 +63,26 @@
 
         <!-- Weekly Activity Chart -->
         <div class="section-card">
-            <h3 class="section-title">📈 Veckoaktivitet / نشاط الأسبوع</h3>
+            <h3 class="section-title">📈 <span class="sv-text">Veckoaktivitet</span><span class="ar-text">نشاط
+                    الأسبوع</span></h3>
             <div class="weekly-chart" id="weeklyChart">
                 <!-- Bars injected by JS -->
             </div>
             <div class="chart-labels">
-                <span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span>
+                <span><span class="sv-text">Mån</span><span class="ar-text">اثن</span></span>
+                <span><span class="sv-text">Tis</span><span class="ar-text">ثلا</span></span>
+                <span><span class="sv-text">Ons</span><span class="ar-text">أرب</span></span>
+                <span><span class="sv-text">Tor</span><span class="ar-text">خمي</span></span>
+                <span><span class="sv-text">Fre</span><span class="ar-text">جمع</span></span>
+                <span><span class="sv-text">Lör</span><span class="ar-text">سبت</span></span>
+                <span><span class="sv-text">Sön</span><span class="ar-text">أحد</span></span>
             </div>
         </div>
 
         <!-- Leaderboard -->
         <div class="section-card">
-            <h3 class="section-title">🏆 Topplista / قائمة المتصدرين</h3>
+            <h3 class="section-title">🏆 <span class="sv-text">Topplista</span><span class="ar-text">قائمة
+                    المتصدرين</span></h3>
             <div id="leaderboard">
                 <!-- Items injected by JS -->
             </div>
@@ -77,8 +90,9 @@
 
         <!-- Achievements -->
         <div class="section-card">
-            <h3 class="section-title">🏅 Prestationer / الإنجازات <span id="achievementCount"
-                    class="achievement-count">(0/12)</span></h3>
+            <h3 class="section-title">🏅 <span class="sv-text">Prestationer</span><span class="ar-text">الإنجازات</span>
+                <span id="achievementCount" class="achievement-count">(0/12)</span>
+            </h3>
             <div class="achievements-grid" id="achievementsGrid">
                 <!-- Items injected by JS -->
             </div>
@@ -92,7 +106,7 @@
                 stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             </svg>
-            <span>Hem</span>
+            <span class="sv-text">Hem</span><span class="ar-text">الرئيسية</span>
         </a>
         <a href="learn/learn.html" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -100,7 +114,7 @@
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
-            <span>Lär dig</span>
+            <span class="sv-text">Lär dig</span><span class="ar-text">تعلم</span>
         </a>
         <a href="games/games.html" class="nav-item">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -110,7 +124,7 @@
                 <rect x="14" y="14" width="7" height="7"></rect>
                 <rect x="3" y="14" width="7" height="7"></rect>
             </svg>
-            <span>Spela</span>
+            <span class="sv-text">Spela</span><span class="ar-text">العب</span>
         </a>
         <a href="profile.html" class="nav-item active">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -118,7 +132,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <span>Profil</span>
+            <span class="sv-text">Profil</span><span class="ar-text">الملف</span>
         </a>
     </nav>
 

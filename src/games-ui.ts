@@ -119,7 +119,7 @@ function updateDailyChallenge() {
             const stats = JSON.parse(localStorage.getItem('gamesStats') || '{}');
             stats.totalScore = (stats.totalScore || 0) + 100;
             localStorage.setItem('gamesStats', JSON.stringify(stats));
-            showToast('🎉 Daglig utmaning klar! +100 poäng / تحدي اليوم مكتمل!');
+            showToast('<span class="sv-text">🎉 Daglig utmaning klar! +100 poäng</span><span class="ar-text">🎉 تحدي اليوم مكتمل! +100 نقطة</span>');
         }
         localStorage.setItem('dailyGameChallenge', JSON.stringify(daily));
     }
@@ -277,7 +277,7 @@ function loadWordOfTheDay() {
 
     if (swedishEl) swedishEl.textContent = word[AppConfig.COLUMNS.SWEDISH];
     if (arabicEl) arabicEl.textContent = word[AppConfig.COLUMNS.ARABIC];
-    if (exampleEl) exampleEl.textContent = word[AppConfig.COLUMNS.EXAMPLE_SWE] || 'Ingen exempelmening / لا يوجد مثال';
+    if (exampleEl) exampleEl.innerHTML = word[AppConfig.COLUMNS.EXAMPLE_SWE] || '<span class="sv-text">Ingen exempelmening</span><span class="ar-text">لا يوجد مثال</span>';
 
     const btn = document.getElementById('wotd-speak-btn');
     if (btn) {

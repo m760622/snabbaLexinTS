@@ -1,14 +1,15 @@
 import { quranData } from '../data/quranData';
 import { QuranEntry } from '../types';
-import { 
-    MobileViewManager, 
-    ThemeManager, 
+import {
+    MobileViewManager,
+    ThemeManager,
     showToast,
     TextSizeManager
 } from '../utils';
 import { TTSManager } from '../tts';
 import { FavoritesManager } from '../favorites';
 import { QuizStats } from '../quiz-stats';
+import { t, LanguageManager } from '../i18n';
 
 /**
  * Quran Learning Module logic
@@ -300,7 +301,7 @@ class QuranManager {
         listContainer.innerHTML = '';
 
         if (items.length === 0) {
-            listContainer.innerHTML = '<div style="text-align:center; color:#ccc; padding:2rem;">Inga resultat hittades</div>';
+            listContainer.innerHTML = `<div style="text-align:center; color:#ccc; padding:2rem;">${t('quran.noResults')}</div>`;
             return;
         }
 
@@ -314,11 +315,11 @@ class QuranManager {
     private renderBatch(container: HTMLElement) {
         const startIndex = this.currentBatchIndex * this.ITEMS_PER_BATCH;
         const endIndex = Math.min(startIndex + this.ITEMS_PER_BATCH, this.currentItems.length);
-        
+
         if (startIndex >= this.currentItems.length) return;
 
         const fragment = document.createDocumentFragment();
-        
+
         for (let i = startIndex; i < endIndex; i++) {
             const item = this.currentItems[i];
             const card = this.createCardElement(item);
@@ -328,7 +329,7 @@ class QuranManager {
         // Apply text sizing only to newly added cards (not entire page)
         // Store references to new cards before appending
         const newCards = Array.from(fragment.children) as HTMLElement[];
-        
+
         // Remove old sentinel if exists
         const oldSentinel = container.querySelector('.load-more-sentinel');
         if (oldSentinel) oldSentinel.remove();
@@ -341,14 +342,16 @@ class QuranManager {
             const sentinel = document.createElement('div');
             sentinel.className = 'load-more-sentinel';
             sentinel.style.cssText = 'height: 50px; display: flex; align-items: center; justify-content: center; color: var(--quran-gold); opacity: 0.7;';
-            sentinel.innerHTML = `<span>⏳ Laddar ${Math.min(this.ITEMS_PER_BATCH, this.currentItems.length - endIndex)} till...</span>`;
+            const count = Math.min(this.ITEMS_PER_BATCH, this.currentItems.length - endIndex);
+            sentinel.innerHTML = `<span>⏳ ${t('quran.loadingMore').replace('{0}', count.toString())}</span>`;
             container.appendChild(sentinel);
         } else {
             // Show end message
             const endMessage = document.createElement('div');
             endMessage.className = 'end-of-list';
             endMessage.style.cssText = 'text-align: center; padding: 1rem; color: var(--quran-gold); opacity: 0.6;';
-            endMessage.innerHTML = `✨ ${this.currentItems.length} ord visas`;
+            const countStr = t('quran.wordsDisplayed').replace('{0}', this.currentItems.length.toString());
+            endMessage.innerHTML = `✨ ${countStr}`;
             container.appendChild(endMessage);
         }
 
@@ -358,7 +361,7 @@ class QuranManager {
                 TextSizeManager.applyToContainer(card);
             });
         });
-        
+
         // Re-observe the new sentinel for the next batch
         const newSentinel = container.querySelector('.load-more-sentinel');
         if (newSentinel && this.loadMoreObserver) {
@@ -469,16 +472,18 @@ class QuranManager {
         const title = document.getElementById('modalTitle');
         const body = document.getElementById('modalBody');
 
-        if (title) title.textContent = `Tafsir: ${item.word}`;
+        if (title) title.innerHTML = `<span class="sv-text">Tafsir: ${item.word}</span><span class="ar-text">تفسير: ${item.word}</span>`;
         if (body) {
             body.innerHTML = `
                 <div class="tafsir-text">
-                    <strong>📝 Rot/Ursprung (Estimat):</strong> ${item.word.replace(/[^\u0621-\u064A]/g, '').substring(0, 3)}<br><br>
-                    <strong>📖 Kontext (Svenska):</strong><br> "${item.ayah_sv}"<br><br>
-                    <strong>💡 Betyدelse (Utökad):</strong><br> ${item.meaning_ar}<br><br>
-                    <em>(Tafsir Al-Jalalayn - Kommer snart)</em>
+                    <strong>📝 <span class="sv-text">Rot/Ursprung (Estimat):</span><span class="ar-text">الأصل/الجذر (تقديري):</span></strong> ${item.word.replace(/[^\u0621-\u064A]/g, '').substring(0, 3)}<br><br>
+                    <strong>📖 <span class="sv-text">Kontext (Svenska):</span><span class="ar-text">السياق (السويدية):</span></strong><br> "${item.ayah_sv}"<br><br>
+                    <strong>💡 <span class="sv-text">Betydelse (Utökad):</span><span class="ar-text">المعنى (موسع):</span></strong><br> ${item.meaning_ar}<br><br>
+                    <em><span class="sv-text">(Tafsir Al-Jalalayn - Kommer snart)</span><span class="ar-text">(تفسير الجلالين - قادماً قريباً)</span></em>
                 </div>
-                <button class="control-btn" style="background:var(--quran-green); width:100%" onclick="closeInfoModal()">Stäng</button>
+                <button class="control-btn" style="background:var(--quran-green); width:100%" onclick="closeInfoModal()">
+                    <span class="sv-text">Stäng</span><span class="ar-text">إغلاق</span>
+                </button>
             `;
         }
         modal?.classList.remove('hidden');
@@ -532,7 +537,7 @@ class QuranManager {
     private async shareCard(item: QuranEntry, e: MouseEvent) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         const text = `🔹 ${item.word} (${item.surah})\n\nMeaning: ${item.meaning_ar}\n\n📖 ${item.ayah_full}\n\n🇸🇪 "${item.ayah_sv}"\n\n- Snabbalexin Quran`;
-        
+
         if (navigator.share) {
             try {
                 await navigator.share({ title: 'Koranord - SnabbaLexin', text });
@@ -610,7 +615,13 @@ class QuranManager {
         globalFcLangToggle?.addEventListener('change', (e) => {
             this.fcDirection = (e.target as HTMLInputElement).checked ? 'sv-ar' : 'ar-sv';
             const label = document.getElementById('fcModeLabel');
-            if (label) label.textContent = this.fcDirection === 'sv-ar' ? '🇸🇪 Svenska (Framsida)' : '🇸🇦 Arabiska (Framsida)';
+            if (label) {
+                if (this.fcDirection === 'sv-ar') {
+                    label.innerHTML = `<span class="sv-text">🇸🇪 Svenska (Framsida)</span><span class="ar-text">🇸🇪 السويدية (الأمام)</span>`;
+                } else {
+                    label.innerHTML = `<span class="sv-text">🇸🇦 Arabiska (Framsida)</span><span class="ar-text">🇸🇦 العربية (الأمام)</span>`;
+                }
+            }
             this.loadFlashcard(this.fcIndex);
         });
 
@@ -638,7 +649,7 @@ class QuranManager {
 
         const fcWord = document.getElementById('fcWord');
         if (fcWord) fcWord.textContent = isArFront ? item.word : item.word_sv;
-        
+
         const fcSurah = document.getElementById('fcSurah');
         if (fcSurah) fcSurah.textContent = item.surah;
 
@@ -655,7 +666,7 @@ class QuranManager {
             const infoBtn = `<button class="audio-btn" onclick="openInfoModal('${item.id}')" title="Tafsir/Info">ℹ️</button>`;
 
             const ayahHtml = item.ayah_full.replace(item.word, `<span class="highlight-word">${item.word}</span>`);
-            
+
             if (isArFront) {
                 fcAyah.innerHTML = ayahHtml + arAudio + infoBtn;
                 fcTrans.innerHTML = `<div style="margin-bottom:5px; font-weight:bold; color:var(--quran-gold)">${item.word_sv} ${svAudio}</div><div>${item.ayah_sv}</div>`;
@@ -677,7 +688,7 @@ class QuranManager {
 
         const prog = document.getElementById('fcProgress');
         if (prog) prog.textContent = `${index + 1} / ${this.filteredData.length}`;
-        
+
         QuizStats.recordStudy(item.id);
     }
 
@@ -708,7 +719,13 @@ class QuranManager {
         quizLangToggle?.addEventListener('change', (e) => {
             this.quizDirection = (e.target as HTMLInputElement).checked ? 'sv-ar' : 'ar-sv';
             const label = document.getElementById('quizModeLabel');
-            if (label) label.textContent = this.quizDirection === 'sv-ar' ? '🇸🇪 Svenska ➔ 🇸🇦 Arabiska' : '🇸🇦 Arabiska ➔ 🇸🇪 Svenska';
+            if (label) {
+                if (this.quizDirection === 'sv-ar') {
+                    label.innerHTML = `<span class="sv-text">🇸🇪 Svenska ➔ 🇸🇦 Arabiska</span><span class="ar-text">🇸🇪 السويدية ➔ 🇸🇦 العربية</span>`;
+                } else {
+                    label.innerHTML = `<span class="sv-text">🇸🇦 Arabiska ➔ 🇸🇪 Svenska</span><span class="ar-text">🇸🇦 العربية ➔ 🇸🇪 السويدية</span>`;
+                }
+            }
             this.nextQuizQuestion();
         });
     }
@@ -717,7 +734,7 @@ class QuranManager {
         const feedback = document.getElementById('quizFeedback');
         const nextBtn = document.getElementById('nextQuestionBtn');
         const optionsContainer = document.getElementById('quizOptions');
-        
+
         feedback?.classList.add('hidden');
         feedback?.classList.remove('correct', 'wrong');
         nextBtn?.classList.add('hidden');
@@ -756,7 +773,7 @@ class QuranManager {
             optionsContainer?.appendChild(btn);
             if (btn) TextSizeManager.apply(btn, text);
         });
-        
+
         if (wordEl && wordEl.textContent) TextSizeManager.apply(wordEl, wordEl.textContent);
     }
 
@@ -771,7 +788,7 @@ class QuranManager {
         if (isCorrect) {
             btn.classList.add('correct');
             if (feedback) {
-                feedback.textContent = 'Rätt! الله يفتح عليك!';
+                feedback.textContent = t('quran.correctFeedback');
                 feedback.className = 'quiz-feedback correct';
             }
             this.quizScore += 10;
@@ -786,7 +803,7 @@ class QuranManager {
                 if (b.textContent === correctText) b.classList.add('correct');
             });
             if (feedback) {
-                feedback.textContent = `Fel. Rätt svar: ${correctText}`;
+                feedback.textContent = `${t('quran.wrongFeedback')} ${correctText}`;
                 feedback.className = 'quiz-feedback wrong';
             }
             this.quizStreak = 0;

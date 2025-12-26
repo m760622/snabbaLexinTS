@@ -4,20 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minneskort - SnabbaLexin</title>
+    <title>Minneskort / بطاقات الذاكرة - SnabbaLexin</title>
     <!-- flashcards_pro.css might be needed if styling is separate, checking -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/games-flashcards-jiP2dhQq.js"></script>
+  <script type="module" crossorigin src="/assets/games-flashcards-RDw8ravM.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
-  <link rel="modulepreload" crossorigin href="/assets/games-utils-ByroIWVH.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/games-utils-Di73MU7e.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
-  <link rel="modulepreload" crossorigin href="/assets/loader-BOlof-UD.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
+  <link rel="modulepreload" crossorigin href="/assets/loader-Cih9HbkJ.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-B7MhtUIl.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
   <link rel="stylesheet" crossorigin href="/assets/games-BP7vN2P2.css">
   <link rel="stylesheet" crossorigin href="/assets/flashcards_pro-E1e2viB9.css">
 </head>
@@ -32,7 +33,7 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
-            <h1 id="pageTitle">Minneskort / بطاقات الذاكرة</h1>
+            <h1 id="pageTitle"><span class="sv-text">Minneskort</span><span class="ar-text">بطاقات الذاكرة</span></h1>
             <!-- Progress Ring -->
             <div class="fc-progress-ring-wrapper">
                 <svg class="fc-progress-ring" width="44" height="44">
@@ -61,9 +62,9 @@
 
         <!-- Swipe Hint -->
         <div class="fc-swipe-hint" id="swipeHint">
-            <span>👈 لا أعرفها</span>
-            <span>اسحب / Svep</span>
-            <span>أعرفها 👉</span>
+            <span>👈 <span class="sv-text">Vet ej</span><span class="ar-text">لا أعرفها</span></span>
+            <span><span class="sv-text">Svep</span><span class="ar-text">اسحب</span></span>
+            <span><span class="sv-text">Kan</span><span class="ar-text">أعرفها</span> 👉</span>
         </div>
 
         <div class="flashcard-container fc-container-pro">
@@ -74,7 +75,8 @@
                 <div class="fc-front-pro">
                     <span class="fc-type-badge" id="flashcardType"></span>
                     <h2 id="flashcardWord" class="fc-word-pro">...</h2>
-                    <p class="hint-text fc-hint-pro">👆 Tryck för att vända / اضغط للقلب</p>
+                    <p class="hint-text fc-hint-pro">👆 <span class="sv-text">Tryck för att vända</span><span
+                            class="ar-text">اضغط للقلب</span></p>
                     <button class="fc-speak-btn"
                         onclick="event.stopPropagation(); TTSManager?.speak(document.getElementById('flashcardWord').textContent, 'sv')">🔊</button>
                 </div>
@@ -107,7 +109,8 @@
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </span>
-                <span class="fc-btn-text">Inte än / لا أعرفها</span>
+                <span class="fc-btn-text"><span class="sv-text">Inte än</span><span class="ar-text">لا
+                        أعرفها</span></span>
             </button>
             <button class="fc-simple-btn fc-know" onclick="handleFlashcardRating(4)">
                 <span class="fc-btn-icon">
@@ -117,7 +120,7 @@
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </span>
-                <span class="fc-btn-text">Kan det / أعرفها</span>
+                <span class="fc-btn-text"><span class="sv-text">Kan det</span><span class="ar-text">أعرفها</span></span>
             </button>
         </div>
 

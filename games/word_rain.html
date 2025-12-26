@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ord-Regn - SnabbaLexin</title>
+    <title>Ord-Regn / مطر الكلمات - SnabbaLexin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/games.css">
     <link
@@ -23,10 +23,11 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
-            <h3>Ord-Regn / مطر الكلمات</h3>
+            <h3><span class="sv-text">Ord-Regn</span><span class="ar-text">مطر الكلمات</span></h3>
         </div>
         <div class="game-controls-header rain-controls-header mb-4">
-            <div class="score-badge">Poäng: <span id="rainScore">0</span> | ❤️ <span id="rainLives">3</span></div>
+            <div class="score-badge"><span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                    id="rainScore">0</span> | ❤️ <span id="rainLives">3</span></div>
         </div>
 
         <div class="rain-area">
@@ -39,14 +40,17 @@
 
             <div class="rain-controls hidden" id="rainControls"></div>
 
-            <button id="startRainBtn" class="start-btn mt-4">Starta / ابدأ</button>
+            <button id="startRainBtn" class="start-btn mt-4"><span class="sv-text">Starta</span><span
+                    class="ar-text">ابدأ</span></button>
 
             <!-- Game Over Overlay -->
             <div id="rainGameOver" class="game-over-overlay hidden">
                 <div class="game-over-content">
-                    <h2>Game Over / انتهت اللعبة</h2>
-                    <p class="final-score">Poäng / النقاط: <span id="rainFinalScore">0</span></p>
-                    <button id="restartRainBtn" class="restart-btn">Spela Igen / العب مجدداً</button>
+                    <h2><span class="sv-text">Game Over</span><span class="ar-text">انتهت اللعبة</span></h2>
+                    <p class="final-score"><span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                            id="rainFinalScore">0</span></p>
+                    <button id="restartRainBtn" class="restart-btn"><span class="sv-text">Spela Igen</span><span
+                            class="ar-text">العب مجدداً</span></button>
                 </div>
             </div>
         </div>

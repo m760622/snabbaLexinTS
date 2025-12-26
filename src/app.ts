@@ -6,6 +6,8 @@ import { ThemeManager, GrammarHelper, CategoryHelper, showToast, TextSizeManager
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { initMainUI } from './main-ui';
+import { LanguageManager, t } from './i18n';
+import './i18n-apply';
 
 /**
  * Main SnabbaLexin Application
@@ -27,6 +29,9 @@ export class App {
     }
 
     private async init() {
+        // Initialize language first to apply correct classes
+        LanguageManager.init();
+
         initMainUI();
         this.initStreaks();
         this.setupSearchListeners();
@@ -436,7 +441,7 @@ export class App {
     private setupGlobalHandlers() {
         (window as any).copyWord = (word: string, e: Event) => {
             e.stopPropagation();
-            navigator.clipboard.writeText(word).then(() => showToast('Kopierat / تم النسخ 📋'));
+            navigator.clipboard.writeText(word).then(() => showToast(t('toast.copied') + ' 📋'));
         };
 
         (window as any).toggleFavorite = (id: string, btn: HTMLElement, e: Event) => {

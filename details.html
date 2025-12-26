@@ -25,7 +25,7 @@
         <!-- Sticky Header with Actions + Tabs -->
         <header class="details-header details-header-sticky">
             <div class="header-actions">
-                <a href="index.html" class="header-action-btn back-btn-nav" aria-label="Tillbaka">
+                <a href="index.html" class="header-action-btn back-btn-nav" data-i18n-title="nav.back">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 12H5"></path>
@@ -34,15 +34,15 @@
                 </a>
 
                 <div class="header-right-group">
-                    <button id="headerAudioBtn" class="header-action-btn" aria-label="Lyssna">
+                    <button id="headerAudioBtn" class="header-action-btn" data-i18n-title="settings.testTTS">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                         </svg>
                     </button>
-    
-                    <button id="headerFavoriteBtn" class="header-action-btn" aria-label="Favorit">
+
+                    <button id="headerFavoriteBtn" class="header-action-btn" data-i18n-title="toast.favAdded">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path
@@ -51,7 +51,7 @@
                         </svg>
                     </button>
 
-                    <button id="headerFlashcardBtn" class="header-action-btn" aria-label="Flashcard">
+                    <button id="headerFlashcardBtn" class="header-action-btn" data-i18n-title="learn.quiz">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
@@ -59,14 +59,14 @@
                         </svg>
                     </button>
 
-                    <button id="themeToggleBtn" class="header-action-btn" aria-label="Tema">
+                    <button id="themeToggleBtn" class="header-action-btn" data-i18n-title="settings.appearance">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
                     </button>
 
-                    <button id="smartCopyBtn" class="header-action-btn" aria-label="Kopiera">
+                    <button id="smartCopyBtn" class="header-action-btn" data-i18n-title="toast.copied">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -74,7 +74,7 @@
                         </svg>
                     </button>
 
-                    <button id="headerShareBtn" class="header-action-btn" aria-label="Dela">
+                    <button id="headerShareBtn" class="header-action-btn" data-i18n-title="btn.export">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="18" cy="5" r="3"></circle>
@@ -90,10 +90,12 @@
             <!-- Tabs inside sticky header -->
             <div class="details-tabs">
                 <button class="details-tab-btn active" data-tab="info">
-                    <span class="tab-icon">📖</span> Info
+                    <span class="tab-icon">📖</span> <span class="sv-text">Info</span><span
+                        class="ar-text">معلومات</span>
                 </button>
                 <button class="details-tab-btn" data-tab="play">
-                    <span class="tab-icon">⚡</span> Interagera
+                    <span class="tab-icon">⚡</span> <span class="sv-text">Interagera</span><span
+                        class="ar-text">تفاعل</span>
                 </button>
             </div>
         </header>
@@ -106,7 +108,7 @@
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
                     <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
-                Sparad lokalt
+                <span class="sv-text">Sparad lokalt</span><span class="ar-text">محفوظ محلياً</span>
             </div>
             <div class="action-buttons">
                 <button id="editBtn" class="edit-btn">
@@ -115,7 +117,7 @@
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
-                    Redigera
+                    <span class="sv-text">Redigera</span><span class="ar-text">تعديل</span>
                 </button>
                 <button id="deleteBtn" class="delete-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -123,13 +125,15 @@
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
-                    Ta bort
+                    <span class="sv-text">Ta bort</span><span class="ar-text">حذف</span>
                 </button>
             </div>
         </div>
 
         <main id="detailsArea" class="tab-content active" data-tab="info">
-            <div class="placeholder-message">Laddar... / جاري التحميل...</div>
+            <div class="placeholder-message">
+                <span class="sv-text">Laddar...</span><span class="ar-text">جاري التحميل...</span>
+            </div>
         </main>
 
         <!-- Interaction Tab Content -->
@@ -137,7 +141,8 @@
             <!-- Quiz Section (High Priority now) -->
             <div class="details-section quiz-section premium-glow-section">
                 <h3 class="section-title">
-                    <span class="section-icon">⚡</span> Snabbtest
+                    <span class="section-icon">⚡</span> <span class="sv-text">Snabbtest</span><span
+                        class="ar-text">اختبار سريع</span>
                 </h3>
                 <div id="miniQuizContainer" class="mini-quiz-card">
                     <div id="miniQuizQuestion" class="mini-quiz-question"></div>
@@ -149,7 +154,8 @@
             <!-- Flashcard Mode -->
             <div class="details-section flashcard-section">
                 <h3 class="section-title">
-                    <span class="section-icon">🃏</span> Flashcard
+                    <span class="section-icon">🃏</span> <span class="sv-text">Flashcard</span><span
+                        class="ar-text">بطاقة</span>
                 </h3>
                 <div id="flashcardContainer" class="flashcard-container">
                     <!-- Flashcard will be rendered here -->
@@ -160,13 +166,15 @@
                 <!-- Notes Section -->
                 <div class="details-section notes-section">
                     <h3 class="section-title">
-                        <span class="section-icon">✍️</span> Anteckningar
+                        <span class="section-icon">✍️</span> <span class="sv-text">Anteckningar</span><span
+                            class="ar-text">ملاحظات</span>
                     </h3>
                     <div class="notes-container">
-                        <textarea id="wordNotes" placeholder="Skriv anteckningar här..."></textarea>
+                        <textarea id="wordNotes" data-i18n-placeholder="details.notesPlaceholder"></textarea>
                         <div class="notes-actions">
                             <span id="notesStatus" class="notes-status"></span>
-                            <button id="saveNotesBtn" class="save-notes-btn">Spara</button>
+                            <button id="saveNotesBtn" class="save-notes-btn"><span class="sv-text">Spara</span><span
+                                    class="ar-text">حفظ</span></button>
                         </div>
                     </div>
                 </div>
@@ -174,7 +182,8 @@
                 <!-- Related Words Section -->
                 <div class="details-section related-section">
                     <h3 class="section-title">
-                        <span class="section-icon">🔗</span> Relaterade ord
+                        <span class="section-icon">🔗</span> <span class="sv-text">Relaterade ord</span><span
+                            class="ar-text">كلمات متعلقة</span>
                     </h3>
                     <div id="relatedWordsContainer" class="related-words-grid">
                         <!-- Related words will be rendered here -->
@@ -184,7 +193,9 @@
         </div>
 
         <div class="back-btn-container">
-            <a href="index.html" class="back-button">Tillbaka</a>
+            <a href="index.html" class="back-button">
+                <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span>
+            </a>
         </div>
     </div>
 

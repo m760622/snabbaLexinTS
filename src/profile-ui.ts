@@ -4,7 +4,7 @@ import { TextSizeManager } from './utils';
  */
 export function initProfileUI() {
     console.log('[ProfileUI] Initializing...');
-    
+
     applyTheme();
     loadStats();
     renderWeeklyChart();
@@ -32,25 +32,30 @@ function loadStats() {
 
     if (streakEl) streakEl.textContent = (learningStats.streak || 0).toString();
     if (wordsEl) wordsEl.textContent = (progressData.uniqueWords || 0).toString();
-    
+
     const totalXP = (learningStats.totalXP || 0) + (gamesStats.totalScore || 0);
     if (xpEl) xpEl.textContent = totalXP.toString();
 
-    // Level calculation
+    // Level calculation with bilingual names
     const level = Math.floor(totalXP / 100) + 1;
-    const levelNames = ['Nybörjare', 'Studerande', 'Kunnig', 'Expert', 'Mästare'];
-    const levelName = levelNames[Math.min(level - 1, levelNames.length - 1)];
-    const levelLabel = `🌟 Nivå ${level} - ${levelName}`;
+    const levelNames = [
+        { sv: 'Nybörjare', ar: 'مبتدئ' },
+        { sv: 'Studerande', ar: 'طالب' },
+        { sv: 'Kunnig', ar: 'متقدم' },
+        { sv: 'Expert', ar: 'خبير' },
+        { sv: 'Mästare', ar: 'ماهر' }
+    ];
+    const levelData = levelNames[Math.min(level - 1, levelNames.length - 1)];
+    const levelLabel = `🌟 <span class="sv-text">Nivå ${level} - ${levelData.sv}</span><span class="ar-text">المستوى ${level} - ${levelData.ar}</span>`;
     if (levelEl) {
-        levelEl.textContent = levelLabel;
-        TextSizeManager.apply(levelEl, levelLabel);
+        levelEl.innerHTML = levelLabel;
     }
 }
 
 function renderWeeklyChart() {
     const chart = document.getElementById('weeklyChart');
     if (!chart) return;
-    
+
     const weekData = JSON.parse(localStorage.getItem('weeklyActivity') || '[]');
     const data = weekData.length === 7 ? weekData : [3, 7, 5, 8, 4, 2, 6];
     const maxVal = Math.max(...data, 1);
@@ -64,7 +69,7 @@ function renderWeeklyChart() {
 function renderLeaderboard() {
     const container = document.getElementById('leaderboard');
     if (!container) return;
-    
+
     const xpValueEl = document.getElementById('xpValue');
     const myXP = xpValueEl ? parseInt(xpValueEl.textContent || '0') : 0;
 
@@ -95,22 +100,22 @@ function renderLeaderboard() {
 function renderAchievements() {
     const container = document.getElementById('achievementsGrid');
     if (!container) return;
-    
+
     const unlockedSet = new Set(JSON.parse(localStorage.getItem('unlockedAchievements') || '[]'));
 
     const achievements = [
-        { id: 'first_word', icon: '📖', name: 'Första ordet' },
-        { id: 'streak_3', icon: '🔥', name: '3 dagar' },
-        { id: 'streak_7', icon: '🏆', name: '7 dagar' },
-        { id: 'words_50', icon: '📚', name: '50 ord' },
-        { id: 'words_100', icon: '💯', name: '100 ord' },
-        { id: 'game_first', icon: '🎮', name: 'Första spelet' },
-        { id: 'quiz_perfect', icon: '⭐', name: '100% quiz' },
-        { id: 'lesson_5', icon: '📝', name: '5 lektioner' },
-        { id: 'cognates_50', icon: '🔤', name: '50 liknande' },
-        { id: 'daily_3', icon: '🏅', name: '3 utmaningar' },
-        { id: 'flashcard_100', icon: '🃏', name: '100 kort' },
-        { id: 'master', icon: '👑', name: 'Mästare' }
+        { id: 'first_word', icon: '📖', sv: 'Första ordet', ar: 'أول كلمة' },
+        { id: 'streak_3', icon: '🔥', sv: '3 dagar', ar: '3 أيام' },
+        { id: 'streak_7', icon: '🏆', sv: '7 dagar', ar: '7 أيام' },
+        { id: 'words_50', icon: '📚', sv: '50 ord', ar: '50 كلمة' },
+        { id: 'words_100', icon: '💯', sv: '100 ord', ar: '100 كلمة' },
+        { id: 'game_first', icon: '🎮', sv: 'Första spelet', ar: 'أول لعبة' },
+        { id: 'quiz_perfect', icon: '⭐', sv: '100% quiz', ar: '100% اختبار' },
+        { id: 'lesson_5', icon: '📝', sv: '5 lektioner', ar: '5 دروس' },
+        { id: 'cognates_50', icon: '🔤', sv: '50 liknande', ar: '50 متشابه' },
+        { id: 'daily_3', icon: '🏅', sv: '3 utmaningar', ar: '3 تحديات' },
+        { id: 'flashcard_100', icon: '🃏', sv: '100 kort', ar: '100 بطاقة' },
+        { id: 'master', icon: '👑', sv: 'Mästare', ar: 'ماهر' }
     ];
 
     let unlockedCount = 0;
@@ -120,7 +125,7 @@ function renderAchievements() {
         return `
             <div class="achievement ${isUnlocked ? 'unlocked' : ''}">
                 <span class="achievement-icon">${a.icon}</span>
-                <span class="achievement-name">${a.name}</span>
+                <span class="achievement-name"><span class="sv-text">${a.sv}</span><span class="ar-text">${a.ar}</span></span>
             </div>`;
     }).join('');
 

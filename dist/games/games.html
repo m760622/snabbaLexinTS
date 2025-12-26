@@ -16,22 +16,41 @@
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
-    <link rel="apple-touch-icon" href="/assets/icon-IoVpuwm3.svg">
+    <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SnabbaLexin">
-  <script type="module" crossorigin src="/assets/games-C2McWMEL.js"></script>
+  <script type="module" crossorigin src="/assets/games-Ciuw_D65.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-CIWjEN3D.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-B7MhtUIl.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BdK6EB-O.css">
   <link rel="stylesheet" crossorigin href="/assets/games-BP7vN2P2.css">
+  <link rel="stylesheet" crossorigin href="/assets/mobile-enhancements-CKQOuDxe.css">
   <link rel="stylesheet" crossorigin href="/assets/flashcards_pro-E1e2viB9.css">
 </head>
 
 <body>
+    <!-- Splash/Loading Screen -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo-container">
+                <div class="splash-logo-glow"></div>
+                <div class="splash-logo">🎮</div>
+            </div>
+            <h1 class="splash-title"><span class="sv-text">Spelzon</span><span class="ar-text">منطقة الألعاب</span></h1>
+            <p class="splash-subtitle"><span class="sv-text">Laddar spel...</span><span class="ar-text">جاري تحميل
+                    الألعاب</span></p>
+            <div class="splash-loader">
+                <div class="splash-loader-bar" id="splashProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast-notification"></div>
 
     <div class="games-container">
@@ -51,7 +70,7 @@
                     <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
             </button>
-            <h1>Spelzon / منطقة الألعاب</h1>
+            <h1><span class="sv-text">Spelzon</span><span class="ar-text">منطقة الألعاب</span></h1>
 
             <!-- SVG Defs for Gradients -->
             <svg class="sr-only" aria-hidden="true" focusable="false">
@@ -62,8 +81,29 @@
             </svg>
         </header>
 
-        <!-- Stats Hero -->
-        <div class="stats-hero">
+        <!-- Animated Gradient Mesh Background -->
+        <div class="gradient-mesh-bg"></div>
+
+        <!-- XP Progress Widget -->
+        <div class="xp-widget glass-card" id="xpWidget"
+            style="margin-bottom: 16px; padding: 16px; border-radius: 16px;">
+            <div class="xp-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="xp-level" style="font-weight: 700; color: var(--text-main);"><span
+                        class="sv-text">Nivå</span><span class="ar-text">مستوى</span> <span
+                        id="currentLevel">1</span></span>
+                <span class="xp-text" style="font-size: 0.85rem; color: var(--text-secondary);"><span
+                        id="currentXP">0</span>/<span id="xpNeeded">100</span> XP</span>
+            </div>
+            <div class="xp-progress-container">
+                <div class="xp-progress-bar" id="xpProgressBar" style="width: 0%;">
+                    <div class="xp-progress-glow"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Hero with Glass Effect -->
+        <div class="stats-hero glass-effect">
             <div class="stats-hero-inner">
                 <div class="hero-stat">
                     <div class="hero-stat-value" id="gamesPlayedStat">0</div>
@@ -72,7 +112,7 @@
                             <path
                                 d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S19.67 9 20.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
                         </svg>
-                        SPELADE
+                        <span class="sv-text">SPELADE</span><span class="ar-text">ألعاب</span>
                     </div>
                 </div>
                 <div class="hero-stat">
@@ -82,7 +122,7 @@
                             <path
                                 d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
                         </svg>
-                        STREAK
+                        <span class="sv-text">STREAK</span><span class="ar-text">سلسلة</span>
                     </div>
                 </div>
                 <div class="hero-stat">
@@ -92,7 +132,7 @@
                             <path
                                 d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                         </svg>
-                        POÄNG
+                        <span class="sv-text">POÄNG</span><span class="ar-text">نقاط</span>
                     </div>
                 </div>
             </div>
@@ -107,8 +147,10 @@
                 </svg>
             </div>
             <div class="daily-banner-content">
-                <div class="daily-banner-title">Dagens Utمانing / تحدي اليوم</div>
-                <div class="daily-banner-subtitle">Spela 3 spel för bonus! / العب 3 ألعاب للمكافأة</div>
+                <div class="daily-banner-title"><span class="sv-text">Dagens Utmaning</span><span class="ar-text">تحدي
+                        اليوم</span></div>
+                <div class="daily-banner-subtitle"><span class="sv-text">Spela 3 spel för bonus!</span><span
+                        class="ar-text">العب 3 ألعاب للمكافأة</span></div>
             </div>
             <div class="daily-banner-progress" id="dailyProgress">0/3</div>
         </div>
@@ -118,13 +160,19 @@
             <div class="wotd-glow"></div>
             <div class="wotd-content-wrapper">
                 <div class="wotd-label">
-                    <span class="wotd-badge">Dagens Ord / كلمة اليوم</span>
+                    <span class="wotd-badge"><span class="sv-text">Dagens Ord</span><span class="ar-text">كلمة
+                            اليوم</span></span>
                     <button id="wotd-speak-btn" class="wotd-speak-btn" aria-label="Lyssna">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
                     </button>
                 </div>
                 <div class="wotd-main">
-                    <h2 id="wotd-swedish">Laddar...</h2>
+                    <h2 id="wotd-swedish"><span class="sv-text">Laddar...</span><span class="ar-text">جاري
+                            التحميل...</span></h2>
                     <p id="wotd-arabic">...</p>
                 </div>
                 <div class="wotd-footer">
@@ -144,21 +192,21 @@
                             d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
                         </path>
                     </svg>
-                    Alla
+                    <span class="sv-text">Alla</span><span class="ar-text">الكل</span>
                 </button>
                 <button class="category-chip" onclick="filterGames('vocab')" data-cat="vocab">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
-                    Ordförråd
+                    <span class="sv-text">Ordförråd</span><span class="ar-text">المفردات</span>
                 </button>
                 <button class="category-chip" onclick="filterGames('grammar')" data-cat="grammar">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                     </svg>
-                    Grammatik
+                    <span class="sv-text">Grammatik</span><span class="ar-text">القواعد</span>
                 </button>
                 <button class="category-chip" onclick="filterGames('listening')" data-cat="listening">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -167,7 +215,7 @@
                             d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
                         </path>
                     </svg>
-                    Lyssna
+                    <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span>
                 </button>
                 <button class="category-chip" onclick="filterGames('puzzle')" data-cat="puzzle">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -175,7 +223,7 @@
                         </path>
                         <path d="M15.5 21l1.64-5.26 4.36-1.74-4.36-1.74L15.5 7"></path>
                     </svg>
-                    Pussel
+                    <span class="sv-text">Pussel</span><span class="ar-text">ألغاز</span>
                 </button>
             </div>
         </div>
@@ -192,9 +240,11 @@
                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                         </svg>
                     </div>
-                    <h3>Minneskort</h3>
-                    <p>بطاقات الذاكرة</p>
-                    <div class="high-score">Klarade: <span id="score-flashcards">0</span></div>
+                    <h3 class="sv-text">Minneskort</h3>
+                    <p class="ar-text">بطاقات الذاكرة</p>
+                    <div class="high-score"><span class="sv-text">Klarade:</span><span class="ar-text">مكتمل:</span>
+                        <span id="score-flashcards">0</span>
+                    </div>
                 </div>
 
                 <!-- Vokaler (Vowel Game) -->
@@ -202,9 +252,10 @@
                     <div class="game-icon-large">
                         <div class="vokaler-icon">abc</div>
                     </div>
-                    <h3>Vokaler</h3>
-                    <p>المتشابهات الصوتية</p>
-                    <div class="high-score">⭐ Populär! / شائع!</div>
+                    <h3 class="sv-text">Vokaler</h3>
+                    <p class="ar-text">المتشابهات الصوتية</p>
+                    <div class="high-score">⭐ <span class="sv-text">Populär!</span><span class="ar-text">شائع!</span>
+                    </div>
                 </div>
 
                 <!-- Unblock Me (New) -->
@@ -217,9 +268,9 @@
                             <line x1="15" y1="9" x2="21" y2="9" />
                         </svg>
                     </div>
-                    <h3>Lås Upp</h3>
-                    <p>فك القفل</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <h3 class="sv-text">Lås Upp</h3>
+                    <p class="ar-text">فك القفل</p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Neon Blocks (New) -->
@@ -234,9 +285,9 @@
                             <rect x="3" y="14" width="7" height="7" />
                         </svg>
                     </div>
-                    <h3>Neon Blocks</h3>
-                    <p>Block Pussel / لغز الكتل</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <h3 class="sv-text">Neon Blocks</h3>
+                    <p><span class="sv-text">Block Pussel</span><span class="ar-text">لغز الكتل</span></p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Neon Word Search (New) -->
@@ -252,88 +303,153 @@
                             <line x1="15" y1="3" x2="15" y2="21" />
                         </svg>
                     </div>
-                    <h3>Neon Search</h3>
-                    <p>Sökord / بحث الكلمات</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <h3 class="sv-text">Neon Search</h3>
+                    <p><span class="sv-text">Sökord</span><span class="ar-text">بحث الكلمات</span></p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Hangman (NEW) -->
                 <div class="game-card-item" onclick="window.location.href='hangman.html'" data-game-id="hangman">
-                    <div class="game-icon-large">🎯</div>
-                    <h3>Hangman</h3>
-                    <p>الرجل المشنوق</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M12 12v6" />
+                            <path d="M8 16l4-4 4 4" />
+                            <path d="M8 22h8" />
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">Hangman</h3>
+                    <p class="ar-text">الرجل المشنوق</p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Memory Match (NEW) -->
                 <div class="game-card-item" onclick="window.location.href='memory.html'" data-game-id="memory">
-                    <div class="game-icon-large">🃏</div>
-                    <h3>Memory</h3>
-                    <p>مطابقة الذاكرة</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="8" height="10" rx="2" />
+                            <rect x="13" y="3" width="8" height="10" rx="2" />
+                            <path d="M7 7v2" />
+                            <path d="M17 7v2" />
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">Memory</h3>
+                    <p class="ar-text">مطابقة الذاكرة</p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
+                </div>
+
+                <!-- 15 Puzzle (NEW) -->
+                <div class="game-card-item" onclick="window.location.href='fifteen_puzzle.html'"
+                    data-game-id="fifteen-puzzle" data-category="puzzle">
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="8" height="8" rx="1" />
+                            <rect x="13" y="3" width="8" height="8" rx="1" />
+                            <rect x="3" y="13" width="8" height="8" rx="1" />
+                            <rect x="13" y="13" width="8" height="8" rx="1" opacity="0.3" />
+                            <text x="7" y="9" font-size="6" text-anchor="middle" fill="currentColor">1</text>
+                            <text x="17" y="9" font-size="6" text-anchor="middle" fill="currentColor">2</text>
+                            <text x="7" y="19" font-size="6" text-anchor="middle" fill="currentColor">3</text>
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">15 Puzzle</h3>
+                    <p class="ar-text">لعبة الأرقام</p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Word Wheel Card -->
                 <div class="game-card-item" data-game-id="word-wheel" onclick="window.location.href='word_wheel.html'">
-                    <div class="game-icon-circle grad-amber">
-                        <span class="game-emoji">🎡</span>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M12 2v3" />
+                            <path d="M12 19v3" />
+                            <path d="M2 12h3" />
+                            <path d="M19 12h3" />
+                        </svg>
                     </div>
-                    <div class="game-info">
-                        <h3>Ord Hjulet</h3>
-                        <p class="game-subtitle">عجلة الكلمات</p>
-                    </div>
+                    <h3 class="sv-text">Ord Hjulet</h3>
+                    <p class="ar-text">عجلة الكلمات</p>
                 </div>
 
                 <!-- Word Connect (Bokstav Länk) Card -->
                 <div class="game-card-item" data-game-id="word-connect"
                     onclick="window.location.href='word_connect.html'">
-                    <div class="game-icon-circle grad-indigo">
-                        <span class="game-emoji">✨</span>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
                     </div>
-                    <div class="game-info">
-                        <h3>Bokstav Länk</h3>
-                        <p class="game-subtitle">ربط الحروف (Word Connect)</p>
-                    </div>
+                    <h3 class="sv-text">Bokstav Länk</h3>
+                    <p class="ar-text">ربط الحروف (Word Connect)</p>
+                    <div class="game-stars" data-game="word-connect"></div>
                 </div>
 
                 <!-- Fill-in-blank (NEW) -->
                 <div class="game-card-item" onclick="window.location.href='fill_blank.html'" data-game-id="fill-blank">
-                    <div class="game-icon-large">📝</div>
-                    <h3>Fyll i</h3>
-                    <p>أكمل الفراغ</p>
-                    <div class="high-score">Nytt! / جديد!</div>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">Fyll i</h3>
+                    <p class="ar-text">أكمل الفراغ</p>
+                    <div class="high-score"><span class="sv-text">Nytt!</span><span class="ar-text">جديد!</span></div>
                 </div>
 
                 <!-- Listening Test (NEW) -->
                 <div class="game-card-item" onclick="window.location.href='listening.html'" data-game-id="listening">
-                    <div class="game-icon-large">🎧</div>
-                    <h3>Lyssna</h3>
-                    <p>اختبار السمع</p>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                            <path
+                                d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">Lyssna</h3>
+                    <p class="ar-text">اختبار السمع</p>
                     <div class="game-stars" data-game="listening"></div>
                 </div>
 
                 <!-- Grammatik -->
                 <div class="game-card-item" onclick="window.location.href='grammar.html'" data-game-id="grammar"
                     data-category="grammar">
-                    <div class="game-badge badge-popular">⭐ Populär</div>
+                    <div class="game-badge badge-popular">⭐ <span class="sv-text">Populär</span><span
+                            class="ar-text">شائع</span></div>
                     <div class="game-icon-large">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                         </svg>
                     </div>
-                    <h3>Grammatik</h3>
-                    <p>قواعد اللغة</p>
+                    <h3 class="sv-text">Grammatik</h3>
+                    <p class="ar-text">قواعد اللغة</p>
                     <div class="game-stars" data-game="grammar"></div>
                 </div>
 
                 <!-- Gissa Ordet -->
                 <div class="game-card-item" onclick="window.location.href='missing_word.html'"
                     data-game-id="missing-word" data-category="vocab">
-                    <div class="game-icon-large">❓</div>
-                    <h3>Gissa Ordet</h3>
-                    <p>الكلمة المفقودة</p>
+                    <div class="game-icon-large">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </div>
+                    <h3 class="sv-text">Gissa Ordet</h3>
+                    <p class="ar-text">الكلمة المفقودة</p>
                     <div class="game-stars" data-game="missing-word"></div>
                 </div>
 
@@ -346,8 +462,8 @@
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                         </svg>
                     </div>
-                    <h3>Skriv Ordet</h3>
-                    <p>اكتب الكلمة</p>
+                    <h3 class="sv-text">Skriv Ordet</h3>
+                    <p class="ar-text">اكتب الكلمة</p>
                     <div class="game-stars" data-game="spelling"></div>
                 </div>
 
@@ -357,20 +473,18 @@
                     <div class="game-icon-large">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="8" y1="6" x2="21" y2="6" />
-                            <line x1="8" y1="12" x2="21" y2="12" />
-                            <line x1="8" y1="18" x2="21" y2="18" />
-                            <line x1="3" y1="6" x2="3.01" y2="6" />
-                            <line x1="3" y1="12" x2="3.01" y2="12" />
-                            <line x1="3" y1="18" x2="3.01" y2="18" />
+                            <path d="M3 3h18v18H3z" />
+                            <path d="M3 9h18" />
+                            <path d="M9 3v18" />
+                            <rect x="12" y="12" width="6" height="6" rx="1" />
                         </svg>
                     </div>
-                    <h3>Bygg Meningen</h3>
-                    <p>بناء الجملة</p>
+                    <h3 class="sv-text">Bygg Meningen</h3>
+                    <p class="ar-text">بناء الجملة</p>
                     <div class="game-stars" data-game="sentence-builder"></div>
                 </div>
 
-                <!-- Ord-Regن -->
+                <!-- Ord-Regn -->
                 <div class="game-card-item" onclick="window.location.href='word_rain.html'" data-game-id="word-rain"
                     data-category="puzzle">
                     <div class="game-icon-large">
@@ -382,8 +496,8 @@
                             <path d="M12 15v8" />
                         </svg>
                     </div>
-                    <h3>Ord-Regn</h3>
-                    <p>مطر الكلمات</p>
+                    <h3 class="sv-text">Ord-Regn</h3>
+                    <p class="ar-text">مطر الكلمات</p>
                     <div class="game-stars" data-game="word-rain"></div>
                 </div>
 
@@ -400,8 +514,8 @@
                             <line x1="15" y1="3" x2="15" y2="21" />
                         </svg>
                     </div>
-                    <h3>Svenska Wordle</h3>
-                    <p>ووردل السويدية</p>
+                    <h3 class="sv-text">Svenska Wordle</h3>
+                    <p class="ar-text">ووردل السويدية</p>
                     <div class="game-stars" data-game="wordle"></div>
                 </div>
 
@@ -417,8 +531,8 @@
                             <line x1="8" y1="23" x2="16" y2="23" />
                         </svg>
                     </div>
-                    <h3>Uttalscoach</h3>
-                    <p>مدرب النطق</p>
+                    <h3 class="sv-text">Uttalscoach</h3>
+                    <p class="ar-text">مدرب النطق</p>
                     <div class="game-stars" data-game="pronunciation"></div>
                 </div>
             </div>
@@ -426,21 +540,25 @@
 
         <!-- لوحة الصدارة -->
         <div class="leaderboard-section">
-            <h2 class="leaderboard-title">🏆 Topplista / لوحة الصدارة</h2>
+            <h2 class="leaderboard-title">🏆 <span class="sv-text">Topplista</span><span class="ar-text">لوحة
+                    الصدارة</span></h2>
             <div class="leaderboard-cards">
                 <div class="leaderboard-card">
                     <span class="leaderboard-icon">🥇</span>
-                    <span class="leaderboard-label">Bäستا Streak</span>
+                    <span class="leaderboard-label"><span class="sv-text">Bästa Streak</span><span class="ar-text">أفضل
+                            سلسلة</span></span>
                     <span class="leaderboard-value" id="bestStreak">0</span>
                 </div>
                 <div class="leaderboard-card">
                     <span class="leaderboard-icon">🎯</span>
-                    <span class="leaderboard-label">Dagens Spel</span>
+                    <span class="leaderboard-label"><span class="sv-text">Dagens Spel</span><span class="ar-text">ألعاب
+                            اليوم</span></span>
                     <span class="leaderboard-value" id="todayGames">0</span>
                 </div>
                 <div class="leaderboard-card">
                     <span class="leaderboard-icon">📅</span>
-                    <span class="leaderboard-label">Denna Vecka</span>
+                    <span class="leaderboard-label"><span class="sv-text">Denna Vecka</span><span class="ar-text">هذا
+                            الأسبوع</span></span>
                     <span class="leaderboard-value" id="weeklyGames">0</span>
                 </div>
             </div>

@@ -869,24 +869,11 @@ export const Celebrations = {
 // TOAST NOTIFICATIONS - إشعارات Toast
 // ============================================================
 
+import { ToastManager } from './toast-manager';
+
 function showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    const existing = document.querySelector('.toast-notification.visible');
-    if (existing) existing.remove();
-
-    let toast = document.getElementById('toast') as HTMLElement;
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        toast.className = 'toast-notification';
-        document.body.appendChild(toast);
-    }
-
-    toast.textContent = message;
-    toast.className = `toast-notification visible ${type}`;
-
-    setTimeout(() => {
-        toast.classList.remove('visible');
-    }, 3000);
+    // Use unified ToastManager which handles bilingual message parsing
+    ToastManager.show(message, { type });
 }
 
 // ============================================================

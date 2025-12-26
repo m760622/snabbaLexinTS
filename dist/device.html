@@ -13,9 +13,10 @@
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
     <link rel="stylesheet" href="device.css">
-  <script type="module" crossorigin src="/assets/device-DiNaekbN.js"></script>
+  <script type="module" crossorigin src="/assets/device-CJRobc58.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
 </head>
 
@@ -32,7 +33,7 @@
         </button>
         <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
             title="وضع الموبايل">📱</button>
-        <h1>🖥️ Device Info / معلومات الجهاز</h1>
+        <h1>🖥️ <span class="sv-text">Device Info</span><span class="ar-text">معلومات الجهاز</span></h1>
     </header>
 
     <main>
@@ -398,12 +399,12 @@
         <!-- Refresh Button -->
         <button class="refresh-btn" onclick="loadDeviceInfo()">
             <span class="refresh-icon">🔄</span>
-            Uppdatera / تحديث
+            <span class="sv-text">Uppdatera</span><span class="ar-text">تحديث</span>
         </button>
 
         <!-- Footer -->
         <div class="footer-info">
-            <p>Senast uppdaterad / آخر تحديث:</p>
+            <p><span class="sv-text">Senast uppdaterad</span><span class="ar-text">آخر تحديث</span>:</p>
             <div class="timestamp" id="timestamp">-</div>
         </div>
     </main>

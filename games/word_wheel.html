@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minneskort - SnabbaLexin</title>
+    <title>Ord Hjulet / عجلة الكلمات - SnabbaLexin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/games.css">
     <link
@@ -22,7 +22,7 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
-            <h3>Ord Hjulet / عجلة الكلمات</h3>
+            <h3><span class="sv-text">Ord Hjulet</span><span class="ar-text">عجلة الكلمات</span></h3>
         </div>
         <div class="game-controls-header word-wheel-controls mb-4">
             <select id="wordWheelLength" class="game-filter-select w-auto flex-grow-0" onchange="startWordWheelGame()"
@@ -34,7 +34,8 @@
                 <option value="7">7 Bokstäver / حروف</option>
                 <option value="8">8 Bokstäver / حروف</option>
             </select>
-            <div class="score-badge">Poäng: <span id="wordWheelScore">0</span></div>
+            <div class="score-badge"><span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                    id="wordWheelScore">0</span></div>
         </div>
 
         <div class="word-wheel-area">

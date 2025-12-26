@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bokstav Länk - SnabbaLexin</title>
+    <title><span class="sv-text">Bokstavlänk</span><span class="ar-text">ربط الحروف</span> - SnabbaLexin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/games.css">
     <link
@@ -35,7 +35,9 @@
                 📱
             </button>
             <!-- Title moved here, next to mobile button -->
-            <span class="hud-title-inline">✨ Bokstavlänk | ربط الحروف</span>
+            <span class="hud-title-inline">
+                ✨ <span class="sv-text">Bokstavlänk</span><span class="ar-text">ربط الحروف</span>
+            </span>
         </div>
     </div>
 
@@ -44,15 +46,14 @@
 
         <!-- Info Group: Numbers -->
         <div class="wc-info-group">
-            <div class="stat-pill moves wc-level-btn" title="Nivå / المستوى - اضغط لاختيار المرحلة"
-                onclick="openLevelSelect()">
+            <div class="stat-pill moves wc-level-btn" title="Nivå / المستوى" onclick="openLevelSelect()">
                 <span class="stat-pill-icon">📶</span>
                 <span class="stat-pill-value" id="wcLevelTitle">1-1</span>
                 <span class="stat-pill-arrow">▼</span>
             </div>
 
             <!-- Streak Counter -->
-            <div class="stat-pill wc-streak-pill" title="سلسلة الإجابات / Svit">
+            <div class="stat-pill wc-streak-pill" title="Svit / سلسلة الإجابات">
                 <span class="stat-pill-icon">🔥</span>
                 <span class="stat-pill-value" id="wcStreakCount">0</span>
             </div>
@@ -65,16 +66,16 @@
 
         <!-- Action Group: Buttons -->
         <div class="wc-actions-group">
-            <div class="stat-pill wc-clickable-pill wc-stats-btn" title="الإحصائيات / Statistik"
+            <div class="stat-pill wc-clickable-pill wc-stats-btn" title="Statistik / الإحصائيات"
                 onclick="showStatsModal()">
                 <span class="stat-pill-icon">📊</span>
             </div>
-            <div class="stat-pill wc-clickable-pill wc-achievements-btn" title="الإنجازات / Prestationer"
+            <div class="stat-pill wc-clickable-pill wc-achievements-btn" title="Prestationer / الإنجازات"
                 onclick="showAchievementsModal()">
                 <span class="stat-pill-icon">🏆</span>
             </div>
             <!-- Sound Toggle -->
-            <div class="stat-pill wc-clickable-pill wc-sound-toggle" title="تشغيل/إيقاف الصوت" onclick="toggleSound()">
+            <div class="stat-pill wc-clickable-pill wc-sound-toggle" title="Ljud / الصوت" onclick="toggleSound()">
                 <span class="stat-pill-icon" id="wcSoundIcon">🔊</span>
             </div>
         </div>
@@ -102,7 +103,7 @@
             <div class="wc-wheel-glow"></div>
 
             <!-- Hint Button in Center -->
-            <div class="wc-wheel-center-btn premium-glow-btn" onclick="useHint()" title="تلميح / Ledtråd (−10 💎)">
+            <div class="wc-wheel-center-btn premium-glow-btn" onclick="useHint()" title="Ledtråd / تلميح (−10 💎)">
                 <span class="wc-center-icon">💡</span>
             </div>
 
@@ -120,14 +121,16 @@
     <div id="wcLevelCompleteModal" class="wc-modal-overlay hidden">
         <div class="wc-modal-content">
             <div class="wc-celebrate-emoji">🎉</div>
-            <div class="wc-celebrate-title">Bra jobbat!</div>
-            <div class="wc-celebrate-subtitle">أحسنت!</div>
+            <div class="wc-celebrate-title">
+                <span class="sv-text">Bra jobbat!</span>
+                <span class="ar-text">أحسنت!</span>
+            </div>
             <div class="wc-modal-actions">
                 <button class="wc-btn wc-btn-secondary" onclick="window.location.href='games.html'">
-                    🏠 Meny
+                    🏠 <span class="sv-text">Meny</span><span class="ar-text">القائمة</span>
                 </button>
                 <button class="wc-btn wc-btn-primary" onclick="nextLevel()">
-                    Nästa ➜
+                    <span class="sv-text">Nästa</span><span class="ar-text">التالي</span> ➜
                 </button>
             </div>
         </div>
@@ -136,7 +139,10 @@
     <div id="wcLevelSelectModal" class="wc-modal-overlay hidden">
         <div class="wc-modal-content wc-level-select-content">
             <div class="wc-modal-header">
-                <h2>اختر المرحلة</h2>
+                <h2>
+                    <span class="sv-text">Välj nivå</span>
+                    <span class="ar-text">اختر المرحلة</span>
+                </h2>
                 <button class="wc-modal-close" onclick="closeLevelSelect()">✕</button>
             </div>
             <div class="wc-level-grid" id="wcLevelGrid">

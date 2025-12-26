@@ -249,12 +249,46 @@ export const ToastManager = {
     },
 
     /**
+     * Parse bilingual message and return only selected language text
+     */
+    parseBilingualMessage(message: string): string {
+        // Check if message has bilingual format: "Swedish / Arabic"
+        if (!message.includes(' / ')) {
+            return message;
+        }
+
+        // Get current language from LanguageManager
+        const savedLang = localStorage.getItem('appLanguage') || 'both';
+
+        // Split by " / " separator
+        const parts = message.split(' / ');
+        if (parts.length !== 2) {
+            return message; // Not a simple bilingual format
+        }
+
+        const [svText, arText] = parts.map(p => p.trim());
+
+        switch (savedLang) {
+            case 'sv':
+                return svText;
+            case 'ar':
+                return arText;
+            case 'both':
+            default:
+                return message; // Show both
+        }
+    },
+
+    /**
      * Show a toast notification
      */
     show(message: string, options: ToastOptions = {}): HTMLElement {
         if (!this.container) this.init();
 
         const { type = 'success', duration = this.defaultDuration } = options;
+
+        // Parse bilingual message
+        const displayMessage = this.parseBilingualMessage(message);
 
         // Remove oldest if max reached
         if (this.toasts.length >= this.maxToasts) {
@@ -268,7 +302,7 @@ export const ToastManager = {
         // Content
         const content = document.createElement('div');
         content.className = 'toast-content';
-        content.textContent = message;
+        content.textContent = displayMessage;
 
         // Close button
         const closeBtn = document.createElement('button');

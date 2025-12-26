@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hangman Pro - الرجل المشنوق</title>
+    <title>Hangman / الرجل المشنوق - SnabbaLexin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -47,7 +47,8 @@
             <option value="verb">🏃 Verb / أفعال</option>
             <option value="adjektiv">🎨 Adjektiv / صفات</option>
         </select>
-        <button class="daily-btn" id="dailyBtn" onclick="startDailyChallenge()">⭐ Dagens / اليوم</button>
+        <button class="daily-btn" id="dailyBtn" onclick="startDailyChallenge()"><span class="sv-text">⭐
+                Dagens</span><span class="ar-text">⭐ اليوم</span></button>
     </div>
 
     <div class="game-container">
@@ -81,12 +82,16 @@
 
         <!-- Hint Area -->
         <div class="hint-area">
-            <div class="main-hint" id="mainHint">🔍 التلميح</div>
+            <div class="main-hint" id="mainHint">🔍 <span class="sv-text">Ledtråd</span><span
+                    class="ar-text">التلميح</span></div>
             <span class="category-badge" id="categoryBadge"></span>
             <div class="extra-hints" id="extraHints">
-                <button class="hint-chip" onclick="useHint('first')">أول حرف <span class="cost">-10🪙</span></button>
-                <button class="hint-chip" onclick="useHint('type')">نوع <span class="cost">-5🪙</span></button>
-                <button class="hint-chip" onclick="useHint('example')">مثال <span class="cost">-20🪙</span></button>
+                <button class="hint-chip" onclick="useHint('first')"><span class="sv-text">Första</span><span
+                        class="ar-text">أول حرف</span> <span class="cost">-10🪙</span></button>
+                <button class="hint-chip" onclick="useHint('type')"><span class="sv-text">Typ</span><span
+                        class="ar-text">نوع</span> <span class="cost">-5🪙</span></button>
+                <button class="hint-chip" onclick="useHint('example')"><span class="sv-text">Exempel</span><span
+                        class="ar-text">مثال</span> <span class="cost">-20🪙</span></button>
             </div>
         </div>
 
@@ -100,7 +105,8 @@
     <!-- Result Overlay -->
     <div class="result-overlay" id="resultOverlay">
         <div class="result-emoji" id="resultEmoji">🎉</div>
-        <div class="result-text" id="resultText">Bra jobbat!</div>
+        <div class="result-text" id="resultText"><span class="sv-text">Bra jobbat!</span><span
+                class="ar-text">أحسنت!</span></div>
         <div class="result-word" id="resultWord"></div>
         <div class="result-example" id="resultExample"></div>
         <div class="result-stats">
@@ -114,8 +120,10 @@
             </div>
         </div>
         <div class="result-actions">
-            <button class="action-btn primary" onclick="startNewGame()">Nästa ord ➜</button>
-            <button class="action-btn secondary" onclick="learnMore()">📖 Lär mer</button>
+            <button class="action-btn primary" onclick="startNewGame()"><span class="sv-text">Nästa ord</span><span
+                    class="ar-text">الكلمة التالية</span> ➜</button>
+            <button class="action-btn secondary" onclick="learnMore()">📖 <span class="sv-text">Lär mer</span><span
+                    class="ar-text">تعلم المزيد</span></button>
         </div>
     </div>
 
@@ -126,25 +134,27 @@
     <div class="modal-overlay" id="statsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>📊 Statistik / الإحصائيات</h2>
+                <h2>📊 <span class="sv-text">Statistik</span><span class="ar-text">الإحصائيات</span></h2>
                 <button class="modal-close" onclick="closeStatsModal()">×</button>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="value" id="statGamesPlayed">0</div>
-                    <div class="label">Spelade / ألعاب</div>
+                    <div class="label"><span class="sv-text">Spelade</span><span class="ar-text">ألعاب</span></div>
                 </div>
                 <div class="stat-card">
                     <div class="value" id="statWinRate">0%</div>
-                    <div class="label">Vinster / فوز</div>
+                    <div class="label"><span class="sv-text">Vinster</span><span class="ar-text">فوز</span></div>
                 </div>
                 <div class="stat-card">
                     <div class="value" id="statBestStreak">0</div>
-                    <div class="label">Bästa streak</div>
+                    <div class="label"><span class="sv-text">Bästa streak</span><span class="ar-text">أفضل سلسلة</span>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="value" id="statTotalScore">0</div>
-                    <div class="label">Total poäng</div>
+                    <div class="label"><span class="sv-text">Total poäng</span><span class="ar-text">مجموع النقاط</span>
+                    </div>
                 </div>
             </div>
         </div>

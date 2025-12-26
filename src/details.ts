@@ -5,6 +5,7 @@ import { ThemeManager, CategoryHelper, GrammarHelper, showToast, TextSizeManager
 import { TTSManager } from './tts';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
+import { t, tLang, LanguageManager } from './i18n';
 
 /**
  * Smart Link Processor - Linkifies definitions
@@ -12,7 +13,7 @@ import { QuizStats } from './quiz-stats';
 class SmartLinkProcessor {
     static process(text: string): string {
         if (!text) return '';
-        
+
         // Match words that are likely to be in the dictionary (Swedish words)
         // We look for sequences of Swedish characters, avoiding common short words or numeric refs
         return text.replace(/([a-zåäöA-ZÅÄÖ]{4,})/g, (match) => {
@@ -58,14 +59,16 @@ class NotesManager {
         saveBtn.onclick = async () => {
             const text = textarea.value.trim();
             (saveBtn as HTMLButtonElement).disabled = true;
-            if (status) status.textContent = 'Sparar...';
+            if (status) status.innerHTML = `<span class="sv-text">${t('details.saving')}</span><span class="ar-text">${t('details.saving')}</span>`;
 
             const success = await DictionaryDB.saveNote(wordId, text);
-            
+
             (saveBtn as HTMLButtonElement).disabled = false;
             if (status) {
-                status.textContent = success ? 'Sparat!' : 'Fel';
-                setTimeout(() => { status.textContent = ''; }, 3000);
+                status.innerHTML = success
+                    ? `<span class="sv-text">${t('details.saved')}</span><span class="ar-text">${t('details.saved')}</span>`
+                    : `<span class="sv-text">${t('common.error')}</span><span class="ar-text">${t('common.error')}</span>`;
+                setTimeout(() => { status.innerHTML = ''; }, 3000);
             }
         };
     }
@@ -88,14 +91,14 @@ class MiniQuizManager {
         const wordCount = text.split(' ').length;
         return { hasAl, hasTaa, hasWaw, hasYaa, hasPlural, wordCount, length: text.length };
     }
-    
+
     /**
      * Score how similar two Arabic texts are (higher = more confusing)
      */
     private static similarityScore(text1: string, text2: string): number {
         const f1 = this.getArabicFeatures(text1);
         const f2 = this.getArabicFeatures(text2);
-        
+
         let score = 0;
         if (f1.hasAl === f2.hasAl) score += 3;           // Same definite article
         if (f1.hasTaa === f2.hasTaa) score += 2;         // Same feminine ending
@@ -104,12 +107,12 @@ class MiniQuizManager {
         if (f1.wordCount === f2.wordCount) score += 3;   // Same word count (critical!)
         if (Math.abs(f1.length - f2.length) <= 1) score += 4;  // Almost same length
         if (Math.abs(f1.length - f2.length) === 0) score += 3; // Exact length bonus
-        
+
         // First letter match
         if (text1.charAt(0) === text2.charAt(0)) score += 2;
         // Last letter match  
         if (text1.charAt(text1.length - 1) === text2.charAt(text2.length - 1)) score += 2;
-        
+
         return score;
     }
 
@@ -120,10 +123,10 @@ class MiniQuizManager {
         const type = wordData[1];
         const arb = wordData[3];
         const swe = wordData[2];
-        
+
         const distractors: string[] = [];
         const used = new Set<string>([arb]);
-        
+
         // Score ALL candidates and sort by similarity
         const candidates = allData
             .filter(row => row[3] !== arb && row[1] === type)
@@ -132,7 +135,7 @@ class MiniQuizManager {
                 score: this.similarityScore(arb, row[3])
             }))
             .sort((a, b) => b.score - a.score);  // Highest score first (most confusing)
-        
+
         // Pick top scoring candidates
         for (const candidate of candidates) {
             if (distractors.length >= count) break;
@@ -141,7 +144,7 @@ class MiniQuizManager {
                 used.add(candidate.text);
             }
         }
-        
+
         // Fallback: any same type
         if (distractors.length < count) {
             for (const row of allData.sort(() => Math.random() - 0.5)) {
@@ -152,19 +155,19 @@ class MiniQuizManager {
                 }
             }
         }
-        
-        console.log('[Quiz] EXTREME distractors:', { 
+
+        console.log('[Quiz] EXTREME distractors:', {
             correct: arb,
             features: this.getArabicFeatures(arb),
-            distractors: distractors.map(d => ({ 
-                text: d, 
+            distractors: distractors.map(d => ({
+                text: d,
                 score: this.similarityScore(arb, d),
                 features: this.getArabicFeatures(d)
             }))
         });
         return distractors;
     }
-    
+
     private static pickRandom(source: any[][], distractors: string[], used: Set<string>, max: number) {
         const shuffled = source.sort(() => Math.random() - 0.5);
         for (const row of shuffled) {
@@ -177,23 +180,23 @@ class MiniQuizManager {
             }
         }
     }
-    
+
     /**
      * Score Swedish word similarity (higher = more confusing)
      */
     private static swedishSimilarityScore(swe1: string, swe2: string): number {
         let score = 0;
-        
+
         // EXACT length match (most important)
         if (swe1.length === swe2.length) score += 10;
         else if (Math.abs(swe1.length - swe2.length) === 1) score += 5;
-        
+
         // Same first letter
         if (swe1.charAt(0).toLowerCase() === swe2.charAt(0).toLowerCase()) score += 4;
-        
+
         // Same last letter
         if (swe1.charAt(swe1.length - 1) === swe2.charAt(swe2.length - 1)) score += 3;
-        
+
         // Same ending pattern (-ar, -er, -or, -ning, -tion, -het)
         const endings = ['ar', 'er', 'or', 'ning', 'tion', 'het', 'lig', 'isk'];
         for (const end of endings) {
@@ -202,25 +205,25 @@ class MiniQuizManager {
                 break;
             }
         }
-        
+
         // Same prefix (2 chars)
         if (swe1.substring(0, 2).toLowerCase() === swe2.substring(0, 2).toLowerCase()) {
             score += 3;
         }
-        
+
         return score;
     }
-    
+
     /**
      * Generate EXTREME Swedish distractors for REVERSE mode
      */
     static getSwedishDistractors(wordData: any[], allData: any[][], count: number = 3): string[] {
         const type = wordData[1];
         const swe = wordData[2];
-        
+
         const distractors: string[] = [];
         const used = new Set<string>([swe]);
-        
+
         // Score ALL candidates and sort by similarity
         const candidates = allData
             .filter(row => row[2] !== swe && row[1] === type)
@@ -229,7 +232,7 @@ class MiniQuizManager {
                 score: this.swedishSimilarityScore(swe, row[2])
             }))
             .sort((a, b) => b.score - a.score);  // Highest score first
-        
+
         // Pick top scoring candidates
         for (const candidate of candidates) {
             if (distractors.length >= count) break;
@@ -238,7 +241,7 @@ class MiniQuizManager {
                 used.add(candidate.text);
             }
         }
-        
+
         // Fallback
         if (distractors.length < count) {
             for (const row of allData.sort(() => Math.random() - 0.5)) {
@@ -249,7 +252,7 @@ class MiniQuizManager {
                 }
             }
         }
-        
+
         console.log('[Quiz] EXTREME Swedish distractors:', {
             correct: swe,
             correctLen: swe.length,
@@ -259,7 +262,7 @@ class MiniQuizManager {
                 score: this.swedishSimilarityScore(swe, d)
             }))
         });
-        
+
         return distractors;
     }
 
@@ -275,9 +278,9 @@ class MiniQuizManager {
         const arb = wordData[3];
         const type = wordData[1];
         const exSwe = wordData[7] || '';  // Example sentence
-        
+
         const allData = (window as any).dictionaryData as any[][];
-        
+
         // Choose quiz type randomly
         // 1 = Fill Blank (if sentence exists), 2 = Listening, 3 = Translation (normal/reverse)
         // Check if sentence contains the word stem (at least first 3 chars)
@@ -285,13 +288,13 @@ class MiniQuizManager {
         const hasSentence = exSwe && exSwe.length > 10 && exSwe.toLowerCase().includes(sweRoot);
         const quizTypes = hasSentence ? [1, 2, 3] : [2, 3];
         const quizType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
-        
+
         let options: string[];
         let correctAnswer: string;
         let questionHTML: string;
         let modeLabel: string;
         let modeIcon: string;
-        
+
         if (quizType === 1 && hasSentence) {
             // FILL-IN-THE-BLANK: Show sentence with blank
             // Find any word in sentence that starts with sweRoot
@@ -301,12 +304,12 @@ class MiniQuizManager {
             correctAnswer = swe;
             questionHTML = `
                 <div class="quiz-sentence" dir="ltr">"${sentenceWithBlank}"</div>
-                <div class="quiz-instruction">Välj rätt ord</div>
+                <div class="quiz-instruction"><span class="sv-text">Välj rätt ord</span><span class="ar-text">اختر الكلمة الصحيحة</span></div>
             `;
-            modeLabel = 'Fyll i';
+            modeLabel = `<span class="sv-text">Fyll i</span><span class="ar-text">إكمال</span>`;
             modeIcon = '📝';
             console.log('[Quiz] FILL BLANK mode:', { sentence: exSwe, correctAnswer: swe });
-            
+
         } else if (quizType === 2) {
             // LISTENING: Play audio, pick the word
             const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : [];
@@ -315,34 +318,38 @@ class MiniQuizManager {
             questionHTML = `
                 <div class="quiz-listen-container">
                     <button class="quiz-listen-btn" onclick="window.TTSManager?.speak('${swe}', 'sv')">
-                        🔊 <span>Lyssna</span>
+                        🔊 <span><span class="sv-text">${tLang('btn.test', 'sv')}</span><span class="ar-text">${tLang('btn.test', 'ar')}</span></span>
                     </button>
                 </div>
-                <div class="quiz-instruction">Vilket ord hörde du?</div>
+                <div class="quiz-instruction"><span class="sv-text">Vilket ord hörde du?</span><span class="ar-text">ما هي الكلمة التي سمعتها؟</span></div>
             `;
-            modeLabel = 'Lyssna';
+            modeLabel = `<span class="sv-text">Lyssna</span><span class="ar-text">استماع</span>`;
             modeIcon = '🎧';
             // Auto-play audio
             setTimeout(() => TTSManager.speak(swe, 'sv'), 500);
             console.log('[Quiz] LISTENING mode:', { correctAnswer: swe });
-            
+
         } else {
             // TRANSLATION: Normal or Reverse
             const isReverse = Math.random() < 0.5;
-            
+
             if (isReverse) {
                 const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : [];
                 options = [...distractors, swe].sort(() => Math.random() - 0.5);
                 correctAnswer = swe;
-                questionHTML = `Vad är det svenska ordet för <strong>"${arb}"</strong>?`;
-                modeLabel = 'Omvänd';
+                questionHTML = `
+                    <span class="sv-text">Vad är det svenska ordet för</span><span class="ar-text">ما هي الكلمة السويدية لـ</span> 
+                    <strong>"${arb}"</strong>?`;
+                modeLabel = `<span class="sv-text">Omvänd</span><span class="ar-text">عكسي</span>`;
                 modeIcon = '🔄';
             } else {
                 const distractors = allData ? this.getSmartDistractors(wordData, allData, 3) : [];
                 options = [...distractors, arb].sort(() => Math.random() - 0.5);
                 correctAnswer = arb;
-                questionHTML = `Vad betyder <strong>"${swe}"</strong>?`;
-                modeLabel = type;
+                questionHTML = `
+                    <span class="sv-text">Vad betyder</span><span class="ar-text">ما معنى</span> 
+                    <strong>"${swe}"</strong>?`;
+                modeLabel = `<span class="sv-text">${type}</span><span class="ar-text">${type}</span>`;
                 modeIcon = '📖';
             }
         }
@@ -362,7 +369,7 @@ class MiniQuizManager {
             <div class="quiz-timer-bar"><div class="quiz-timer-progress"></div></div>
             ${questionHTML}
         `;
-        
+
         optionsEl.innerHTML = options.map(opt => `
             <div class="mini-quiz-option" data-value="${opt}">${opt}</div>
         `).join('');
@@ -395,20 +402,20 @@ class MiniQuizManager {
     }
 
     private static handleAnswer(
-        optionsEl: HTMLElement, 
-        feedbackEl: HTMLElement, 
-        selected: string, 
+        optionsEl: HTMLElement,
+        feedbackEl: HTMLElement,
+        selected: string,
         correctAnswer: string,
         wordData: any[],
         userClicked: boolean
     ) {
         const isCorrect = selected === correctAnswer;
         const wordId = wordData[0].toString();
-        
+
         // Update streak and XP
         let streak = parseInt(localStorage.getItem('quizStreak') || '0');
         let xp = parseInt(localStorage.getItem('quizXP') || '0');
-        
+
         if (isCorrect) {
             streak++;
             xp += 10 + (streak * 2); // Bonus XP for streak
@@ -416,10 +423,10 @@ class MiniQuizManager {
         } else {
             streak = 0;
         }
-        
+
         localStorage.setItem('quizStreak', streak.toString());
         localStorage.setItem('quizXP', xp.toString());
-        
+
         // Update mastery level and weak words
         const mastery = MasteryManager.updateMastery(wordId, isCorrect);
         if (isCorrect) {
@@ -437,21 +444,21 @@ class MiniQuizManager {
 
         // Show feedback with retry button
         const streakMsg = isCorrect && streak > 1 ? `<span class="streak-bonus">🔥 ${streak}x streak! +${streak * 2} XP</span>` : '';
-        const timeUpMsg = !userClicked ? '⏰ Tiden är slut!' : '';
-        
+        const timeUpMsg = !userClicked ? `⏰ <span class="sv-text">${tLang('details.timeUp', 'sv')}</span><span class="ar-text">${tLang('details.timeUp', 'ar')}</span>` : '';
+
         feedbackEl.classList.remove('hidden');
         feedbackEl.innerHTML = `
             ${timeUpMsg}
-            ${isCorrect 
-                ? `🎉 Rätt! Bra jobbat! ${streakMsg}` 
-                : `❌ Fel. Rätt svar är "${correctAnswer}".`
+            ${isCorrect
+                ? `🎉 <span class="sv-text">${tLang('details.correct', 'sv')}</span><span class="ar-text">${tLang('details.correct', 'ar')}</span> ${streakMsg}`
+                : `❌ <span class="sv-text">${tLang('details.wrong', 'sv')} "${correctAnswer}".</span><span class="ar-text">${tLang('details.wrong', 'ar')} "${correctAnswer}".</span>`
             }
             <button class="quiz-retry-btn" onclick="MiniQuizManager.init(window.currentWordData)">
-                🔄 Testa igen
+                🔄 <span class="sv-text">${tLang('details.retry', 'sv')}</span><span class="ar-text">${tLang('details.retry', 'ar')}</span>
             </button>
         `;
         feedbackEl.className = `mini-quiz-feedback ${isCorrect ? 'correct' : 'wrong'}`;
-        
+
         // Store word data globally for retry
         (window as any).currentWordData = wordData;
     }
@@ -459,7 +466,7 @@ class MiniQuizManager {
     private static showConfetti() {
         const container = document.getElementById('miniQuizContainer');
         if (!container) return;
-        
+
         const confettiCount = 30;
         for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
@@ -512,47 +519,47 @@ class SwipeNavigator {
     private static startX = 0;
     private static startY = 0;
     private static currentWordIndex = -1;
-    
+
     static init(wordId: string) {
         const allData = (window as any).dictionaryData as any[][];
         if (!allData) return;
-        
+
         // Find current word index
         this.currentWordIndex = allData.findIndex(row => row[0].toString() === wordId);
         if (this.currentWordIndex === -1) return;
-        
+
         const container = document.getElementById('detailsArea');
         if (!container) return;
-        
+
         // Add swipe hint arrows
         this.addSwipeHints(container);
-        
+
         // Touch events
         container.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
         container.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
     }
-    
+
     private static addSwipeHints(container: HTMLElement) {
         const hints = document.createElement('div');
         hints.className = 'swipe-hints';
         hints.innerHTML = `
-            <span class="swipe-hint left" onclick="SwipeNavigator.navigate(-1)">‹ Föregående</span>
-            <span class="swipe-hint right" onclick="SwipeNavigator.navigate(1)">Nästa ›</span>
+            <span class="swipe-hint left" onclick="SwipeNavigator.navigate(-1)"><span class="sv-text">‹ Föregående</span><span class="ar-text">‹ السابق</span></span>
+            <span class="swipe-hint right" onclick="SwipeNavigator.navigate(1)"><span class="sv-text">Nästa ›</span><span class="ar-text">التالي ›</span></span>
         `;
         container.prepend(hints);
     }
-    
+
     private static handleTouchStart(e: TouchEvent) {
         this.startX = e.touches[0].clientX;
         this.startY = e.touches[0].clientY;
     }
-    
+
     private static handleTouchEnd(e: TouchEvent) {
         const endX = e.changedTouches[0].clientX;
         const endY = e.changedTouches[0].clientY;
         const diffX = endX - this.startX;
         const diffY = Math.abs(endY - this.startY);
-        
+
         // Minimum swipe distance and must be horizontal
         if (Math.abs(diffX) > 80 && diffY < 50) {
             if (diffX > 0) {
@@ -562,11 +569,11 @@ class SwipeNavigator {
             }
         }
     }
-    
+
     static navigate(direction: number) {
         const allData = (window as any).dictionaryData as any[][];
         if (!allData || this.currentWordIndex === -1) return;
-        
+
         const newIndex = this.currentWordIndex + direction;
         if (newIndex >= 0 && newIndex < allData.length) {
             const newWordId = allData[newIndex][0];
@@ -589,11 +596,11 @@ class MasteryManager {
     private static getKey(wordId: string) {
         return `mastery_${wordId}`;
     }
-    
+
     static getMastery(wordId: string): number {
         return parseInt(localStorage.getItem(this.getKey(wordId)) || '0');
     }
-    
+
     static updateMastery(wordId: string, correct: boolean) {
         let mastery = this.getMastery(wordId);
         mastery += correct ? 20 : -10;
@@ -601,42 +608,42 @@ class MasteryManager {
         localStorage.setItem(this.getKey(wordId), mastery.toString());
         return mastery;
     }
-    
+
     static getLastStudied(wordId: string): string | null {
         return localStorage.getItem(`lastStudied_${wordId}`);
     }
-    
+
     static recordStudy(wordId: string) {
         localStorage.setItem(`lastStudied_${wordId}`, new Date().toISOString());
     }
-    
+
     static getTimeAgo(wordId: string): string {
         const last = this.getLastStudied(wordId);
         if (!last) return '';
-        
+
         const diff = Date.now() - new Date(last).getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const mins = Math.floor(diff / (1000 * 60));
-        
-        if (days > 0) return `Studerad ${days} dagar sedan`;
-        if (hours > 0) return `Studerad ${hours} timmar sedan`;
-        if (mins > 0) return `Studerad ${mins} minuter sedan`;
-        return 'Nyligen';
+
+        if (days > 0) return `<span class="sv-text">Studerad ${days} dagar sedan</span><span class="ar-text">درست منذ ${days} أيام</span>`;
+        if (hours > 0) return `<span class="sv-text">Studerad ${hours} timmar sedan</span><span class="ar-text">درست منذ ${hours} ساعات</span>`;
+        if (mins > 0) return `<span class="sv-text">Studerad ${mins} minuter sedan</span><span class="ar-text">درست منذ ${mins} دقائق</span>`;
+        return '<span class="sv-text">Nyligen</span><span class="ar-text">مؤخراً</span>';
     }
-    
+
     static renderMasteryBar(wordId: string, container: HTMLElement) {
         const mastery = this.getMastery(wordId);
         const timeAgo = this.getTimeAgo(wordId);
         const isWeak = WeakWordsManager.isWeak(wordId);
-        
+
         const bar = document.createElement('div');
         bar.className = 'mastery-section';
         bar.innerHTML = `
             <div class="mastery-header">
                 <span class="mastery-label">
-                    📈 Behärskningsnivå
-                    ${isWeak ? '<span class="weak-badge">⚠️ Svagt ord</span>' : ''}
+                    📈 <span class="sv-text">Behärskningsnivå</span><span class="ar-text">مستوى الإتقان</span>
+                    ${isWeak ? '<span class="weak-badge">⚠️ <span class="sv-text">Svagt ord</span><span class="ar-text">كلمة ضعيفة</span></span>' : ''}
                 </span>
                 <span class="mastery-percent">${mastery}%</span>
             </div>
@@ -646,7 +653,7 @@ class MasteryManager {
             ${timeAgo ? `<div class="last-studied">${timeAgo}</div>` : ''}
         `;
         container.prepend(bar);
-        
+
         // Record this study
         this.recordStudy(wordId);
     }
@@ -659,22 +666,22 @@ class WeakWordsManager {
     private static getKey(wordId: string) {
         return `weak_${wordId}`;
     }
-    
+
     static recordWrong(wordId: string) {
         const count = this.getWrongCount(wordId) + 1;
         localStorage.setItem(this.getKey(wordId), count.toString());
     }
-    
+
     static recordCorrect(wordId: string) {
         // Reduce wrong count on correct answer
         const count = Math.max(0, this.getWrongCount(wordId) - 1);
         localStorage.setItem(this.getKey(wordId), count.toString());
     }
-    
+
     static getWrongCount(wordId: string): number {
         return parseInt(localStorage.getItem(this.getKey(wordId)) || '0');
     }
-    
+
     static isWeak(wordId: string): boolean {
         return this.getWrongCount(wordId) >= 3;
     }
@@ -686,20 +693,20 @@ class WeakWordsManager {
 class DailyStreakManager {
     private static STREAK_KEY = 'dailyStreak';
     private static LAST_DATE_KEY = 'lastStudyDate';
-    
+
     static checkAndUpdateStreak(): number {
         const today = new Date().toDateString();
         const lastDate = localStorage.getItem(this.LAST_DATE_KEY);
         let streak = parseInt(localStorage.getItem(this.STREAK_KEY) || '0');
-        
+
         if (lastDate === today) {
             // Already studied today
             return streak;
         }
-        
+
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        
+
         if (lastDate === yesterday.toDateString()) {
             // Studied yesterday - continue streak
             streak++;
@@ -707,26 +714,26 @@ class DailyStreakManager {
             // Streak broken - reset
             streak = 1;
         }
-        
+
         localStorage.setItem(this.STREAK_KEY, streak.toString());
         localStorage.setItem(this.LAST_DATE_KEY, today);
-        
+
         return streak;
     }
-    
+
     static getStreak(): number {
         return parseInt(localStorage.getItem(this.STREAK_KEY) || '0');
     }
-    
+
     static renderStreakBadge(container: HTMLElement) {
         const streak = this.checkAndUpdateStreak();
         if (streak < 2) return;
-        
+
         const badge = document.createElement('div');
         badge.className = 'daily-streak-badge';
         badge.innerHTML = `
             <span class="streak-fire">🔥</span>
-            <span>${streak} أيام متتالية!</span>
+            <span class="sv-text">${streak} dagar i rad!</span><span class="ar-text">${streak} أيام متتالية!</span>
         `;
         container.prepend(badge);
     }
@@ -737,20 +744,28 @@ class DailyStreakManager {
  */
 class MotivationManager {
     private static quotes = [
-        { text: "Varje nytt ord är ett fönster mot en ny värld", author: "Okänd" },
-        { text: "Lärande är ingen tävling, det är en resa", author: "Visdom" },
-        { text: "Den som lär sig ett språk, förstår en kultur", author: "Ordspråk" },
-        { text: "Språket är nationens själ", author: "Fichte" },
-        { text: "Varje dag lär du dig något nytt", author: "Svenskt ordspråk" },
-        { text: "Språket är nyckeln till kulturen", author: "Visdom" },
-        { text: "Ett språk är en värld", author: "Okänd" },
-        { text: "Övning ger färdighet", author: "Svenskt ordspråk" }
+        {
+            text: `<span class="sv-text">Varje nytt ord är ett fönster mot en ny värld</span><span class="ar-text">كل كلمة جديدة هي نافذة على عالم جديد</span>`,
+            author: `<span class="sv-text">Okänd</span><span class="ar-text">مجهول</span>`
+        },
+        {
+            text: `<span class="sv-text">Lärande är ingen tävling, det är en resa</span><span class="ar-text">التعلم ليس سباقاً، بل رحلة</span>`,
+            author: `<span class="sv-text">Visdom</span><span class="ar-text">حكمة</span>`
+        },
+        {
+            text: `<span class="sv-text">Den som lär sig ett språk, förstår en kultur</span><span class="ar-text">من يتعلم لغة، يفهم ثقافة</span>`,
+            author: `<span class="sv-text">Ordspråk</span><span class="ar-text">مثل</span>`
+        },
+        {
+            text: `<span class="sv-text">Sprائكة هو روح الأمة</span><span class="ar-text">اللغة هي روح الأمة</span>`,
+            author: `<span class="sv-text">Fichte</span><span class="ar-text">فيخته</span>`
+        }
     ];
-    
+
     static getRandomQuote() {
         return this.quotes[Math.floor(Math.random() * this.quotes.length)];
     }
-    
+
     static renderQuote(container: HTMLElement) {
         const quote = this.getRandomQuote();
         const el = document.createElement('div');
@@ -772,26 +787,25 @@ class ShareManager {
         const swe = wordData[2];
         const arb = wordData[3];
         const type = wordData[1];
-        
+
         const text = `📚 تعلمت كلمة جديدة!\n\n🇸🇪 ${swe} (${type})\n🇸🇦 ${arb}\n\n#SnabbaLexin #LearnSwedish`;
-        
+
         if (navigator.share) {
             navigator.share({
                 title: `${swe} - SnabbaLexin`,
                 text: text,
                 url: window.location.href
-            }).catch(() => {});
+            }).catch(() => { });
         } else {
-            // Fallback: copy to clipboard
             navigator.clipboard.writeText(text);
-            showToast('Kopierad!');
+            showToast('<span class="sv-text">Kopierad!</span><span class="ar-text">تم النسخ!</span>');
         }
     }
-    
+
     static renderShareButton(container: HTMLElement, wordData: any[]) {
         const btn = document.createElement('button');
         btn.className = 'share-btn';
-        btn.innerHTML = '📤 Dela';
+        btn.innerHTML = '📤 <span class="sv-text">Dela</span><span class="ar-text">مشاركة</span>';
         btn.onclick = () => this.share(wordData);
         container.appendChild(btn);
     }
@@ -809,7 +823,7 @@ class FlashcardManager {
     private static sessionStats = { correct: 0, wrong: 0, total: 0 };
     private static startTime = Date.now();
     private static currentWordData: any[] | null = null;
-    
+
     // Map word types to glow classes
     private static getTypeGlowClass(type: string): string {
         const t = type.toLowerCase();
@@ -820,7 +834,7 @@ class FlashcardManager {
         if (t.includes('prep')) return 'glow-preposition';
         return 'glow-default';
     }
-    
+
     // Dynamic text sizing based on text length
     private static getTextSizeClass(text: string): string {
         const len = text.length;
@@ -830,7 +844,7 @@ class FlashcardManager {
         if (len <= 40) return 'text-sm';
         return 'text-xs';
     }
-    
+
     // Simple success glow effect (replaces confetti)
     private static showSuccessGlow() {
         const card = document.querySelector('.flashcard-clean');
@@ -839,7 +853,7 @@ class FlashcardManager {
             setTimeout(() => card.classList.remove('fc-success-glow'), 600);
         }
     }
-    
+
     // Subtle error flash (replaces shake)
     private static showErrorFlash() {
         const card = document.querySelector('.flashcard-clean');
@@ -848,34 +862,34 @@ class FlashcardManager {
             setTimeout(() => card.classList.remove('fc-error-flash'), 400);
         }
     }
-    
+
     // Toggle focus mode
     static toggleFocus() {
         this.focusMode = !this.focusMode;
         const cardArea = document.querySelector('.fc-card-area');
         const statsBar = document.getElementById('fcStatsBar');
         const header = document.querySelector('.fc-minimal-header');
-        
+
         if (this.focusMode) {
             cardArea?.classList.add('focus-mode');
             statsBar?.classList.add('hidden');
             header?.classList.add('hidden');
-            showToast('🧘 Fokusläge aktiverat', { type: 'info' });
+            showToast('🧘 <span class="sv-text">Fokusläge aktiverat</span><span class="ar-text">وضع التركيز مُفعّل</span>', { type: 'info' });
         } else {
             cardArea?.classList.remove('focus-mode');
             statsBar?.classList.remove('hidden');
             header?.classList.remove('hidden');
-            showToast('Fokusläge avslutat');
+            showToast('<span class="sv-text">Fokusläge avslutat</span><span class="ar-text">انتهى وضع التركيز</span>');
         }
     }
-    
+
     // Play audio for the word
     private static playAudio(word: string) {
         if ((window as any).TTSManager) {
             (window as any).TTSManager.speak(word, 'sv');
         }
     }
-    
+
     // Format time elapsed
     private static formatTime(ms: number): string {
         const secs = Math.floor(ms / 1000);
@@ -883,42 +897,42 @@ class FlashcardManager {
         const s = secs % 60;
         return `${mins}:${s.toString().padStart(2, '0')}`;
     }
-    
+
     // Get accuracy percentage  
     private static getAccuracy(): number {
         if (this.sessionStats.total === 0) return 0;
         return Math.round((this.sessionStats.correct / this.sessionStats.total) * 100);
     }
-    
+
     static init(wordData: any[]) {
         const container = document.getElementById('flashcardContainer');
         if (!container) return;
-        
+
         this.currentWordData = wordData;
         const swe = wordData[2];
         const arb = wordData[3];
         const type = wordData[1];
         const exSwe = wordData[7] || '';
-        
+
         const glowClass = this.getTypeGlowClass(type);
         const sweSizeClass = this.getTextSizeClass(swe);
         const arbSizeClass = this.getTextSizeClass(arb);
-        
+
         // Get front/back content based on mode
         const frontWord = this.currentMode === 'reverse' ? arb : swe;
         const backWord = this.currentMode === 'reverse' ? swe : arb;
         const frontDir = this.currentMode === 'reverse' ? 'rtl' : 'ltr';
         const backDir = this.currentMode === 'reverse' ? 'ltr' : 'rtl';
-        
+
         container.innerHTML = `
             <!-- Minimal Header: Mode + Focus Toggle -->
             <div class="fc-minimal-header">
                 <div class="fc-mode-pills">
-                    <button class="fc-pill ${this.currentMode === 'normal' ? 'active' : ''}" onclick="FlashcardManager.setMode('normal')" title="Normal">🇸🇪</button>
-                    <button class="fc-pill ${this.currentMode === 'reverse' ? 'active' : ''}" onclick="FlashcardManager.setMode('reverse')" title="Omvänd">🔄</button>
-                    <button class="fc-pill ${this.currentMode === 'listening' ? 'active' : ''}" onclick="FlashcardManager.setMode('listening')" title="Lyssna">🎧</button>
+                    <button class="fc-pill ${this.currentMode === 'normal' ? 'active' : ''}" onclick="FlashcardManager.setMode('normal')" title="Normal / عادي">🇸🇪</button>
+                    <button class="fc-pill ${this.currentMode === 'reverse' ? 'active' : ''}" onclick="FlashcardManager.setMode('reverse')" title="Omvänd / عكسي">🔄</button>
+                    <button class="fc-pill ${this.currentMode === 'listening' ? 'active' : ''}" onclick="FlashcardManager.setMode('listening')" title="Lyssna / استماع">🎧</button>
                 </div>
-                <button class="fc-focus-toggle" onclick="FlashcardManager.toggleFocus()" title="Fokusläge">
+                <button class="fc-focus-toggle" onclick="FlashcardManager.toggleFocus()" title="Fokusläge / وضع التركيز">
                     ⛶
                 </button>
             </div>
@@ -964,28 +978,28 @@ class FlashcardManager {
                 
                 <!-- Icon-Only Rating Buttons -->
                 <div class="fc-actions-simple">
-                    <button class="fc-action-btn wrong" onclick="FlashcardManager.markWrong('${wordData[0]}')" title="Vet inte">
+                    <button class="fc-action-btn wrong" onclick="FlashcardManager.markWrong('${wordData[0]}')" title="Vet inte / لا أعرف">
                         ❌
                     </button>
-                    <button class="fc-action-btn correct" onclick="FlashcardManager.markCorrect('${wordData[0]}')" title="Vet">
+                    <button class="fc-action-btn correct" onclick="FlashcardManager.markCorrect('${wordData[0]}')" title="Vet / أعرف">
                         ✅
                     </button>
                 </div>
                 
                 <!-- Minimal Navigation (hidden in focus mode) -->
                 <div class="fc-nav-simple">
-                    <button class="fc-nav-icon" onclick="SwipeNavigator.navigate(-1)" title="Föregående">←</button>
-                    <button class="fc-nav-icon random" onclick="FlashcardManager.randomWord()" title="Slumpmässigt">🎲</button>
-                    <button class="fc-nav-icon" onclick="SwipeNavigator.navigate(1)" title="Nästa">→</button>
+                    <button class="fc-nav-icon" onclick="SwipeNavigator.navigate(-1)" title="Föregående / السابق">←</button>
+                    <button class="fc-nav-icon random" onclick="FlashcardManager.randomWord()" title="Slumpmässigt / عشوائي">🎲</button>
+                    <button class="fc-nav-icon" onclick="SwipeNavigator.navigate(1)" title="Nästa / التالي">→</button>
                 </div>
             </div>
         `;
-        
+
         this.isFlipped = false;
         this.setupKeyboardShortcuts();
         this.startTimeUpdater();
     }
-    
+
     // Generate listening mode options
     private static generateListeningOptions(correctWord: string): string {
         const allData = (window as any).dictionaryData as any[][] || [];
@@ -994,16 +1008,16 @@ class FlashcardManager {
             .sort(() => Math.random() - 0.5)
             .slice(0, 3)
             .map(w => w[2]);
-        
+
         const options = [...distractors, correctWord].sort(() => Math.random() - 0.5);
-        
+
         return options.map(opt => `
             <button class="fc-listen-option" onclick="FlashcardManager.checkListeningAnswer('${opt}', '${correctWord}')">
                 ${opt}
             </button>
         `).join('');
     }
-    
+
     // Check listening mode answer
     static checkListeningAnswer(selected: string, correct: string) {
         if (selected === correct) {
@@ -1012,7 +1026,7 @@ class FlashcardManager {
             this.markWrong(this.currentWordData?.[0] || '');
         }
     }
-    
+
     // Set learning mode
     static setMode(mode: 'normal' | 'reverse' | 'listening' | 'challenge') {
         this.currentMode = mode;
@@ -1020,7 +1034,7 @@ class FlashcardManager {
             this.init(this.currentWordData);
         }
     }
-    
+
     // Keyboard shortcuts
     private static setupKeyboardShortcuts() {
         document.onkeydown = (e) => {
@@ -1038,7 +1052,7 @@ class FlashcardManager {
             }
         };
     }
-    
+
     // Time updater
     private static startTimeUpdater() {
         setInterval(() => {
@@ -1046,7 +1060,7 @@ class FlashcardManager {
             if (el) el.textContent = this.formatTime(Date.now() - this.startTime);
         }, 1000);
     }
-    
+
     static flip() {
         const card = document.querySelector('.flashcard-clean');
         if (card) {
@@ -1054,68 +1068,68 @@ class FlashcardManager {
             card.classList.toggle('flipped', this.isFlipped);
             card.classList.add('shimmering');
             setTimeout(() => card.classList.remove('shimmering'), 1500);
-            
+
             // Auto-play audio on flip to back
             if (this.isFlipped && this.currentWordData) {
                 setTimeout(() => this.playAudio(this.currentWordData![2]), 300);
             }
         }
     }
-    
+
     static randomWord() {
         const allData = (window as any).dictionaryData as any[][];
         if (!allData || allData.length === 0) return;
-        
+
         const randomIndex = Math.floor(Math.random() * allData.length);
         const randomWord = allData[randomIndex];
         window.location.href = `details.html?id=${randomWord[0]}`;
     }
-    
+
     static markCorrect(wordId: string) {
         // Update stats
         this.streak++;
         this.xp += 10 + (this.streak * 2); // Bonus XP for streak
         this.sessionStats.correct++;
         this.sessionStats.total++;
-        
+
         // Update UI
         this.updateStatsUI();
-        
+
         // Visual feedback
         this.showSuccessGlow();
         showToast(`✅ +${10 + (this.streak * 2)} XP`, { type: 'success' });
-        
+
         // Save progress
         MasteryManager.updateMastery(wordId, true);
         WeakWordsManager.recordCorrect(wordId);
-        
+
         // Go to next word after delay
         setTimeout(() => SwipeNavigator.navigate(1), 800);
     }
-    
+
     static markWrong(wordId: string) {
         // Update stats
         this.streak = 0;
         this.sessionStats.wrong++;
         this.sessionStats.total++;
-        
+
         // Update UI
         this.updateStatsUI();
-        
+
         // Visual feedback
         this.showErrorFlash();
         showToast('❌', { type: 'error' });
-        
+
         // Save progress
         MasteryManager.updateMastery(wordId, false);
         WeakWordsManager.recordWrong(wordId);
     }
-    
+
     private static updateStatsUI() {
         const streakEl = document.getElementById('fcStreak');
         const xpEl = document.getElementById('fcXP');
         const accEl = document.getElementById('fcAccuracy');
-        
+
         if (streakEl) streakEl.textContent = this.streak.toString();
         if (xpEl) xpEl.textContent = this.xp.toString();
         if (accEl) accEl.textContent = `${this.getAccuracy()}%`;
@@ -1154,11 +1168,11 @@ export class DetailsManager {
         // 1. Init DB connection
         // 2. Try direct lookup (Fastest)
         // 3. Only fallback to full load if absolutely necessary (or load in background)
-        
+
         try {
             await DictionaryDB.init();
             const cachedWord = await DictionaryDB.getWordById(this.wordId);
-            
+
             if (cachedWord) {
                 console.log('[Details] ⚡ Instant load from cache');
                 this.wordData = cachedWord;
@@ -1166,7 +1180,7 @@ export class DetailsManager {
                 this.renderDetails();
                 QuizStats.recordStudy(this.wordId!);
                 NotesManager.init(this.wordId!);
-                
+
                 // Background load for advanced features (related words etc)
                 this.loadBackgroundData();
                 return;
@@ -1192,39 +1206,39 @@ export class DetailsManager {
     private async loadBackgroundData() {
         // Load partial data or full dictionary in background for "Related Words" etc.
         // For now, we just check if we have data or need to fetch constraints
-        
+
         if ((window as any).dictionaryData) {
             this.initDeferredFeatures();
         } else {
             // Optional: You could fetch just related words here instead of full dict
             // For now, let's just init what we can
-             this.initDeferredFeatures();
+            this.initDeferredFeatures();
         }
     }
 
     private initDeferredFeatures() {
         if (!this.wordData) return;
-        
+
         const detailsArea = document.getElementById('detailsArea');
         if (detailsArea) {
-             MasteryManager.renderMasteryBar(this.wordId!, detailsArea);
-             DailyStreakManager.renderStreakBadge(detailsArea);
+            MasteryManager.renderMasteryBar(this.wordId!, detailsArea);
+            DailyStreakManager.renderStreakBadge(detailsArea);
         }
 
         // These need full dictionary to be perfect, but we can try with what we have
         // or wait for a background thread.
         // For performance, we can skip complex distractors if data is missing
         if ((window as any).dictionaryData) {
-             MiniQuizManager.init(this.wordData);
-             RelatedWordsManager.init(this.wordData);
-             SwipeNavigator.init(this.wordId!);
-             FlashcardManager.init(this.wordData);
+            MiniQuizManager.init(this.wordData);
+            RelatedWordsManager.init(this.wordData);
+            SwipeNavigator.init(this.wordId!);
+            FlashcardManager.init(this.wordData);
         } else {
             // Minimal init without full data
-             // RelatedWordsManager requires full data... skip or mock?
-             // Let's rely on cached mini-quiz if possible or disable
-             const noteSection = document.querySelector('.notes-section');
-             if(noteSection) MotivationManager.renderQuote(noteSection as HTMLElement);
+            // RelatedWordsManager requires full data... skip or mock?
+            // Let's rely on cached mini-quiz if possible or disable
+            const noteSection = document.querySelector('.notes-section');
+            if (noteSection) MotivationManager.renderQuote(noteSection as HTMLElement);
         }
     }
 
@@ -1248,7 +1262,7 @@ export class DetailsManager {
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetTab = (btn as HTMLElement).dataset.tab;
-                
+
                 tabBtns.forEach(b => b.classList.toggle('active', b === btn));
                 tabContents.forEach(c => {
                     const isTarget = (c as HTMLElement).dataset.tab === targetTab;
@@ -1278,14 +1292,14 @@ export class DetailsManager {
         if (this.wordData) {
             QuizStats.recordStudy(this.wordId!);
             this.renderDetails();
-            
+
             // Init new professional features
             NotesManager.init(this.wordId!);
             MiniQuizManager.init(this.wordData);
             RelatedWordsManager.init(this.wordData);
         } else {
             const area = document.getElementById('detailsArea');
-            if (area) area.innerHTML = '<div class="placeholder-message">Ordet hittades inte</div>';
+            if (area) area.innerHTML = '<div class="placeholder-message"><span class="sv-text">Ordet hittades inte</span><span class="ar-text">الكلمة غير موجودة</span></div>';
         }
     }
 
@@ -1343,7 +1357,11 @@ export class DetailsManager {
                 </div>
                 
                 <div class="word-meta-row">
-                    <span class="word-type-pill">${type}</span>
+                    <span class="word-type-pill">
+                        <span class="sv-text">${type}</span>
+                        <span class="sv-text ar-text"> / </span>
+                        <span class="ar-text">${tLang('quran.' + type.toLowerCase().replace('substantiv', 'noun'), 'ar') || type}</span>
+                    </span>
                     ${grammarBadge}
                 </div>
             </div>
@@ -1351,7 +1369,7 @@ export class DetailsManager {
             <div class="details-content-grid">
                 ${forms ? `
                 <div class="details-section">
-                    <h3 class="section-title"><span class="section-icon">🔗</span> Böjningar</h3>
+                    <h3 class="section-title"><span class="section-icon">🔗</span> <span class="sv-text">Böjningar</span><span class="ar-text">التصريفات</span></h3>
                     <div class="forms-container">
                         ${forms.split(',').map((f: string) => `<span class="form-chip">${f.trim()}</span>`).join('')}
                     </div>
@@ -1360,7 +1378,7 @@ export class DetailsManager {
 
                 ${(def || arbExt) ? `
                 <div class="details-section">
-                    <h3 class="section-title"><span class="section-icon">📝</span> Betydelse</h3>
+                    <h3 class="section-title"><span class="section-icon">📝</span> <span class="sv-text">Betydelse</span><span class="ar-text">المعنى</span></h3>
                     <div class="definition-card">
                         ${def ? `<p class="def-text">${processedDef}</p>` : ''}
                         ${arbExt ? `<p class="def-text" dir="rtl" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">${arbExt}</p>` : ''}
@@ -1370,7 +1388,7 @@ export class DetailsManager {
 
                 ${(exSwe || exArb) ? `
                 <div class="details-section">
-                    <h3 class="section-title"><span class="section-icon">💡</span> Exempel</h3>
+                    <h3 class="section-title"><span class="section-icon">💡</span> <span class="sv-text">Exempel</span><span class="ar-text">أمثلة</span></h3>
                     <div class="example-card">
                         ${exSwe ? `<div class="ex-swe-detail" dir="ltr">${processedExSwe}</div>` : ''}
                         ${exArb ? `<div class="ex-arb-detail" dir="rtl">${exArb}</div>` : ''}
@@ -1380,7 +1398,7 @@ export class DetailsManager {
 
                 ${(idiomSwe || idiomArb) ? `
                 <div class="details-section">
-                    <h3 class="section-title"><span class="section-icon">💬</span> Uttryck</h3>
+                    <h3 class="section-title"><span class="section-icon">💬</span> <span class="sv-text">Uttryck</span><span class="ar-text">تعابير</span></h3>
                     <div class="example-card idiom-card">
                         ${idiomSwe ? `<div class="ex-swe-detail" dir="ltr">${processedIdiomSwe}</div>` : ''}
                         ${idiomArb ? `<div class="ex-arb-detail" dir="rtl">${idiomArb}</div>` : ''}
@@ -1391,20 +1409,26 @@ export class DetailsManager {
         `;
 
         detailsArea.innerHTML = html;
-        
+
         // Setup Smart Link listeners
         SmartLinkProcessor.setupListeners(detailsArea);
-        
+
         // Dynamic text sizing
         const sweEl = detailsArea.querySelector('.word-swe-hero');
         if (sweEl) TextSizeManager.apply(sweEl as HTMLElement, swe);
-        
+
         const arbEl = detailsArea.querySelector('.word-arb-hero');
         if (arbEl) TextSizeManager.apply(arbEl as HTMLElement, arb);
 
         detailsArea.querySelectorAll('.def-text, .ex-swe-detail, .ex-arb-detail').forEach(el => {
             TextSizeManager.apply(el as HTMLElement, el.textContent || '');
         });
+
+        // Dynamic page title
+        const lang = LanguageManager.getLanguage();
+        if (lang === 'sv') document.title = `${swe} - SnabbaLexin`;
+        else if (lang === 'ar') document.title = `${arb} - سنابا لكسين`;
+        else document.title = `${swe} | ${arb} - SnabbaLexin`;
     }
 
     private setupHeaderActions(row: any[], isFav: boolean) {
@@ -1443,9 +1467,9 @@ export class DetailsManager {
         const deleteBtn = document.getElementById('deleteBtn');
         if (deleteBtn) {
             deleteBtn.onclick = async () => {
-                if (confirm('Är du säker على حذف الكلمة؟')) {
+                if (confirm(t('details.confirmDelete'))) {
                     await DictionaryDB.deleteWord(id);
-                    showToast('Ordet borttaget');
+                    showToast('<span class="sv-text">Ordet borttaget</span><span class="ar-text">تم حذف الكلمة</span>');
                     setTimeout(() => window.location.href = 'index.html', 1000);
                 }
             };
@@ -1454,21 +1478,26 @@ export class DetailsManager {
         const copyBtn = document.getElementById('smartCopyBtn');
         if (copyBtn) {
             copyBtn.onclick = () => {
-                navigator.clipboard.writeText(swe).then(() => showToast('Kopierat 📋'));
+                navigator.clipboard.writeText(swe).then(() => showToast('<span class="sv-text">Kopierat</span><span class="ar-text">تم النسخ</span> 📋'));
             };
         }
 
         const shareBtn = document.getElementById('headerShareBtn');
         if (shareBtn) {
             shareBtn.onclick = () => {
+                const currentLang = LanguageManager.getLanguage();
+                const text = currentLang === 'ar'
+                    ? `📚 تعلمت كلمة جديدة!\n\n🇸🇪 ${swe}\n🇸🇦 ${row[3]}\n\n#SnabbaLexin`
+                    : `📚 Jag lärde mig ett nytt ord!\n\n🇸🇪 ${swe}\n🇸🇦 ${row[3]}\n\n#SnabbaLexin`;
+
                 if (navigator.share) {
                     navigator.share({
                         title: `Lexin: ${swe}`,
-                        text: `Hur man säger "${swe}" på arabiska: ${row[3]}`,
+                        text: text,
                         url: window.location.href
                     }).catch(console.error);
                 } else {
-                    navigator.clipboard.writeText(window.location.href).then(() => showToast('Länk kopierad 🔗'));
+                    navigator.clipboard.writeText(window.location.href).then(() => showToast(`<span class="sv-text">Länk kopierad</span><span class="ar-text">تم نسخ الرابط</span> 🔗`));
                 }
             };
         }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Blocks</title>
+    <title>Neon Blocks / مكعبات نيون - SnabbaLexin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
@@ -14,15 +14,15 @@
         <button class="back-btn" onclick="window.location.href='games.html'">←</button>
         <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
             title="وضع الموبايل">📱</button>
-        <h1>Neon Blocks</h1>
+        <h1><span class="sv-text">Neon Blocks</span><span class="ar-text">مكعبات نيون</span></h1>
 
         <div class="score-container">
             <div class="score-row">
-                <span class="score-label">Best / الأفضل</span>
+                <span class="score-label"><span class="sv-text">Best</span><span class="ar-text">الأفضل</span></span>
                 <span class="score-value-small" id="highScore">0</span>
             </div>
             <div class="score-row">
-                <span class="score-label">Score / النقاط</span>
+                <span class="score-label"><span class="sv-text">Score</span><span class="ar-text">النقاط</span></span>
                 <span class="score-value" id="score">0</span>
             </div>
         </div>
@@ -67,16 +67,18 @@
         <div id="gameOverModal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-title">Game Over</div>
-                <div class="score-label">Final Score</div>
+                <div class="score-label"><span class="sv-text">Final Score</span><span class="ar-text">النتيجة
+                        النهائية</span></div>
                 <div class="final-score" id="finalScore">0</div>
-                <div class="score-label" id="newHighScoreLabel">New High Score!</div>
+                <div class="score-label" id="newHighScoreLabel"><span class="sv-text">New High Score!</span><span
+                        class="ar-text">رقم قياسي جديد!</span></div>
                 <button class="modal-btn" onclick="game.showMenu()">Menu / القائمة</button>
                 <button class="modal-btn secondary" onclick="game.restart()">Replay / إعادة</button>
             </div>
         </div>
     </div>
 
-        <script type="module" src="../src/games/blockPuzzleGame.ts"></script>
+    <script type="module" src="../src/games/blockPuzzleGame.ts"></script>
     <script type="module" src="../src/loader.ts"></script>
     <script type="module" src="/src/pwa.ts"></script>
 </body>

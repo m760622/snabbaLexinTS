@@ -22,29 +22,17 @@ export const COL_EX_ARB = AppConfig.COLUMNS.EXAMPLE_ARB;
 export const COL_IDIOM = AppConfig.COLUMNS.IDIOM_SWE;
 export const COL_IDIOM_ARB = AppConfig.COLUMNS.IDIOM_ARB;
 
+import { ToastManager } from '../toast-manager';
+
 // State
 let gameScore = 0;
 
 // ========================================
-// Toast Notification
+// Toast Notification - Unified with language support
 // ========================================
 export function showToast(message: string, type: 'default' | 'error' | 'success' | 'info' = 'default'): void {
-    const toast = document.getElementById('toast');
-    if (toast) {
-        toast.textContent = message;
-        toast.className = 'toast-notification visible';
-        if (type === 'error') {
-            toast.classList.add('error');
-        } else if (type === 'success') {
-            toast.classList.add('success');
-        } else if (type === 'info') {
-            toast.classList.add('info');
-        }
-
-        setTimeout(() => {
-            toast.classList.remove('visible');
-        }, 3000);
-    }
+    // Use unified ToastManager which handles bilingual message parsing
+    ToastManager.show(message, { type: type === 'default' ? 'success' : type });
 }
 
 // ========================================

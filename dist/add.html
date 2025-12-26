@@ -12,13 +12,14 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/add-8dB2s3Zi.js"></script>
+  <script type="module" crossorigin src="/assets/add-DV5nXIv4.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-B-9iATqE.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-B7MhtUIl.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
 </head>
 
 <body>
@@ -33,26 +34,27 @@
                     </svg>
                 </a>
             </div>
-            <h1>Lägg till ord</h1>
-            <p class="subtitle">إضافة كلمة جديدة</p>
+            <h1><span class="sv-text">Lägg till ord</span><span class="ar-text">إضافة كلمة</span></h1>
         </header>
 
         <main>
             <form id="addWordForm" class="add-form">
                 <div class="form-group">
-                    <label for="swe">Svenska / السويدية *</label>
+                    <label for="swe"><span class="sv-text">Svenska</span><span class="ar-text">السويدية</span> *</label>
                     <input type="text" id="swe" required placeholder="T.ex. Bok">
                 </div>
 
                 <div class="form-group">
-                    <label for="arb">Arabiska / العربية *</label>
+                    <label for="arb"><span class="sv-text">Arabiska</span><span class="ar-text">العربية</span> *</label>
                     <input type="text" id="arb" required placeholder="مثلاً: كتاب" dir="rtl">
                 </div>
 
                 <div class="form-group">
-                    <label for="type">Ordklass / نوع الكلمة</label>
+                    <label for="type"><span class="sv-text">Ordklass</span><span class="ar-text">نوع
+                            الكلمة</span></label>
                     <select id="type">
-                        <option value="">Välj ordklass / اختر نوع الكلمة</option>
+                        <option value=""><span class="sv-text">Välj ordklass</span> / <span class="ar-text">اختر نوع
+                                الكلمة</span></option>
                         <optgroup label="Grammatik / قواعد">
                             <option value="Substantiv">Substantiv (Ism)</option>
                             <option value="Verb">Verb (Fi'l)</option>
@@ -106,7 +108,8 @@
                 </div>
 
                 <div class="live-preview-container" id="livePreview">
-                    <p class="preview-label">Förhandsvisning / معاينة</p>
+                    <p class="preview-label"><span class="sv-text">Förhandsvisning</span><span
+                            class="ar-text">معاينة</span></p>
                     <div class="card compact-card shadow-sm">
                         <div class="card-header">
                             <div class="word-header-group">
@@ -120,7 +123,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Spara / حفظ</button>
+                <button type="submit" class="submit-btn"><span class="sv-text">Spara</span><span
+                        class="ar-text">حفظ</span></button>
             </form>
         </main>
     </div>

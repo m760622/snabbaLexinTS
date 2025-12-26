@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gissa Ordet - SnabbaLexin</title>
+    <title>Gissa Ordet / خمن الكلمة - SnabbaLexin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/games.css">
     <link
@@ -29,7 +29,7 @@
             </button>
         </div>
 
-        <div class="hud-title">Gissa Ordet</div>
+        <div class="hud-title"><span class="sv-text">Gissa Ordet</span><span class="ar-text">خمن الكلمة</span></div>
 
         <div class="hud-stats">
             <div class="stat-pill score" title="Poäng / النقاط">
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Holographic Title -->
-    <div class="memory-holo-title">Gissa Ordet / خمن الكلمة</div>
+    <div class="memory-holo-title"><span class="sv-text">Gissa Ordet</span><span class="ar-text">خمن الكلمة</span></div>
 
     <!-- Game Container (Neon Future) -->
     <div id="missingWordGame" class="mw-neon-container">
@@ -63,12 +63,14 @@
 
         <!-- Options (Hexagonal Grid) -->
         <div class="mw-hex-grid" id="gameOptions">
-            <div class="skeleton-loader">Synkroniserar...</div>
+            <div class="skeleton-loader"><span class="sv-text">Synkroniserar...</span><span class="ar-text">جاري
+                    المزامنة...</span></div>
         </div>
 
         <!-- Next Button (Cyber Button) -->
         <button id="nextQuestionBtn" class="mw-cyber-btn hidden" onclick="loadMissingWordQuestion()">
-            <span class="btn-text">NÄSTA NIVÅ</span>
+            <span class="btn-text"><span class="sv-text">NÄSTA NIVÅ</span><span class="ar-text">المستوى
+                    التالي</span></span>
             <span class="btn-glitch">➜</span>
         </button>
 
