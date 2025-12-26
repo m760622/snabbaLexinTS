@@ -133,7 +133,7 @@ export const TTSManager = {
         this.audioUnlocked = true;
     },
 
-    async speak(text: string, lang = 'sv', options: TTSOptions = {}) {
+    async speak(text: string, lang = 'sv', options: TTSOptions & { slow?: boolean } = {}) {
         if (!text || text.trim() === '') return;
 
         const cleanText = text.replace(/['']/g, "'").trim();
@@ -155,6 +155,11 @@ export const TTSManager = {
 
         if (options.onStart) options.onStart();
 
+        // Custom Slow Mode Override
+        if (options.slow) {
+            options.speed = 0.45;
+        }
+
         return this._speakWithProviders(cleanText, normalizedLang, options);
     },
 
@@ -166,14 +171,24 @@ export const TTSManager = {
         return this.speak(text, 'ar', options);
     },
 
+    speakSlowly(text: string, lang = 'sv') {
+        return this.speak(text, lang, { slow: true });
+    },
+
     async _speakWithProviders(text: string, lang: string, options: TTSOptions) {
         const isOnline = navigator.onLine;
 
-        const providers = [
-            { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true },
-            { name: 'Local TTS', fn: () => this._playLocalTTS(text, lang, options) },
-            { name: 'VoiceRSS', fn: () => this._playVoiceRSS(text, lang, options), requiresOnline: true }
-        ];
+        // Priority changes when slow mode is requested (Local TTS handle rate better)
+        const providers = (options as any).slow
+            ? [
+                { name: 'Local TTS', fn: () => this._playLocalTTS(text, lang, options) },
+                { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true }
+            ]
+            : [
+                { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true },
+                { name: 'Local TTS', fn: () => this._playLocalTTS(text, lang, options) },
+                { name: 'VoiceRSS', fn: () => this._playVoiceRSS(text, lang, options), requiresOnline: true }
+            ];
 
         for (let i = 0; i < providers.length; i++) {
             const provider = providers[i];
@@ -248,12 +263,13 @@ export const TTSManager = {
             const url2 = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langCode}&client=gtx&q=${encodeURIComponent(text)}`;
 
             const handleFallback = () => {
-                this.audio!.src = url2;
-                this.audio!.onerror = () => {
+                if (!this.audio) return;
+                this.audio.src = url2;
+                this.audio.onerror = () => {
                     this.isPlaying = false;
                     reject(new Error('Google TTS failed'));
                 };
-                this.audio!.play().catch(reject);
+                this.audio.play().catch(reject);
             };
 
             this.audio.src = this.audioCache.get(url1) || url1;
@@ -317,8 +333,17 @@ export const TTSManager = {
                     const voices = window.speechSynthesis.getVoices();
                     const langCode = lang.substring(0, 2);
                     let voice: SpeechSynthesisVoice | null = null;
+
+                    // Voice Preference Logic
+                    const pref = localStorage.getItem('ttsVoicePreference') || 'natural';
+
                     if (langCode === 'sv') {
-                        const swedishPriority = ['Alva', 'Klara', 'Oskar', 'Svenska'];
+                        const swedishPriority = pref === 'male'
+                            ? ['Oskar', 'Svenska']
+                            : pref === 'female'
+                                ? ['Alva', 'Klara', 'Maja']
+                                : ['Alva', 'Klara', 'Oskar', 'Svenska'];
+
                         for (const name of swedishPriority) {
                             voice = voices.find(v => v.name.includes(name) && v.lang.includes('sv')) || null;
                             if (voice) break;
@@ -329,16 +354,38 @@ export const TTSManager = {
                     }
 
                     if (voice) utterance.voice = voice;
+
+                    // Karaoke Hook
+                    utterance.onboundary = (event) => {
+                        if (event.name === 'word') {
+                            const word = speakText.substring(event.charIndex, event.charIndex + event.charLength);
+                            const eventDetail = {
+                                word,
+                                charIndex: event.charIndex,
+                                charLength: event.charLength,
+                                text: speakText
+                            };
+                            window.dispatchEvent(new CustomEvent('tts-boundary', { detail: eventDetail }));
+                        }
+                    };
+
                     window.speechSynthesis.speak(utterance);
+                };
+
+                utterance.onstart = () => {
+                    window.dispatchEvent(new CustomEvent('tts-start', { detail: { text: speakText } }));
                 };
 
                 utterance.onend = () => {
                     this.isPlaying = false;
+                    window.dispatchEvent(new CustomEvent('tts-end'));
+                    if (options.onEnd) options.onEnd();
                     resolve();
                 };
 
                 utterance.onerror = (e) => {
                     this.isPlaying = false;
+                    window.dispatchEvent(new CustomEvent('tts-error', { detail: e }));
                     if (e.error !== 'interrupted') {
                         this.isIOS ? resolve() : reject(e);
                     } else {
@@ -380,8 +427,14 @@ export const TTSManager = {
         const premiumKeywords = ['Premium', 'Enhanced', 'Neural', 'Natural', 'Alva', 'Maja', 'Astrid', 'Samantha', 'Karen', 'Daniel', 'Maged', 'Majed', 'Tarik'];
         const lowQualityKeywords = ['Compact', 'eSpeak', 'Android'];
 
+        const pref = localStorage.getItem('ttsVoicePreference') || 'natural';
+
         for (const keyword of premiumKeywords) {
-            const match = voices.find(v => v.name.includes(keyword) && !lowQualityKeywords.some(lq => v.name.includes(lq)));
+            const match = voices.find(v => {
+                const nameMatch = v.name.includes(keyword);
+                const genderMatch = pref === 'male' ? (v.name.includes('Daniel') || v.name.includes('Maged')) : true;
+                return nameMatch && genderMatch && !lowQualityKeywords.some(lq => v.name.includes(lq));
+            });
             if (match) return match;
         }
         return voices.find(v => !lowQualityKeywords.some(lq => v.name.includes(lq))) || voices[0];
@@ -397,7 +450,9 @@ export const TTSManager = {
         if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } }
         if (this.timeoutId) { clearTimeout(this.timeoutId); this.timeoutId = null; }
         this.isPlaying = false;
+        window.dispatchEvent(new CustomEvent('tts-stop'));
     }
+
 };
 
 export function speakText(text: string, lang = 'sv') { return TTSManager.speak(text, lang); }

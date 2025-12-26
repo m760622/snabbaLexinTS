@@ -493,6 +493,395 @@ export const PullToRefresh = {
 };
 
 // ============================================================
+// AUDIO VISUALIZER - موجات صوتية تفاعلية
+// ============================================================
+
+export class AudioVisualizer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private animationId: number | null = null;
+    private bars: number[] = [];
+    private barCount = 48;
+    private isActive = false;
+    private color = '#7dd3fc';
+    private secondaryColor = '#4ade80';
+    private mode: 'bars' | 'liquid' | 'circle' = 'liquid'; // Default to liquid mode
+    private analyser: AnalyserNode | null = null;
+    private dataArray: Uint8Array | null = null;
+    private phase = 0;
+
+    constructor(containerId: string, color = '#7dd3fc') {
+        const container = document.getElementById(containerId);
+        if (!container) throw new Error('Visualizer container not found');
+
+        this.canvas = document.createElement('canvas');
+        this.canvas.className = 'audio-visualizer-canvas liquid-wave';
+        container.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d')!;
+        this.color = color;
+
+        this.initBars();
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+    }
+
+    private initBars() {
+        this.bars = Array(this.barCount).fill(0).map(() => Math.random() * 5 + 2);
+    }
+
+    private resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = this.canvas.parentElement!.getBoundingClientRect();
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.ctx.scale(dpr, dpr);
+        this.canvas.style.width = `${rect.width}px`;
+        this.canvas.style.height = `${rect.height}px`;
+    }
+
+    setMode(mode: 'bars' | 'liquid' | 'circle') {
+        this.mode = mode;
+    }
+
+    connectAnalyser(analyser: AnalyserNode) {
+        this.analyser = analyser;
+        this.dataArray = new Uint8Array(analyser.frequencyBinCount);
+    }
+
+    start() {
+        if (this.isActive) return;
+        this.isActive = true;
+        this.animate();
+    }
+
+    stop() {
+        this.isActive = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        this.initBars();
+        this.draw();
+    }
+
+    private animate() {
+        if (!this.isActive) return;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.updateBars();
+        this.draw();
+        this.phase += 0.05;
+
+        this.animationId = requestAnimationFrame(() => this.animate());
+    }
+
+    private updateBars() {
+        if (this.analyser && this.dataArray) {
+            this.analyser.getByteFrequencyData(this.dataArray as any);
+            const step = Math.floor(this.dataArray.length / this.barCount);
+            for (let i = 0; i < this.barCount; i++) {
+                const value = this.dataArray[i * step] / 255;
+                this.bars[i] += (value * 40 - this.bars[i]) * 0.3;
+            }
+        } else {
+            // Simulate for demo
+            for (let i = 0; i < this.barCount; i++) {
+                const target = Math.random() * 25 + 5;
+                this.bars[i] += (target - this.bars[i]) * 0.2;
+            }
+        }
+    }
+
+    private draw() {
+        const w = this.canvas.width / (window.devicePixelRatio || 1);
+        const h = this.canvas.height / (window.devicePixelRatio || 1);
+
+        if (this.mode === 'liquid') {
+            this.drawLiquidWave(w, h);
+        } else if (this.mode === 'circle') {
+            this.drawCircleWave(w, h);
+        } else {
+            this.drawBars(w, h);
+        }
+    }
+
+    private drawLiquidWave(w: number, h: number) {
+        const midY = h / 2;
+
+        // Create gradient
+        const gradient = this.ctx.createLinearGradient(0, 0, w, 0);
+        gradient.addColorStop(0, this.color);
+        gradient.addColorStop(0.5, this.secondaryColor);
+        gradient.addColorStop(1, this.color);
+        this.ctx.fillStyle = gradient;
+
+        // Top wave
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, midY);
+        for (let i = 0; i <= this.barCount; i++) {
+            const x = (i / this.barCount) * w;
+            const waveHeight = this.isActive ? this.bars[i % this.barCount] : 3;
+            const y = midY - waveHeight - Math.sin(this.phase + i * 0.3) * 5;
+            if (i === 0) this.ctx.moveTo(x, y);
+            else this.ctx.quadraticCurveTo(x - w / this.barCount / 2, y - 3, x, y);
+        }
+        this.ctx.lineTo(w, midY);
+        this.ctx.lineTo(0, midY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Bottom wave (mirror)
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, midY);
+        for (let i = 0; i <= this.barCount; i++) {
+            const x = (i / this.barCount) * w;
+            const waveHeight = this.isActive ? this.bars[i % this.barCount] : 3;
+            const y = midY + waveHeight + Math.sin(this.phase + i * 0.3) * 5;
+            if (i === 0) this.ctx.moveTo(x, y);
+            else this.ctx.quadraticCurveTo(x - w / this.barCount / 2, y + 3, x, y);
+        }
+        this.ctx.lineTo(w, midY);
+        this.ctx.lineTo(0, midY);
+        this.ctx.closePath();
+        this.ctx.fill();
+    }
+
+    private drawCircleWave(w: number, h: number) {
+        const centerX = w / 2;
+        const centerY = h / 2;
+        const baseRadius = Math.min(w, h) / 4;
+
+        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, baseRadius * 2);
+        gradient.addColorStop(0, this.secondaryColor);
+        gradient.addColorStop(1, this.color);
+        this.ctx.strokeStyle = gradient;
+        this.ctx.lineWidth = 3;
+
+        this.ctx.beginPath();
+        for (let i = 0; i < this.barCount; i++) {
+            const angle = (i / this.barCount) * Math.PI * 2;
+            const waveHeight = this.isActive ? this.bars[i] : 5;
+            const radius = baseRadius + waveHeight + Math.sin(this.phase + i * 0.2) * 3;
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            if (i === 0) this.ctx.moveTo(x, y);
+            else this.ctx.lineTo(x, y);
+        }
+        this.ctx.closePath();
+        this.ctx.stroke();
+    }
+
+    private drawBars(w: number, h: number) {
+        const barWidth = w / this.barCount - 2;
+        this.ctx.fillStyle = this.color;
+
+        for (let i = 0; i < this.barCount; i++) {
+            const barHeight = this.isActive ? this.bars[i] : 2;
+            const x = i * (barWidth + 2);
+            const y = h / 2 - barHeight / 2;
+            this.roundRect(this.ctx, x, y, barWidth, barHeight, barWidth / 2);
+            this.ctx.fill();
+        }
+    }
+
+    private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+}
+
+// ============================================================
+// PITCH TRACKER - تتبع النبرة الصوتية
+// ============================================================
+
+export class PitchTracker {
+    private audioContext: AudioContext | null = null;
+    private analyser: AnalyserNode | null = null;
+    private pitchData: number[] = [];
+    private isTracking = false;
+    private mediaStream: MediaStream | null = null;
+
+    async start(): Promise<AnalyserNode | null> {
+        try {
+            this.audioContext = new AudioContext();
+            this.analyser = this.audioContext.createAnalyser();
+            this.analyser.fftSize = 2048;
+
+            this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+            source.connect(this.analyser);
+
+            this.isTracking = true;
+            this.pitchData = [];
+            this.trackPitch();
+
+            return this.analyser;
+        } catch (err) {
+            console.error('[PitchTracker] Failed to start:', err);
+            return null;
+        }
+    }
+
+    stop(): number[] {
+        this.isTracking = false;
+        if (this.mediaStream) {
+            this.mediaStream.getTracks().forEach(track => track.stop());
+        }
+        if (this.audioContext) {
+            this.audioContext.close();
+        }
+        return this.pitchData;
+    }
+
+    private trackPitch() {
+        if (!this.isTracking || !this.analyser) return;
+
+        const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+        this.analyser.getByteFrequencyData(dataArray);
+
+        // Simple pitch estimation: find peak frequency
+        let maxIndex = 0;
+        let maxValue = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            if (dataArray[i] > maxValue) {
+                maxValue = dataArray[i];
+                maxIndex = i;
+            }
+        }
+        // Convert index to approximate frequency
+        const sampleRate = this.audioContext?.sampleRate || 44100;
+        const frequency = (maxIndex * sampleRate) / (this.analyser.fftSize * 2);
+        this.pitchData.push(frequency > 50 ? frequency : 0); // Filter noise
+
+        requestAnimationFrame(() => this.trackPitch());
+    }
+
+    getPitchData(): number[] {
+        return this.pitchData;
+    }
+
+    getAnalyser(): AnalyserNode | null {
+        return this.analyser;
+    }
+}
+
+// ============================================================
+// MASTERY BADGE SYSTEM - نظام الأوسمة
+// ============================================================
+
+export const MasteryBadges = {
+    levels: [
+        { name: 'bronze', minScore: 50, label: '🥉 Bronze / برونزي', color: '#cd7f32' },
+        { name: 'silver', minScore: 70, label: '🥈 Silver / فضي', color: '#c0c0c0' },
+        { name: 'gold', minScore: 85, label: '🥇 Gold / ذهبي', color: '#ffd700' },
+        { name: 'platinum', minScore: 95, label: '💎 Platinum / بلاتيني', color: '#e5e4e2' }
+    ],
+
+    getBadge(score: number): { name: string; label: string; color: string } | null {
+        for (let i = this.levels.length - 1; i >= 0; i--) {
+            if (score >= this.levels[i].minScore) return this.levels[i];
+        }
+        return null;
+    },
+
+    renderBadge(score: number, container: HTMLElement) {
+        const badge = this.getBadge(score);
+        if (!badge) return;
+
+        const badgeEl = document.createElement('div');
+        badgeEl.className = `mastery-badge mastery-${badge.name}`;
+        badgeEl.style.cssText = `
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, ${badge.color}22, ${badge.color}44);
+            border: 2px solid ${badge.color};
+            color: ${badge.color};
+            font-weight: 700;
+            animation: badge-pop 0.5s ease-out;
+        `;
+        badgeEl.innerHTML = badge.label;
+        container.appendChild(badgeEl);
+
+        // Add pop animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes badge-pop {
+                0% { transform: scale(0); opacity: 0; }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+};
+
+
+// ============================================================
+// PRONUNCIATION RECORDER - نظام "استمع وقارن"
+// ============================================================
+
+export class PronunciationRecorder {
+    private mediaRecorder: MediaRecorder | null = null;
+    private audioChunks: Blob[] = [];
+    private isRecording = false;
+
+    async start() {
+        if (this.isRecording) return;
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaRecorder = new MediaRecorder(stream);
+            this.audioChunks = [];
+
+            this.mediaRecorder.ondataavailable = (event) => {
+                this.audioChunks.push(event.data);
+            };
+
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            window.dispatchEvent(new CustomEvent('recorder-start'));
+        } catch (err) {
+            console.error('Recording failed:', err);
+            const showToast = (window as any).showToast;
+            if (showToast) showToast('❌ <span class="sv-text">Mikrofonåtkomst nekad</span><span class="ar-text">تم رفض الوصول للميكروفون</span>', { type: 'error' });
+        }
+    }
+
+    stop(): Promise<Blob> {
+        return new Promise((resolve) => {
+            if (!this.mediaRecorder || !this.isRecording) return;
+
+            this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                this.isRecording = false;
+                window.dispatchEvent(new CustomEvent('recorder-stop', { detail: { blob: audioBlob } }));
+                resolve(audioBlob);
+            };
+
+            this.mediaRecorder.stop();
+            // Stop all tracks to release microphone
+            this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        });
+    }
+
+    static async playBlob(blob: Blob) {
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        await audio.play();
+    }
+}
+
+// ============================================================
 // AUTO-INIT - تهيئة تلقائية
 // ============================================================
 
@@ -516,4 +905,7 @@ if (typeof window !== 'undefined') {
     (window as any).OnboardingTour = OnboardingTour;
     (window as any).MicroInteractions = MicroInteractions;
     (window as any).PullToRefresh = PullToRefresh;
+    (window as any).AudioVisualizer = AudioVisualizer;
+    (window as any).PronunciationRecorder = PronunciationRecorder;
 }
+

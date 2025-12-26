@@ -8,7 +8,7 @@
     <meta name="description"
         content="Gratis svensk-arabiskt lexikon med 34000+ ord, uttal, grammatik och lärspel. Offline-stöd för iOS och Android. القاموس السويدي العربي المجاني مع أكثر من 34000 كلمة.">
     <meta name="keywords"
-        content="svensk arabisk lexikon, svenska ordbok, arabiska ordbok, lär dig svenska, تعلم السويدية, قاموس سويدي عربي">
+        content="svensk-arabiskt lexikon, svensk ordbok, arabisk ordbok, lär dig svenska, تعلم السويدية, قاموس سويدي عربي, تعلم اللغة السويدية للمبتدئين">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -216,6 +216,16 @@
                     </div>
                 </div>
 
+                <!-- NEW: TTS Voice Selection -->
+                <div class="menu-item tts-voice-selection">
+                    <span class="icon-box icon-color-indigo">🎭</span>
+                    <div class="voice-selector-inline">
+                        <button class="voice-btn active" data-voice="natural" title="Naturlig / طبيعي">🌍</button>
+                        <button class="voice-btn" data-voice="female" title="Kvinna / أنثى">👩</button>
+                        <button class="voice-btn" data-voice="male" title="Man / ذكر">👨</button>
+                    </div>
+                </div>
+
                 <!-- Reminder Notifications Control -->
                 <div class="menu-item reminder-control">
                     <span class="icon-box icon-color-amber">
@@ -386,7 +396,6 @@
                 </div>
             </div>
         </div>
-        </div>
 
         <div class="nav-center">
             <div class="brand-header">
@@ -411,21 +420,14 @@
                     <span id="currentStreak">0</span>
                 </span>
             </div>
-        </div>
 
-        <!-- Hidden elements kept for functionality -->
-        <button id="installApp" class="hidden" title="Installera appen / تثبيت التطبيق"></button>
-        <input type="file" id="importCustomFile" accept=".json" class="hidden"
-            title="Importera anpassade ord / استيراد كلمات مخصصة">
-        <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
+            <!-- Hidden elements kept for functionality -->
+            <button id="installApp" class="hidden" title="Installera appen / تثبيت التطبيق"></button>
+            <input type="file" id="importCustomFile" accept=".json" class="hidden"
+                title="Importera anpassade ord / استيراد كلمات مخصصة">
+            <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
     </nav>
 
-    </div>
-    </nav>
-
-
-
-    </div>
     <!-- <h3>Snabba Lexin</h3> -->
     <!-- <p class="subtitle">Svensk-Arabiskt Lexikon / القاموس السويدي العربي</p> -->
 

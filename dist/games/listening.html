@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listening Test - اختبار السمع</title>
+    <title>Lyssna Test / اختبار السمع - SnabbaLexin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -44,7 +44,7 @@
     </header>
 
     <div class="title-bar">
-        <h1 class="game-title">🎧 Lyssna / اختبار السمع</h1>
+        <h1 class="game-title">🎧 <span class="sv-text">Lyssna</span><span class="ar-text">اختبار السمع</span></h1>
     </div>
 
     <div class="game-container">
@@ -54,27 +54,35 @@
         </div>
 
         <div class="difficulty-btns">
-            <button class="diff-btn active" onclick="setDifficulty('easy', this)">Lätt</button>
-            <button class="diff-btn" onclick="setDifficulty('medium', this)">Medel</button>
-            <button class="diff-btn" onclick="setDifficulty('hard', this)">Svår</button>
+            <button class="diff-btn active" onclick="setDifficulty('easy', this)"><span class="sv-text">Lätt</span><span
+                    class="ar-text">سهل</span></button>
+            <button class="diff-btn" onclick="setDifficulty('medium', this)"><span class="sv-text">Medel</span><span
+                    class="ar-text">متوسط</span></button>
+            <button class="diff-btn" onclick="setDifficulty('hard', this)"><span class="sv-text">Svår</span><span
+                    class="ar-text">صعب</span></button>
         </div>
 
         <button class="speaker-btn" id="speakerBtn" onclick="playWord()" aria-label="Play / استمع">🔊</button>
-        <div class="hint-text">Klicka för att lyssna / انقر للاستماع</div>
+        <div class="hint-text"><span class="sv-text">Klicka för att lyssna</span><span class="ar-text">انقر
+                للاستماع</span></div>
 
         <div class="translation-hint" id="translationHint"></div>
 
         <div class="input-container">
-            <input type="text" class="word-input" id="wordInput" placeholder="Skriv ordet..." autocomplete="off">
-            <button class="submit-btn" onclick="checkAnswer()">Kontrollera ✓</button>
+            <input type="text" class="word-input" id="wordInput" placeholder="Skriv ordet... / اكتب الكلمة..."
+                autocomplete="off">
+            <button class="submit-btn" onclick="checkAnswer()"><span class="sv-text">Kontrollera</span><span
+                    class="ar-text">تحقق</span> ✓</button>
         </div>
     </div>
 
     <div class="result-overlay" id="resultOverlay">
         <div class="result-emoji" id="resultEmoji">🎉</div>
-        <div class="result-text" id="resultText">Bra jobbat!</div>
+        <div class="result-text" id="resultText"><span class="sv-text">Bra jobbat!</span><span
+                class="ar-text">أحسنت!</span></div>
         <div id="resultStats"></div>
-        <button class="play-again-btn" onclick="startNewGame()">Spela igen 🔄</button>
+        <button class="play-again-btn" onclick="startNewGame()"><span class="sv-text">Spela igen</span><span
+                class="ar-text">العب مرة أخرى</span> 🔄</button>
     </div>
 
     <script>

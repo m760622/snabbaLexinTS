@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Info / معلومات الجهاز</title>
+    <title><span class="sv-text">Enhetsinformation</span><span class="ar-text">معلومات الجهاز</span></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -33,7 +33,7 @@
         </button>
         <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
             title="وضع الموبايل">📱</button>
-        <h1>🖥️ <span class="sv-text">Device Info</span><span class="ar-text">معلومات الجهاز</span></h1>
+        <h1>🖥️ <span class="sv-text">Enhetsinfo</span><span class="ar-text">معلومات الجهاز</span></h1>
     </header>
 
     <main>
@@ -50,7 +50,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🌐</span>
-                    <span class="stat-label">Webbläsare / المتصفح</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Webbläsare</span>
+                        <span class="ar-text">المتصفح</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="browserInfo">-</div>
             </div>
@@ -59,7 +62,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">⚙️</span>
-                    <span class="stat-label">Operativsystem / نظام التشغيل</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Operativsystem</span>
+                        <span class="ar-text">نظام التشغيل</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="osInfo">-</div>
             </div>
@@ -68,7 +74,10 @@
             <div class="stat-card screen-card">
                 <div class="stat-header">
                     <span class="stat-icon">📐</span>
-                    <span class="stat-label">Skärmstorlek / حجم الشاشة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Skärmstorlek</span>
+                        <span class="ar-text">حجم الشاشة</span>
+                    </span>
                 </div>
                 <div class="stat-value">
                     <div class="screen-visual" id="screenVisual">-</div>
@@ -80,7 +89,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔍</span>
-                    <span class="stat-label">Pixel Density / كثافة البكسل</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Pixeltäthet</span>
+                        <span class="ar-text">كثافة البكسل</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="pixelRatio">-</div>
             </div>
@@ -89,7 +101,10 @@
             <div class="stat-card hidden" id="batteryCard">
                 <div class="stat-header">
                     <span class="stat-icon">🔋</span>
-                    <span class="stat-label">Batteri / البطارية</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Batteri</span>
+                        <span class="ar-text">البطارية</span>
+                    </span>
                 </div>
                 <div class="battery-visual">
                     <span class="battery-icon" id="batteryIcon">🔋</span>
@@ -105,7 +120,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📶</span>
-                    <span class="stat-label">Nätverk / الشبكة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Nätverk</span>
+                        <span class="ar-text">الشبكة</span>
+                    </span>
                 </div>
                 <div class="stat-value">
                     <div class="network-status">
@@ -119,7 +137,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🌍</span>
-                    <span class="stat-label">Språk / اللغة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Språk</span>
+                        <span class="ar-text">اللغة</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="languageInfo">-</div>
             </div>
@@ -128,7 +149,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">👆</span>
-                    <span class="stat-label">Touch / اللمس</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Touch</span>
+                        <span class="ar-text">اللمس</span>
+                    </span>
                 </div>
                 <div class="stat-value">
                     <span class="touch-indicator" id="touchInfo">-</span>
@@ -139,7 +163,10 @@
             <div class="stat-card hidden" id="memoryCard">
                 <div class="stat-header">
                     <span class="stat-icon">💾</span>
-                    <span class="stat-label">Minne / الذاكرة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Minne</span>
+                        <span class="ar-text">الذاكرة</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="memoryInfo">-</div>
             </div>
@@ -148,21 +175,30 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🧠</span>
-                    <span class="stat-label">CPU Kärnor / نوى المعالج</span>
+                    <span class="stat-label">
+                        <span class="sv-text">CPU-kärnor</span>
+                        <span class="ar-text">نوى المعالج</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="cpuInfo">-</div>
             </div>
 
             <!-- ADVANCED DATA SECTION -->
             <div class="section-divider">
-                <span>🔬 Avancerad Data / بيانات متقدمة</span>
+                <span>
+                    🔬 <span class="sv-text">Avancerad data</span>
+                    <span class="ar-text">بيانات متقدمة</span>
+                </span>
             </div>
 
             <!-- Timezone -->
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🕐</span>
-                    <span class="stat-label">Tidszon / المنطقة الزمنية</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Tidszon</span>
+                        <span class="ar-text">المنطقة الزمنية</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="timezoneInfo">-</div>
             </div>
@@ -171,7 +207,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🎨</span>
-                    <span class="stat-label">Färgdjup / عمق الألوان</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Färgdjup</span>
+                        <span class="ar-text">عمق الألوان</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="colorDepthInfo">-</div>
             </div>
@@ -180,7 +219,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔄</span>
-                    <span class="stat-label">Skärmorientering / اتجاه الشاشة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Skärmorientering</span>
+                        <span class="ar-text">اتجاه الشاشة</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="orientationInfo">-</div>
             </div>
@@ -189,7 +231,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">💻</span>
-                    <span class="stat-label">Platform / المنصة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Plattform</span>
+                        <span class="ar-text">المنصة</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="platformInfo">-</div>
             </div>
@@ -198,7 +243,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🏭</span>
-                    <span class="stat-label">Browser Vendor / مصنع المتصفح</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Utgivare</span>
+                        <span class="ar-text">المصنع</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="vendorInfo">-</div>
             </div>
@@ -216,7 +264,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🕵️</span>
-                    <span class="stat-label">Do Not Track / عدم التتبع</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Spårning ej tillåten</span>
+                        <span class="ar-text">عدم التتبع</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="dntInfo">-</div>
             </div>
@@ -225,7 +276,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📄</span>
-                    <span class="stat-label">PDF Viewer / عارض PDF</span>
+                    <span class="stat-label">
+                        <span class="sv-text">PDF-stöd</span>
+                        <span class="ar-text">عارض PDF</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="pdfInfo">-</div>
             </div>
@@ -234,7 +288,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🎮</span>
-                    <span class="stat-label">WebGL Renderer / عارض الرسوميات</span>
+                    <span class="stat-label">
+                        <span class="sv-text">WebGL-grafik</span>
+                        <span class="ar-text">عارض الرسوميات</span>
+                    </span>
                 </div>
                 <div class="stat-value text-sm" id="webglInfo">-</div>
             </div>
@@ -243,7 +300,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🖼️</span>
-                    <span class="stat-label">Canvas Hash / بصمة الرسم</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Grafisk signatur</span>
+                        <span class="ar-text">بصمة الرسم</span>
+                    </span>
                 </div>
                 <div class="stat-value font-mono-sm" id="canvasInfo">-</div>
             </div>
@@ -252,7 +312,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔊</span>
-                    <span class="stat-label">Audio Context / سياق الصوت</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Ljudsystem</span>
+                        <span class="ar-text">سياق الصوت</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="audioInfo">-</div>
             </div>
@@ -261,7 +324,10 @@
             <div class="stat-card" id="storageCard">
                 <div class="stat-header">
                     <span class="stat-icon">📦</span>
-                    <span class="stat-label">Storage Quota / مساحة التخزين</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Lagringskvot</span>
+                        <span class="ar-text">مساحة التخزين</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="storageInfo">-</div>
                 <div class="storage-bar">
@@ -282,7 +348,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔔</span>
-                    <span class="stat-label">Notifications / الإشعارات</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Notifikationer</span>
+                        <span class="ar-text">الإشعارات</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="notifInfo">-</div>
             </div>
@@ -291,7 +360,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📍</span>
-                    <span class="stat-label">Geolocation / الموقع الجغرافي</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Platstjänster</span>
+                        <span class="ar-text">الموقع الجغرافي</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="geoInfo">-</div>
             </div>
@@ -300,7 +372,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔌</span>
-                    <span class="stat-label">Plugins / الإضافات</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Webbläsartillägg</span>
+                        <span class="ar-text">الإضافات</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="pluginsInfo">-</div>
             </div>
@@ -309,7 +384,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🔐</span>
-                    <span class="stat-label">UA Fingerprint / بصمة المتصفح</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Fingeravtryck</span>
+                        <span class="ar-text">بصمة المتصفح</span>
+                    </span>
                 </div>
                 <div class="stat-value stat-value-mono" id="uaHashInfo">-</div>
             </div>
@@ -318,7 +396,10 @@
             <div class="stat-card" id="connectionCard">
                 <div class="stat-header">
                     <span class="stat-icon">🌐</span>
-                    <span class="stat-label">Connection Details / تفاصيل الاتصال</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Anslutning</span>
+                        <span class="ar-text">تفاصيل الاتصال</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="connectionInfo">-</div>
             </div>
@@ -327,7 +408,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📏</span>
-                    <span class="stat-label">Viewport Size / حجم العرض</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Visningsyta</span>
+                        <span class="ar-text">حجم العرض</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="viewportInfo">-</div>
             </div>
@@ -336,7 +420,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🖥️</span>
-                    <span class="stat-label">Available Screen / الشاشة المتاحة</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Tillgänglig skärm</span>
+                        <span class="ar-text">الشاشة المتاحة</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="availScreenInfo">-</div>
             </div>
@@ -345,7 +432,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">💾</span>
-                    <span class="stat-label">LocalStorage Used / التخزين المحلي</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Lokalt lager used</span>
+                        <span class="ar-text">التخزين المحلي</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="localStorageInfo">-</div>
             </div>
@@ -354,7 +444,10 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📊</span>
-                    <span class="stat-label">Session Count / عدد الجلسات</span>
+                    <span class="stat-label">
+                        <span class="sv-text">Antal sessioner</span>
+                        <span class="ar-text">عدد الجلسات</span>
+                    </span>
                 </div>
                 <div class="stat-value" id="sessionInfo">-</div>
             </div>
@@ -363,7 +456,7 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">🎥</span>
-                    <span class="stat-label">WebRTC Support / دعم WebRTC</span>
+                    <span class="stat-label">WebRTC-stöd / دعم WebRTC</span>
                 </div>
                 <div class="stat-value" id="webrtcInfo">-</div>
             </div>

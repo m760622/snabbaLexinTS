@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fill-in-blank - أكمل الفراغ</title>
+    <title>Fyll i / أكمل الفراغ - SnabbaLexin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -45,7 +45,7 @@
     </header>
 
     <div class="title-bar">
-        <h1 class="game-title">📝 Fyll i / أكمل الفراغ</h1>
+        <h1 class="game-title">📝 <span class="sv-text">Fyll i</span><span class="ar-text">أكمل الفراغ</span></h1>
     </div>
 
     <div class="game-container">
@@ -55,7 +55,8 @@
         </div>
 
         <div class="question-card" id="questionCard">
-            <div class="sentence" id="sentence">Loading...</div>
+            <div class="sentence" id="sentence"><span class="sv-text">Loading...</span><span class="ar-text">جاري
+                    التحميل...</span></div>
             <div class="translation" id="translation"></div>
             <div class="options" id="options"></div>
         </div>
@@ -65,9 +66,11 @@
 
     <div class="result-overlay" id="resultOverlay">
         <div class="result-emoji" id="resultEmoji">🎉</div>
-        <div class="result-text" id="resultText">Bra jobbat!</div>
+        <div class="result-text" id="resultText"><span class="sv-text">Bra jobbat!</span><span
+                class="ar-text">أحسنت!</span></div>
         <div id="resultStats"></div>
-        <button class="play-again-btn" onclick="startNewGame()">Spela igen 🔄</button>
+        <button class="play-again-btn" onclick="startNewGame()"><span class="sv-text">Spela igen</span><span
+                class="ar-text">العب مرة أخرى</span> 🔄</button>
     </div>
 
     <script>

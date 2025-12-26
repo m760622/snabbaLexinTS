@@ -8,7 +8,7 @@
     <meta name="description"
         content="Gratis svensk-arabiskt lexikon med 34000+ ord, uttal, grammatik och lärspel. Offline-stöd för iOS och Android. القاموس السويدي العربي المجاني مع أكثر من 34000 كلمة.">
     <meta name="keywords"
-        content="svensk arabisk lexikon, svenska ordbok, arabiska ordbok, lär dig svenska, تعلم السويدية, قاموس سويدي عربي">
+        content="svensk-arabiskt lexikon, svensk ordbok, arabisk ordbok, lär dig svenska, تعلم السويدية, قاموس سويدي عربي, تعلم اللغة السويدية للمبتدئين">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -19,19 +19,19 @@
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/main-BJ9NuH6t.js"></script>
+  <script type="module" crossorigin src="/assets/main-BviAHa9-.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
   <link rel="modulepreload" crossorigin href="/assets/loader-Cih9HbkJ.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-C5U53K2V.js">
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-C6Jzjky6.js">
-  <link rel="modulepreload" crossorigin href="/assets/i18n-CIWjEN3D.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-BjpN1E78.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-XhfEu2e6.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-DUR12SQ4.css">
   <link rel="stylesheet" crossorigin href="/assets/mobile-enhancements-CKQOuDxe.css">
 </head>
 
@@ -226,6 +226,16 @@
                     </div>
                 </div>
 
+                <!-- NEW: TTS Voice Selection -->
+                <div class="menu-item tts-voice-selection">
+                    <span class="icon-box icon-color-indigo">🎭</span>
+                    <div class="voice-selector-inline">
+                        <button class="voice-btn active" data-voice="natural" title="Naturlig / طبيعي">🌍</button>
+                        <button class="voice-btn" data-voice="female" title="Kvinna / أنثى">👩</button>
+                        <button class="voice-btn" data-voice="male" title="Man / ذكر">👨</button>
+                    </div>
+                </div>
+
                 <!-- Reminder Notifications Control -->
                 <div class="menu-item reminder-control">
                     <span class="icon-box icon-color-amber">
@@ -396,7 +406,6 @@
                 </div>
             </div>
         </div>
-        </div>
 
         <div class="nav-center">
             <div class="brand-header">
@@ -421,21 +430,14 @@
                     <span id="currentStreak">0</span>
                 </span>
             </div>
-        </div>
 
-        <!-- Hidden elements kept for functionality -->
-        <button id="installApp" class="hidden" title="Installera appen / تثبيت التطبيق"></button>
-        <input type="file" id="importCustomFile" accept=".json" class="hidden"
-            title="Importera anpassade ord / استيراد كلمات مخصصة">
-        <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
+            <!-- Hidden elements kept for functionality -->
+            <button id="installApp" class="hidden" title="Installera appen / تثبيت التطبيق"></button>
+            <input type="file" id="importCustomFile" accept=".json" class="hidden"
+                title="Importera anpassade ord / استيراد كلمات مخصصة">
+            <input type="file" id="importFile" accept=".json" class="hidden" title="Importera data / استيراد البيانات">
     </nav>
 
-    </div>
-    </nav>
-
-
-
-    </div>
     <!-- <h3>Snabba Lexin</h3> -->
     <!-- <p class="subtitle">Svensk-Arabiskt Lexikon / القاموس السويدي العربي</p> -->
 

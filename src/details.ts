@@ -6,6 +6,391 @@ import { TTSManager } from './tts';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { t, tLang, LanguageManager } from './i18n';
+import { AudioVisualizer, PronunciationRecorder, HapticFeedback, Celebrations, MasteryBadges } from './ui-enhancements';
+import { PronunciationHelper } from './pronunciation-data';
+
+/**
+ * Pronunciation Lab Manager
+ * مختبر النطق - يدير التفاعل الصوتي والمرئي
+ */
+class PronunciationLab {
+    private static visualizer: AudioVisualizer | null = null;
+    private static recorder: PronunciationRecorder | null = null;
+    private static currentWord: string = '';
+    private static recognition: any = null;
+    private static currentLevel: 'listen' | 'repeat' | 'challenge' = 'listen';
+
+    static init(word: string) {
+        this.currentWord = word;
+
+        try {
+            if (!this.visualizer) {
+                this.visualizer = new AudioVisualizer('audioVisualizerContainer', '#7dd3fc');
+                this.visualizer.setMode('liquid'); // Use liquid wave mode
+            }
+            if (!this.recorder) {
+                this.recorder = new PronunciationRecorder();
+            }
+
+            this.setupEvents();
+            this.setupPracticeLevels();
+            this.renderStaticInfo();
+            this.initSpeechRecognition();
+        } catch (e) {
+            console.warn('PronunciationLab init failed:', e);
+        }
+    }
+
+    private static setupPracticeLevels() {
+        const container = document.getElementById('practiceLevelsContainer');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="practice-levels">
+                <button class="practice-level-btn active" data-level="listen">
+                    <span class="practice-level-icon">👂</span>
+                    <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span>
+                </button>
+                <button class="practice-level-btn" data-level="repeat">
+                    <span class="practice-level-icon">🔁</span>
+                    <span class="sv-text">Upprepa</span><span class="ar-text">كرر</span>
+                </button>
+                <button class="practice-level-btn" data-level="challenge">
+                    <span class="practice-level-icon">🎯</span>
+                    <span class="sv-text">Utmaning</span><span class="ar-text">تحدي</span>
+                </button>
+            </div>
+        `;
+
+        container.querySelectorAll('.practice-level-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                container.querySelectorAll('.practice-level-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentLevel = (btn as HTMLElement).dataset.level as any;
+                this.updateUIForLevel();
+            });
+        });
+    }
+
+    private static updateUIForLevel() {
+        const normalBtn = document.getElementById('pronounceNormalBtn');
+        const slowBtn = document.getElementById('pronounceSlowBtn');
+        const recordSection = document.getElementById('recordingSection');
+
+        if (this.currentLevel === 'listen') {
+            normalBtn?.classList.remove('hidden');
+            slowBtn?.classList.remove('hidden');
+            recordSection?.classList.add('hidden');
+        } else if (this.currentLevel === 'repeat') {
+            normalBtn?.classList.remove('hidden');
+            slowBtn?.classList.remove('hidden');
+            recordSection?.classList.remove('hidden');
+        } else { // challenge
+            normalBtn?.classList.add('hidden');
+            slowBtn?.classList.add('hidden');
+            recordSection?.classList.remove('hidden');
+        }
+    }
+
+    private static setupEvents() {
+        const normalBtn = document.getElementById('pronounceNormalBtn');
+        const slowBtn = document.getElementById('pronounceSlowBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const playRecordedBtn = document.getElementById('playRecordedBtn');
+
+        normalBtn?.addEventListener('click', () => {
+            HapticFeedback.light();
+            TTSManager.speakSwedish(this.currentWord);
+        });
+
+        slowBtn?.addEventListener('click', () => {
+            HapticFeedback.light();
+            TTSManager.speakSlowly(this.currentWord, 'sv');
+        });
+
+        recordBtn?.addEventListener('click', () => this.toggleRecording());
+
+        playRecordedBtn?.addEventListener('click', async () => {
+            HapticFeedback.light();
+            const blob = (this as any).lastRecordedBlob;
+            if (blob) PronunciationRecorder.playBlob(blob);
+        });
+
+        // TTS Events for Visualizer & Karaoke
+        window.addEventListener('tts-start', () => {
+            this.visualizer?.start();
+            this.updateKaraokeActive(true);
+            document.getElementById('audioVisualizerContainer')?.classList.add('active');
+            this.startSyllableHighlight(); // Start syllable animation
+        });
+
+        window.addEventListener('tts-end', () => {
+            this.visualizer?.stop();
+            this.updateKaraokeActive(false);
+            document.getElementById('audioVisualizerContainer')?.classList.remove('active');
+            this.stopSyllableHighlight(); // Stop syllable animation
+        });
+
+        window.addEventListener('tts-boundary', (e: any) => {
+            this.highlightWord(e.detail.word);
+        });
+    }
+
+    private static syllableInterval: any = null;
+
+    private static startSyllableHighlight() {
+        const syllables = document.querySelectorAll('.syllable-chip');
+        if (syllables.length === 0) return;
+
+        // Clear any existing highlight
+        syllables.forEach(s => s.classList.remove('active'));
+
+        // 1. Estimate total duration based on word length and speed
+        // Average speaking rate ~ 12-15 chars per second for normal speech
+        // We add some buffer for startup delay
+        const totalChars = this.currentWord.length;
+        const speed = parseFloat(localStorage.getItem('ttsSpeed') || '0.85');
+
+        // Base duration calculation: (Chars * ms_per_char) / speed
+        // + extra time for "slower" Swedish pronunciation usually found in TTS
+        const estimatedDuration = (totalChars * 80) / speed;
+
+        // 2. Calculate duration for each syllable based on its length weight
+        const syllableDurations: number[] = [];
+        let totalWeight = 0;
+
+        syllables.forEach(el => {
+            const textHTML = el.textContent || '';
+            const weight = Math.max(1, textHTML.length); // Min weight 1
+            totalWeight += weight;
+            // Store temporarily
+            (el as any)._weight = weight;
+        });
+
+        // Distribute estimated duration
+        syllables.forEach((el, index) => {
+            const weight = (el as any)._weight;
+            const duration = (weight / totalWeight) * estimatedDuration;
+            syllableDurations[index] = Math.max(200, duration); // Min duration 200ms
+        });
+
+        let currentIndex = 0;
+
+        const highlightNext = () => {
+            if (currentIndex >= syllables.length) return; // Stop if done
+
+            // Clear previous
+            if (currentIndex > 0) syllables[currentIndex - 1].classList.remove('active');
+
+            // Highlight current
+            const currentEl = syllables[currentIndex];
+            currentEl.classList.add('active');
+
+            const duration = syllableDurations[currentIndex];
+            currentIndex++;
+
+            // Schedule next
+            this.syllableInterval = setTimeout(highlightNext, duration);
+        };
+
+        // Start correctly
+        highlightNext();
+    }
+
+    private static stopSyllableHighlight() {
+        if (this.syllableInterval) {
+            clearTimeout(this.syllableInterval); // Changed to clearTimeout
+            this.syllableInterval = null;
+        }
+        // Remove all highlights
+        document.querySelectorAll('.syllable-chip').forEach(s => s.classList.remove('active'));
+    }
+
+    private static renderStaticInfo() {
+        // Karaoke Display
+        const karaoke = document.getElementById('karaokeDisplay');
+        if (karaoke) {
+            karaoke.innerHTML = this.currentWord.split(' ').map((word, i) =>
+                `<span class="karaoke-word" data-word-index="${i}">${word}</span>`
+            ).join(' ');
+
+            // Apply text auto-sizing for long words
+            karaoke.setAttribute('data-auto-size', '');
+            karaoke.setAttribute('data-max-lines', '1');
+            setTimeout(() => TextSizeManager.apply(karaoke, this.currentWord, 1, 2.5), 50); // Base size 2.5rem
+        }
+
+        // Syllables
+        const syllableDisplay = document.getElementById('syllableDisplay');
+        if (syllableDisplay) {
+            const syllables = PronunciationHelper.splitIntoSyllables(this.currentWord);
+            syllableDisplay.innerHTML = syllables.map(s => `<span class="syllable-chip" data-auto-size data-max-lines="1">${s}</span>`).join('');
+            // Apply text size after rendering
+            setTimeout(() => TextSizeManager.applyToContainer(syllableDisplay), 50);
+        }
+
+        // Tips
+        const tipsArea = document.getElementById('phoneticTipsArea');
+        if (tipsArea) {
+            const tips = PronunciationHelper.getTipsForWord(this.currentWord);
+            tipsArea.innerHTML = tips.map(tip => `
+                <div class="tip-card">
+                    <div class="tip-title">💡 <span class="sv-text">Tips</span><span class="ar-text">نصيحة</span></div>
+                    <div class="tip-text">${LanguageManager.getLanguage() === 'sv' ? tip.tip.sv : tip.tip.ar}</div>
+                    <div class="tip-ex">Ex: ${tip.example}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    private static highlightWord(word: string) {
+        const karaoke = document.getElementById('karaokeDisplay');
+        if (!karaoke) return;
+
+        const spans = karaoke.querySelectorAll('.karaoke-word');
+        spans.forEach(span => {
+            const spanWord = span.textContent?.toLowerCase().replace(/[.,!?;:]/g, '');
+            const targetWord = word.toLowerCase().replace(/[.,!?;:]/g, '');
+
+            if (spanWord === targetWord) {
+                span.classList.add('active');
+                setTimeout(() => span.classList.remove('active'), 800);
+            }
+        });
+    }
+
+    private static updateKaraokeActive(active: boolean) {
+        const karaoke = document.getElementById('karaokeDisplay');
+        if (karaoke) {
+            if (active) karaoke.classList.add('playing');
+            else karaoke.classList.remove('playing');
+        }
+    }
+
+    private static isRecording = false;
+    private static async toggleRecording() {
+        const recordBtn = document.getElementById('recordBtn');
+        const feedback = document.getElementById('recordingFeedback');
+        const playback = document.getElementById('playbackArea');
+        const labSection = document.querySelector('.pronunciation-lab-section');
+
+        if (!this.isRecording) {
+            // Start
+            this.isRecording = true;
+            recordBtn?.classList.add('active');
+            recordBtn!.innerHTML = `⏹️ <span class="sv-text">Stoppa</span><span class="ar-text">إيقاف</span>`;
+            feedback?.classList.remove('hidden');
+            playback?.classList.add('hidden');
+            labSection?.classList.add('recording');
+
+            this.visualizer?.start();
+            document.querySelector('.audio-visualizer-canvas')?.classList.add('recording');
+            await this.recorder?.start();
+            this.startSpeechRecognition();
+        } else {
+            // Stop
+            this.isRecording = false;
+            recordBtn?.classList.remove('active');
+            recordBtn!.innerHTML = `🎙️ <span class="sv-text">Spela in</span><span class="ar-text">تسجيل</span>`;
+            feedback?.classList.add('hidden');
+            labSection?.classList.remove('recording');
+            document.querySelector('.audio-visualizer-canvas')?.classList.remove('recording');
+
+            this.visualizer?.stop();
+            const blob = await this.recorder?.stop();
+            (this as any).lastRecordedBlob = blob;
+            playback?.classList.remove('hidden');
+
+            this.stopSpeechRecognition();
+        }
+    }
+
+    private static initSpeechRecognition() {
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
+
+        this.recognition = new SpeechRecognition();
+        this.recognition.lang = 'sv-SE';
+        this.recognition.interimResults = false;
+        this.recognition.maxAlternatives = 1;
+
+        this.recognition.onresult = (event: any) => {
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            const confidence = event.results[0][0].confidence;
+            this.calculateScore(spokenText, confidence);
+        };
+    }
+
+    private static startSpeechRecognition() {
+        if (this.recognition) {
+            try { this.recognition.start(); } catch (e) { }
+        }
+    }
+
+    private static stopSpeechRecognition() {
+        if (this.recognition) {
+            try { this.recognition.stop(); } catch (e) { }
+        }
+    }
+
+    private static calculateScore(spoken: string, confidence: number) {
+        const target = this.currentWord.toLowerCase();
+        let score = 0;
+
+        if (spoken === target) {
+            score = Math.round(confidence * 100);
+        } else {
+            if (spoken.includes(target) || target.includes(spoken)) {
+                score = Math.round(confidence * 80);
+            } else {
+                score = Math.round(confidence * 40);
+            }
+        }
+
+        const scoreEl = document.getElementById('pronunciationScore');
+        const badgeContainer = document.getElementById('masteryBadgeContainer');
+        const labSection = document.querySelector('.pronunciation-lab-section');
+
+        if (scoreEl) {
+            scoreEl.innerHTML = `⭐ <span class="sv-text">Resultat: ${score}%</span><span class="ar-text">النتيجة: ${score}%</span>`;
+
+            // Show success state
+            if (score > 50) {
+                labSection?.classList.add('success');
+                setTimeout(() => labSection?.classList.remove('success'), 2000);
+            }
+
+            // High score celebration with gold particles
+            if (score > 80) {
+                Celebrations.confetti({ particleCount: 50, spread: 50 });
+                HapticFeedback.success();
+                this.showGoldParticles();
+            }
+
+            // Render mastery badge
+            if (badgeContainer) {
+                badgeContainer.innerHTML = ''; // Clear previous
+                MasteryBadges.renderBadge(score, badgeContainer);
+            }
+        }
+    }
+
+    private static showGoldParticles() {
+        const container = document.getElementById('audioVisualizerContainer');
+        if (!container) return;
+
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'gold-particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 0.5}s`;
+            container.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 1500);
+        }
+    }
+}
+
 
 /**
  * Smart Link Processor - Linkifies definitions
@@ -23,12 +408,23 @@ class SmartLinkProcessor {
 
     static setupListeners(container: HTMLElement) {
         container.querySelectorAll('.smart-link').forEach(link => {
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', async (e) => {
                 const word = (e.currentTarget as HTMLElement).dataset.word;
                 if (word) {
-                    // Search for the word in dictionary
+                    // 1. Search for the word in dictionary (fast global lookup)
                     const data = (window as any).dictionaryData as any[][];
-                    const found = data?.find(row => row[2].toLowerCase() === word);
+                    let found = data?.find(row => row[2].toLowerCase() === word);
+
+                    // 2. Try DB if global data not ready
+                    if (!found) {
+                        try {
+                            const allWords = await DictionaryDB.getAllWords();
+                            found = allWords?.find(row => row[2].toLowerCase() === word);
+                        } catch (err) {
+                            console.warn('[SmartLink] DB fallback fail:', err);
+                        }
+                    }
+
                     if (found) {
                         window.location.href = `details.html?id=${found[0]}`;
                     } else {
@@ -1429,6 +1825,11 @@ export class DetailsManager {
         if (lang === 'sv') document.title = `${swe} - SnabbaLexin`;
         else if (lang === 'ar') document.title = `${arb} - سنابا لكسين`;
         else document.title = `${swe} | ${arb} - SnabbaLexin`;
+
+        // Initialize Pronunciation Lab
+        setTimeout(() => {
+            PronunciationLab.init(swe);
+        }, 100);
     }
 
     private setupHeaderActions(row: any[], isFav: boolean) {

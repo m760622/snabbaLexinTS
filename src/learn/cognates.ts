@@ -2,6 +2,7 @@ import { CognateEntry } from '../types';
 import { cognatesData } from '../data/cognatesData';
 import { TTSManager } from '../tts';
 import { TextSizeManager } from '../utils';
+import { LanguageManager } from '../i18n';
 
 // ========== TYPES ==========
 
@@ -38,6 +39,7 @@ const categoryIcons: Record<string, string> = {
 
 // ========== INIT ==========
 export function init() {
+    LanguageManager.init();
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     if (localStorage.getItem('mobileView') === 'true') {

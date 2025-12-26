@@ -151,56 +151,102 @@
                 </div>
             </div>
 
-            <!-- Flashcard Mode -->
-            <div class="details-section flashcard-section">
+            <!-- Pronunciation Lab (NEW) -->
+            <div class="details-section pronunciation-lab-section premium-glow-section">
                 <h3 class="section-title">
-                    <span class="section-icon">🃏</span> <span class="sv-text">Flashcard</span><span
-                        class="ar-text">بطاقة</span>
+                    <span class="section-icon">🎙️</span> <span class="sv-text">Uttalslabb</span><span
+                        class="ar-text">مختبر النطق</span>
                 </h3>
-                <div id="flashcardContainer" class="flashcard-container">
-                    <!-- Flashcard will be rendered here -->
+
+                <div class="pronunciation-card">
+                    <!-- Practice Levels -->
+                    <div id="practiceLevelsContainer"></div>
+
+                    <!-- Visualizer -->
+                    <div id="audioVisualizerContainer" class="visualizer-container"></div>
+
+                    <!-- Word Display with Highlight -->
+                    <div id="karaokeDisplay" class="karaoke-display"></div>
+
+                    <!-- Syllables Breakdown -->
+                    <div id="syllableDisplay" class="syllable-display"></div>
+
+                    <!-- Main Actions -->
+                    <div class="pronunciation-actions">
+                        <button id="pronounceNormalBtn" class="pro-btn primary" title="Normalt uttal">
+                            🔊 <span class="sv-text">Normal</span><span class="ar-text">عادي</span>
+                        </button>
+                        <button id="pronounceSlowBtn" class="pro-btn secondary" title="Långsamt uttal (Sköldpadda)">
+                            🐢 <span class="sv-text">Långsamt</span><span class="ar-text">بطيء</span>
+                        </button>
+                        <button id="recordBtn" class="pro-btn accent" title="Lyssna & Jämför">
+                            🎙️ <span class="sv-text">Spela in</span><span class="ar-text">تسجيل</span>
+                        </button>
+                    </div>
+
+                    <!-- Recording Feedback -->
+                    <div id="recordingFeedback" class="recording-feedback hidden">
+                        <div class="pulse-ring"></div>
+                        <span class="sv-text">Lyssnar...</span><span class="ar-text">جاري الاستماع...</span>
+                    </div>
+
+                    <!-- Playback of recorded audio -->
+                    <div id="playbackArea" class="playback-area hidden">
+                        <button id="playRecordedBtn" class="pro-btn outline">
+                            ▶️ <span class="sv-text">Hör din röst</span><span class="ar-text">اسمع صوتك</span>
+                        </button>
+                        <div id="pronunciationScore" class="pronunciation-score"></div>
+                        <div id="masteryBadgeContainer" class="mastery-badge-container"></div>
+                    </div>
+
+                    <!-- Phonetic Tips -->
+                    <div id="phoneticTipsArea" class="phonetic-tips-area"></div>
                 </div>
             </div>
 
-            <div class="interaction-grid">
-                <!-- Notes Section -->
-                <div class="details-section notes-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">✍️</span> <span class="sv-text">Anteckningar</span><span
-                            class="ar-text">ملاحظات</span>
-                    </h3>
-                    <div class="notes-container">
-                        <textarea id="wordNotes" data-i18n-placeholder="details.notesPlaceholder"></textarea>
-                        <div class="notes-actions">
-                            <span id="notesStatus" class="notes-status"></span>
-                            <button id="saveNotesBtn" class="save-notes-btn"><span class="sv-text">Spara</span><span
-                                    class="ar-text">حفظ</span></button>
+            <!-- Flashcard Mode -->
+            <div class="details-section flashcard-section">
+
+
+                <div class="interaction-grid">
+                    <!-- Notes Section -->
+                    <div class="details-section notes-section">
+                        <h3 class="section-title">
+                            <span class="section-icon">✍️</span> <span class="sv-text">Anteckningar</span><span
+                                class="ar-text">ملاحظات</span>
+                        </h3>
+                        <div class="notes-container">
+                            <textarea id="wordNotes" data-i18n-placeholder="details.notesPlaceholder"></textarea>
+                            <div class="notes-actions">
+                                <span id="notesStatus" class="notes-status"></span>
+                                <button id="saveNotesBtn" class="save-notes-btn"><span class="sv-text">Spara</span><span
+                                        class="ar-text">حفظ</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Words Section -->
+                    <div class="details-section related-section">
+                        <h3 class="section-title">
+                            <span class="section-icon">🔗</span> <span class="sv-text">Relaterade ord</span><span
+                                class="ar-text">كلمات متعلقة</span>
+                        </h3>
+                        <div id="relatedWordsContainer" class="related-words-grid">
+                            <!-- Related words will be rendered here -->
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Related Words Section -->
-                <div class="details-section related-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">🔗</span> <span class="sv-text">Relaterade ord</span><span
-                            class="ar-text">كلمات متعلقة</span>
-                    </h3>
-                    <div id="relatedWordsContainer" class="related-words-grid">
-                        <!-- Related words will be rendered here -->
-                    </div>
-                </div>
+            <div class="back-btn-container">
+                <a href="index.html" class="back-button">
+                    <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span>
+                </a>
             </div>
         </div>
 
-        <div class="back-btn-container">
-            <a href="index.html" class="back-button">
-                <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span>
-            </a>
-        </div>
-    </div>
-
-    <script type="module" src="./src/details.ts"></script>
-    <script type="module" src="/src/pwa.ts"></script>
+        <script type="module" src="./src/details.ts"></script>
+        <script type="module" src="/src/pwa.ts"></script>
 </body>
 
 </html>

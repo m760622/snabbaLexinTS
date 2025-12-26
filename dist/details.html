@@ -14,16 +14,18 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/details-DL-ip50j.js"></script>
+  <script type="module" crossorigin src="/assets/details-DtUjPaRx.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-C5U53K2V.js">
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-C6Jzjky6.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-enhancements-DUZ6U4ck.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/details-COcHxRDM.css">
+  <link rel="stylesheet" crossorigin href="/assets/details-BV_KvcT1.css">
 </head>
 
 <body>
@@ -33,7 +35,7 @@
         <!-- Sticky Header with Actions + Tabs -->
         <header class="details-header details-header-sticky">
             <div class="header-actions">
-                <a href="index.html" class="header-action-btn back-btn-nav" aria-label="Tillbaka">
+                <a href="index.html" class="header-action-btn back-btn-nav" data-i18n-title="nav.back">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 12H5"></path>
@@ -42,7 +44,7 @@
                 </a>
 
                 <div class="header-right-group">
-                    <button id="headerAudioBtn" class="header-action-btn" aria-label="Lyssna">
+                    <button id="headerAudioBtn" class="header-action-btn" data-i18n-title="settings.testTTS">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -50,7 +52,7 @@
                         </svg>
                     </button>
 
-                    <button id="headerFavoriteBtn" class="header-action-btn" aria-label="Favorit">
+                    <button id="headerFavoriteBtn" class="header-action-btn" data-i18n-title="toast.favAdded">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path
@@ -59,7 +61,7 @@
                         </svg>
                     </button>
 
-                    <button id="headerFlashcardBtn" class="header-action-btn" aria-label="Flashcard">
+                    <button id="headerFlashcardBtn" class="header-action-btn" data-i18n-title="learn.quiz">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
@@ -67,14 +69,14 @@
                         </svg>
                     </button>
 
-                    <button id="themeToggleBtn" class="header-action-btn" aria-label="Tema">
+                    <button id="themeToggleBtn" class="header-action-btn" data-i18n-title="settings.appearance">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
                     </button>
 
-                    <button id="smartCopyBtn" class="header-action-btn" aria-label="Kopiera">
+                    <button id="smartCopyBtn" class="header-action-btn" data-i18n-title="toast.copied">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -82,7 +84,7 @@
                         </svg>
                     </button>
 
-                    <button id="headerShareBtn" class="header-action-btn" aria-label="Dela">
+                    <button id="headerShareBtn" class="header-action-btn" data-i18n-title="btn.export">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="18" cy="5" r="3"></circle>
@@ -139,7 +141,9 @@
         </div>
 
         <main id="detailsArea" class="tab-content active" data-tab="info">
-            <div class="placeholder-message">Laddar... / جاري التحميل...</div>
+            <div class="placeholder-message">
+                <span class="sv-text">Laddar...</span><span class="ar-text">جاري التحميل...</span>
+            </div>
         </main>
 
         <!-- Interaction Tab Content -->
@@ -157,53 +161,99 @@
                 </div>
             </div>
 
-            <!-- Flashcard Mode -->
-            <div class="details-section flashcard-section">
+            <!-- Pronunciation Lab (NEW) -->
+            <div class="details-section pronunciation-lab-section premium-glow-section">
                 <h3 class="section-title">
-                    <span class="section-icon">🃏</span> <span class="sv-text">Flashcard</span><span
-                        class="ar-text">بطاقة</span>
+                    <span class="section-icon">🎙️</span> <span class="sv-text">Uttalslabb</span><span
+                        class="ar-text">مختبر النطق</span>
                 </h3>
-                <div id="flashcardContainer" class="flashcard-container">
-                    <!-- Flashcard will be rendered here -->
+
+                <div class="pronunciation-card">
+                    <!-- Practice Levels -->
+                    <div id="practiceLevelsContainer"></div>
+
+                    <!-- Visualizer -->
+                    <div id="audioVisualizerContainer" class="visualizer-container"></div>
+
+                    <!-- Word Display with Highlight -->
+                    <div id="karaokeDisplay" class="karaoke-display"></div>
+
+                    <!-- Syllables Breakdown -->
+                    <div id="syllableDisplay" class="syllable-display"></div>
+
+                    <!-- Main Actions -->
+                    <div class="pronunciation-actions">
+                        <button id="pronounceNormalBtn" class="pro-btn primary" title="Normalt uttal">
+                            🔊 <span class="sv-text">Normal</span><span class="ar-text">عادي</span>
+                        </button>
+                        <button id="pronounceSlowBtn" class="pro-btn secondary" title="Långsamt uttal (Sköldpadda)">
+                            🐢 <span class="sv-text">Långsamt</span><span class="ar-text">بطيء</span>
+                        </button>
+                        <button id="recordBtn" class="pro-btn accent" title="Lyssna & Jämför">
+                            🎙️ <span class="sv-text">Spela in</span><span class="ar-text">تسجيل</span>
+                        </button>
+                    </div>
+
+                    <!-- Recording Feedback -->
+                    <div id="recordingFeedback" class="recording-feedback hidden">
+                        <div class="pulse-ring"></div>
+                        <span class="sv-text">Lyssnar...</span><span class="ar-text">جاري الاستماع...</span>
+                    </div>
+
+                    <!-- Playback of recorded audio -->
+                    <div id="playbackArea" class="playback-area hidden">
+                        <button id="playRecordedBtn" class="pro-btn outline">
+                            ▶️ <span class="sv-text">Hör din röst</span><span class="ar-text">اسمع صوتك</span>
+                        </button>
+                        <div id="pronunciationScore" class="pronunciation-score"></div>
+                        <div id="masteryBadgeContainer" class="mastery-badge-container"></div>
+                    </div>
+
+                    <!-- Phonetic Tips -->
+                    <div id="phoneticTipsArea" class="phonetic-tips-area"></div>
                 </div>
             </div>
 
-            <div class="interaction-grid">
-                <!-- Notes Section -->
-                <div class="details-section notes-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">✍️</span> <span class="sv-text">Anteckningar</span><span
-                            class="ar-text">ملاحظات</span>
-                    </h3>
-                    <div class="notes-container">
-                        <textarea id="wordNotes"
-                            placeholder="اكتب ملاحظاتك هنا... / Skriv anteckningar här..."></textarea>
-                        <div class="notes-actions">
-                            <span id="notesStatus" class="notes-status"></span>
-                            <button id="saveNotesBtn" class="save-notes-btn"><span class="sv-text">Spara</span><span
-                                    class="ar-text">حفظ</span></button>
+            <!-- Flashcard Mode -->
+            <div class="details-section flashcard-section">
+
+
+                <div class="interaction-grid">
+                    <!-- Notes Section -->
+                    <div class="details-section notes-section">
+                        <h3 class="section-title">
+                            <span class="section-icon">✍️</span> <span class="sv-text">Anteckningar</span><span
+                                class="ar-text">ملاحظات</span>
+                        </h3>
+                        <div class="notes-container">
+                            <textarea id="wordNotes" data-i18n-placeholder="details.notesPlaceholder"></textarea>
+                            <div class="notes-actions">
+                                <span id="notesStatus" class="notes-status"></span>
+                                <button id="saveNotesBtn" class="save-notes-btn"><span class="sv-text">Spara</span><span
+                                        class="ar-text">حفظ</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Words Section -->
+                    <div class="details-section related-section">
+                        <h3 class="section-title">
+                            <span class="section-icon">🔗</span> <span class="sv-text">Relaterade ord</span><span
+                                class="ar-text">كلمات متعلقة</span>
+                        </h3>
+                        <div id="relatedWordsContainer" class="related-words-grid">
+                            <!-- Related words will be rendered here -->
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Related Words Section -->
-                <div class="details-section related-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">🔗</span> <span class="sv-text">Relaterade ord</span><span
-                            class="ar-text">كلمات متعلقة</span>
-                    </h3>
-                    <div id="relatedWordsContainer" class="related-words-grid">
-                        <!-- Related words will be rendered here -->
-                    </div>
-                </div>
+            <div class="back-btn-container">
+                <a href="index.html" class="back-button">
+                    <span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span>
+                </a>
             </div>
         </div>
-
-        <div class="back-btn-container">
-            <a href="index.html" class="back-button"><span class="sv-text">Tillbaka</span><span
-                    class="ar-text">رجوع</span></a>
-        </div>
-    </div>
 
 </body>
 

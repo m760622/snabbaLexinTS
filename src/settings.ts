@@ -27,6 +27,7 @@ interface UserSettings {
     focusMode: boolean;
     eyeCare: boolean;
     avatar: string;
+    ttsVoicePreference: 'natural' | 'male' | 'female';
 }
 
 interface UserProgress {
@@ -63,7 +64,8 @@ const SettingsManager: {
         showExamples: true,
         focusMode: false,
         eyeCare: false,
-        avatar: '👤'
+        avatar: '👤',
+        ttsVoicePreference: 'natural'
     } as UserSettings,
 
     updateCompletionProgress: () => { },
@@ -199,6 +201,12 @@ const UIController = {
         // Avatar
         const avatarEmoji = document.querySelector('.avatar-emoji');
         if (avatarEmoji) avatarEmoji.textContent = settings.avatar;
+
+        // TTS Voice Preference
+        const voiceBtns = document.querySelectorAll('.voice-btn');
+        voiceBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-voice') === settings.ttsVoicePreference);
+        });
 
         // Update completion progress
         this.updateCompletionProgress();
@@ -345,6 +353,18 @@ const UIController = {
             const valueEl = document.getElementById('ttsSpeedValue');
             if (valueEl) valueEl.textContent = `${value}%`;
             localStorage.setItem('ttsSpeed', String(value));
+        });
+
+        // TTS Voice Preference
+        document.querySelectorAll('.voice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const voice = btn.getAttribute('data-voice') as 'natural' | 'male' | 'female';
+                SettingsManager.update('ttsVoicePreference', voice);
+                localStorage.setItem('ttsVoicePreference', voice);
+                showToast(`🗣️ ${t('settings.voiceChanged') || 'Rösttyp ändrad'}`);
+            });
         });
 
         // Test TTS

@@ -587,11 +587,21 @@ class QuranManager {
 
         const listContainer = document.getElementById('quranList');
         if (listContainer) {
-            listContainer.innerHTML = `<div class="related-header" style="padding:1rem; text-align:center;">
-                <h3 style="color:var(--quran-gold)">Orden från samma rot "${sourceWord}" (Ungefär)</h3>
-                <button onclick="renderCards()" class="control-btn" style="margin-top:10px">Visa alla</button>
-            </div>`;
             this.renderCards(related);
+
+            const header = document.createElement('div');
+            header.className = 'related-header';
+            header.style.cssText = "padding:1.5rem 1rem; text-align:center; border-bottom:1px solid var(--quran-gold-o2);";
+            header.innerHTML = `
+                <h3 style="color:var(--quran-gold); margin-bottom:12px; font-size:1.2rem;">
+                    <span class="sv-text">Orden från samma rot "${sourceWord}"</span>
+                    <span class="ar-text">الكلمات من نفس الجذر "${sourceWord}"</span>
+                </h3>
+                <button onclick="renderCards()" class="control-btn" style="padding: 0.6rem 1.2rem;">
+                    <span class="sv-text">Visa alla</span>
+                    <span class="ar-text">عرض الكل</span>
+                </button>`;
+            listContainer.prepend(header);
         }
     }
 

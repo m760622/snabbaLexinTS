@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnabbaLexin - Quran Learning</title>
+    <title>SnabbaLexin - <span class="sv-text">Koraninlärning</span><span class="ar-text">تعلم القرآن</span></title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
@@ -13,19 +13,20 @@
     <link rel="manifest" href="/assets/manifest-mLlvNCWw.json">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#064e3b" media="(prefers-color-scheme: dark)">
-  <script type="module" crossorigin src="/assets/games-quran-D2aTWVLd.js"></script>
+  <script type="module" crossorigin src="/assets/games-quran-DVq6B_fz.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BPLy4HEw.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-C5U53K2V.js">
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-C6Jzjky6.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
   <link rel="stylesheet" crossorigin href="/assets/games-quran-Bl6Nj2_K.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-DUR12SQ4.css">
 </head>
 
 <body>
     <header class="quran-header">
-        <button class="back-btn" onclick="window.history.back()" aria-label="Tillbaka">
+        <button class="back-btn" onclick="window.history.back()" aria-label="Tillbaka / رجوع">
             <svg viewBox="0 0 24 24" fill="none" class="icon-md" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -34,48 +35,56 @@
         </button>
         <div class="title-container">
             <span class="quran-icon">📖</span>
-            <h1 class="quran-title">Koranord</h1>
+            <h1 class="quran-title">
+                <span class="sv-text">Koranord</span>
+                <span class="ar-text">كلمات القرآن</span>
+            </h1>
         </div>
 
-        <button id="settingsBtn" class="settings-trigger" aria-label="Inställningar">
+        <button id="settingsBtn" class="settings-trigger" aria-label="Inställningar / الإعدادات">
             ⚙️
         </button>
-
-
     </header>
 
     <div class="search-container">
-        <input type="text" id="searchInput" class="glass-input" placeholder="Sök ord, surah eller betydelse...">
+        <input type="text" id="searchInput" class="glass-input" data-i18n-placeholder="quran.searchPlaceholder"
+            placeholder="Sök ord, surah...">
     </div>
 
     <!-- Mode Tabs -->
     <div class="mode-tabs">
-        <!-- Tabs Only -->
-        <button class="tab-btn active" data-mode="list">📜 Lista</button>
-        <button class="tab-btn" data-mode="flashcards">🗂️ Kort</button>
-        <button class="tab-btn" data-mode="quiz">❓ Quiz</button>
+        <button class="tab-btn active" data-mode="list">
+            📜 <span class="sv-text">Lista</span><span class="ar-text">قائمة</span>
+        </button>
+        <button class="tab-btn" data-mode="flashcards">
+            🗂️ <span class="sv-text">Kort</span><span class="ar-text">بطاقات</span>
+        </button>
+        <button class="tab-btn" data-mode="quiz">
+            ❓ <span class="sv-text">Quiz</span><span class="ar-text">اختبار</span>
+        </button>
     </div>
 
     <!-- Filter Bar -->
     <div class="filter-bar" id="filterBar">
-        <select class="glass-select" id="surahFilter" aria-label="Filtrera efter Surah">
-            <option value="all">Alla Suror</option>
-            <option value="favorites">❤️ Favoriter</option>
+        <select class="glass-select" id="surahFilter" data-i18n-title="quran.filterSurah">
+            <option value="all" data-i18n="quran.allSurahs">Alla Suror</option>
+            <option value="favorites">❤️ <span class="sv-text">Favoriter</span><span class="ar-text">المفضلة</span>
+            </option>
             <!-- Populated via JS -->
         </select>
-        <select class="glass-select" id="typeFilter" aria-label="Filtrera efter ordtyp">
-            <option value="all">Alla Typer</option>
-            <option value="verb">Verb</option>
-            <option value="noun">Noun</option>
-            <option value="particle">Particle</option>
-            <option value="phrase">Phrase</option>
-            <option value="word">Word</option>
+        <select class="glass-select" id="typeFilter" data-i18n-title="quran.filterType">
+            <option value="all" data-i18n="quran.allTypes">Alla Typer</option>
+            <option value="verb" data-i18n="quran.verb">Verb</option>
+            <option value="noun" data-i18n="quran.noun">Substantiv</option>
+            <option value="particle" data-i18n="quran.particle">Partikel</option>
+            <option value="phrase" data-i18n="quran.phrase">Fras</option>
+            <option value="word" data-i18n="quran.word">Ord</option>
         </select>
     </div>
 
     <!-- Daily Goal Widget (Hidden in Quran screen) -->
     <div class="daily-goal-widget hidden" id="dailyGoalWidget">
-        <span>📅 Dagens Mål:</span>
+        <span>📅 <span class="sv-text">Dagens Mål:</span><span class="ar-text">هدف اليوم:</span></span>
         <div class="goal-track">
             <div class="goal-fill" id="dailyGoalFill"></div>
         </div>
@@ -96,7 +105,10 @@
                     <input type="checkbox" id="fcLangToggle" aria-label="Byt språk för flashcards">
                     <span class="slider round"></span>
                 </label>
-                <span id="fcModeLabel">🇸🇦 Arabiska (Framsida)</span>
+                <span id="fcModeLabel">
+                    <span class="sv-text">🇸🇦 Arabiska (Framsida)</span>
+                    <span class="ar-text">🇸🇦 العربية (الأمام)</span>
+                </span>
             </div>
 
             <!-- Flashcard Container -->
@@ -106,7 +118,7 @@
                         <div class="fc-top-bar">
                             <span class="badger surah-badge" id="fcSurah">Surah</span>
                             <div class="action-group">
-                                <button class="share-btn" id="fcShareBtn" title="Dela">
+                                <button class="share-btn" id="fcShareBtn" title="Dela / مشاركة">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="18" cy="5" r="3"></circle>
@@ -116,7 +128,7 @@
                                         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                     </svg>
                                 </button>
-                                <button class="fav-btn" id="fcFavBtn" title="Spara till favoriter">
+                                <button class="fav-btn" id="fcFavBtn" title="Spara / حفظ">
                                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path
@@ -127,13 +139,16 @@
                             </div>
                         </div>
                         <div class="fc-word-large" id="fcWord">Word</div>
-                        <div class="fc-hint">Klicka för att vända</div>
+                        <div class="fc-hint">
+                            <span class="sv-text">Klicka för att vända</span>
+                            <span class="ar-text">اضغط للقلب</span>
+                        </div>
                     </div>
                     <div class="fc-back">
                         <div class="fc-top-bar">
                             <span class="badger opacity-0">.</span> <!-- Spacer -->
                             <div class="action-group">
-                                <button class="share-btn" id="fcShareBtnBack" title="Dela">
+                                <button class="share-btn" id="fcShareBtnBack" title="Dela / مشاركة">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="18" cy="5" r="3"></circle>
@@ -143,7 +158,7 @@
                                         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                     </svg>
                                 </button>
-                                <button class="fav-btn" id="fcFavBtnBack" title="Spara till favoriter">
+                                <button class="fav-btn" id="fcFavBtnBack" title="Spara / حفظ">
                                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path
@@ -160,27 +175,31 @@
                 </div>
             </div>
 
-            <!-- Rating Controls (Hidden until flipped, or always visible? Usually hidden) -->
+            <!-- Rating Controls -->
             <div class="fc-controls rating-controls" id="ratingControls">
                 <button class="rate-btn wrong" data-rating="again">
                     <span>❌</span>
-                    <small>Igen</small>
+                    <small class="sv-text">Igen</small>
+                    <small class="ar-text">مرة أخرى</small>
                 </button>
                 <button class="rate-btn hard" data-rating="hard">
                     <span>🤔</span>
-                    <small>Svår</small>
+                    <small class="sv-text">Svår</small>
+                    <small class="ar-text">صعب</small>
                 </button>
                 <button class="rate-btn good" data-rating="good">
                     <span>✅</span>
-                    <small>Bra</small>
+                    <small class="sv-text">Bra</small>
+                    <small class="ar-text">جيد</small>
                 </button>
                 <button class="rate-btn easy" data-rating="easy">
                     <span>🚀</span>
-                    <small>Lätt</small>
+                    <small class="sv-text">Lätt</small>
+                    <small class="ar-text">سهل</small>
                 </button>
             </div>
 
-            <!-- Navigation Controls (Secondary) -->
+            <!-- Navigation Controls -->
             <div class="fc-controls nav-only mt-10px opacity-70">
                 <button class="control-btn" id="prevCardBtn">❮</button>
                 <div class="fc-progress" id="fcProgress">1 / 100</div>
@@ -193,7 +212,12 @@
     <div id="quizMode" class="mode-container hidden">
         <div class="quiz-wrapper">
             <div class="quiz-stats">
-                <span>Poäng: <span id="quizScore">0</span> | Streak: <span id="quizStreak">0</span>🔥</span>
+                <span>
+                    <span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                        id="quizScore">0</span> |
+                    <span class="sv-text">Streak:</span><span class="ar-text">سلسلة:</span> <span
+                        id="quizStreak">0</span>🔥
+                </span>
                 <div class="xp-container">
                     <div class="xp-donut" id="xpDonut">
                         <div class="xp-donut-inner">
@@ -210,11 +234,17 @@
                     <input type="checkbox" id="quizLangToggle" checked aria-label="Byt språk för quiz">
                     <span class="slider round"></span>
                 </label>
-                <span id="quizModeLabel">🇸🇦 Arabiska ➔ 🇸🇪 Svenska</span>
+                <span id="quizModeLabel">
+                    <span class="sv-text">🇸🇦 Arabiska ➔ 🇸🇪 Svenska</span>
+                    <span class="ar-text">🇸🇦 العربية ➔ 🇸🇪 السويدية</span>
+                </span>
             </div>
 
             <div class="quiz-card">
-                <div class="quiz-question-type">Vad betyder detta ord?</div>
+                <div class="quiz-question-type">
+                    <span class="sv-text">Vad betyder detta ord?</span>
+                    <span class="ar-text">ماذا تعني هذه الكلمة؟</span>
+                </div>
                 <div class="quiz-target-word" id="quizWord">WORD</div>
 
                 <div class="quiz-options" id="quizOptions">
@@ -224,7 +254,10 @@
                 <div class="quiz-feedback hidden" id="quizFeedback"></div>
             </div>
 
-            <button class="next-question-btn hidden" id="nextQuestionBtn">Nästa Fråga ❯</button>
+            <button class="next-question-btn hidden" id="nextQuestionBtn">
+                <span class="sv-text">Nästa Fråga</span>
+                <span class="ar-text">السؤال التالي</span> ❯
+            </button>
         </div>
     </div>
 
@@ -232,7 +265,10 @@
     <div id="infoModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal" onclick="closeInfoModal()">&times;</span>
-            <h2 id="modalTitle">Tafsir & Info</h2>
+            <h2 id="modalTitle">
+                <span class="sv-text">Tafsir & Info</span>
+                <span class="ar-text">تفسير ومعلومات</span>
+            </h2>
             <div id="modalBody">
                 <p>Loading...</p>
             </div>
@@ -243,19 +279,24 @@
     <div id="settingsModal" class="modal hidden">
         <div class="modal-content settings-content">
             <div class="modal-header">
-                <h2>⚙️ Inställningar</h2>
+                <h2>
+                    ⚙️ <span class="sv-text">Inställningar</span><span class="ar-text">الإعدادات</span>
+                </h2>
                 <span class="close-modal" id="closeSettingsBtn">&times;</span>
             </div>
 
             <div class="setting-item">
-                <label for="themeSelector">🎨 Färgtema</label>
-                <select id="themeSelector" class="glass-select full-width" title="Välj Färgtema">
-                    <option value="default">🟢 Emerald (Standard)</option>
-                    <option value="sage">🌿 Matte Green</option>
-                    <option value="luxury">👑 Golden Green</option>
+                <label for="themeSelector">
+                    🎨 <span class="sv-text">Färgtema</span><span class="ar-text">لون الثيم</span>
+                </label>
+                <select id="themeSelector" class="glass-select full-width"
+                    data-i18n-title="settings.themeSelectorTitle">
+                    <option value="default">🟢 Emerald</option>
+                    <option value="sage">🌿 Sage</option>
+                    <option value="luxury">👑 Luxury</option>
                     <option value="teal">💠 Teal</option>
-                    <option value="ruby">💎 Royal Ruby</option>
-                    <option value="bronze">🏺 Ancient Bronze</option>
+                    <option value="ruby">💎 Ruby</option>
+                    <option value="bronze">🏺 Bronze</option>
                     <option value="midnight">🌙 Midnight</option>
                     <option value="sunset">🌅 Sunset</option>
                     <option value="amethyst">🟣 Amethyst</option>
@@ -269,7 +310,9 @@
             </div>
 
             <div class="setting-item">
-                <label for="mobileViewToggle">📱 Mobilvy</label>
+                <label for="mobileViewToggle">
+                    📱 <span class="sv-text">Mobilvy</span><span class="ar-text">عرض الجوال</span>
+                </label>
                 <label class="toggle-switch">
                     <input type="checkbox" id="mobileViewToggle" aria-label="Aktivera Mobilvy">
                     <span class="slider round"></span>
@@ -277,7 +320,10 @@
             </div>
 
             <div class="setting-item">
-                <label for="globalFcLangToggle">🇸🇦 Visa Arabiska i Flashcards</label>
+                <label for="globalFcLangToggle">
+                    🇸🇦 <span class="sv-text">Visa Arabiska i Flashcards</span><span class="ar-text">إظهار العربية في
+                        البطاقات</span>
+                </label>
                 <label class="toggle-switch">
                     <input type="checkbox" id="globalFcLangToggle" checked aria-label="Visa Arabiska i Flashcards">
                     <span class="slider round"></span>

@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minneskort - SnabbaLexin</title>
+    <title>Ord Hjulet / عجلة الكلمات - SnabbaLexin</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/games-word-wheel-DHk6HLOw.js"></script>
+  <script type="module" crossorigin src="/assets/games-word-wheel-EThwVCXf.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
   <link rel="modulepreload" crossorigin href="/assets/games-utils-Di73MU7e.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-BLMpOHmV.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-DUR12SQ4.css">
   <link rel="stylesheet" crossorigin href="/assets/games-BP7vN2P2.css">
 </head>
 
@@ -27,7 +27,7 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
-            <h3>Ord Hjulet / عجلة الكلمات</h3>
+            <h3><span class="sv-text">Ord Hjulet</span><span class="ar-text">عجلة الكلمات</span></h3>
         </div>
         <div class="game-controls-header word-wheel-controls mb-4">
             <select id="wordWheelLength" class="game-filter-select w-auto flex-grow-0" onchange="startWordWheelGame()"
@@ -39,7 +39,8 @@
                 <option value="7">7 Bokstäver / حروف</option>
                 <option value="8">8 Bokstäver / حروف</option>
             </select>
-            <div class="score-badge">Poäng: <span id="wordWheelScore">0</span></div>
+            <div class="score-badge"><span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                    id="wordWheelScore">0</span></div>
         </div>
 
         <div class="word-wheel-area">

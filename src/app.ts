@@ -2,7 +2,7 @@ import './loader';
 import './utils';
 import './quiz';
 import './confetti';
-import { ThemeManager, GrammarHelper, CategoryHelper, showToast, TextSizeManager } from './utils';
+import { ThemeManager, GrammarHelper, CategoryHelper, showToast, TextSizeManager, VoiceSearchManager } from './utils';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { initMainUI } from './main-ui';
@@ -40,8 +40,18 @@ export class App {
         this.setupInfiniteScroll();
         this.setupGlobalHandlers();
         this.setupFilters();
+        this.setupVoiceSearch();
+        this.setupVoiceSelection();
         this.updateDailyChallenge(); // Initial update
         this.updateDailyProgressBar(); // Update daily progress bar
+
+        // Initial search from URL parameter 's'
+        const params = new URLSearchParams(window.location.search);
+        const searchQuery = params.get('s');
+        if (searchQuery) {
+            const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+            if (searchInput) searchInput.value = searchQuery;
+        }
 
         window.addEventListener('dictionaryLoaded', () => {
             console.log('[App] Data loaded event received');
@@ -165,8 +175,10 @@ export class App {
         // Initialize Word of the Day
         this.initWordOfTheDay();
 
-        // Initial state: hide results, show landing page
-        this.performSearch('');
+        // Initial state: hide results, show landing page, OR perform initial search
+        const params = new URLSearchParams(window.location.search);
+        const searchQuery = params.get('s');
+        this.performSearch(searchQuery || '');
     }
 
     private initWordOfTheDay() {
@@ -543,6 +555,44 @@ export class App {
         }
 
         console.log(`[App] Daily progress: ${totalActivity}/${DAILY_GOAL} (${percent.toFixed(0)}%)`);
+    }
+
+    private setupVoiceSearch() {
+        const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+        const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+        if (!voiceSearchBtn || !searchInput) return;
+
+        voiceSearchBtn.addEventListener('click', () => {
+            VoiceSearchManager.toggle();
+        });
+
+        VoiceSearchManager.onResult = (transcript: string, isFinal: boolean) => {
+            searchInput.value = transcript;
+            if (isFinal) {
+                this.performSearch(transcript);
+                showToast(`🎤 "${transcript}"`);
+            }
+        };
+    }
+
+    private setupVoiceSelection() {
+        const voiceBtns = document.querySelectorAll('.voice-selector-inline .voice-btn');
+        const currentVoice = localStorage.getItem('ttsVoicePreference') || 'natural';
+
+        voiceBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-voice') === currentVoice);
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const voice = btn.getAttribute('data-voice') as 'natural' | 'female' | 'male';
+
+                voiceBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                localStorage.setItem('ttsVoicePreference', voice);
+                showToast(`🗣️ ${t('settings.voiceChanged') || 'Rösttyp ändrad'}`);
+            });
+        });
     }
 }
 
