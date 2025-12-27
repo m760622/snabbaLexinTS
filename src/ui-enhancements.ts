@@ -515,7 +515,7 @@ export class AudioVisualizer {
         if (!container) throw new Error('Visualizer container not found');
 
         this.canvas = document.createElement('canvas');
-        this.canvas.className = 'audio-visualizer-canvas liquid-wave';
+        this.canvas.className = 'audio-visualizer-canvas';
         container.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d')!;
         this.color = color;
@@ -532,11 +532,13 @@ export class AudioVisualizer {
     private resize() {
         const dpr = window.devicePixelRatio || 1;
         const rect = this.canvas.parentElement!.getBoundingClientRect();
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
+        const width = rect.width > 0 ? rect.width : 300;
+        const height = rect.height > 0 ? rect.height : 60; // Default 60px if 0
+        this.canvas.width = width * dpr;
+        this.canvas.height = height * dpr;
         this.ctx.scale(dpr, dpr);
-        this.canvas.style.width = `${rect.width}px`;
-        this.canvas.style.height = `${rect.height}px`;
+        this.canvas.style.width = `${width}px`;
+        this.canvas.style.height = `${height}px`;
     }
 
     setMode(mode: 'bars' | 'liquid' | 'circle') {
@@ -672,16 +674,60 @@ export class AudioVisualizer {
     }
 
     private drawBars(w: number, h: number) {
-        const barWidth = w / this.barCount - 2;
-        this.ctx.fillStyle = this.color;
+        const barCount = this.barCount;
+        const gap = 3;
+        const barWidth = (w - gap * (barCount - 1)) / barCount;
+        const maxBarHeight = h - 10; // Leave some padding
 
-        for (let i = 0; i < this.barCount; i++) {
-            const barHeight = this.isActive ? this.bars[i] : 2;
-            const x = i * (barWidth + 2);
-            const y = h / 2 - barHeight / 2;
-            this.roundRect(this.ctx, x, y, barWidth, barHeight, barWidth / 2);
+        for (let i = 0; i < barCount; i++) {
+            const rawHeight = this.isActive ? this.bars[i] : 3;
+            const barHeight = Math.min(rawHeight * 2.5, maxBarHeight); // Scale up for visibility
+            const x = i * (barWidth + gap);
+            const y = h - barHeight; // Align to bottom
+
+            // Create vertical gradient for each bar (green -> yellow -> red)
+            const gradient = this.ctx.createLinearGradient(x, h, x, y);
+            gradient.addColorStop(0, '#22c55e');  // Green at bottom
+            gradient.addColorStop(0.5, '#facc15'); // Yellow in middle
+            gradient.addColorStop(1, '#ef4444');   // Red at top
+
+            // Draw main bar with rounded top
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            const radius = barWidth / 2;
+            this.ctx.moveTo(x, h);
+            this.ctx.lineTo(x, y + radius);
+            this.ctx.arcTo(x, y, x + radius, y, radius);
+            this.ctx.arcTo(x + barWidth, y, x + barWidth, y + radius, radius);
+            this.ctx.lineTo(x + barWidth, h);
+            this.ctx.closePath();
             this.ctx.fill();
+
+            // Add glow effect for taller bars
+            if (barHeight > maxBarHeight * 0.5) {
+                this.ctx.shadowColor = '#22c55e';
+                this.ctx.shadowBlur = 10;
+                this.ctx.fill();
+                this.ctx.shadowBlur = 0;
+            }
         }
+
+        // Add reflection at bottom (subtle)
+        this.ctx.globalAlpha = 0.15;
+        for (let i = 0; i < barCount; i++) {
+            const rawHeight = this.isActive ? this.bars[i] : 3;
+            const barHeight = Math.min(rawHeight * 0.8, 20); // Shorter reflection
+            const x = i * (barWidth + gap);
+            const y = h;
+
+            const gradient = this.ctx.createLinearGradient(x, h, x, h + barHeight);
+            gradient.addColorStop(0, '#22c55e');
+            gradient.addColorStop(1, 'transparent');
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(x, y, barWidth, barHeight);
+        }
+        this.ctx.globalAlpha = 1;
     }
 
     private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {

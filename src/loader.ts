@@ -1,11 +1,12 @@
 import { AppConfig } from './config';
 import { DictionaryDB } from './db';
-import { TextSizeManager } from './utils';
+import { TextSizeManager, showToast } from './utils';
 
 /**
  * SnabbaLexin Premium Data Loader
  */
 class LoaderClass {
+
     private startTime: number = Date.now();
     private tipInterval: any = null;
 
@@ -13,7 +14,7 @@ class LoaderClass {
         // Optimized: Synchronous check for returning users (Instant Skip)
         const hasDataReady = localStorage.getItem('snabbaLexin_dataReady') === 'true';
         const storedVersion = localStorage.getItem('snabbaLexin_version');
-        
+
         if (hasDataReady && storedVersion === AppConfig.DATA_VERSION) {
             console.log('[Loader] Fast boot - hiding splash immediately');
             const splash = document.getElementById('splashScreen');
@@ -28,16 +29,16 @@ class LoaderClass {
 
             // Check if this is a returning user with valid cache
             const isReturningUser = hasCached && cachedVersion === AppConfig.DATA_VERSION;
-            
+
             if (isReturningUser) {
                 console.log('[Loader] Returning user - skipping splash, loading from cache...');
                 // Ensure splash is hidden (if not already by fast boot)
                 const splash = document.getElementById('splashScreen');
                 if (splash) splash.style.display = 'none';
-                
+
                 const data = await DictionaryDB.getAllWords();
                 (window as any).dictionaryData = data;
-                
+
                 // Dispatch event immediately
                 window.dispatchEvent(new Event('dictionaryLoaded'));
                 return;
@@ -50,7 +51,7 @@ class LoaderClass {
         // If we hid it optimistically but failed/needs update, show it again
         const splash = document.getElementById('splashScreen');
         if (splash && splash.style.display === 'none') {
-             splash.style.display = 'flex';
+            splash.style.display = 'flex';
         }
 
         this.startSplashUI();
@@ -61,7 +62,7 @@ class LoaderClass {
         this.startTime = Date.now();
         console.log('[Loader] Splash UI started');
         this.updateProgress(10, 'Ansluter... / جاري الاتصال...');
-        
+
         const tips = AppConfig.LOADING_TIPS;
         const tipEl = document.getElementById('splashTip') as HTMLElement | null;
         if (tipEl) {
@@ -101,7 +102,7 @@ class LoaderClass {
 
         try {
             this.updateProgress(20, 'Laddar ordbok... / تحميل القاموس...');
-            
+
             console.log(`[Loader] Fetching data from: ${DATA_URL}`);
             const response = await fetch(DATA_URL);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -149,7 +150,7 @@ class LoaderClass {
     private finishLoading(): void {
         this.updateProgress(100, 'Klart! / جاهز!');
         if (this.tipInterval) clearInterval(this.tipInterval);
-        
+
         const data = (window as any).dictionaryData;
         const wordCountEl = document.getElementById('splashWordCount');
         if (wordCountEl && data) {
@@ -177,11 +178,10 @@ class LoaderClass {
         console.error('[Loader] Fatal Error:', e);
         if (this.tipInterval) clearInterval(this.tipInterval);
         this.updateProgress(0, 'Fel! / خطأ!');
-        
-        const errorToast = document.createElement('div');
-        errorToast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:12px 24px;border-radius:12px;z-index:9999;font-family:sans-serif;';
-        errorToast.textContent = 'Fel vid laddning. Pröva att ladda om sidan. / خطأ في التحميل.';
-        document.body.appendChild(errorToast);
+
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        // Show specific error reason as requested
+        showToast(`Fel vid laddning: ${errorMessage} / خطأ في التحميل: ${errorMessage} `, { type: 'error', duration: 0 }); // Duration 0 for sticky until clicked likely, or long duration
     }
 }
 

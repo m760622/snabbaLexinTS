@@ -9,6 +9,77 @@ import { t, tLang, LanguageManager } from './i18n';
 import { AudioVisualizer, PronunciationRecorder, HapticFeedback, Celebrations, MasteryBadges } from './ui-enhancements';
 import { PronunciationHelper } from './pronunciation-data';
 
+// ... (Previous imports)
+
+/**
+ * Heart Explosion Effect Manager
+ */
+class HeartExplosion {
+    static spawn(x: number, y: number) {
+        const count = 15;
+        for (let i = 0; i < count; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'heart-particle';
+
+            // Random spread for explosion effect
+            const tx = (Math.random() - 0.5) * 100; // Spread -50px to 50px
+            const ty = (Math.random() - 1) * 100;   // Upward mostly
+
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            heart.style.setProperty('--tx', `${tx}px`);
+
+            // Random size variation
+            const scale = 0.5 + Math.random() * 1;
+            heart.style.transform = `scale(${scale})`;
+
+            document.body.appendChild(heart);
+
+            // Cleanup
+            setTimeout(() => heart.remove(), 1000);
+        }
+    }
+}
+
+/**
+ * Smart Expandable Card Logic
+ */
+class SmartCardManager {
+    static init(container: HTMLElement) {
+        // Find Sections: Definition and Examples
+        const sections = container.querySelectorAll('.details-section');
+
+        sections.forEach((section: Element) => {
+            const sec = section as HTMLElement;
+            // Only sections with specific content are candidates
+            if (!sec.querySelector('.definition-card') && !sec.querySelector('.example-card')) return;
+
+            // Wait for render/layout
+            setTimeout(() => {
+                if (sec.scrollHeight > 250) {
+                    sec.classList.add('expandable');
+
+                    const mask = document.createElement('div');
+                    mask.className = 'expand-mask';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'expand-btn';
+                    btn.innerHTML = 'Visa mer <span class="ar-text">عرض المزيد</span>';
+
+                    btn.addEventListener('click', () => {
+                        sec.classList.add('expanded');
+                        // Optional: remove mask/btn completely or animate them out
+                    });
+
+                    mask.appendChild(btn);
+                    sec.appendChild(mask);
+                }
+            }, 100);
+        });
+    }
+}
+
 /**
  * Pronunciation Lab Manager
  * مختبر النطق - يدير التفاعل الصوتي والمرئي
@@ -26,7 +97,7 @@ class PronunciationLab {
         try {
             if (!this.visualizer) {
                 this.visualizer = new AudioVisualizer('audioVisualizerContainer', '#7dd3fc');
-                this.visualizer.setMode('liquid'); // Use liquid wave mode
+                this.visualizer.setMode('bars'); // Use equalizer mode
             }
             if (!this.recorder) {
                 this.recorder = new PronunciationRecorder();
@@ -471,6 +542,73 @@ class NotesManager {
 }
 
 /**
+ * Quiz Sound Manager - Web Audio API for feedback sounds
+ */
+class QuizSoundManager {
+    private static audioContext: AudioContext | null = null;
+
+    private static getContext(): AudioContext {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        return this.audioContext;
+    }
+
+    static playCorrect() {
+        const ctx = this.getContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        // Happy ascending notes
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.4);
+    }
+
+    static playWrong() {
+        const ctx = this.getContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        // Descending buzz
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+    }
+
+    static playTick() {
+        const ctx = this.getContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.05);
+    }
+}
+
+/**
  * Mini Quiz Manager - EXTREME DIFFICULTY Distractor Generation
  * Uses linguistic analysis to create maximum confusion
  */
@@ -677,6 +815,15 @@ class MiniQuizManager {
 
         const allData = (window as any).dictionaryData as any[][];
 
+        // Fallback distractors if dictionary not loaded
+        const fallbackSwedish = ['Hus', 'Bil', 'Katt', 'Hund', 'Sol', 'Vatten', 'Bröd', 'Bok'];
+        const fallbackArabic = ['بيت', 'سيارة', 'قطة', 'كلب', 'شمس', 'ماء', 'خبز', 'كتاب'];
+
+        const getFallbackDistractors = (correct: string, isSwe: boolean): string[] => {
+            const pool = isSwe ? fallbackSwedish : fallbackArabic;
+            return pool.filter(w => w !== correct).sort(() => Math.random() - 0.5).slice(0, 3);
+        };
+
         // Choose quiz type randomly
         // 1 = Fill Blank (if sentence exists), 2 = Listening, 3 = Translation (normal/reverse)
         // Check if sentence contains the word stem (at least first 3 chars)
@@ -695,7 +842,7 @@ class MiniQuizManager {
             // FILL-IN-THE-BLANK: Show sentence with blank
             // Find any word in sentence that starts with sweRoot
             const sentenceWithBlank = exSwe.replace(new RegExp(`\\b(${sweRoot}\\w*)\\b`, 'gi'), '______');
-            const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : [];
+            const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : getFallbackDistractors(swe, true);
             options = [...distractors, swe].sort(() => Math.random() - 0.5);
             correctAnswer = swe;
             questionHTML = `
@@ -708,7 +855,7 @@ class MiniQuizManager {
 
         } else if (quizType === 2) {
             // LISTENING: Play audio, pick the word
-            const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : [];
+            const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : getFallbackDistractors(swe, true);
             options = [...distractors, swe].sort(() => Math.random() - 0.5);
             correctAnswer = swe;
             questionHTML = `
@@ -730,7 +877,7 @@ class MiniQuizManager {
             const isReverse = Math.random() < 0.5;
 
             if (isReverse) {
-                const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : [];
+                const distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : getFallbackDistractors(swe, true);
                 options = [...distractors, swe].sort(() => Math.random() - 0.5);
                 correctAnswer = swe;
                 questionHTML = `
@@ -739,7 +886,7 @@ class MiniQuizManager {
                 modeLabel = `<span class="sv-text">Omvänd</span><span class="ar-text">عكسي</span>`;
                 modeIcon = '🔄';
             } else {
-                const distractors = allData ? this.getSmartDistractors(wordData, allData, 3) : [];
+                const distractors = allData ? this.getSmartDistractors(wordData, allData, 3) : getFallbackDistractors(arb, false);
                 options = [...distractors, arb].sort(() => Math.random() - 0.5);
                 correctAnswer = arb;
                 questionHTML = `
@@ -768,7 +915,12 @@ class MiniQuizManager {
 
         optionsEl.innerHTML = options.map(opt => `
             <div class="mini-quiz-option" data-value="${opt}">${opt}</div>
-        `).join('');
+        `).join('') + `
+            <button class="quiz-hint-btn" id="quizHintBtn" ${xp < 5 ? 'disabled' : ''}>
+                💡 <span class="sv-text">Ledtråd</span><span class="ar-text">تلميح</span>
+                <span class="hint-cost">(-5 XP)</span>
+            </button>
+        `;
 
         // Start timer
         let timeLeft = 15;
@@ -780,6 +932,10 @@ class MiniQuizManager {
                 timerProgress.style.width = `${pct}%`;
                 if (pct < 30) timerProgress.style.background = '#ef4444';
                 else if (pct < 60) timerProgress.style.background = '#f59e0b';
+            }
+            // Play tick sound in the last 5 seconds
+            if (timeLeft <= 5 && timeLeft > 0) {
+                QuizSoundManager.playTick();
             }
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
@@ -795,6 +951,39 @@ class MiniQuizManager {
                 this.handleAnswer(optionsEl, feedbackEl, selected!, correctAnswer, wordData, true);
             });
         });
+
+        // Hint button handler
+        const hintBtn = optionsEl.querySelector('#quizHintBtn') as HTMLButtonElement;
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => {
+                let currentXP = parseInt(localStorage.getItem('quizXP') || '0');
+                if (currentXP < 5) return;
+
+                // Deduct XP
+                currentXP -= 5;
+                localStorage.setItem('quizXP', currentXP.toString());
+
+                // Update XP display
+                const xpDisplay = questionEl.querySelector('.quiz-xp');
+                if (xpDisplay) xpDisplay.textContent = `⭐ ${currentXP} XP`;
+
+                // Eliminate one wrong answer
+                const wrongOptions = Array.from(optionsEl.querySelectorAll('.mini-quiz-option:not(.disabled)'))
+                    .filter(el => (el as HTMLElement).dataset.value !== correctAnswer);
+
+                if (wrongOptions.length > 0) {
+                    const toRemove = wrongOptions[Math.floor(Math.random() * wrongOptions.length)] as HTMLElement;
+                    toRemove.classList.add('eliminated');
+                    toRemove.style.opacity = '0.3';
+                    toRemove.style.pointerEvents = 'none';
+                    toRemove.style.textDecoration = 'line-through';
+                }
+
+                // Disable hint button
+                hintBtn.disabled = true;
+                hintBtn.style.opacity = '0.5';
+            });
+        }
     }
 
     private static handleAnswer(
@@ -816,8 +1005,10 @@ class MiniQuizManager {
             streak++;
             xp += 10 + (streak * 2); // Bonus XP for streak
             this.showConfetti();
+            QuizSoundManager.playCorrect();
         } else {
             streak = 0;
+            QuizSoundManager.playWrong();
         }
 
         localStorage.setItem('quizStreak', streak.toString());
@@ -843,12 +1034,25 @@ class MiniQuizManager {
         const timeUpMsg = !userClicked ? `⏰ <span class="sv-text">${tLang('details.timeUp', 'sv')}</span><span class="ar-text">${tLang('details.timeUp', 'ar')}</span>` : '';
 
         feedbackEl.classList.remove('hidden');
+
+        // Get example sentence for explanation
+        const exampleSwe = wordData[7] || '';
+        const exampleArb = wordData[8] || '';
+        const explanationHTML = exampleSwe ? `
+            <div class="quiz-explanation">
+                <div class="explanation-label">📚 <span class="sv-text">Exempel</span><span class="ar-text">مثال</span>:</div>
+                <div class="explanation-swe">"${exampleSwe}"</div>
+                ${exampleArb ? `<div class="explanation-arb" dir="rtl">"${exampleArb}"</div>` : ''}
+            </div>
+        ` : '';
+
         feedbackEl.innerHTML = `
             ${timeUpMsg}
             ${isCorrect
                 ? `🎉 <span class="sv-text">${tLang('details.correct', 'sv')}</span><span class="ar-text">${tLang('details.correct', 'ar')}</span> ${streakMsg}`
                 : `❌ <span class="sv-text">${tLang('details.wrong', 'sv')} "${correctAnswer}".</span><span class="ar-text">${tLang('details.wrong', 'ar')} "${correctAnswer}".</span>`
             }
+            ${explanationHTML}
             <button class="quiz-retry-btn" onclick="MiniQuizManager.init(window.currentWordData)">
                 🔄 <span class="sv-text">${tLang('details.retry', 'sv')}</span><span class="ar-text">${tLang('details.retry', 'ar')}</span>
             </button>
@@ -884,25 +1088,84 @@ class MiniQuizManager {
  */
 class RelatedWordsManager {
     static init(wordData: any[]) {
+        console.log('[RelatedWords] init called with:', wordData?.[2]);
         const container = document.getElementById('relatedWordsContainer');
+        console.log('[RelatedWords] container found:', !!container);
         if (!container) return;
 
         const type = wordData[1];
         const swe = wordData[2];
         const allData = (window as any).dictionaryData as any[][];
+        console.log('[RelatedWords] allData available:', !!allData, allData?.length);
 
-        if (!allData) return;
+        if (!allData) {
+            console.log('[RelatedWords] Starting polling...');
+            // Data not loaded yet? Poll for it!
+            let retries = 0;
+            const poll = setInterval(() => {
+                const data = (window as any).dictionaryData;
+                retries++;
+                if (data) {
+                    clearInterval(poll);
+                    RelatedWordsManager.init(wordData);
+                } else if (retries > 25) { // 5 seconds max wait
+                    clearInterval(poll);
+                    container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-secondary);">
+                        <span class="sv-text">Kunde inte ladda relaterade ord</span>
+                        <span class="ar-text">تعذر تحميل الكلمات ذات الصلة</span>
+                    </div>`;
+                }
+            }, 200);
 
-        // Find words of same type or starting with same letter
-        const related = allData
-            .filter(row => row[2] !== swe && (row[1] === type || row[2].startsWith(swe.substring(0, 2))))
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 6);
+            // Show loading state placeholder
+            container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-secondary);">
+                <span class="sv-text">Laddar relaterade ord...</span>
+                <span class="ar-text">جاري تحميل الكلمات ذات الصلة...</span>
+            </div>`;
+            return;
+        }
+
+        // Smart Tiered Algorithm to ensure results
+        // Tier 1: Compounds/Deep Relations (Contains the word OR word contains it)
+        const compounds = allData.filter(row =>
+            row[2] !== swe && (row[2].includes(swe) || swe.includes(row[2]))
+        );
+
+        // Tier 2: Neighbors (Starts with same 3 letters)
+        const neighbors = allData.filter(row =>
+            row[2] !== swe && row[2].startsWith(swe.substring(0, 3))
+        );
+
+        // Tier 3: Category Fallback (Same grammatical type)
+        const sameType = allData.filter(row =>
+            row[2] !== swe && row[1] === type
+        );
+
+        // Combine and prioritize unique results
+        const combined = new Set([...compounds, ...neighbors, ...sameType]);
+        let related = Array.from(combined);
+
+        // Improve relevance sort: Compounds first, then neighbors, then random type fallback
+        related.sort((a, b) => {
+            const aIsCompound = a[2].includes(swe) || swe.includes(a[2]);
+            const bIsCompound = b[2].includes(swe) || swe.includes(b[2]);
+            if (aIsCompound && !bIsCompound) return -1;
+            if (!aIsCompound && bIsCompound) return 1;
+            return 0.5 - Math.random(); // Shuffle the rest
+        });
+
+        // Slice to max 6
+        related = related.slice(0, 6);
+
+        // Final fail-safe: If somehow still empty (e.g. bad data), pick totally random words
+        if (related.length === 0) {
+            related = allData.sort(() => Math.random() - 0.5).slice(0, 6);
+        }
 
         container.innerHTML = related.map(row => `
             <div class="related-word-chip" onclick="window.location.href='details.html?id=${row[0]}'">
-                <span class="swe">${row[2]}</span>
-                <span class="arb">${row[3]}</span>
+                <span class="related-swe">${row[2]}</span>
+                <span class="related-arb">${row[3]}</span>
             </div>
         `).join('');
     }
@@ -1692,6 +1955,7 @@ export class DetailsManager {
             // Init new professional features
             NotesManager.init(this.wordId!);
             MiniQuizManager.init(this.wordData);
+            console.log('[handleDataReady] Calling RelatedWordsManager.init...');
             RelatedWordsManager.init(this.wordData);
         } else {
             const area = document.getElementById('detailsArea');
@@ -1766,8 +2030,10 @@ export class DetailsManager {
                 ${forms ? `
                 <div class="details-section">
                     <h3 class="section-title"><span class="section-icon">🔗</span> <span class="sv-text">Böjningar</span><span class="ar-text">التصريفات</span></h3>
-                    <div class="forms-container">
-                        ${forms.split(',').map((f: string) => `<span class="form-chip">${f.trim()}</span>`).join('')}
+                    <div class="forms-card-container">
+                        <div class="forms-container">
+                            ${forms.split(',').map((f: string) => `<span class="form-chip">${f.trim()}</span>`).join('')}
+                        </div>
                     </div>
                 </div>
                 ` : ''}
@@ -1829,7 +2095,53 @@ export class DetailsManager {
         // Initialize Pronunciation Lab
         setTimeout(() => {
             PronunciationLab.init(swe);
+            // SmartCardManager.init(detailsArea); // Disabled: User requested full text always
         }, 100);
+
+        // 3D Parallax Effect for Hero
+        detailsArea.addEventListener('mousemove', (e) => {
+            const hero = detailsArea.querySelector('.hero-inner') as HTMLElement;
+            if (!hero) {
+                // Try finding it again if updated
+                const newHero = detailsArea.querySelector('.hero-inner') as HTMLElement;
+                if (!newHero) return;
+                // Re-assign if needed, but 'hero' var is local.
+                // Simplified: just return for now.
+                return;
+            }
+
+            const rect = hero.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+
+            hero.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        detailsArea.addEventListener('mouseleave', () => {
+            const hero = detailsArea.querySelector('.hero-inner') as HTMLElement;
+            if (hero) {
+                hero.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            }
+        });
+
+        // Double Tap to Love (Heart Explosion)
+        const heroSection = detailsArea.querySelector('.details-hero');
+        if (heroSection) {
+            heroSection.addEventListener('dblclick', (e: Event) => {
+                const me = e as MouseEvent;
+                HeartExplosion.spawn(me.clientX, me.clientY);
+
+                // Trigger Favorite Toggle
+                const favBtn = document.getElementById('headerFavoriteBtn');
+                if (favBtn) favBtn.click();
+            });
+        }
     }
 
     private setupHeaderActions(row: any[], isFav: boolean) {
