@@ -147,16 +147,20 @@ class PronunciationLab {
     private static updateUIForLevel() {
         const normalBtn = document.getElementById('pronounceNormalBtn');
         const recordSection = document.getElementById('recordingSection');
+        const instruction = document.getElementById('modeInstruction');
 
         if (this.currentLevel === 'listen') {
             normalBtn?.classList.remove('hidden');
             recordSection?.classList.add('hidden');
+            if (instruction) instruction.innerHTML = '<span class="sv-text">Lyssna noga på uttalet.</span><span class="ar-text">استمع جيداً للنطق الصحيح.</span>';
         } else if (this.currentLevel === 'repeat') {
             normalBtn?.classList.remove('hidden');
             recordSection?.classList.remove('hidden');
+            if (instruction) instruction.innerHTML = '<span class="sv-text">Lyssna först, spela sedan in.</span><span class="ar-text">استمع أولاً، ثم سجل صوتك.</span>';
         } else { // challenge
             normalBtn?.classList.add('hidden');
             recordSection?.classList.remove('hidden');
+            if (instruction) instruction.innerHTML = '<span class="sv-text">Kan du ordet? Spela in direkt!</span><span class="ar-text">هل تعرف الكلمة؟ سجلها مباشرة!</span>';
         }
     }
 
@@ -619,10 +623,103 @@ class QuizSoundManager {
 }
 
 /**
+ * Emoji Quiz Helper - Maps words to emojis for "Picture" Quiz
+ */
+class EmojiQuizHelper {
+    private static emojiMap: Record<string, string> = {
+        // Animals
+        'hund': '🐶', 'katt': '🐱', 'fågel': '🐦', 'häst': '🐴', 'ko': '🐮',
+        'gris': '🐷', 'får': '🐑', 'kanin': '🐰', 'björn': '🐻', 'lejon': '🦁',
+        'tiger': '🐯', 'elefant': '🐘', 'apa': '🐵', 'fisk': '🐟', 'val': '🐋',
+        'orm': '🐍', 'spindel': '🕷️', 'bi': '🐝', 'fjäril': '🦋', 'räv': '🦊',
+        'älg': '🫎', 'varg': '🐺', 'mus': '🐭', 'groda': '🐸', 'sköldpadda': '🐢',
+
+        // Nature
+        'sol': '☀️', 'måne': '🌙', 'stjärna': '⭐', 'moln': '☁️', 'regn': '🌧️',
+        'snö': '❄️', 'eld': '🔥', 'vatten': '💧', 'träd': '🌳', 'blomma': '🌸',
+        'skog': '🌲', 'berg': '🏔️', 'hav': '🌊', 'strand': '6🏖️', 'ö': '🏝️',
+        'blad': '🍃', 'gräs': '🌱', 'sten': '🪨', 'regnbåge': '🌈', 'blixt': '⚡',
+
+        // Food
+        'äpple': '🍎', 'banan': '🍌', 'päron': '🍐', 'apelsin': '🍊', 'citron': '🍋',
+        'druvor': '🍇', 'jordgubbe': '🍓', 'tomat': '🍅', 'potatis': '🥔', 'morot': '🥕',
+        'bröd': '🍞', 'kött': '🥩', 'ägg': '🥚', 'ost': '🧀', 'pizza': '🍕',
+        'burgare': '🍔', 'glass': '🍦', 'kaka': '🍰', 'kaffe': '☕', 'mjölk': '🥛',
+        'ris': '🍚', 'sås': '🥣', 'kyckling': '🍗',
+
+        // Objects/Home
+        'hus': '🏠', 'bil': '🚗', 'cykel': '🚲', 'båt': '⛵', 'flygplan': '✈️',
+        'tåg': '🚆', 'buss': '🚌', 'dator': '💻', 'telefon': '📱', 'klocka': '⌚',
+        'bok': '📖', 'penna': '✏️', 'stol': '🪑', 'säng': '🛌', 'nyckel': '🔑',
+        'väska': '👜', 'glasögon': '👓', 'hatt': '🎩', 'skor': '👞', 'kläder': '👕',
+        'dörr': '🚪', 'fönster': '🪟', 'bord': '5️⃣', 'lampa': '💡', 'sax': '✂️',
+
+        // Body
+        'öga': '👁️', 'öra': '👂', 'näsa': '👃', 'mun': '👄', 'hand': '✋',
+        'fot': '🦶', 'hjärta': '❤️', 'hjärna': '🧠', 'tand': '🦷', 'hår': '💇',
+
+        // People/Professions
+        'läkare': '👨‍⚕️', 'lärare': '🧑‍🏫', 'polis': '👮', 'bebis': '👶', 'kvinna': '👩',
+        'man': '👨', 'flicka': '👧', 'pojke': '👦', 'familj': '👨‍👩‍👧‍👦', 'kung': '👑',
+    };
+
+    static getEmoji(word: string): string | null {
+        const lower = word.toLowerCase();
+        // Exact match
+        if (this.emojiMap[lower]) return this.emojiMap[lower];
+
+        // Prefix match (for compounds e.g. "fotboll" -> "fot" maybe?) - careful
+        // Let's stick to safe matches or simple normalization
+
+        // Return random if in dev/test mode? No, better strict.
+        return null;
+    }
+
+    static hasEmoji(word: string): boolean {
+        return !!this.getEmoji(word);
+    }
+}
+
+/**
  * Mini Quiz Manager - EXTREME DIFFICULTY Distractor Generation
  * Uses linguistic analysis to create maximum confusion
  */
+type QuizDifficulty = 'easy' | 'medium' | 'hard';
+
 class MiniQuizManager {
+    private static difficulty: QuizDifficulty = 'medium';
+    private static consecutiveCorrect = 0;
+
+    static setDifficulty(level: QuizDifficulty) {
+        this.difficulty = level;
+        console.log(`[Quiz] Difficulty set to: ${level}`);
+    }
+
+    static adjustDifficulty(isCorrect: boolean) {
+        if (isCorrect) {
+            this.consecutiveCorrect++;
+            if (this.consecutiveCorrect >= 3 && this.difficulty !== 'hard') {
+                this.setDifficulty(this.difficulty === 'easy' ? 'medium' : 'hard');
+                this.consecutiveCorrect = 0;
+                // Show toast for level up?
+            }
+        } else {
+            this.consecutiveCorrect = 0;
+            if (this.difficulty !== 'easy') {
+                this.setDifficulty(this.difficulty === 'hard' ? 'medium' : 'easy');
+            }
+        }
+    }
+
+    static getTimeLimit(): number {
+        switch (this.difficulty) {
+            case 'easy': return 15;
+            case 'medium': return 10;
+            case 'hard': return 5;
+            default: return 10;
+        }
+    }
+
     /**
      * Extract Arabic morphological features for matching
      */
@@ -810,6 +907,65 @@ class MiniQuizManager {
         return distractors;
     }
 
+    /**
+     * EASY: Random words from dictionary
+     */
+    static getEasyDistractors(allData: any[][], count: number = 3): string[] {
+        const distractors: string[] = [];
+        const randomPool = allData.sort(() => Math.random() - 0.5).slice(0, 20);
+
+        for (const row of randomPool) {
+            if (distractors.length >= count) break;
+            const word = row[3] || row[2]; // Arab or Swe depending... wait, this needs context. 
+            // Actually let's assume Arabic distractors for now or make it generic?
+            // Existing methods separate Swedish/Arabic.
+            // Let's make generic helpers or stick to specific.
+            // getSwedishDistractors returns Swedish. getSmartDistractors returns Arabic.
+            // So we need getEasyArabic and getEasySwedish?
+            // Or just return rows and let caller pick.
+            // Safer to return strings.
+        }
+        return []; // Placeholder, implemented better below
+    }
+
+    static getEasyDistractorsAr(correct: string, allData: any[][], count: number = 3): string[] {
+        return allData
+            .filter(r => r[3] !== correct)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count)
+            .map(r => r[3]);
+    }
+
+    static getEasyDistractorsSv(correct: string, allData: any[][], count: number = 3): string[] {
+        return allData
+            .filter(r => r[2] !== correct)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count)
+            .map(r => r[2]);
+    }
+
+    static getMediumDistractorsAr(wordData: any[], allData: any[][], count: number = 3): string[] {
+        const type = wordData[1];
+        const correct = wordData[3];
+        // Same POS, random sort
+        return allData
+            .filter(r => r[1] === type && r[3] !== correct)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count)
+            .map(r => r[3]);
+    }
+
+    static getMediumDistractorsSv(wordData: any[], allData: any[][], count: number = 3): string[] {
+        const type = wordData[1];
+        const correct = wordData[2];
+        // Same POS, random sort
+        return allData
+            .filter(r => r[1] === type && r[2] !== correct)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count)
+            .map(r => r[2]);
+    }
+
     static init(wordData: any[]) {
         const container = document.getElementById('miniQuizContainer');
         const questionEl = document.getElementById('miniQuizQuestion');
@@ -839,7 +995,12 @@ class MiniQuizManager {
         // Check if sentence contains the word stem (at least first 3 chars)
         const sweRoot = swe.substring(0, Math.min(4, swe.length)).toLowerCase();
         const hasSentence = exSwe && exSwe.length > 10 && exSwe.toLowerCase().includes(sweRoot);
-        const quizTypes = hasSentence ? [1, 2, 3] : [2, 3];
+        const hasEmoji = EmojiQuizHelper.hasEmoji(swe);
+
+        const quizTypes = [2, 3]; // Default: Listening, Translation
+        if (hasSentence) quizTypes.push(1);
+        if (hasEmoji) quizTypes.push(4); // Emoji Quiz
+
         const quizType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
 
         let options: string[];
@@ -848,7 +1009,30 @@ class MiniQuizManager {
         let modeLabel: string;
         let modeIcon: string;
 
-        if (quizType === 1 && hasSentence) {
+        if (quizType === 4 && hasEmoji) {
+            // EMOJI QUIZ: Picture -> Word
+            const emoji = EmojiQuizHelper.getEmoji(swe)!;
+
+            // Distractors: Random Swedish words (maybe try to pick from emoji map keys if poss?)
+            // For now, random Swedish words is fine.
+            let distractors: string[];
+            if (this.difficulty === 'easy') {
+                distractors = this.getEasyDistractorsSv(swe, allData, 3);
+            } else {
+                distractors = allData ? this.getSwedishDistractors(wordData, allData, 3) : getFallbackDistractors(swe, true);
+            }
+
+            options = [...distractors, swe].sort(() => Math.random() - 0.5);
+            correctAnswer = swe;
+            questionHTML = `
+                <div class="quiz-emoji-display">${emoji}</div>
+                <div class="quiz-instruction"><span class="sv-text">Vilket ord passar bilden?</span><span class="ar-text">ما هي الكلمة المناسبة للصورة؟</span></div>
+            `;
+            modeLabel = `<span class="sv-text">Bidlquiz</span><span class="ar-text">اختبار الصور</span>`;
+            modeIcon = '🖼️';
+            console.log('[Quiz] EMOJI mode:', { emoji, correctAnswer: swe });
+
+        } else if (quizType === 1 && hasSentence) {
             // FILL-IN-THE-BLANK: Show sentence with blank
             // Find any word in sentence that starts with sweRoot
             const sentenceWithBlank = exSwe.replace(new RegExp(`\\b(${sweRoot}\\w*)\\b`, 'gi'), '______');
@@ -933,12 +1117,13 @@ class MiniQuizManager {
         `;
 
         // Start timer
-        let timeLeft = 15;
+        const maxTime = this.getTimeLimit();
+        let timeLeft = maxTime;
         const timerProgress = questionEl.querySelector('.quiz-timer-progress') as HTMLElement;
         const timerInterval = setInterval(() => {
             timeLeft--;
             if (timerProgress) {
-                const pct = (timeLeft / 15) * 100;
+                const pct = (timeLeft / maxTime) * 100;
                 timerProgress.style.width = `${pct}%`;
                 if (pct < 30) timerProgress.style.background = '#ef4444';
                 else if (pct < 60) timerProgress.style.background = '#f59e0b';

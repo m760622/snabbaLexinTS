@@ -88,10 +88,6 @@ export const TTSManager = {
     setSpeed(speed: number): number {
         const clamped = Math.min(1.5, Math.max(0.5, speed));
         localStorage.setItem('ttsSpeed', clamped.toString());
-        const showToast = (window as any).showToast;
-        if (typeof showToast === 'function') {
-            showToast(`Uttalshastighet: ${Math.round(clamped * 100)}% / سرعة النطق`);
-        }
         return clamped;
     },
 
