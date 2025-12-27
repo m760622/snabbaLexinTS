@@ -189,8 +189,53 @@ class PronunciationLab {
 
         normalBtn?.addEventListener('click', () => {
             HapticFeedback.light();
-            // Trust setSpeed from slider
             TTSManager.speakSwedish(this.currentWord);
+        });
+
+        // Repeat Button Logic
+        const repeatBtn = document.getElementById('repeatBtn');
+        const repeatSelect = document.getElementById('repeatCount') as HTMLSelectElement;
+        let isRepeating = false;
+        let stopRepeat = false;
+
+        repeatBtn?.addEventListener('click', async () => {
+            // Toggle stop if already repeating
+            if (isRepeating) {
+                stopRepeat = true;
+                return;
+            }
+
+            HapticFeedback.medium();
+            const value = repeatSelect?.value || '3';
+            const isInfinite = value === 'infinite';
+            const count = isInfinite ? Infinity : parseInt(value);
+
+            isRepeating = true;
+            stopRepeat = false;
+            repeatBtn.classList.add('active');
+
+            // Change button text to "Stop" during repeat
+            const originalHTML = repeatBtn.innerHTML;
+            repeatBtn.innerHTML = '⏹️ <span class="sv-text">Stopp</span><span class="ar-text">إيقاف</span>';
+
+            let i = 0;
+            while (i < count && !stopRepeat) {
+                await new Promise<void>(resolve => {
+                    TTSManager.speakSwedish(this.currentWord);
+                    const onEnd = () => {
+                        window.removeEventListener('tts-end', onEnd);
+                        setTimeout(resolve, 800);
+                    };
+                    window.addEventListener('tts-end', onEnd);
+                });
+                i++;
+            }
+
+            // Reset button state
+            isRepeating = false;
+            stopRepeat = false;
+            repeatBtn.classList.remove('active');
+            repeatBtn.innerHTML = originalHTML;
         });
 
         recordBtn?.addEventListener('click', () => this.toggleRecording());
@@ -1279,88 +1324,102 @@ class MiniQuizManager {
 (window as any).MiniQuizManager = MiniQuizManager;
 
 /**
- * Related Words Manager
+ * Related Words Manager - Enhanced with Categories & Guaranteed Results
  */
 class RelatedWordsManager {
-    static init(wordData: any[]) {
+    static async init(wordData: any[]) {
         console.log('[RelatedWords] init called with:', wordData?.[2]);
         const container = document.getElementById('relatedWordsContainer');
-        console.log('[RelatedWords] container found:', !!container);
         if (!container) return;
 
         const type = wordData[1];
         const swe = wordData[2];
-        const allData = (window as any).dictionaryData as any[][];
-        console.log('[RelatedWords] allData available:', !!allData, allData?.length);
+        const arb = wordData[3];
 
+        // Show loading state
+        container.innerHTML = `<div class="related-loading">⏳ <span class="sv-text">Laddar...</span><span class="ar-text">جاري التحميل...</span></div>`;
+
+        // Load data directly from IndexedDB
+        let allData: any[][] = (window as any).dictionaryData;
         if (!allData) {
-            console.log('[RelatedWords] Starting polling...');
-            // Data not loaded yet? Poll for it!
-            let retries = 0;
-            const poll = setInterval(() => {
-                const data = (window as any).dictionaryData;
-                retries++;
-                if (data) {
-                    clearInterval(poll);
-                    RelatedWordsManager.init(wordData);
-                } else if (retries > 25) { // 5 seconds max wait
-                    clearInterval(poll);
-                    container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-secondary);">
-                        <span class="sv-text">Kunde inte ladda relaterade ord</span>
-                        <span class="ar-text">تعذر تحميل الكلمات ذات الصلة</span>
-                    </div>`;
-                }
-            }, 200);
+            try {
+                allData = await DictionaryDB.getAllWords();
+                (window as any).dictionaryData = allData; // Cache for future use
+            } catch (e) {
+                console.error('[RelatedWords] Failed to load data:', e);
+                container.innerHTML = `<div class="related-empty">
+                    <span class="sv-text">Kunde inte ladda relaterade ord</span>
+                    <span class="ar-text">تعذر تحميل الكلمات ذات الصلة</span>
+                </div>`;
+                return;
+            }
+        }
 
-            // Show loading state placeholder
-            container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-secondary);">
-                <span class="sv-text">Laddar relaterade ord...</span>
-                <span class="ar-text">جاري تحميل الكلمات ذات الصلة...</span>
+        if (!allData || allData.length === 0) {
+            container.innerHTML = `<div class="related-empty">
+                <span class="sv-text">Inga relaterade ord hittades</span>
+                <span class="ar-text">لم يتم العثور على كلمات ذات صلة</span>
             </div>`;
             return;
         }
 
-        // Smart Tiered Algorithm to ensure results
-        // Tier 1: Compounds/Deep Relations (Contains the word OR word contains it)
+        // Category-based Related Words
+        const categories: { label: string; labelAr: string; icon: string; words: any[] }[] = [];
+
+        // 1. Compounds (words containing this word)
         const compounds = allData.filter(row =>
-            row[2] !== swe && (row[2].includes(swe) || swe.includes(row[2]))
-        );
-
-        // Tier 2: Neighbors (Starts with same 3 letters)
-        const neighbors = allData.filter(row =>
-            row[2] !== swe && row[2].startsWith(swe.substring(0, 3))
-        );
-
-        // Tier 3: Category Fallback (Same grammatical type)
-        const sameType = allData.filter(row =>
-            row[2] !== swe && row[1] === type
-        );
-
-        // Combine and prioritize unique results
-        const combined = new Set([...compounds, ...neighbors, ...sameType]);
-        let related = Array.from(combined);
-
-        // Improve relevance sort: Compounds first, then neighbors, then random type fallback
-        related.sort((a, b) => {
-            const aIsCompound = a[2].includes(swe) || swe.includes(a[2]);
-            const bIsCompound = b[2].includes(swe) || swe.includes(b[2]);
-            if (aIsCompound && !bIsCompound) return -1;
-            if (!aIsCompound && bIsCompound) return 1;
-            return 0.5 - Math.random(); // Shuffle the rest
-        });
-
-        // Slice to max 6
-        related = related.slice(0, 6);
-
-        // Final fail-safe: If somehow still empty (e.g. bad data), pick totally random words
-        if (related.length === 0) {
-            related = allData.sort(() => Math.random() - 0.5).slice(0, 6);
+            row[2] !== swe && (row[2].toLowerCase().includes(swe.toLowerCase()) || swe.toLowerCase().includes(row[2].toLowerCase()))
+        ).slice(0, 4);
+        if (compounds.length > 0) {
+            categories.push({ label: 'Sammansatta ord', labelAr: 'كلمات مركبة', icon: '🔗', words: compounds });
         }
 
-        container.innerHTML = related.map(row => `
-            <div class="related-word-chip" onclick="window.location.href='details.html?id=${row[0]}'">
-                <span class="related-swe">${row[2]}</span>
-                <span class="related-arb">${row[3]}</span>
+        // 2. Same Root (starts with same 3+ letters)
+        const prefix = swe.substring(0, Math.min(3, swe.length)).toLowerCase();
+        const sameRoot = allData.filter(row =>
+            row[2] !== swe && row[2].toLowerCase().startsWith(prefix) && !compounds.includes(row)
+        ).slice(0, 4);
+        if (sameRoot.length > 0) {
+            categories.push({ label: 'Liknande ord', labelAr: 'كلمات مشابهة', icon: '🌱', words: sameRoot });
+        }
+
+        // 3. Same Category (grammatical type)
+        const sameType = allData.filter(row =>
+            row[2] !== swe && row[1] === type && !compounds.includes(row) && !sameRoot.includes(row)
+        ).sort(() => Math.random() - 0.5).slice(0, 4);
+        if (sameType.length > 0) {
+            const typeLabels: Record<string, { sv: string; ar: string }> = {
+                'verb': { sv: 'Andra verb', ar: 'أفعال أخرى' },
+                'subst.': { sv: 'Andra substantiv', ar: 'أسماء أخرى' },
+                'adj.': { sv: 'Andra adjektiv', ar: 'صفات أخرى' },
+                'adv.': { sv: 'Andra adverb', ar: 'ظروف أخرى' },
+            };
+            const typeLabel = typeLabels[type] || { sv: `Samma typ (${type})`, ar: `نفس النوع (${type})` };
+            categories.push({ label: typeLabel.sv, labelAr: typeLabel.ar, icon: '📚', words: sameType });
+        }
+
+        // 4. Random Discovery (if no other categories)
+        if (categories.length === 0 || categories.reduce((sum, c) => sum + c.words.length, 0) < 3) {
+            const random = allData.filter(row => row[2] !== swe).sort(() => Math.random() - 0.5).slice(0, 6);
+            categories.push({ label: 'Upptäck ord', labelAr: 'اكتشف كلمات', icon: '✨', words: random });
+        }
+
+        // Render with category headers
+        container.innerHTML = categories.map(cat => `
+            <div class="related-category">
+                <div class="related-category-header">
+                    <span class="category-icon">${cat.icon}</span>
+                    <span class="sv-text">${cat.label}</span>
+                    <span class="ar-text">${cat.labelAr}</span>
+                </div>
+                <div class="related-words-row">
+                    ${cat.words.map(row => `
+                        <div class="related-word-chip" onclick="window.location.href='details.html?id=${row[0]}'">
+                            <span class="related-swe">${row[2]}</span>
+                            <span class="related-arb">${row[3]}</span>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         `).join('');
     }

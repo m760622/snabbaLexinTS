@@ -83,7 +83,7 @@
     top: 12px;
     left: 12px;
     padding: 4px 8px;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
     color: white;
     border-radius: 8px;
     font-size: 0.65rem;
@@ -91,7 +91,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.4);
     animation: pulseGlow 2s ease-in-out infinite;
 }
 
@@ -99,11 +99,11 @@
 
     0%,
     100% {
-        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.4);
     }
 
     50% {
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.6);
+        box-shadow: 0 4px 16px rgba(30, 58, 138, 0.6);
     }
 }
 
@@ -159,7 +159,7 @@
     position: absolute;
     width: 6px;
     height: 6px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.6) 0%, transparent 70%);
     border-radius: 50%;
     animation: floatParticle linear infinite;
 }
@@ -339,7 +339,7 @@
     border-radius: 50%;
     border: 2px solid var(--surface);
     margin-left: -8px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -356,8 +356,8 @@
    ============================================================ */
 
 .quote-widget {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(30, 58, 138, 0.1));
+    border: 1px solid rgba(37, 99, 235, 0.2);
     border-radius: 20px;
     padding: 20px 24px;
     margin-bottom: 20px;
@@ -371,7 +371,7 @@
     left: 16px;
     font-size: 4rem;
     opacity: 0.1;
-    color: #6366f1;
+    color: #2563eb;
 }
 
 .quote-text {
@@ -385,7 +385,7 @@
 
 .quote-author {
     font-size: 0.85rem;
-    color: #6366f1;
+    color: #2563eb;
     margin-top: 8px;
     font-weight: 600;
 }
@@ -397,18 +397,18 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(37, 99, 235, 0.1);
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6366f1;
+    color: #2563eb;
     transition: all 0.3s ease;
 }
 
 .quote-refresh:hover {
-    background: rgba(99, 102, 241, 0.2);
+    background: rgba(37, 99, 235, 0.2);
     transform: rotate(180deg);
 }
 
@@ -470,7 +470,7 @@
 .bar {
     width: 100%;
     max-width: 40px;
-    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
     border-radius: 6px 6px 0 0;
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -549,7 +549,7 @@
 }
 
 .skill-bar-fill.grammar {
-    background: linear-gradient(90deg, #6366f1, #4f46e5);
+    background: linear-gradient(90deg, #2563eb, #4f46e5);
 }
 
 .skill-bar-fill.listening {
@@ -748,11 +748,11 @@ body.eye-care-mode .eye-care-toggle {
 }
 
 .theme-indigo {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
 .theme-purple {
-    background: linear-gradient(135deg, #a855f7, #9333ea);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
 }
 
 .theme-pink {
@@ -924,8 +924,8 @@ body.eye-care-mode .eye-care-toggle {
 }
 
 .leaderboard-entry.current-user {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 58, 138, 0.2));
+    border: 1px solid rgba(37, 99, 235, 0.3);
 }
 
 .leaderboard-rank {
@@ -963,7 +963,7 @@ body.eye-care-mode .eye-care-toggle {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     display: flex;
     align-items: center;
     justify-content: center;

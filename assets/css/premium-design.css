@@ -43,7 +43,7 @@
     --shadow-premium-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-premium-md: 0 10px 25px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
     --shadow-premium-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+    --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.3);
 
     /* XP System Colors - ألوان نظام الخبرة */
     --xp-bronze: linear-gradient(135deg, #cd7f32, #8b4513);
@@ -172,13 +172,13 @@ body.focus-mode .focus-mode-toggle {
     transform: translateY(-8px) scale(1.02);
     box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.2),
-        0 0 60px rgba(99, 102, 241, 0.15);
+        0 0 60px rgba(37, 99, 235, 0.15);
 }
 
 /* Stats Hero Glassmorphism */
 .stats-hero.glass-effect {
     background: linear-gradient(135deg,
-            rgba(99, 102, 241, 0.2),
+            rgba(37, 99, 235, 0.2),
             rgba(236, 72, 153, 0.2));
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -186,7 +186,7 @@ body.focus-mode .focus-mode-toggle {
     border-radius: 24px;
     padding: 2rem;
     box-shadow:
-        0 8px 32px rgba(99, 102, 241, 0.2),
+        0 8px 32px rgba(37, 99, 235, 0.2),
         inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
@@ -260,7 +260,7 @@ body.focus-mode .focus-mode-toggle {
 
 .switch-neumorphic.active::before {
     left: calc(100% - 32px);
-    background: linear-gradient(145deg, #6366f1, #4f46e5);
+    background: linear-gradient(145deg, #2563eb, #4f46e5);
 }
 
 /* ============================================================
@@ -409,7 +409,7 @@ body.focus-mode .focus-mode-toggle {
 
 .xp-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b);
+    background: linear-gradient(90deg, #2563eb, #ec4899, #f59e0b);
     background-size: 200% 100%;
     border-radius: 6px;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -906,7 +906,7 @@ body.focus-mode .focus-mode-toggle {
 .mystery-box {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -915,14 +915,14 @@ body.focus-mode .focus-mode-toggle {
     position: relative;
     transition: var(--transition-spring);
     box-shadow:
-        0 10px 30px rgba(99, 102, 241, 0.4),
+        0 10px 30px rgba(37, 99, 235, 0.4),
         inset 0 2px 4px rgba(255, 255, 255, 0.2);
 }
 
 .mystery-box:hover {
     transform: scale(1.05) rotate(2deg);
     box-shadow:
-        0 15px 40px rgba(99, 102, 241, 0.5),
+        0 15px 40px rgba(37, 99, 235, 0.5),
         inset 0 2px 4px rgba(255, 255, 255, 0.2);
 }
 
@@ -1096,7 +1096,7 @@ body.focus-mode .focus-mode-toggle {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     border: none;
     cursor: pointer;
     display: flex;
@@ -1126,7 +1126,7 @@ body.focus-mode .focus-mode-toggle {
 
 .music-player-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #ec4899);
+    background: linear-gradient(90deg, #2563eb, #ec4899);
     width: 0%;
     transition: width 0.3s linear;
 }
@@ -1195,7 +1195,7 @@ body.focus-mode .focus-mode-toggle {
     font-weight: 800;
     text-align: center;
     font-family: 'SF Mono', 'Fira Code', monospace;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
+    background: linear-gradient(135deg, #2563eb, #ec4899);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1218,13 +1218,13 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
 }
 
 .pomodoro-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
 }
 
 .pomodoro-btn-secondary {
@@ -1257,7 +1257,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-session-dot.active {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     animation: pulseDot 1s ease-in-out infinite;
 }
 
@@ -1509,7 +1509,7 @@ body.focus-mode .focus-mode-toggle {
     position: absolute;
     width: 300px;
     background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    border: 1px solid rgba(37, 99, 235, 0.3);
     border-radius: 20px;
     padding: 24px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -1562,7 +1562,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .tour-next {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     border: none;
     color: white;
     padding: 10px 24px;
@@ -1574,7 +1574,7 @@ body.focus-mode .focus-mode-toggle {
 
 .tour-next:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
 }
 
 .tour-progress {
@@ -1593,7 +1593,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .tour-dot.active {
-    background: #6366f1;
+    background: #2563eb;
     width: 24px;
     border-radius: 4px;
 }
@@ -1617,8 +1617,8 @@ body.focus-mode .focus-mode-toggle {
 .pull-spinner {
     width: 30px;
     height: 30px;
-    border: 3px solid rgba(99, 102, 241, 0.2);
-    border-top-color: #6366f1;
+    border: 3px solid rgba(37, 99, 235, 0.2);
+    border-top-color: #2563eb;
     border-radius: 50%;
 }
 
@@ -1731,7 +1731,7 @@ body.focus-mode .focus-mode-toggle {
     50% {
         box-shadow:
             0 6px 16px rgba(0, 0, 0, 0.08),
-            0 0 12px rgba(99, 102, 241, 0.05),
+            0 0 12px rgba(37, 99, 235, 0.05),
             inset 0 1px 1px rgba(255, 255, 255, 0.7);
     }
 }

@@ -220,7 +220,7 @@
     padding: 24px;
     margin-bottom: 16px;
     text-align: center;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 58, 138, 0.1));
 }
 
 .profile-avatar-wrapper {
@@ -238,7 +238,7 @@
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.4);
     position: relative;
     overflow: hidden;
 }
@@ -838,7 +838,7 @@ body.lang-both .section-title .ar-text {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--settings-primary), var(--settings-secondary));
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
 }
 
 .slider-value {
@@ -896,7 +896,7 @@ body.lang-both .section-title .ar-text {
 
 .test-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
 }
 
 /* ============================================================
@@ -993,7 +993,7 @@ body.lang-both .section-title .ar-text {
 }
 
 .info-badge {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 58, 138, 0.2));
     color: var(--settings-primary-light);
 }
 
@@ -1157,7 +1157,7 @@ body.lang-both .section-title .ar-text {
 
 .avatar-option.selected {
     border-color: var(--settings-primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
 /* Confirm Modal */
@@ -1576,11 +1576,11 @@ body.rtl .toast-progress {
 }
 
 .toast-item.info {
-    border-left: 3px solid #6366f1;
+    border-left: 3px solid #2563eb;
 }
 
 .toast-item.info .toast-progress {
-    background: linear-gradient(90deg, #6366f1, #818cf8);
+    background: linear-gradient(90deg, #2563eb, #818cf8);
 }
 
 /* Stacking effect - older toasts become smaller */
@@ -1679,7 +1679,7 @@ body:not(.dark-mode) .glass-card {
 }
 
 body:not(.dark-mode) .settings-profile-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(30, 58, 138, 0.05));
 }
 
 body:not(.dark-mode) .toggle-slider {
@@ -2263,5 +2263,5 @@ body:not(.dark-mode) .toast-notification {
 
 .voice-btn.active {
     background: var(--settings-primary);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }

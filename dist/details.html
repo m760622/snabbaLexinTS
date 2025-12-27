@@ -14,7 +14,7 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/details-RBd9zJWy.js"></script>
+  <script type="module" crossorigin src="/assets/details-x1lqgyTd.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
@@ -25,7 +25,7 @@
   <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
   <link rel="modulepreload" crossorigin href="/assets/ui-enhancements-sg46XY7N.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/details-CIguRcP_.css">
+  <link rel="stylesheet" crossorigin href="/assets/details-CEST3LNm.css">
 </head>
 
 <body>
@@ -197,13 +197,46 @@
                         </div>
                     </div>
 
-                    <!-- Main Actions -->
-                    <div class="pronunciation-actions">
-                        <button id="pronounceNormalBtn" class="pro-btn primary" title="Normalt uttal">
-                            🔊 <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span>
+                    <!-- Main Actions - Premium Grid Layout -->
+                    <div class="pronunciation-actions-grid">
+                        <!-- Primary Action: Listen -->
+                        <button id="pronounceNormalBtn" class="action-card listen-card">
+                            <span class="action-icon">🔊</span>
+                            <span class="action-label">
+                                <span class="sv-text">Lyssna</span>
+                                <span class="ar-text">استمع</span>
+                            </span>
+                            <span class="action-hint sv-text">En gång</span>
+                            <span class="action-hint ar-text">مرة واحدة</span>
                         </button>
-                        <button id="recordBtn" class="pro-btn accent" title="Lyssna & Jämför">
-                            🎙️ <span class="sv-text">Spela in</span><span class="ar-text">تسجيل</span>
+
+                        <!-- Repeat Action -->
+                        <div class="action-card repeat-card">
+                            <span class="action-icon">🔁</span>
+                            <div class="repeat-inner">
+                                <select id="repeatCount" class="repeat-select-modern">
+                                    <option value="2">2×</option>
+                                    <option value="3" selected>3×</option>
+                                    <option value="5">5×</option>
+                                    <option value="10">10×</option>
+                                    <option value="infinite">∞</option>
+                                </select>
+                                <button id="repeatBtn" class="repeat-go-btn">
+                                    <span class="sv-text">Upprepa</span>
+                                    <span class="ar-text">تكرار</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Record Action -->
+                        <button id="recordBtn" class="action-card record-card">
+                            <span class="action-icon">🎙️</span>
+                            <span class="action-label">
+                                <span class="sv-text">Spela in</span>
+                                <span class="ar-text">تسجيل</span>
+                            </span>
+                            <span class="action-hint sv-text">Jämför</span>
+                            <span class="action-hint ar-text">قارن صوتك</span>
                         </button>
                     </div>
 
