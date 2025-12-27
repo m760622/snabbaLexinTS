@@ -2265,7 +2265,7 @@ export class DetailsManager {
         // Minimalist Hero HTML - Matching Flashcard-Clean style
         let html = `
             <!-- Hero Section with Type Glow -->
-            <div class="details-hero ${glowClass}">
+            <div class="details-hero ${glowClass} premium-border-animated">
                 <div class="hero-inner">
                     <h1 class="word-swe-hero">${swe}</h1>
                     <div class="hero-divider"></div>

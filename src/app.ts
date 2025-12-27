@@ -229,31 +229,18 @@ export class App {
         if (typeBadge) typeBadge.textContent = word[1];
 
         // Toggle sections based on data
-        const sections = {
-            '.wod-forms-preview': 6,
-            '.wod-def-preview': 5,
-            '.wod-example-preview': 7,
-            '.wod-example-arb-preview': 8,
-            '.wod-idiom-preview': 9
-        };
+        // User Request: Show only Swedish, Arabic, and Type. Hide all other details.
+        const sectionsToHide = [
+            '.wod-forms-preview',
+            '.wod-def-preview',
+            '.wod-example-preview',
+            '.wod-example-arb-preview',
+            '.wod-idiom-preview'
+        ];
 
-        Object.entries(sections).forEach(([selector, index]) => {
+        sectionsToHide.forEach(selector => {
             const el = wodCard.querySelector(selector) as HTMLElement;
-            if (el) {
-                const hasData = word[index] && word[index].length > 0;
-                el.classList.toggle('hidden', !hasData);
-                if (hasData) {
-                    const textEl = el.querySelector('.wod-def-text, .wod-example-text, .wod-forms-chips, .wod-idiom-swe');
-                    if (textEl) {
-                        if (selector === '.wod-forms-chips') {
-                            textEl.innerHTML = word[index].split(',').map((f: string) => `<span class="wod-form-chip">${f.trim()}</span>`).join('');
-                        } else {
-                            textEl.textContent = word[index];
-                            TextSizeManager.apply(textEl as HTMLElement, word[index]);
-                        }
-                    }
-                }
-            }
+            if (el) el.classList.add('hidden');
         });
 
         // Setup individual WOD buttons

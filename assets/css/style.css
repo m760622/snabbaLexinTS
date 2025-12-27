@@ -7439,6 +7439,12 @@ body.flashcard-active .revealed {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Reusable Premium Border Animation Class */
+.premium-border-animated {
+  position: relative;
+  overflow: hidden;
+}
+
 /* Word of the Day - Dark Mode - Deep Dark + Corner Glow */
 [data-theme="dark"] .word-of-day-card {
   background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 50%, #0f1419 100%);
@@ -7449,7 +7455,8 @@ body.flashcard-active .revealed {
 }
 
 /* Corner Glow Effects for WOD - Animated Turquoise Dot */
-[data-theme="dark"] .word-of-day-card::before {
+[data-theme="dark"] .word-of-day-card::before,
+[data-theme="dark"] .premium-border-animated::before {
   content: "";
   position: absolute;
   width: 3px;
@@ -7465,7 +7472,8 @@ body.flashcard-active .revealed {
   animation: corner-glow-1 40s ease-in-out infinite;
 }
 
-[data-theme="dark"] .word-of-day-card::after {
+[data-theme="dark"] .word-of-day-card::after,
+[data-theme="dark"] .premium-border-animated::after {
   content: "";
   position: absolute;
   width: 3px;
