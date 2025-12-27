@@ -147,8 +147,9 @@ export function startGrammarGame(retryCount = 0): void {
     const shuffled = [...currentGrammarRule.words].sort(() => Math.random() - 0.5);
 
     shuffled.forEach((word, index) => {
-        const btn = document.createElement('div');
-        btn.className = 'gr-word-chip animate-in';
+        const btn = document.createElement('button');
+        // Use standard quiz-option class for consistent styling (80% width, stacked)
+        btn.className = 'quiz-option animate-in';
         btn.style.animationDelay = `${index * 0.1}s`;
         btn.textContent = word;
         btn.dataset.word = word;
@@ -161,15 +162,22 @@ export function startGrammarGame(retryCount = 0): void {
             }
 
             if (btn.parentElement === wordBank) {
-                // Remove placeholder if present
+                // Moving to DropZone (Sentence Construction)
+                // Switch from Button style to Chip style
                 const placeholder = dropZone.querySelector('.gr-drop-placeholder');
                 if (placeholder) placeholder.remove();
 
                 dropZone.appendChild(btn);
+                btn.classList.remove('quiz-option'); // Remove big button style
+                btn.classList.add('gr-word-chip');   // Add chip style for sentence
                 btn.classList.add('in-zone');
                 grammarCurrent.push(word);
             } else {
+                // Moving back to WordBank (Options)
+                // Switch from Chip style to Button style
                 wordBank.appendChild(btn);
+                btn.classList.remove('gr-word-chip'); // Remove chip style
+                btn.classList.add('quiz-option');     // Restore big button style
                 btn.classList.remove('in-zone');
                 const idx = grammarCurrent.indexOf(word);
                 if (idx > -1) grammarCurrent.splice(idx, 1);
@@ -273,7 +281,7 @@ export function showGrammarAnswer(): void {
     });
 
     // Disable word bank
-    const bankWords = wordBank.querySelectorAll('.gr-word-chip') as NodeListOf<HTMLElement>;
+    const bankWords = wordBank.querySelectorAll('.quiz-option') as NodeListOf<HTMLElement>;
     bankWords.forEach(w => {
         w.style.opacity = '0.4';
         w.style.pointerEvents = 'none';

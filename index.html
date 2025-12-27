@@ -14,15 +14,25 @@
     <link
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css?v=i18n">
     <link rel="stylesheet" href="assets/css/details-premium.css?v=7">
     <link rel="stylesheet" href="assets/css/points-style.css?v=premium">
+    <link rel="stylesheet" href="assets/css/style.css?v=i18n">
     <link rel="stylesheet" href="assets/css/mobile-enhancements.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" href="assets/images/icon.svg">
     <link rel="apple-touch-icon" href="assets/images/icon.png">
+    <style>
+        /* Dark Blue Theme (was Purple) */
+        [data-color-theme="darkblue"] {
+            --primary: #1e3a8a;
+            --primary-hover: #1e40af;
+            --accent: #1e3a8a;
+            --theme-gradient-start: #1e3a8a;
+            --theme-gradient-end: #172554;
+        }
+    </style>
 </head>
 
 <body>
@@ -193,7 +203,7 @@
                         <option value="ocean">🌊 Ocean Blue</option>
                         <option value="sunset">🌅 Sunset Orange</option>
                         <option value="forest">🌲 Forest Green</option>
-                        <option value="purple">💜 Purple Haze</option>
+                        <option value="darkblue">💙 Dark Blue</option>
                         <option value="rose">🌸 Rose Pink</option>
                         <option value="midnight">🌙 Midnight Blue</option>
                         <option value="mint">🍃 Mint Green</option>
@@ -211,7 +221,7 @@
 
                 <!-- TTS Speed Control -->
                 <div class="menu-item tts-speed-control">
-                    <span class="icon-box icon-color-purple"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                    <span class="icon-box icon-color-indigo"><svg xmlns="http://www.w3.org/2000/svg" width="18"
                             height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
@@ -239,6 +249,13 @@
                         <button class="voice-btn" data-voice="male" title="Man / ذكر">👨</button>
                     </div>
                 </div>
+                <style>
+                    [data-color-theme="darkblue"][data-theme="dark"] {
+                        --background: #0f172a;
+                        --surface: #1e293b;
+                        --border: rgba(30, 58, 138, 0.2);
+                    }
+                </style>
 
                 <!-- Reminder Notifications Control -->
                 <div class="menu-item reminder-control">
@@ -304,7 +321,7 @@
                 </button>
 
                 <button id="flashcardsBtn" class="menu-item" aria-label="Flashcards / بطاقات">
-                    <span class="icon-box icon-color-violet"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                    <span class="icon-box icon-color-indigo"><svg xmlns="http://www.w3.org/2000/svg" width="18"
                             height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -392,7 +409,7 @@
                 </a>
 
                 <a href="changelog.html" class="menu-item" aria-label="Changelog / سجل التحديثات">
-                    <span class="icon-box icon-color-purple-light"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                    <span class="icon-box icon-color-indigo"><svg xmlns="http://www.w3.org/2000/svg" width="18"
                             height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -479,21 +496,21 @@
                 </div>
 
 
-                <div class="flashcard-controls-inline hidden" id="flashcardControlsInline">
-                    <button class="fc-btn-inline fc-again" data-quality="0">
+                <div class="flashcard-controls-inline hidden quiz-options" id="flashcardControlsInline">
+                    <button class="quiz-option fc-again" data-quality="0">
                         <span class="fc-emoji">😅</span>
                         <span class="fc-label"><span class="sv-text">Igen</span><span class="ar-text">مرة
                                 أخرى</span></span>
                     </button>
-                    <button class="fc-btn-inline fc-hard" data-quality="2">
+                    <button class="quiz-option fc-hard" data-quality="2">
                         <span class="fc-emoji">🤔</span>
                         <span class="fc-label"><span class="sv-text">Svårt</span><span class="ar-text">صعب</span></span>
                     </button>
-                    <button class="fc-btn-inline fc-good" data-quality="4">
+                    <button class="quiz-option fc-good" data-quality="4">
                         <span class="fc-emoji">👍</span>
                         <span class="fc-label"><span class="sv-text">Bra</span><span class="ar-text">جيد</span></span>
                     </button>
-                    <button class="fc-btn-inline fc-easy" data-quality="5">
+                    <button class="quiz-option fc-easy" data-quality="5">
                         <span class="fc-emoji">🌟</span>
                         <span class="fc-label"><span class="sv-text">Lätt</span><span class="ar-text">سهل</span></span>
                     </button>
@@ -697,6 +714,8 @@
                             <option value="reverse">🔄 Omvänd</option>
                             <option value="listening">🔊 Lyssna</option>
                             <option value="timed">⏱️ Tidsutmaning</option>
+                            <option value="picture">🖼️ Bildquiz</option>
+                            <option value="sentence">🧩 Meningen</option>
                             <option value="favorites">⭐ Favoriter</option>
                             <option value="weak">🎓 Svåra ord</option>
                         </select>
@@ -727,6 +746,8 @@
                     <div class="question-card">
                         <h3 id="quizQuestion">...</h3>
                         <p id="quizExample" class="quiz-example"></p>
+                        <p id="quizHelp" class="text-xs text-secondary mt-2 hidden">🎯 Lyssna på det svenska ordet och
+                            välj rätt arabisk översättning.<br>استمع للكلمة السويدية واختر الترجمة العربية الصحيحة.</p>
                     </div>
                     <div id="quizOptions" class="quiz-options"></div>
                     <div id="quizFeedback" class="quiz-feedback"></div>

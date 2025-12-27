@@ -208,10 +208,10 @@ textarea,
   --theme-gradient-end: #1e40af;
 }
 
-[data-color-theme="purple"][data-theme="dark"] {
-  --background: #1a1625;
-  --surface: #251f33;
-  --border: rgba(168, 85, 247, 0.2);
+[data-color-theme="darkblue"][data-theme="dark"] {
+  --background: #0f172a;
+  --surface: #1e293b;
+  --border: rgba(30, 58, 138, 0.2);
 }
 
 /* ========== 5 NEW THEMES ========== */
@@ -6388,29 +6388,48 @@ h1 {
   direction: rtl;
 }
 
-.game-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* Forced Override for Quiz Layout - NUCLEAR OPTION */
+html body .container .quiz-options,
+html body .game-options,
+#quizOptions {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-bottom: 2rem;
 }
 
-.option-btn {
+html body .quiz-option,
+html body .option-btn,
+button.quiz-option {
+  width: 80% !important;
+  max-width: 400px !important;
+  min-width: 250px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important;
   background: var(--surface);
   border: 2px solid var(--border);
-  padding: 1rem;
-  border-radius: 1rem;
-  font-size: 1.1rem;
+  padding: 16px 20px;
+  border-radius: 16px;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-main);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
-.option-btn:hover {
+.option-btn:hover,
+.quiz-option:hover {
   border-color: var(--primary);
-  background: rgba(56, 189, 248, 0.05);
-  transform: translateY(-2px);
+  background: var(--surface-secondary);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .option-btn.correct {
@@ -11920,7 +11939,7 @@ body.dark-mode .onboarding-container {
    ============================================================ */
 
 /* Swedish Only Mode - Hide all Arabic text */
-body.lang-sv [dir="rtl"]:not(.card *):not(.details-page-container *),
+body.lang-sv [dir="rtl"]:not(.card *):not(.details-page-container *):not(.quiz-option),
 body.lang-sv .ar-text,
 body.lang-sv .arabic-text,
 body.lang-sv .text-ar,

@@ -3,9 +3,11 @@
 
 :root {
     --bg-gradient-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --bg-gradient-dark: linear-gradient(135deg, #000000 0%, #111111 100%); /* OLED Black */
+    --bg-gradient-dark: linear-gradient(135deg, #000000 0%, #111111 100%);
+    /* OLED Black */
     --card-bg-light: #ffffff;
-    --card-bg-dark: #121212; /* Material Dark */
+    --card-bg-dark: #121212;
+    /* Material Dark */
     --glass-border-light: rgba(255, 255, 255, 0.5);
     --glass-border-dark: rgba(255, 255, 255, 0.08);
     --text-main-light: #1f2937;
@@ -217,8 +219,8 @@ body.dark-mode {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
-    background: linear-gradient(to right, #22d3ee, #ec4899);
-    /* Purple to Pink */
+    background: linear-gradient(to right, #22d3ee, #1e3a8a);
+    /* Cyan to Dark Blue */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -583,7 +585,7 @@ body.dark-mode .theme-toggle-btn {
 
 .game-card-item:nth-child(12) .game-icon-large {
     color: #22d3ee;
-    /* Purple */
+    /* Cyan */
     filter: drop-shadow(0 4px 8px rgba(34, 211, 238, 0.4));
 }
 
@@ -804,16 +806,55 @@ body.dark-mode .game-card-item:hover {
 }
 
 /* Particle Utilities to resolve inline style lints */
-.particle-1 { --delay: 0s; --x: 10%; }
-.particle-2 { --delay: 0.5s; --x: 25%; }
-.particle-3 { --delay: 1s; --x: 40%; }
-.particle-4 { --delay: 1.5s; --x: 55%; }
-.particle-5 { --delay: 2s; --x: 70%; }
-.particle-6 { --delay: 2.5s; --x: 85%; }
-.particle-7 { --delay: 0.8s; --x: 30%; }
-.particle-8 { --delay: 1.6s; --x: 50%; }
-.particle-9 { --delay: 2.4s; --x: 70%; }
-.particle-10 { --delay: 3.2s; --x: 90%; }
+.particle-1 {
+    --delay: 0s;
+    --x: 10%;
+}
+
+.particle-2 {
+    --delay: 0.5s;
+    --x: 25%;
+}
+
+.particle-3 {
+    --delay: 1s;
+    --x: 40%;
+}
+
+.particle-4 {
+    --delay: 1.5s;
+    --x: 55%;
+}
+
+.particle-5 {
+    --delay: 2s;
+    --x: 70%;
+}
+
+.particle-6 {
+    --delay: 2.5s;
+    --x: 85%;
+}
+
+.particle-7 {
+    --delay: 0.8s;
+    --x: 30%;
+}
+
+.particle-8 {
+    --delay: 1.6s;
+    --x: 50%;
+}
+
+.particle-9 {
+    --delay: 2.4s;
+    --x: 70%;
+}
+
+.particle-10 {
+    --delay: 3.2s;
+    --x: 90%;
+}
 
 .game-icon-large {
     font-size: 4rem;
@@ -6383,6 +6424,7 @@ body.dark-mode .wc-reward-translation {
     padding: 4px;
     margin-left: -4px;
     margin-right: -4px;
+
     @supports (scrollbar-width: none) {
         scrollbar-width: none;
     }
@@ -6390,7 +6432,8 @@ body.dark-mode .wc-reward-translation {
     /* Scroll Animation Init - Forced Visible */
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s var(--spring-easing);
+    transition: opacity 0.6s ease-out,
+    transform 0.6s var(--spring-easing);
 }
 
 .category-filter-container.scroll-in-view {
@@ -6528,6 +6571,14 @@ body.memory-game-page::before {
 }
 
 /* 3D Card Grid - Neon Frame */
+.game-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
 .memory-card-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -9231,8 +9282,8 @@ body.memory-game-page::before {
 
 /* ==== Sound Toggle ==== */
 .wc-sound-toggle {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(30, 58, 138, 0.2)) !important;
-    border-color: rgba(37, 99, 235, 0.4) !important;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.1) 0%, rgba(30, 58, 138, 0.05) 100%) !important;
+    border: 1px solid rgba(30, 58, 138, 0.2) !important;
 }
 
 .wc-sound-toggle:hover {
@@ -11553,15 +11604,16 @@ body.memory-game-page::before {
         opacity: 0.7;
     }
 }
+
 /* Word of the Day Widget */
 .wotd-container {
     margin-bottom: 2rem;
     position: relative;
     border-radius: 24px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
     overflow: hidden;
     animation: slideUpFade 0.8s ease-out;
@@ -11574,14 +11626,19 @@ body.memory-game-page::before {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(0,0,0,0) 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
     animation: rotateGlow 15s linear infinite;
     pointer-events: none;
 }
 
 @keyframes rotateGlow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .wotd-content-wrapper {
@@ -11608,7 +11665,7 @@ body.memory-game-page::before {
 }
 
 .wotd-speak-btn {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: #e2e8f0;
     width: 36px;
@@ -11650,7 +11707,7 @@ body.memory-game-page::before {
 }
 
 .wotd-footer {
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 1rem;
     text-align: center;
 }

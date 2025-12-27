@@ -1073,7 +1073,7 @@ class MiniQuizManager {
                 <div class="quiz-emoji-display">${emoji}</div>
                 <div class="quiz-instruction"><span class="sv-text">Vilket ord passar bilden?</span><span class="ar-text">ما هي الكلمة المناسبة للصورة؟</span></div>
             `;
-            modeLabel = `<span class="sv-text">Bidlquiz</span><span class="ar-text">اختبار الصور</span>`;
+            modeLabel = `<span class="sv-text">Bildquiz</span><span class="ar-text">اختبار الصور</span>`;
             modeIcon = '🖼️';
             console.log('[Quiz] EMOJI mode:', { emoji, correctAnswer: swe });
 
@@ -1153,7 +1153,7 @@ class MiniQuizManager {
         `;
 
         optionsEl.innerHTML = options.map(opt => `
-            <div class="mini-quiz-option" data-value="${opt}">${opt}</div>
+            <button class="quiz-option" data-value="${opt}">${opt}</button>
         `).join('') + `
             <button class="quiz-hint-btn" id="quizHintBtn" ${xp < 5 ? 'disabled' : ''}>
                 💡 <span class="sv-text">Ledtråd</span><span class="ar-text">تلميح</span>
@@ -1184,7 +1184,7 @@ class MiniQuizManager {
             }
         }, 1000);
 
-        optionsEl.querySelectorAll('.mini-quiz-option').forEach(btn => {
+        optionsEl.querySelectorAll('.quiz-option').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 clearInterval(timerInterval);
                 const selected = (e.currentTarget as HTMLElement).dataset.value;
@@ -1208,7 +1208,7 @@ class MiniQuizManager {
                 if (xpDisplay) xpDisplay.textContent = `⭐ ${currentXP} XP`;
 
                 // Eliminate one wrong answer
-                const wrongOptions = Array.from(optionsEl.querySelectorAll('.mini-quiz-option:not(.disabled)'))
+                const wrongOptions = Array.from(optionsEl.querySelectorAll('.quiz-option:not(.disabled)'))
                     .filter(el => (el as HTMLElement).dataset.value !== correctAnswer);
 
                 if (wrongOptions.length > 0) {
@@ -1263,7 +1263,7 @@ class MiniQuizManager {
         }
 
         // Mark options
-        optionsEl.querySelectorAll('.mini-quiz-option').forEach(b => {
+        optionsEl.querySelectorAll('.quiz-option').forEach(b => {
             b.classList.add('disabled');
             if ((b as HTMLElement).dataset.value === correctAnswer) b.classList.add('correct');
             else if ((b as HTMLElement).dataset.value === selected && !isCorrect) b.classList.add('wrong');
@@ -1864,7 +1864,7 @@ class FlashcardManager {
                         <button class="fc-listen-circle" onclick="FlashcardManager.playAudio('${swe}')">
                             🔊
                         </button>
-                        <div class="fc-listen-grid">
+                        <div class="fc-listen-grid quiz-options">
                             ${this.generateListeningOptions(swe)}
                         </div>
                     </div>
@@ -1925,7 +1925,7 @@ class FlashcardManager {
         const options = [...distractors, correctWord].sort(() => Math.random() - 0.5);
 
         return options.map(opt => `
-            <button class="fc-listen-option" onclick="FlashcardManager.checkListeningAnswer('${opt}', '${correctWord}')">
+            <button class="quiz-option" onclick="FlashcardManager.checkListeningAnswer('${opt}', '${correctWord}')">
                 ${opt}
             </button>
         `).join('');

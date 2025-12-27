@@ -6,6 +6,12 @@
 /* New Design Variables - Dark Theme with Soft Sky Blue */
 :root {
     --bg-dark-main: #0f1115;
+    --primary: #1e3a8a;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e3a8a;
+    --accent: #1e3a8a;
+    --accent-glow: rgba(30, 58, 138, 0.4);
+    --surface: #ffffff;
     --bg-dark-card: #1e2229;
     --text-dark-primary: #ffffff;
     --text-dark-secondary: #a0a5ac;
@@ -491,13 +497,13 @@
     animation: hero-entrance 0.6s ease-out, glow-pulse-blue 4s ease-in-out infinite;
 }
 
-/* Verbs - Purple #8B5CF6 - Faster wave (2.5s) */
+/* Verbs - Dark Blue #1e3a8a - Faster wave (2.5s) */
 .details-hero.type-verb {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
         0 0 0 0.5px rgba(30, 58, 138, 0.8),
         0 0 10px rgba(30, 58, 138, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-purple 2.5s ease-in-out infinite;
+    animation: hero-entrance 0.6s ease-out, glow-pulse-darkblue 2.5s ease-in-out infinite;
 }
 
 /* Adjectives - Amber #F59E0B - Gentle shimmer (5s) */
@@ -613,8 +619,8 @@
     }
 }
 
-/* Purple - Verbs: FAST ENERGETIC WAVE (2.5s) */
-@keyframes glow-pulse-purple {
+/* Dark Blue - Verbs: FAST ENERGETIC WAVE (2.5s) */
+@keyframes glow-pulse-darkblue {
 
     0%,
     100% {
@@ -4421,6 +4427,39 @@ button:active,
     transform: scale(1.02);
 }
 
+.quiz-option {
+    width: 80% !important;
+    max-width: 400px !important;
+    margin: 0 auto 12px auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+body .quiz-options {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.mini-quiz-opt.icon-color-purple {
+    color: #1e3a8a !important;
+    background: rgba(30, 58, 138, 0.1);
+}
+
+.text-purple-600 {
+    color: #1e3a8a !important;
+}
+
+.bg-purple-100 {
+    background-color: #dbeafe !important;
+}
+
+.bg-purple-600 {
+    background-color: #1e3a8a !important;
+}
+
 .mini-quiz-option.correct {
     background: rgba(34, 197, 94, 0.2) !important;
     border-color: #22c55e !important;
@@ -7477,6 +7516,7 @@ button:active,
     font-size: 0.9rem;
     margin-top: 0.25rem;
 }
+
 /* Speed Control Slider */
 .speed-control-container {
     padding: 0 1rem;
@@ -7570,15 +7610,23 @@ button:active,
 }
 
 @keyframes pulse-red {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
 }
 
 /* Quiz Timer Bar fix */
 .quiz-timer-bar {
     height: 6px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
     overflow: hidden;
     margin-top: 1rem;
@@ -7604,8 +7652,15 @@ button:active,
 }
 
 @keyframes float-emoji {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 /* Repeat Control Styling */
@@ -7649,8 +7704,15 @@ button:active,
 }
 
 @keyframes pulse-repeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 /* ========================================
@@ -7685,7 +7747,7 @@ button:active,
     inset: 0;
     border-radius: 16px;
     padding: 2px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -7696,7 +7758,7 @@ button:active,
 .action-icon {
     font-size: 2rem;
     line-height: 1;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .action-label {
@@ -7809,8 +7871,15 @@ button:active,
 }
 
 @keyframes pulse-record {
-    0%, 100% { box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
-    50% { box-shadow: 0 4px 30px rgba(239, 68, 68, 0.8); }
+
+    0%,
+    100% {
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 30px rgba(239, 68, 68, 0.8);
+    }
 }
 
 /* Responsive */
@@ -7819,19 +7888,19 @@ button:active,
         grid-template-columns: repeat(3, 1fr);
         gap: 0.6rem;
     }
-    
+
     .action-card {
         padding: 1rem 0.5rem;
     }
-    
+
     .action-icon {
         font-size: 1.5rem;
     }
-    
+
     .action-label {
         font-size: 0.85rem;
     }
-    
+
     .action-hint {
         font-size: 0.65rem;
     }
@@ -7870,8 +7939,8 @@ button:active,
     flex-direction: column;
     align-items: center;
     padding: 0.6rem 1rem;
-    background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    border: 1px solid rgba(255,255,255,0.12);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -7880,8 +7949,8 @@ button:active,
 }
 
 .related-word-chip:hover {
-    background: linear-gradient(145deg, rgba(59,130,246,0.2), rgba(59,130,246,0.1));
-    border-color: rgba(59,130,246,0.4);
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+    border-color: rgba(59, 130, 246, 0.4);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
@@ -7898,7 +7967,8 @@ button:active,
     direction: rtl;
 }
 
-.related-loading, .related-empty {
+.related-loading,
+.related-empty {
     text-align: center;
     padding: 1rem;
     color: var(--text-secondary);
@@ -7910,6 +7980,13 @@ button:active,
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }

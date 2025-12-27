@@ -3,11 +3,12 @@ import { showToast, TextSizeManager } from './utils';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { Achievements } from './achievements';
+import { WordEmojiMap } from './data/emoji-map';
 
 /**
  * Quiz Modes
  */
-export type QuizMode = 'normal' | 'reverse' | 'listening' | 'timed' | 'favorites' | 'weak';
+export type QuizMode = 'normal' | 'reverse' | 'listening' | 'timed' | 'favorites' | 'weak' | 'picture' | 'sentence';
 
 /**
  * QuizManager - Professional quiz experience with multiple modes
@@ -20,7 +21,7 @@ export class QuizManager {
     private isAnswered = false;
     private container: HTMLElement | null = null;
     private currentWord: any[] | null = null;
-    
+
     // Quiz configuration
     private mode: QuizMode = 'normal';
     private questionCount = 10;
@@ -125,7 +126,7 @@ export class QuizManager {
         // Hide end screen, show quiz body
         const endScreen = document.getElementById('quizEndScreen');
         if (endScreen) endScreen.classList.add('hidden');
-        
+
         const body = document.querySelector('.quiz-body');
         if (body) {
             Array.from(body.children).forEach(child => {
@@ -159,6 +160,21 @@ export class QuizManager {
                 pool = this.data.filter(row => weakIds.includes(row[0].toString()));
                 if (pool.length < 5) pool = this.data; // Fallback
                 break;
+            case 'picture':
+                // Filter words that have an emoji mapping
+                pool = this.data.filter(row => {
+                    const swe = (row[2] || '').toLowerCase().trim();
+                    return WordEmojiMap.hasOwnProperty(swe);
+                });
+                break;
+            case 'sentence':
+                // Filter words that have examples containing the word itself
+                pool = this.data.filter(row => {
+                    const swe = (row[2] || '').toLowerCase().trim();
+                    const example = (row[7] || '').toLowerCase();
+                    return example.length > 5 && example.includes(swe);
+                });
+                break;
             default:
                 pool = this.data;
         }
@@ -178,6 +194,7 @@ export class QuizManager {
         let questionText = '';
         let correctAnswer = '';
         let optionLang: 'swe' | 'arb' = 'arb';
+        let isPictureMode = false;
 
         if (this.mode === 'reverse') {
             questionText = arb;
@@ -187,6 +204,27 @@ export class QuizManager {
             questionText = '🔊 Lyssna och välj rätt ord';
             correctAnswer = arb;
             TTSManager.speak(swe, 'sv');
+        } else if (this.mode === 'picture') {
+            // Picture Mode Logic
+            const sweKey = (swe || '').toLowerCase().trim();
+            const emoji = WordEmojiMap[sweKey] || '❓';
+
+            questionText = emoji;
+            correctAnswer = swe;
+            optionLang = 'swe';
+            isPictureMode = true;
+        } else if (this.mode === 'sentence') {
+            // Sentence Mode Logic
+            const sweKey = (swe || '').toLowerCase().trim();
+            const rawExample = word[7] || '';
+
+            // Replace word in sentence with blanks
+            // We use a regex to replace the word case-insensitively
+            const regex = new RegExp(sweKey, 'gi');
+            questionText = rawExample.replace(regex, '_______');
+
+            correctAnswer = swe;
+            optionLang = 'swe';
         } else {
             questionText = swe;
             correctAnswer = arb;
@@ -196,8 +234,18 @@ export class QuizManager {
         const questionEl = document.getElementById('quizQuestion');
         if (questionEl) {
             questionEl.textContent = questionText;
-            questionEl.dir = this.mode === 'reverse' ? 'rtl' : 'ltr';
-            TextSizeManager.apply(questionEl, questionText);
+
+            if (isPictureMode) {
+                questionEl.style.fontSize = '4.5rem'; // Large emoji
+                questionEl.dir = 'ltr';
+            } else if (this.mode === 'sentence') {
+                questionEl.style.fontSize = '1.4rem'; // Slightly smaller for long sentences
+                questionEl.style.direction = 'ltr'; // Ensure sentences are LTR unless mainly Arabic? Swedish sentences -> LTR
+            } else {
+                questionEl.style.fontSize = ''; // Reset
+                questionEl.dir = this.mode === 'reverse' ? 'rtl' : 'ltr';
+                TextSizeManager.apply(questionEl, questionText);
+            }
         }
 
         // Example
@@ -205,6 +253,11 @@ export class QuizManager {
         if (exampleEl) {
             if (this.mode === 'listening') {
                 exampleEl.textContent = '';
+            } else if (this.mode === 'picture') {
+                exampleEl.textContent = 'Vilket ord är detta? / ما هذه الكلمة؟';
+                TextSizeManager.apply(exampleEl, exampleEl.textContent);
+            } else if (this.mode === 'sentence') {
+                exampleEl.textContent = 'Vilket ord saknas? / أي كلمة مفقودة؟';
             } else {
                 const text = word[7] || '';
                 exampleEl.textContent = text;
@@ -212,12 +265,27 @@ export class QuizManager {
             }
         }
 
+        // Show/Hide Help Text for Normal Mode
+        const helpEl = document.getElementById('quizHelp');
+        if (helpEl) {
+            if (this.mode === 'normal') {
+                helpEl.classList.remove('hidden');
+            } else {
+                helpEl.classList.add('hidden');
+            }
+        }
+
         // Generate options
         const optionsEl = document.getElementById('quizOptions');
         if (optionsEl) {
+            console.log('[Quiz] Found optionsEl, clearing content');
             optionsEl.innerHTML = '';
             const options = this.generateOptions(word, optionLang);
+            console.log('[Quiz] Generated options:', options);
+            if (options.length === 0) console.error('[Quiz] Options array is EMPTY!');
+
             options.forEach((opt, idx) => {
+                console.log('[Quiz] Creating button for:', opt);
                 const btn = document.createElement('button');
                 btn.className = 'quiz-option';
                 btn.textContent = opt;
@@ -227,6 +295,9 @@ export class QuizManager {
                 btn.onclick = () => this.handleAnswer(opt, correctAnswer, btn);
                 optionsEl.appendChild(btn);
             });
+            console.log('[Quiz] Appended buttons. Children count:', optionsEl.children.length);
+        } else {
+            console.error('[Quiz] optionsEl NOT FOUND!');
         }
 
         // Reset feedback
@@ -261,12 +332,12 @@ export class QuizManager {
     private generateOptions(currentWord: any[], lang: 'swe' | 'arb'): string[] {
         const correct = lang === 'arb' ? currentWord[3] : currentWord[2];
         const currentType = currentWord[1]; // Word type for smart distractors
-        
+
         const distractors: string[] = [];
-        const sameTypeWords = this.data.filter(row => 
+        const sameTypeWords = this.data.filter(row =>
             row[1] === currentType && row[0] !== currentWord[0]
         );
-        
+
         // Prefer same type distractors
         const pool = sameTypeWords.length >= 3 ? sameTypeWords : this.data;
         const shuffledPool = [...pool].sort(() => 0.5 - Math.random());
@@ -290,7 +361,7 @@ export class QuizManager {
         const isCorrect = selected === correct;
         const wordId = this.currentWord![0].toString();
         const responseTime = QuizStats.recordAnswer(wordId, isCorrect);
-        
+
         // Update daily challenge UI
         const app = (window as any).app;
         if (app) {
@@ -310,7 +381,7 @@ export class QuizManager {
         } else {
             btn.classList.add('wrong');
             this.showFeedback(`Fel! Rätt: ${correct} / خطأ ❌`, false);
-            
+
             document.querySelectorAll('.quiz-option').forEach(opt => {
                 if (opt.textContent === correct) opt.classList.add('correct');
             });
@@ -321,7 +392,7 @@ export class QuizManager {
         if (nextBtn) (nextBtn as HTMLButtonElement).disabled = false;
 
         // Speak correct answer
-        if (this.mode === 'reverse') {
+        if (this.mode === 'reverse' || this.mode === 'picture' || this.mode === 'sentence') {
             TTSManager.speak(correct, 'sv');
         } else {
             TTSManager.speak(correct, 'ar');
@@ -366,8 +437,8 @@ export class QuizManager {
         QuizStats.recordAnswer(wordId, false);
 
         this.showFeedback('Tiden är slut! / انتهى الوقت ⏱️', false);
-        
-        const correct = this.mode === 'reverse' ? this.currentWord![2] : this.currentWord![3];
+
+        const correct = (this.mode === 'reverse' || this.mode === 'picture' || this.mode === 'sentence') ? this.currentWord![2] : this.currentWord![3];
         document.querySelectorAll('.quiz-option').forEach(opt => {
             if (opt.textContent === correct) opt.classList.add('correct');
         });
@@ -408,7 +479,7 @@ export class QuizManager {
         const id = this.currentWord[0].toString();
         const isFav = FavoritesManager.toggle(id);
         btn.classList.toggle('active', isFav);
-        
+
         // Update SVG fill and stroke directly
         const svg = btn.querySelector('svg');
         if (svg) {
@@ -441,13 +512,13 @@ export class QuizManager {
         const endScreen = document.getElementById('quizEndScreen');
         if (endScreen) {
             endScreen.classList.remove('hidden');
-            
+
             const finalScoreEl = document.getElementById('endScoreValue');
             if (finalScoreEl) finalScoreEl.textContent = this.score.toString();
-            
+
             const messageEl = document.getElementById('endMessage');
             if (messageEl) {
-            if (this.score === this.questions.length) {
+                if (this.score === this.questions.length) {
                     messageEl.innerHTML = `🎉 Perfekt! Bästa serien: ${sessionStats.bestStreak}`;
                     this.showConfetti();
                     Achievements.unlockById('perfect_10');
@@ -492,7 +563,7 @@ export class QuizManager {
             confetti.className = 'confetti';
             confetti.style.left = Math.random() * 100 + '%';
             confetti.style.animationDelay = Math.random() * 2 + 's';
-            confetti.style.backgroundColor = ['#10B981', '#6366f1', '#F59E0B', '#EF4444', '#8B5CF6'][Math.floor(Math.random() * 5)];
+            confetti.style.backgroundColor = ['#10B981', '#1e3a8a', '#F59E0B', '#EF4444', '#3b82f6'][Math.floor(Math.random() * 5)];
             container.appendChild(confetti);
             setTimeout(() => confetti.remove(), 3000);
         }
