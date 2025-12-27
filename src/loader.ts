@@ -48,10 +48,18 @@ class LoaderClass {
         }
 
         // First-time user or cache miss - show splash and fetch
-        // If we hid it optimistically but failed/needs update, show it again
+        // Only show if we haven't already verified data availability
         const splash = document.getElementById('splashScreen');
-        if (splash && splash.style.display === 'none') {
+        // Only re-show if we definitely don't have data
+        if (splash && !hasDataReady) {
             splash.style.display = 'flex';
+        } else if (hasDataReady && storedVersion === AppConfig.DATA_VERSION) {
+            // If we thought we had data but fell through to here, something is wrong with DB
+            // But for UX, let's try to proceed if we can, or just silent fail
+            // However, to be safe, if we are here it means `isReturningUser` was false/failed
+            // So we SHOULD show splash to fetch data. 
+            // BUT, back button navigation might trigger this if DB is busy.
+            splash!.style.display = 'flex'; // Force show if we really need to fetch
         }
 
         this.startSplashUI();

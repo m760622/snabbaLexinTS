@@ -84,6 +84,20 @@
             </div>
         </div>
     </div>
+    <script>
+        // Critical: Fast boot check to prevent splash flicker
+        // This runs immediately before paint
+        try {
+            const hasDataReady = localStorage.getItem('snabbaLexin_dataReady') === 'true';
+            // We can't check config version easily here without importing, 
+            // but checking flag is 99% good enough for preventing flicker.
+            // verifying version happens in loader.ts anyway.
+            if (hasDataReady) {
+                const splash = document.getElementById('splashScreen');
+                if (splash) splash.style.display = 'none';
+            }
+        } catch (e) { console.error('Fast boot failed', e); }
+    </script>
 
 
     <div class="ambient-background">
