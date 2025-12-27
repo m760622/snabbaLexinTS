@@ -2231,6 +2231,7 @@ body:not(.dark-mode) .toast-notification {
 .settings-section:nth-child(6) {
     animation-delay: 0.35s;
 }
+
 /* ========================================
    Voice Selector Styles
    ======================================== */

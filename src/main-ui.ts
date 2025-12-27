@@ -54,7 +54,7 @@ function initMobileView() {
             (window as any).MobileViewManager?.toggle();
         });
     }
-    
+
     // Legacy support for toggleMobileView global
     (window as any).toggleMobileView = () => (window as any).MobileViewManager?.toggle();
 }
@@ -97,7 +97,7 @@ function initQuickActions() {
             }
         });
     }
-    
+
     const quickFavBtn = document.getElementById('quickFavBtn');
     if (quickFavBtn) {
         quickFavBtn.addEventListener('click', () => {
@@ -136,7 +136,7 @@ function initOnboarding() {
         dots.forEach((d, i) => d.classList.toggle('active', i === index));
         if (prevBtn) prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
         if (nextBtn) nextBtn.textContent = index === totalSlides - 1 ? 'Börja! 🚀' : 'Nästa ⟶';
-        
+
         // Apply sizing to active slide
         const activeSlide = slides[index] as HTMLElement;
         if (activeSlide) {
