@@ -96,8 +96,9 @@ class PronunciationLab {
 
         try {
             if (!this.visualizer) {
-                this.visualizer = new AudioVisualizer('audioVisualizerContainer', '#7dd3fc');
-                this.visualizer.setMode('bars'); // Use equalizer mode
+                // Turquoise color #2dd4bf (Teal-400) or #14b8a6 (Teal-500)
+                this.visualizer = new AudioVisualizer('audioVisualizerContainer', '#2dd4bf');
+                this.visualizer.setMode('liquid'); // Use wave mode as requested
             }
             if (!this.recorder) {
                 this.recorder = new PronunciationRecorder();
@@ -145,38 +146,47 @@ class PronunciationLab {
 
     private static updateUIForLevel() {
         const normalBtn = document.getElementById('pronounceNormalBtn');
-        const slowBtn = document.getElementById('pronounceSlowBtn');
         const recordSection = document.getElementById('recordingSection');
 
         if (this.currentLevel === 'listen') {
             normalBtn?.classList.remove('hidden');
-            slowBtn?.classList.remove('hidden');
             recordSection?.classList.add('hidden');
         } else if (this.currentLevel === 'repeat') {
             normalBtn?.classList.remove('hidden');
-            slowBtn?.classList.remove('hidden');
             recordSection?.classList.remove('hidden');
         } else { // challenge
             normalBtn?.classList.add('hidden');
-            slowBtn?.classList.add('hidden');
             recordSection?.classList.remove('hidden');
         }
     }
 
     private static setupEvents() {
         const normalBtn = document.getElementById('pronounceNormalBtn');
-        const slowBtn = document.getElementById('pronounceSlowBtn');
         const recordBtn = document.getElementById('recordBtn');
         const playRecordedBtn = document.getElementById('playRecordedBtn');
+        const speedSlider = document.getElementById('ttsSpeedSlider') as HTMLInputElement;
+        const speedVal = document.getElementById('speedValue');
+        const speedValAr = document.getElementById('speedValueAr');
+
+        // Init Slider
+        if (speedSlider) {
+            const currentSpeed = TTSManager.getSpeed();
+            speedSlider.value = currentSpeed.toString();
+            if (speedVal) speedVal.textContent = `${currentSpeed}x`;
+            if (speedValAr) speedValAr.textContent = `${currentSpeed}x`;
+
+            speedSlider.addEventListener('input', (e) => {
+                const val = parseFloat((e.target as HTMLInputElement).value);
+                TTSManager.setSpeed(val);
+                if (speedVal) speedVal.textContent = `${val}x`;
+                if (speedValAr) speedValAr.textContent = `${val}x`;
+            });
+        }
 
         normalBtn?.addEventListener('click', () => {
             HapticFeedback.light();
+            // Trust setSpeed from slider
             TTSManager.speakSwedish(this.currentWord);
-        });
-
-        slowBtn?.addEventListener('click', () => {
-            HapticFeedback.light();
-            TTSManager.speakSlowly(this.currentWord, 'sv');
         });
 
         recordBtn?.addEventListener('click', () => this.toggleRecording());
@@ -1933,6 +1943,9 @@ export class DetailsManager {
                 // Re-init features if target is play tab (just in case)
                 if (targetTab === 'play' && this.wordData) {
                     MiniQuizManager.init(this.wordData);
+                    // Optimized: Only init if not already initialized for this word to avoid overhead?
+                    // actually PronunciationLab.init is light enough and handles re-init.
+                    PronunciationLab.init(this.wordData[2]);
                 }
             });
         });

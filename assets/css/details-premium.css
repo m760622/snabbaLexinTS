@@ -6962,9 +6962,13 @@ button:active,
     letter-spacing: 0.05em;
     min-height: 3.5rem;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 0.5rem;
+    /* Increased gap for better word separation when wrapped */
+    padding: 0 0.5rem;
+    /* Add padding to prevent edge touching */
 }
 
 .karaoke-word {
@@ -7472,4 +7476,52 @@ button:active,
     color: var(--text-secondary);
     font-size: 0.9rem;
     margin-top: 0.25rem;
+}
+/* Speed Control Slider */
+.speed-control-container {
+    padding: 0 1rem;
+    width: 100%;
+}
+
+.speed-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.speed-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+    margin: 10px 0;
+}
+
+.speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    transition: transform 0.2s;
+}
+
+.speed-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.speed-markers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: -5px;
 }

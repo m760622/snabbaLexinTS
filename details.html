@@ -171,13 +171,25 @@
                     <!-- Syllables Breakdown -->
                     <div id="syllableDisplay" class="syllable-display"></div>
 
+                    <!-- Speed Control -->
+                    <div class="speed-control-container">
+                        <label for="ttsSpeedSlider" class="speed-label">
+                            <span class="sv-text">Hastighet: <span id="speedValue">1.0x</span></span>
+                            <span class="ar-text">السرعة: <span id="speedValueAr">1.0x</span></span>
+                        </label>
+                        <input type="range" id="ttsSpeedSlider" class="speed-slider" min="0.5" max="1.5" step="0.1"
+                            value="1.0">
+                        <div class="speed-markers">
+                            <span>0.5x</span>
+                            <span>1.0x</span>
+                            <span>1.5x</span>
+                        </div>
+                    </div>
+
                     <!-- Main Actions -->
                     <div class="pronunciation-actions">
                         <button id="pronounceNormalBtn" class="pro-btn primary" title="Normalt uttal">
-                            🔊 <span class="sv-text">Normal</span><span class="ar-text">عادي</span>
-                        </button>
-                        <button id="pronounceSlowBtn" class="pro-btn secondary" title="Långsamt uttal (Sköldpadda)">
-                            🐢 <span class="sv-text">Långsamt</span><span class="ar-text">بطيء</span>
+                            🔊 <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span>
                         </button>
                         <button id="recordBtn" class="pro-btn accent" title="Lyssna & Jämför">
                             🎙️ <span class="sv-text">Spela in</span><span class="ar-text">تسجيل</span>
