@@ -297,6 +297,7 @@ export const MobileViewManager = {
     init() {
         // Default to mobile view if not set (mobile-first approach)
         const savedValue = localStorage.getItem('mobileView');
+        // Force default TRUE if null
         const isMobileView = savedValue === null ? true : savedValue === 'true';
         this.apply(isMobileView);
     },

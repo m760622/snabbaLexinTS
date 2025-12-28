@@ -263,23 +263,41 @@ body.dark-mode {
 /* Daily Challenge Text */
 .daily-banner-title {
     color: #fbbf24;
-    /* Amber-400 */
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    /* Reduced from 1.1rem for mobile */
     margin-bottom: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .daily-banner-subtitle {
     color: #fbbf24;
-    /* Match title or slightly lighter */
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    /* Reduced from 0.9rem */
     opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    /* Force constraint */
 }
 
 .daily-banner-progress {
     background: rgba(0, 0, 0, 0.3);
     color: #fbbf24;
     border: 1px solid rgba(251, 191, 36, 0.3);
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    height: auto;
+    position: absolute;
+    /* Anchor to right */
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 32px;
+    text-align: center;
 }
 
 /* Filter Chips with Icons */
@@ -401,8 +419,17 @@ body.dark-mode .theme-toggle-btn {
 /* Game Menu Grid */
 .game-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    /* Force 2 columns */
+    gap: 12px;
+    /* Tighter gap for mobile */
+}
+
+@media (min-width: 600px) {
+    .game-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1.5rem;
+    }
 }
 
 .game-card-item {

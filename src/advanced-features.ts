@@ -803,8 +803,8 @@ document.addEventListener('DOMContentLoaded', () => {
         GameMascot.init();
 
         // Phase 3: Engagement Features
-        LivePlayersCounter.init();
-        MotivationalQuotes.init();
+        // LivePlayersCounter.init();
+        // MotivationalQuotes.init();
         WeeklyLeaderboard.init();
         AIRecommendations.init();
 
