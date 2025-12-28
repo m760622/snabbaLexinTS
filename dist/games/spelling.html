@@ -8,15 +8,18 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/games-spelling-BpPPE7uh.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
-  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
-  <link rel="modulepreload" crossorigin href="/assets/games-utils-Di73MU7e.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BuOrQ7kI.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-OVC7VUt9.css">
-  <link rel="stylesheet" crossorigin href="/assets/games-CP8CpSeS.css">
+    <script type="module" crossorigin src="/assets/games-spelling-BepchRnR.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
+    <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
+    <link rel="modulepreload" crossorigin href="/assets/loader-B7oZEySq.js">
+    <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
+    <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+    <link rel="modulepreload" crossorigin href="/assets/games-utils-CgPy3Odt.js">
+    <link rel="modulepreload" crossorigin href="/assets/utils-DkwAXeNx.js">
+    <link rel="modulepreload" crossorigin href="/assets/tts-BuOrQ7kI.js">
+    <link rel="stylesheet" crossorigin href="/assets/style-Df86Qq__.css">
+    <link rel="stylesheet" crossorigin href="/assets/games-cDh2hzkj.css">
 </head>
 
 <body class="sp-cyber-theme mobile-view-mode">
@@ -34,7 +37,8 @@
     <!-- Premium HUD -->
     <div class="memory-hud sp-hud">
         <div class="hud-nav">
-            <button class="hud-btn" onclick="window.location.href='games.html'" aria-label="Tillbaks / رجوع">
+            <button class="hud-btn" onclick="window.location.href='games.html'" data-i18n-title="nav.back"
+                aria-label="Tillbaks / رجوع">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -49,11 +53,11 @@
         <div class="hud-title">✍️ <span class="sv-text">Skriv Ordet</span><span class="ar-text">اكتب الكلمة</span></div>
 
         <div class="hud-stats">
-            <div class="stat-pill score" title="Poäng / النقاط">
+            <div class="stat-pill score" data-i18n-title="games.score">
                 <span class="stat-pill-icon">⭐</span>
                 <span class="stat-pill-value" id="spellingScore">0</span>
             </div>
-            <div class="stat-pill moves" title="Streak / السلسلة">
+            <div class="stat-pill moves" data-i18n-title="profile.streak">
                 <span class="stat-pill-icon">🔥</span>
                 <span class="stat-pill-value" id="spellingStreak">0</span>
             </div>

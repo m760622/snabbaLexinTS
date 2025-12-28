@@ -14,8 +14,8 @@ export interface ToastOptions {
 export const ToastManager = {
     container: null as HTMLElement | null,
     toasts: [] as HTMLElement[],
-    maxToasts: 5,
-    defaultDuration: 4000,
+    maxToasts: 2,
+    defaultDuration: 2000,
     stylesInjected: false,
 
     /**

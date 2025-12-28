@@ -335,6 +335,21 @@ textarea,
   --text-secondary: #166534;
 }
 
+/* ========================================
+   Bilingual Visibility Rules
+   ======================================== */
+/* When language is Arabic (ar), hide Swedish text */
+body.lang-ar .sv-text {
+  display: none !important;
+}
+
+/* When language is Swedish (sv), hide Arabic text */
+body.lang-sv .ar-text {
+  display: none !important;
+}
+
+/* When language is Both (both), show both via flex/block logic handled by parents */
+/* Typically we want them inline or block depending on context */
 .streak-counter {
   background: rgba(255, 150, 50, 0.15);
   color: #ff9632;
@@ -12190,20 +12205,22 @@ body.lang-both [data-tooltip-sv][data-tooltip-ar]::after {
     opacity: 1;
   }
 }
+
 /* ========================================
    LANGUAGE VISIBILITY CONTROL
    ======================================== */
 /* Hide Arabic text when Swedish is active */
 body.lang-sv .ar-text {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide Swedish text when Arabic is active */
 body.lang-ar .sv-text {
-    display: none !important;
+  display: none !important;
 }
 
 /* Ensure spacing doesn't collapse weirdly */
-.sv-text, .ar-text {
-    /* Optional: transitions or display properties */
+.sv-text,
+.ar-text {
+  /* Optional: transitions or display properties */
 }

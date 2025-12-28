@@ -255,6 +255,15 @@ const translations: Record<string, TranslationEntry> = {
     'details.retry': { sv: 'Testa igen', ar: 'حاول مرة أخرى' },
     'details.correct': { sv: 'Rätt! Bra jobbat!', ar: 'صحيح! أحسنت!' },
     'details.wrong': { sv: 'Fel. Rätt svar: ', ar: 'خطأ. الإجابة الصحيحة: ' },
+
+    // Game Specific
+    'games.wordLength': { sv: 'Ord längd', ar: 'طول الكلمة' },
+    'games.letters': { sv: 'Bokstäver', ar: 'حروف' },
+    'games.skip': { sv: 'Hoppa över', ar: 'تخطي' },
+    'games.undo': { sv: 'Ångra', ar: 'تراجع' },
+    'games.showAnswer': { sv: 'Visa svaret', ar: 'أظهر الإجابة' },
+    'games.menu': { sv: 'Meny', ar: 'القائمة' },
+    'settings.testTTS': { sv: 'Testa uttal', ar: 'اختبار النطق' },
 };
 
 // Language Manager

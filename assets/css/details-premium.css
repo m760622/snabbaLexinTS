@@ -66,6 +66,20 @@
     color: #e2e8f0;
 }
 
+/* RTL Specific Overrides for Details */
+[dir="rtl"] .def-text,
+[dir="rtl"] .ex-swe-detail,
+[dir="rtl"] .ex-arb-detail {
+    text-align: right;
+}
+
+[dir="rtl"] .definition-card,
+[dir="rtl"] .example-card {
+    border-left: none;
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+    padding: 0 1rem 0 0;
+}
+
 /* ========================================
    Details Page Visual Overhaul (Clean & Premium)
    ======================================== */

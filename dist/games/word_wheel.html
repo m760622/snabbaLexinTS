@@ -8,19 +8,23 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/games-word-wheel-DkiroD_N.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
-  <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
-  <link rel="modulepreload" crossorigin href="/assets/games-utils-Di73MU7e.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-OVC7VUt9.css">
-  <link rel="stylesheet" crossorigin href="/assets/games-CP8CpSeS.css">
+    <script type="module" crossorigin src="/assets/games-word-wheel-BF7oWlAq.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
+    <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
+    <link rel="modulepreload" crossorigin href="/assets/loader-B7oZEySq.js">
+    <link rel="modulepreload" crossorigin href="/assets/i18n-1qhfGv7S.js">
+    <link rel="modulepreload" crossorigin href="/assets/toast-manager-CZ3snF2j.js">
+    <link rel="modulepreload" crossorigin href="/assets/games-utils-CgPy3Odt.js">
+    <link rel="stylesheet" crossorigin href="/assets/style-Df86Qq__.css">
+    <link rel="stylesheet" crossorigin href="/assets/games-cDh2hzkj.css">
 </head>
 
 <body class="game-page-body">
     <div id="wordWheelGame" class="active-game-container">
         <div class="game-header-inner">
-            <button class="game-back-btn" onclick="window.location.href='games.html'" aria-label="Menu / القائمة">
+            <button class="game-back-btn" onclick="window.location.href='games.html'" data-i18n-title="nav.back"
+                aria-label="Menu / القائمة">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -31,7 +35,7 @@
         </div>
         <div class="game-controls-header word-wheel-controls mb-4">
             <select id="wordWheelLength" class="game-filter-select w-auto flex-grow-0" onchange="startWordWheelGame()"
-                title="Word Length / طول الكلمة">
+                data-i18n-title="games.wordLength" title="Word Length / طول الكلمة">
                 <option value="3">3 Bokstäver / حروف</option>
                 <option value="4">4 Bokstäver / حروف</option>
                 <option value="5">5 Bokstäver / حروف</option>
@@ -60,21 +64,22 @@
             <div id="wheelExample" class="game-example hidden"></div> <!-- Fixed hidden class -->
 
             <div class="game-controls-row fixed-controls">
-                <button id="undoWheelBtn" onclick="undoWordWheel()" title="Ångra / تراجع">
+                <button id="undoWheelBtn" onclick="undoWordWheel()" data-i18n-title="games.undo" title="Ångra / تراجع">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                         <path d="M3 3v5h5" />
                     </svg>
                 </button>
-                <button id="skipWheelBtn" onclick="skipWordWheel()" title="Hoppa över / تخطي">
+                <button id="skipWheelBtn" onclick="skipWordWheel()" data-i18n-title="games.skip"
+                    title="Hoppa över / تخطي">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="5 4 15 12 5 20 5 4" />
                         <line x1="19" y1="5" x2="19" y2="19" />
                     </svg>
                 </button>
-                <button id="wheelShowAnswerBtn" onclick="showWordWheelAnswer()"
+                <button id="wheelShowAnswerBtn" onclick="showWordWheelAnswer()" data-i18n-title="games.showAnswer"
                     title="Visa svaret (1 poäng) / أظهر الإجابة (1 نقطة)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
