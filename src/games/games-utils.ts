@@ -6,6 +6,7 @@
 console.log("games-utils.ts LOADED and EXECUTING");
 
 import { AppConfig } from '../config';
+import '../i18n'; // Initialize LanguageManager
 
 // ========================================
 // Constants (from AppConfig)
@@ -21,6 +22,19 @@ export const COL_EX = AppConfig.COLUMNS.EXAMPLE_SWE;
 export const COL_EX_ARB = AppConfig.COLUMNS.EXAMPLE_ARB;
 export const COL_IDIOM = AppConfig.COLUMNS.IDIOM_SWE;
 export const COL_IDIOM_ARB = AppConfig.COLUMNS.IDIOM_ARB;
+
+/* Expose to window for legacy scripts */
+(window as any).COL_ID = COL_ID;
+(window as any).COL_TYPE = COL_TYPE;
+(window as any).COL_SWE = COL_SWE;
+(window as any).COL_ARB = COL_ARB;
+(window as any).COL_ARB_DEF = COL_ARB_DEF;
+(window as any).COL_DEF = COL_DEF;
+(window as any).COL_FORMS = COL_FORMS;
+(window as any).COL_EX = COL_EX;
+(window as any).COL_EX_ARB = COL_EX_ARB;
+(window as any).COL_IDIOM = COL_IDIOM;
+(window as any).COL_IDIOM_ARB = COL_IDIOM_ARB;
 
 import { ToastManager } from '../toast-manager';
 

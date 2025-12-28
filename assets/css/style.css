@@ -12190,3 +12190,20 @@ body.lang-both [data-tooltip-sv][data-tooltip-ar]::after {
     opacity: 1;
   }
 }
+/* ========================================
+   LANGUAGE VISIBILITY CONTROL
+   ======================================== */
+/* Hide Arabic text when Swedish is active */
+body.lang-sv .ar-text {
+    display: none !important;
+}
+
+/* Hide Swedish text when Arabic is active */
+body.lang-ar .sv-text {
+    display: none !important;
+}
+
+/* Ensure spacing doesn't collapse weirdly */
+.sv-text, .ar-text {
+    /* Optional: transitions or display properties */
+}

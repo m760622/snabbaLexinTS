@@ -28,24 +28,24 @@
     --spring-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     --bounce-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Game Theme Colors */
-    --color-grammar: #4f46e5;
-    /* Indigo */
+    /* Game Theme Colors - Refined to Blue/Cool Palette */
+    --color-grammar: #3b82f6;
+    /* Blue */
     --color-missing: #ea580c;
     /* Orange */
     --color-flashcards: #059669;
     /* Emerald */
-    --color-spelling: #db2777;
-    /* Pink */
-    --color-wheel: #7c3aed;
-    /* Violet */
+    --color-spelling: #06b6d4;
+    /* Cyan */
+    --color-wheel: #0284c7;
+    /* Sky */
     --color-sentence: #0284c7;
     /* Sky */
     --color-rain: #2563eb;
-    /* Blue */
+    /* Dark Blue */
     --color-wordle: #65a30d;
     /* Lime */
-    --color-pronunciation: #dc2626;
+    --color-pronunciation: #ef4444;
     /* Red */
 }
 
@@ -214,18 +214,16 @@ body.dark-mode {
 
 
 
-/* Games Header Title - Gradient Text */
+/* Games Header Title - Solid Dark Text */
 .games-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
-    background: linear-gradient(to right, #22d3ee, #1e3a8a);
-    /* Cyan to Dark Blue */
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #e2e8f0;
+    /* Light Slate - No Gradient */
+    text-shadow: none;
+    /* No Glow */
     text-align: right;
-    /* As per image */
     flex-grow: 1;
 }
 
@@ -519,7 +517,7 @@ body.dark-mode .theme-toggle-btn {
 /* Individual Game Colors via nth-child */
 .game-card-item:nth-child(1) .game-icon-large {
     color: #2563eb;
-    /* Indigo */
+    /* Blue */
     filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.4));
 }
 
@@ -542,9 +540,9 @@ body.dark-mode .theme-toggle-btn {
 }
 
 .game-card-item:nth-child(5) .game-icon-large {
-    color: #1d4ed8;
-    /* Violet */
-    filter: drop-shadow(0 4px 8px rgba(14, 165, 233, 0.4));
+    color: #0284c7;
+    /* Sky Blue (was Violet) */
+    filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.4));
 }
 
 .game-card-item:nth-child(6) .game-icon-large {
@@ -554,9 +552,9 @@ body.dark-mode .theme-toggle-btn {
 }
 
 .game-card-item:nth-child(7) .game-icon-large {
-    color: #ec4899;
-    /* Pink */
-    filter: drop-shadow(0 4px 8px rgba(236, 72, 153, 0.4));
+    color: #0ea5e9;
+    /* Light Blue (was Pink) */
+    filter: drop-shadow(0 4px 8px rgba(14, 165, 233, 0.4));
 }
 
 .game-card-item:nth-child(8) .game-icon-large {
@@ -636,161 +634,103 @@ body.dark-mode .game-card-item {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Complex Glowing Pulse Animation (20+ Colors) */
+/* Premium Moving Dots Animation */
+.premium-moving-dots {
+    position: relative;
+    background: #020617;
+    /* Almost Black */
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    /* Subtle shadow only */
+}
+
+.premium-moving-dots::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 2px;
+    /* Border width */
+    background: linear-gradient(90deg, transparent 50%, #334155 50%),
+        linear-gradient(90deg, #334155 50%, transparent 50%),
+        linear-gradient(0deg, transparent 50%, #334155 50%),
+        linear-gradient(0deg, #334155 50%, transparent 50%);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size: 15px 2px, 15px 2px, 2px 15px, 2px 15px;
+    background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%;
+    animation: border-dance 4s infinite linear;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+@keyframes border-dance {
+    0% {
+        background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+    }
+}
+
+/* Complex Glowing Pulse Animation (Blue/Cool Cycle) */
+/* Complex Glowing Pulse Animation (Blue/Cool Cycle) - Softened */
 @keyframes game-pulse {
     0% {
-        box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
         transform: scale(1);
-        border-color: rgba(37, 99, 235, 0.4);
-    }
-
-    /* Indigo */
-    5% {
-        box-shadow: 0 0 35px rgba(244, 63, 94, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(244, 63, 94, 0.6);
-    }
-
-    /* Rose */
-    10% {
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        transform: scale(1);
-        border-color: rgba(16, 185, 129, 0.4);
-    }
-
-    /* Emerald */
-    15% {
-        box-shadow: 0 0 35px rgba(245, 158, 11, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(245, 158, 11, 0.6);
-    }
-
-    /* Amber */
-    20% {
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
-        transform: scale(1);
-        border-color: rgba(14, 165, 233, 0.4);
-    }
-
-    /* Sky */
-    25% {
-        box-shadow: 0 0 35px rgba(14, 165, 233, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(14, 165, 233, 0.6);
-    }
-
-    /* Violet */
-    30% {
-        box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
-        transform: scale(1);
-        border-color: rgba(20, 184, 166, 0.4);
-    }
-
-    /* Teal */
-    35% {
-        box-shadow: 0 0 35px rgba(249, 115, 22, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(249, 115, 22, 0.6);
-    }
-
-    /* Orange */
-    40% {
-        box-shadow: 0 0 20px rgba(217, 70, 239, 0.4);
-        transform: scale(1);
-        border-color: rgba(217, 70, 239, 0.4);
-    }
-
-    /* Fuchsia */
-    45% {
-        box-shadow: 0 0 35px rgba(132, 204, 22, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(132, 204, 22, 0.6);
-    }
-
-    /* Lime */
-    50% {
-        box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-        transform: scale(1);
-        border-color: rgba(6, 182, 212, 0.4);
-    }
-
-    /* Cyan */
-    55% {
-        box-shadow: 0 0 35px rgba(236, 72, 153, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(236, 72, 153, 0.6);
-    }
-
-    /* Pink */
-    60% {
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-        transform: scale(1);
-        border-color: rgba(59, 130, 246, 0.4);
+        border-color: rgba(37, 99, 235, 0.3);
     }
 
     /* Blue */
-    65% {
-        box-shadow: 0 0 35px rgba(34, 211, 238, 0.6);
+    20% {
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
         transform: scale(1.02);
-        border-color: rgba(34, 211, 238, 0.6);
+        border-color: rgba(14, 165, 233, 0.3);
     }
 
-    /* Purple */
-    70% {
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+    /* Sky */
+    40% {
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
         transform: scale(1);
-        border-color: rgba(34, 197, 94, 0.4);
+        border-color: rgba(6, 182, 212, 0.3);
     }
 
-    /* Green */
-    75% {
-        box-shadow: 0 0 35px rgba(234, 179, 8, 0.6);
+    /* Cyan */
+    60% {
+        box-shadow: 0 0 15px rgba(20, 184, 166, 0.3);
         transform: scale(1.02);
-        border-color: rgba(234, 179, 8, 0.6);
-    }
-
-    /* Yellow */
-    80% {
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-        transform: scale(1);
-        border-color: rgba(239, 68, 68, 0.4);
-    }
-
-    /* Red */
-    85% {
-        box-shadow: 0 0 35px rgba(37, 99, 235, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(37, 99, 235, 0.6);
-    }
-
-    /* Indigo (Cycle) */
-    90% {
-        box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
-        transform: scale(1);
-        border-color: rgba(34, 211, 238, 0.4);
-    }
-
-    /* Purple */
-    95% {
-        box-shadow: 0 0 35px rgba(20, 184, 166, 0.6);
-        transform: scale(1.02);
-        border-color: rgba(20, 184, 166, 0.6);
+        border-color: rgba(20, 184, 166, 0.3);
     }
 
     /* Teal */
-    100% {
-        box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    80% {
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
         transform: scale(1);
-        border-color: rgba(37, 99, 235, 0.4);
+        border-color: rgba(59, 130, 246, 0.3);
     }
 
-    /* Back to Start */
+    /* Light Blue */
+    100% {
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
+        transform: scale(1.02);
+        border-color: rgba(37, 99, 235, 0.3);
+    }
 }
 
 .game-card-item {
     /* ... existing styles ... */
-    animation: game-pulse 30s infinite linear;
-    /* Very slow, continuous cycle */
+    animation: game-pulse 8s infinite linear;
+    /* Faster, smoother cycle */
 }
 
 .game-card-item:hover {

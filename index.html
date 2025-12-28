@@ -36,78 +36,23 @@
 </head>
 
 <body>
-    <!-- Premium Splash Screen -->
-    <div id="splashScreen" class="splash-screen">
-        <!-- Animated Background Particles -->
-        <div class="splash-particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-
-        <!-- Animated Gradient Waves -->
-        <div class="splash-waves">
-            <div class="wave wave-1"></div>
-            <div class="wave wave-2"></div>
-            <div class="wave wave-3"></div>
-        </div>
-
-        <div class="splash-content">
-            <!-- Glowing Logo -->
-            <div class="splash-logo-container">
-                <div class="splash-logo-glow"></div>
-                <div class="splash-logo">📚</div>
-            </div>
-
-            <h1 class="splash-title">SnabbaLexin</h1>
-            <p class="splash-subtitle"><span class="sv-text">Svensk-Arabiskt Lexikon</span><br><span
-                    class="ar-text">القاموس السويدي العربي</span></p>
-
-            <!-- Stats Badge -->
-            <div class="splash-stats">
-                <span class="stats-icon">📖</span>
-                <span id="splashWordCount">+34,000</span> <span class="sv-text">ord</span> / <span
-                    class="ar-text">كلمة</span>
-            </div>
-
-            <!-- Real Progress Bar -->
-            <div class="splash-progress-container">
-                <div class="splash-loader">
-                    <div class="splash-loader-bar" id="splashProgressBar"></div>
-                </div>
-                <div class="splash-progress-text">
-                    <span id="splashStatus"><span class="sv-text">Laddar data...</span><span class="ar-text">جاري
-                            التحميل...</span></span>
-                    <span id="splashPercent">0%</span>
-                </div>
-            </div>
-
-            <!-- Rotating Tips -->
-            <div class="splash-tip" id="splashTip">
-                💡 <span class="sv-text">Visste du? Du kan söka på både svenska och arabiska!</span><span
-                    class="ar-text">هل تعلم؟ يمكنك البحث بالسويدية والعربية!</span>
-            </div>
-        </div>
-    </div>
+    <div id="splashScreen" class="splash-screen" style="display: none !important;"></div>
     <script>
-        // Critical: Fast boot check to prevent splash flicker
-        // This runs immediately before paint
+        // Check if we need to load data via Welcome screen
         try {
             const hasDataReady = localStorage.getItem('snabbaLexin_dataReady') === 'true';
-            // We can't check config version easily here without importing, 
-            // but checking flag is 99% good enough for preventing flicker.
-            // verifying version happens in loader.ts anyway.
-            if (hasDataReady) {
-                const splash = document.getElementById('splashScreen');
-                if (splash) splash.style.display = 'none';
+            const storedVersion = localStorage.getItem('snabbaLexin_version');
+            // If no data or version mismatch, redirect to welcome page
+            // We hardcode version check here to match config (e.g. '1.5.0') 
+            // Better to just rely on flag, if flag is false -> go welcome
+            if (!hasDataReady) {
+                window.location.replace('/welcome.html');
             }
-        } catch (e) { console.error('Fast boot failed', e); }
+        } catch (e) {
+            console.error('Redirect check failed', e);
+        }
     </script>
+
 
 
     <div class="ambient-background">

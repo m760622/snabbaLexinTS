@@ -20,10 +20,25 @@ let spellingStreak = 0;
  */
 export function startSpellingGame(retryCount = 0): void {
     if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
-        if (retryCount < 10) {
-            console.warn(`Data not ready for Spelling. Retrying (${retryCount + 1}/10)...`);
-            if (typeof showToast === 'function') showToast("Laddar speldata... / جاري تحميل البيانات...", 'info');
-            setTimeout(() => startSpellingGame(retryCount + 1), 500);
+        // If data is missing, wait for the event instead of just polling
+        console.log("Data not ready for Spelling. Waiting for dictionaryLoaded event...");
+
+        const onDataLoaded = () => {
+            console.log("dictionaryLoaded event received in Spelling Game");
+            window.removeEventListener('dictionaryLoaded', onDataLoaded);
+            startSpellingGame(0);
+        };
+
+        window.addEventListener('dictionaryLoaded', onDataLoaded);
+
+        // Keep the polling as a fallback in case the event already fired or fails
+        if (retryCount < 20) {
+            setTimeout(() => {
+                if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
+                    // Only retry if still empty
+                    startSpellingGame(retryCount + 1);
+                }
+            }, 500);
         } else {
             console.error("Critical: Data failed to load for Spelling.");
             if (typeof showToast === 'function') showToast("Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.", 'error');
