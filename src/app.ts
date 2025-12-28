@@ -1,4 +1,4 @@
-import './loader';
+import { Loader } from './loader';
 import './utils';
 import './quiz';
 import './confetti';
@@ -33,6 +33,7 @@ export class App {
         LanguageManager.init();
 
         initMainUI();
+        Loader.checkCacheAndLoad();
         this.initStreaks();
         this.setupSearchListeners();
         this.setupThemeListener();
