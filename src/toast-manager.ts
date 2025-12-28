@@ -67,7 +67,7 @@ export const ToastManager = {
             /* Individual toast item */
             .toast-item {
                 position: relative;
-                padding: 14px 44px 14px 18px;
+                padding: 10px 44px 10px 18px;
                 background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
@@ -103,7 +103,7 @@ export const ToastManager = {
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                line-height: 1.4;
+                line-height: 16px;
             }
 
             /* Close button */
@@ -226,7 +226,7 @@ export const ToastManager = {
                 }
                 
                 .toast-item {
-                    padding: 12px 40px 12px 14px;
+                    padding: 8px 40px 8px 14px;
                     font-size: 0.85rem;
                 }
                 
