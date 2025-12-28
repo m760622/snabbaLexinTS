@@ -261,9 +261,28 @@ const translations: Record<string, TranslationEntry> = {
     'games.letters': { sv: 'Bokstäver', ar: 'حروف' },
     'games.skip': { sv: 'Hoppa över', ar: 'تخطي' },
     'games.undo': { sv: 'Ångra', ar: 'تراجع' },
+    'games.sentenceTitle': { sv: 'Bygg Meningen', ar: 'بناء الجملة' },
+    'games.translation': { sv: 'Översättning', ar: 'الترجمة' },
+    'games.dragHere': { sv: 'Dra ord hit', ar: 'اسحب الكلمات هنا' },
+    'games.correctOrder': { sv: 'Rätt ordning visas ovan', ar: 'الترتيب الصحيح معروض أعلاه' },
+    'games.notQuite': { sv: 'Inte riktigt... Försök igen!', ar: 'ليس تماماً... حاول مرة أخرى!' },
+    'games.perfect': { sv: 'Helt rätt!', ar: 'صحيح تماماً!' },
+
+    // Language Manager
     'games.showAnswer': { sv: 'Visa svaret', ar: 'أظهر الإجابة' },
     'games.menu': { sv: 'Meny', ar: 'القائمة' },
     'settings.testTTS': { sv: 'Testa uttal', ar: 'اختبار النطق' },
+
+    // Game Titles & specific
+    'games.spellingTitle': { sv: 'Skriv Ordet', ar: 'اكتب الكلمة' },
+    'games.wordWheelTitle': { sv: 'Ordhjulet', ar: 'عجلة الكلمات' },
+    'games.feedbackSuccess': { sv: 'Rätt!', ar: 'صحيح!' },
+    'games.feedbackError': { sv: 'Fel svar, försök igen!', ar: 'إجابة خاطئة، حاول مرة أخرى' },
+    'games.streak': { sv: '{0} i rad!', ar: '{0} على التوالي!' },
+    'games.solved': { sv: 'Löst!', ar: 'تم الحل!' },
+    'games.firstLetter': { sv: 'Första bokstaven: {0}', ar: 'الحرف الأول: {0}' },
+    'games.costPoint': { sv: 'Kostar 1 poäng', ar: 'تكلفة 1 نقطة' },
+    'games.needPoints': { sv: 'Du behöver {0} poäng', ar: 'تحتاج إلى {0} نقاط' },
 };
 
 // Language Manager

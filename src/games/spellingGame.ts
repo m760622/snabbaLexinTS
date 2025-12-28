@@ -2,6 +2,7 @@ import { AppConfig } from '../config';
 import { showToast, saveScore } from './games-utils';
 import { generateEducationalSentence, TextSizeManager } from '../utils';
 import { TTSManager } from '../tts';
+import { LanguageManager, t } from '../i18n';
 
 // Global declarations
 declare const dictionaryData: any[];
@@ -41,7 +42,7 @@ export function startSpellingGame(retryCount = 0): void {
             }, 500);
         } else {
             console.error("Critical: Data failed to load for Spelling.");
-            if (typeof showToast === 'function') showToast("Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.", 'error');
+            if (typeof showToast === 'function') showToast(t('common.error'), 'error');
         }
         return;
     }
@@ -50,6 +51,34 @@ export function startSpellingGame(retryCount = 0): void {
     spellingStreak = 0;
     updateSpellingDisplay();
     loadSpellingQuestion();
+    spellingScore = 0;
+    spellingStreak = 0;
+    updateSpellingDisplay();
+    loadSpellingQuestion();
+    updateSpellingUI();
+}
+
+/**
+ * Initialize Language Listener
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    if (LanguageManager) {
+        LanguageManager.onLanguageChange(() => {
+            updateSpellingUI();
+        });
+        updateSpellingUI();
+    }
+});
+
+function updateSpellingUI() {
+    const backBtn = document.querySelector('.hud-btn');
+    if (backBtn) {
+        backBtn.setAttribute('aria-label', t('nav.back'));
+        backBtn.setAttribute('title', t('nav.back'));
+    }
+
+    // Also trigger global update if needed
+    if (LanguageManager) LanguageManager.updateTranslations();
 }
 
 /**
@@ -80,7 +109,7 @@ function loadSpellingQuestion(): void {
     feedbackEl.className = 'sp-feedback';
     if (nextBtn) nextBtn.classList.add('hidden');
     if (hintBtn) hintBtn.classList.remove('hidden');
-    optionsEl.innerHTML = '<div class="sp-loading"><div class="sp-loading-spinner"></div><span>Laddar...</span></div>';
+    optionsEl.innerHTML = `<div class="sp-loading"><div class="sp-loading-spinner"></div><span>${t('common.loading')}</span></div>`;
 
     // Find a suitable word with translation
     let candidate: any[] | null = null;
@@ -95,9 +124,9 @@ function loadSpellingQuestion(): void {
     }
 
     if (!candidate) {
-        hintEl.textContent = "Kunde inte hitta ett ord. Försök igen.";
+        hintEl.textContent = t('details.noWordFound');
         if (exampleEl) exampleEl.textContent = "";
-        optionsEl.innerHTML = '<button class="spelling-option-btn" onclick="loadSpellingQuestion()">Försök igen</button>';
+        optionsEl.innerHTML = `<button class="spelling-option-btn" onclick="loadSpellingQuestion()">${t('learn.tryAgain')}</button>`;
         return;
     }
 
@@ -226,7 +255,7 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
         // Trigger celebration for streaks
         if (spellingStreak >= 3 && spellingStreak % 3 === 0) {
             if (typeof showToast === 'function') {
-                showToast(`🔥 ${spellingStreak} i rad! / ${spellingStreak} على التوالي!`, 'success');
+                showToast(`🔥 ${t('games.streak').replace('{0}', String(spellingStreak))}`, 'success');
             }
         }
     } else {
@@ -269,7 +298,7 @@ export function showSpellingHint(): void {
     const firstLetter = word.charAt(0).toUpperCase();
 
     if (typeof showToast === 'function') {
-        showToast(`💡 Första bokstaven: ${firstLetter}`, 'info');
+        showToast(`💡 ${t('games.firstLetter').replace('{0}', firstLetter)}`, 'info');
     }
 
     // Disable hint button after use

@@ -12,6 +12,8 @@ interface WheelTarget {
 }
 
 // Global declarations
+import { LanguageManager, t } from '../i18n';
+
 declare const dictionaryData: any[];
 declare const COL_SWE: number;
 declare const COL_ARB: number;
@@ -24,6 +26,32 @@ declare const TTSManager: { speak: (text: string, lang?: string) => void } | und
 declare const soundManager: { playClick?: () => void; playSuccess?: () => void; playError?: () => void } | undefined;
 
 console.log("wordWheelGame.ts LOADED");
+
+// Initialize Language Listener
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial update
+    updateWordWheelUI();
+
+    // Listen for changes
+    if (LanguageManager) {
+        LanguageManager.onLanguageChange(() => {
+            updateWordWheelUI();
+        });
+    }
+});
+
+function updateWordWheelUI() {
+    // Update Dropdown Options
+    const lengthSelect = document.getElementById('wordWheelLength') as HTMLSelectElement | null;
+    if (lengthSelect) {
+        const lettersText = t('games.letters');
+        for (let i = 0; i < lengthSelect.options.length; i++) {
+            const opt = lengthSelect.options[i];
+            const val = opt.value;
+            opt.text = `${val} ${lettersText}`;
+        }
+    }
+}
 
 // State
 let wheelTarget: WheelTarget | null = null;
@@ -39,11 +67,11 @@ export function startWordWheelGame(retryCount = 0): void {
     if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
         if (retryCount < 10) {
             console.warn(`Data not ready for Word Wheel. Retrying (${retryCount + 1}/10)...`);
-            if (typeof showToast === 'function') showToast("Laddar speldata... / جاري تحميل البيانات...", 'info');
+            if (typeof showToast === 'function') showToast(t('common.loading'), 'info');
             setTimeout(() => startWordWheelGame(retryCount + 1), 500);
         } else {
             console.error("Critical: Data failed to load for Word Wheel.");
-            if (typeof showToast === 'function') showToast("Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.", 'error');
+            if (typeof showToast === 'function') showToast(t('common.error'), 'error');
         }
         return;
     }
@@ -92,7 +120,7 @@ export function startWordWheelGame(retryCount = 0): void {
     }
 
     if (!candidate) {
-        hintEl.textContent = "Kunde inte hitta ett ord. Försök igen.";
+        hintEl.textContent = t('details.noWordFound');
         lettersEl.innerHTML = '<button class="wheel-letter" onclick="startWordWheelGame()">🔄</button>';
         return;
     }
@@ -164,10 +192,10 @@ function updateHintButtonState(): void {
 
     if (wheelScore >= 1) {
         hintBtn.disabled = false;
-        hintBtn.title = "Visa svaret (Kostar 1 poäng) / أظهر الإجابة (تكلفة 1 نقطة)";
+        hintBtn.title = `${t('games.showAnswer')} (${t('games.costPoint')})`;
     } else {
         hintBtn.disabled = true;
-        hintBtn.title = "Du behöver 1 poäng / تحتاج إلى نقطة واحدة";
+        hintBtn.title = t('games.needPoints').replace('{0}', '1');
     }
 }
 
@@ -234,7 +262,7 @@ function checkWordWheel(): void {
     if (wheelCurrentWord.toUpperCase() === wheelTarget.word) {
         if (typeof soundManager !== 'undefined' && soundManager?.playSuccess) soundManager.playSuccess();
 
-        feedbackEl.innerHTML = '✅ Rätt! / صحيح!';
+        feedbackEl.innerHTML = `✅ ${t('games.feedbackSuccess')}`;
         feedbackEl.className = 'game-feedback success';
         wheelScore++;
         wheelWordsSolved++;
@@ -265,7 +293,7 @@ function checkWordWheel(): void {
         answerBox.classList.add('shake-error');
         setTimeout(() => answerBox.classList.remove('shake-error'), 500);
 
-        feedbackEl.innerHTML = '❌ Fel svar, försök igen! / إجابة خاطئة، حاول مرة أخرى';
+        feedbackEl.innerHTML = `❌ ${t('games.feedbackError')}`;
         feedbackEl.className = 'game-feedback error';
 
         if (navigator.vibrate) navigator.vibrate(200);
@@ -298,9 +326,9 @@ export function skipWordWheel(): void {
 
 export function showWordWheelAnswer(): void {
     if (!wheelTarget) return;
-    
+
     if (wheelScore < 1) {
-        if (typeof showToast === 'function') showToast("Du behöver minst 1 poäng! / تحتاج نقطة واحدة على الأقل!", 'error');
+        if (typeof showToast === 'function') showToast(t('games.needPoints').replace('{0}', '1'), 'error');
         return;
     }
 
@@ -327,7 +355,7 @@ export function showWordWheelAnswer(): void {
 
     if (typeof soundManager !== 'undefined' && soundManager?.playSuccess) soundManager.playSuccess();
 
-    feedbackEl.innerHTML = '✅ Löst! / تم الحل!';
+    feedbackEl.innerHTML = `✅ ${t('games.solved')}`;
     feedbackEl.className = 'game-feedback success';
 
     if (wheelTarget.example) {

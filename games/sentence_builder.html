@@ -29,7 +29,7 @@
             </button>
         </div>
 
-        <div class="hud-title"><span class="sv-text">Bygg Meningen</span><span class="ar-text">بناء الجملة</span></div>
+        <div class="hud-title"><span data-i18n="games.sentenceTitle">Bygg Meningen</span></div>
 
         <div class="hud-stats">
             <div class="stat-pill score" title="Poäng / النقاط">
@@ -40,22 +40,21 @@
     </div>
 
     <!-- Holographic Title -->
-    <div class="memory-holo-title"><span class="sv-text">Bygg Meningen</span><span class="ar-text">بناء الجملة</span>
+    <div class="memory-holo-title"><span data-i18n="games.sentenceTitle">Bygg Meningen</span>
     </div>
 
     <!-- Game Container -->
     <div id="sentenceGame" class="sentence-game-container">
         <!-- Hint Card -->
         <div class="sentence-hint-card">
-            <div class="hint-label"><span class="sv-text">Översättning</span><span class="ar-text">الترجمة</span></div>
+            <div class="hint-label"><span data-i18n="games.translation">Översättning</span></div>
             <div class="game-hint large" id="sentenceHint">...</div>
         </div>
 
         <!-- Drop Zone (Magnetic Board) -->
         <div class="sentence-board-area">
             <div class="sentence-drop-zone premium" id="sentenceDropZone">
-                <div class="drop-placeholder"><span class="sv-text">Dra ord hit</span><span class="ar-text">اسحب الكلمات
-                        هنا</span></div>
+                <div class="drop-placeholder"><span data-i18n="games.dragHere">Dra ord hit</span></div>
             </div>
         </div>
 
@@ -67,13 +66,13 @@
 
         <div class="game-controls-row">
             <button id="sentenceShowAnswerBtn" class="game-btn secondary-btn" onclick="showSentenceAnswer()">
-                👁️ <span class="sv-text">Visa Svaret</span><span class="ar-text">اعرض الجواب</span>
+                👁️ <span data-i18n="games.showAnswer">Visa Svaret</span>
             </button>
             <button id="checkSentenceBtn" class="game-btn primary-btn">
-                ✅ <span class="sv-text">Klar</span><span class="ar-text">تم</span>
+                ✅ <span data-i18n="games.completed">Klar</span>
             </button>
             <button id="nextSentenceBtn" class="game-btn primary-btn hidden" onclick="startSentenceGame()">
-                <span class="sv-text">Nästa</span><span class="ar-text">التالي</span> ➜
+                <span data-i18n="games.next">Nästa</span> ➜
             </button>
         </div>
     </div>

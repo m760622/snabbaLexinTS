@@ -1,6 +1,7 @@
 import { AppConfig } from '../config';
 import { showToast, saveScore } from './games-utils';
 import { TTSManager } from '../tts';
+import { LanguageManager, t } from '../i18n';
 
 // Constants and globals
 declare const dictionaryData: any[];
@@ -20,11 +21,11 @@ export function startSentenceGame(retryCount = 0): void {
     if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
         if (retryCount < 10) {
             console.warn(`Data not ready for Sentence Builder. Retrying (${retryCount + 1}/10)...`);
-            if (typeof showToast === 'function') showToast("Laddar speldata... / جاري تحميل البيانات...", 'info');
+            if (typeof showToast === 'function') showToast(t('common.loading'), 'info');
             setTimeout(() => startSentenceGame(retryCount + 1), 500);
         } else {
             console.error("Critical: Data failed to load for Sentence Builder.");
-            if (typeof showToast === 'function') showToast("Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.", 'error');
+            if (typeof showToast === 'function') showToast(t('common.error'), 'error');
         }
         return;
     }
@@ -43,7 +44,7 @@ export function startSentenceGame(retryCount = 0): void {
     feedbackEl.className = 'game-feedback';
     if (nextBtn) nextBtn.style.display = 'none';
     if (checkBtn) checkBtn.style.display = 'block';
-    dropZone.innerHTML = '<div class="drop-placeholder">Dra ord hit / اسحب الكلمات هنا</div>';
+    dropZone.innerHTML = `<div class="drop-placeholder">${t('games.dragHere')}</div>`;
     wordBank.innerHTML = '';
     sentenceCurrent = [];
 
@@ -60,7 +61,7 @@ export function startSentenceGame(retryCount = 0): void {
     }
 
     if (!candidate) {
-        hintEl.textContent = "Kunde inte hitta en mening. Försök igen.";
+        hintEl.textContent = t('details.noWordFound');
         return;
     }
 
@@ -69,7 +70,8 @@ export function startSentenceGame(retryCount = 0): void {
     const arabicHint = (candidate[AppConfig.COLUMNS.EXAMPLE_ARB] || candidate[AppConfig.COLUMNS.ARABIC] || '') as string;
 
     // Show Arabic translation as hint
-    hintEl.innerHTML = `<span style="direction: rtl; display: block;">${arabicHint}</span>`;
+    // Direction is handled globally by i18n.ts
+    hintEl.innerHTML = `<span style="display: block;">${arabicHint}</span>`;
 
     // Split and shuffle
     sentenceTarget = sentence.split(' ').filter((w: string) => w.length > 0);
@@ -96,9 +98,9 @@ export function startSentenceGame(retryCount = 0): void {
 function moveWord(btn: HTMLButtonElement, word: string): void {
     const dropZone = document.getElementById('sentenceDropZone');
     const wordBank = document.getElementById('sentenceWordBank');
-    
+
     if (!dropZone || !wordBank) return;
-    
+
     const placeholder = dropZone.querySelector('.drop-placeholder');
 
     if (btn.parentElement === wordBank) {
@@ -114,7 +116,7 @@ function moveWord(btn: HTMLButtonElement, word: string): void {
 
         // Show placeholder if empty
         if (dropZone.children.length === 0) {
-            dropZone.innerHTML = '<div class="drop-placeholder">Dra ord hit / اسحب الكلمات هنا</div>';
+            dropZone.innerHTML = `<div class="drop-placeholder">${t('games.dragHere')}</div>`;
         }
     }
 }
@@ -135,7 +137,7 @@ function checkSentence(): void {
     const targetStr = sentenceTarget.join(' ');
 
     if (currentStr === targetStr) {
-        feedbackEl.textContent = "✅ Helt rätt! / صحيح تماماً!";
+        feedbackEl.textContent = `✅ ${t('games.perfect')}`;
         feedbackEl.className = 'game-feedback success';
         sentenceScore++;
         if (scoreEl) scoreEl.textContent = String(sentenceScore);
@@ -152,7 +154,7 @@ function checkSentence(): void {
         if (nextBtn) nextBtn.style.display = 'block';
         if (checkBtn) checkBtn.style.display = 'none';
     } else {
-        feedbackEl.textContent = "❌ Inte riktigt... Försök igen! / ليس تماماً...";
+        feedbackEl.textContent = `❌ ${t('games.notQuite')}`;
         feedbackEl.className = 'game-feedback error';
     }
 }
@@ -180,7 +182,7 @@ export function showSentenceAnswer(): void {
         dropZone.appendChild(span);
     });
 
-    feedbackEl.innerHTML = `📖 Rätt ordning visas ovan`;
+    feedbackEl.innerHTML = `📖 ${t('games.correctOrder')}`;
     feedbackEl.className = 'game-feedback';
 
     // Speak the sentence
