@@ -500,7 +500,7 @@ export const MysteryBox = {
         setTimeout(() => {
             overlay.classList.add('fade-out');
             setTimeout(() => overlay.remove(), 500);
-        }, 4000);
+        }, 2000);
     },
 
     render(container: HTMLElement): void {

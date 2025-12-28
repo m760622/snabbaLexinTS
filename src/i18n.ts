@@ -340,10 +340,11 @@ export const LanguageManager = {
 
         // Set document direction and language class
         if (lang === 'ar') {
-            document.documentElement.setAttribute('dir', 'rtl');
+            // User requested NO RTL for Arabic
+            document.documentElement.setAttribute('dir', 'ltr'); // Changed from rtl to ltr
             document.documentElement.setAttribute('lang', 'ar');
-            document.body.classList.add('rtl', 'lang-ar');
-            document.body.classList.remove('ltr', 'lang-sv', 'lang-both');
+            document.body.classList.add('lang-ar'); // Removed 'rtl' class
+            document.body.classList.remove('rtl', 'ltr', 'lang-sv', 'lang-both');
         } else if (lang === 'sv') {
             document.documentElement.setAttribute('dir', 'ltr');
             document.documentElement.setAttribute('lang', 'sv');

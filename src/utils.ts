@@ -131,14 +131,14 @@ export interface ToastOptions {
     type?: ToastType;
 }
 
-export function showToast(message: string, durationOrOptions: number | ToastOptions = 3000) {
-    let duration = 4000;
+export function showToast(message: string, durationOrOptions: number | ToastOptions = 1500) {
+    let duration = 1500;
     let type: ToastType = 'success';
 
     if (typeof durationOrOptions === 'number') {
         duration = durationOrOptions;
     } else if (typeof durationOrOptions === 'object') {
-        duration = durationOrOptions.duration || 4000;
+        duration = durationOrOptions.duration || 1500;
         type = durationOrOptions.type || 'success';
     }
 

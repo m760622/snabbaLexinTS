@@ -150,7 +150,7 @@ function triggerConfetti(): void {
             pointer-events: none;
         `;
         container.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 4000);
+        setTimeout(() => confetti.remove(), 2000);
     }
 }
 
@@ -217,7 +217,7 @@ export function initFlashcards(retryCount = 0): void {
 
         updateProgressRing(0);
         initSegmentedProgress();
-        
+
         const progressEl = document.getElementById('flashcardProgress');
         if (progressEl) progressEl.textContent = `0/${flashcardTotal}`;
 
@@ -415,7 +415,7 @@ function showNextFlashcard(): void {
 
     const progress = (flashcardIndex / flashcardTotal) * 100;
     updateProgressRing(progress);
-    
+
     const progressEl = document.getElementById('flashcardProgress');
     if (progressEl) progressEl.textContent = `${flashcardIndex + 1}/${flashcardTotal}`;
 
@@ -475,16 +475,8 @@ function updateAutoPlayButton(): void {
 // Next Review Toast
 // ========================================
 function showNextReviewToast(box: number, isCorrect: boolean): void {
-    if (typeof showToast !== 'function') return;
-
-    const intervals = [1, 3, 7, 14, 30];
-    const days = intervals[box - 1] || 1;
-
-    const msg = isCorrect
-        ? `Bra! Nästa repetition om ${days} dagar (Box ${box})`
-        : `Repetition imorgon (Box 1)`;
-
-    showToast(msg);
+    // Toast removed as per user request
+    return;
 }
 
 // ========================================

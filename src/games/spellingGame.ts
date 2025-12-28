@@ -9,12 +9,13 @@ declare const dictionaryData: any[];
 declare const soundManager: { playClick?: () => void; playSuccess?: () => void; playError?: () => void } | undefined;
 declare const HapticManager: { trigger: (type: string) => void } | undefined;
 
-console.log("spellingGame.ts LOADED");
+console.log("spellingGame.ts LOADED - VERSION DEBUG 1234");
 
 // State
 let spellingCurrentItem: any[] | null = null;
 let spellingScore = 0;
 let spellingStreak = 0;
+let spellingTimeout: any = null; // Timer for auto-advance
 
 /**
  * Start Spelling Game
@@ -47,10 +48,7 @@ export function startSpellingGame(retryCount = 0): void {
         return;
     }
 
-    spellingScore = 0;
-    spellingStreak = 0;
-    updateSpellingDisplay();
-    loadSpellingQuestion();
+    if (spellingTimeout) clearTimeout(spellingTimeout);
     spellingScore = 0;
     spellingStreak = 0;
     updateSpellingDisplay();
@@ -59,48 +57,21 @@ export function startSpellingGame(retryCount = 0): void {
 }
 
 /**
- * Initialize Language Listener
- */
-document.addEventListener('DOMContentLoaded', () => {
-    if (LanguageManager) {
-        LanguageManager.onLanguageChange(() => {
-            updateSpellingUI();
-        });
-        updateSpellingUI();
-    }
-});
-
-function updateSpellingUI() {
-    const backBtn = document.querySelector('.hud-btn');
-    if (backBtn) {
-        backBtn.setAttribute('aria-label', t('nav.back'));
-        backBtn.setAttribute('title', t('nav.back'));
-    }
-
-    // Also trigger global update if needed
-    if (LanguageManager) LanguageManager.updateTranslations();
-}
-
-/**
- * Update Display
- */
-function updateSpellingDisplay(): void {
-    const scoreEl = document.getElementById('spellingScore');
-    const streakEl = document.getElementById('spellingStreak');
-    if (scoreEl) scoreEl.textContent = String(spellingScore);
-    if (streakEl) streakEl.textContent = String(spellingStreak);
-}
-
-/**
  * Load Question
  */
-function loadSpellingQuestion(): void {
+export function loadSpellingQuestion(): void {
     const hintEl = document.getElementById('spellingHint');
     const exampleEl = document.getElementById('spellingExample');
     const optionsEl = document.getElementById('spellingOptions');
     const feedbackEl = document.getElementById('spellingFeedback');
     const nextBtn = document.getElementById('nextSpellingBtn');
     const hintBtn = document.getElementById('spHintBtn');
+
+    // Clear any pending auto-advance timer
+    if (spellingTimeout) {
+        clearTimeout(spellingTimeout);
+        spellingTimeout = null;
+    }
 
     if (!hintEl || !optionsEl || !feedbackEl) return;
 
@@ -190,6 +161,7 @@ function loadSpellingQuestion(): void {
  * Check Answer
  */
 function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButtonElement): void {
+    console.log("checkSpellingAnswer CALLED", { selected, correct });
     const feedbackEl = document.getElementById('spellingFeedback');
     const nextBtn = document.getElementById('nextSpellingBtn');
     const hintBtn = document.getElementById('spHintBtn');
@@ -222,42 +194,67 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
     }
 
     if (selected === correct) {
+        console.log("Correct answer selected - entering success block");
         btnEl.classList.add('correct');
         spellingScore++;
         spellingStreak++;
         updateSpellingDisplay();
 
         // Haptic vibration
-        if (typeof HapticManager !== 'undefined' && HapticManager) {
-            HapticManager.trigger('success');
-        } else if (navigator.vibrate) {
-            navigator.vibrate([50, 30, 50]);
-        }
+        try {
+            if (typeof HapticManager !== 'undefined' && HapticManager) {
+                HapticManager.trigger('success');
+            } else if (navigator.vibrate) {
+                navigator.vibrate([50, 30, 50]);
+            }
+        } catch (e) { console.error("Haptic error", e); }
 
         // Play success sound
-        if (typeof soundManager !== 'undefined' && soundManager?.playSuccess) {
-            soundManager.playSuccess();
-        }
+        try {
+            if (typeof soundManager !== 'undefined' && soundManager?.playSuccess) {
+                soundManager.playSuccess();
+            }
+        } catch (e) { console.error("Sound error", e); }
 
         feedbackEl.innerHTML = feedbackHTML;
         feedbackEl.className = 'sp-feedback success';
 
         // Trigger text sizing calc
-        if (window.TextSizeManager) {
-            window.TextSizeManager.applyRules();
-        }
+        try {
+            if (window.TextSizeManager) {
+                window.TextSizeManager.applyRules();
+            }
+        } catch (e) { console.error("TextSize error", e); }
 
         // Save score
-        if (typeof saveScore === 'function') {
-            saveScore('spelling', spellingScore);
-        }
+        try {
+            if (typeof saveScore === 'function') {
+                saveScore('spelling', spellingScore);
+            }
+        } catch (e) { console.error("SaveScore error", e); }
 
-        // Trigger celebration for streaks
-        if (spellingStreak >= 3 && spellingStreak % 3 === 0) {
-            if (typeof showToast === 'function') {
+        // Trigger celebration for streaks (Toast removed as per request)
+        /*
+        try {
+            if (typeof showToast === 'function' && spellingStreak >= 3 && spellingStreak % 3 === 0) {
                 showToast(`🔥 ${t('games.streak').replace('{0}', String(spellingStreak))}`, 'success');
             }
+        } catch (e) { console.error("Toast error", e); }
+        */
+
+        // Auto-advance after 5 seconds
+        if (spellingTimeout) clearTimeout(spellingTimeout);
+        spellingTimeout = setTimeout(() => {
+            console.log("Auto-advancing...");
+            loadSpellingQuestion();
+        }, 5000);
+
+        // Show Next button immediately as well
+        if (nextBtn) {
+            nextBtn.classList.remove('hidden');
+            nextBtn.style.setProperty('display', 'flex', 'important');
         }
+
     } else {
         btnEl.classList.add('wrong');
 
@@ -284,8 +281,6 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
     if (typeof TTSManager !== 'undefined' && TTSManager) {
         TTSManager.speak(correct, 'sv');
     }
-
-    if (nextBtn) nextBtn.classList.remove('hidden');
 }
 
 /**
@@ -308,6 +303,39 @@ export function showSpellingHint(): void {
         hintBtn.style.opacity = '0.5';
     }
 }
+
+/**
+ * Update Display
+ */
+function updateSpellingDisplay(): void {
+    const scoreEl = document.getElementById('spellingScore');
+    const streakEl = document.getElementById('spellingStreak');
+    if (scoreEl) scoreEl.textContent = String(spellingScore);
+    if (streakEl) streakEl.textContent = String(spellingStreak);
+}
+
+function updateSpellingUI() {
+    const backBtn = document.querySelector('.hud-btn');
+    if (backBtn) {
+        backBtn.setAttribute('aria-label', t('nav.back'));
+        backBtn.setAttribute('title', t('nav.back'));
+    }
+
+    // Also trigger global update if needed
+    if (LanguageManager) LanguageManager.updateTranslations();
+}
+
+/**
+ * Initialize Language Listener
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    if (LanguageManager) {
+        LanguageManager.onLanguageChange(() => {
+            updateSpellingUI();
+        });
+        updateSpellingUI();
+    }
+});
 
 // Expose to window
 (window as any).startSpellingGame = startSpellingGame;

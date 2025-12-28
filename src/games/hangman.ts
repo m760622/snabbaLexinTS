@@ -94,14 +94,14 @@ export async function init() {
     (window as any).startDailyChallenge = startDailyChallenge;
     (window as any).guessLetter = guessLetter;
     (window as any).createConfetti = createConfetti;
-    
+
     // Optimization: Init DB
     try {
         await DictionaryDB.init();
     } catch (e) {
         console.error('DB Init failed', e);
     }
-    
+
     // Wait for dictionary data if it's not loaded yet
     if ((window as any).dictionaryData) {
         startNewGame();
@@ -467,7 +467,7 @@ function showResult(won: boolean, score: number) {
         currentWord,
         currentHint,
         currentEntry[COL_SWE_EX],
-        currentEntry[COL_ARB], 
+        currentEntry[COL_ARB],
         undefined, // No definition available in currentEntry directly, but could be added if needed
         currentEntry[COL_TYPE]
     );
@@ -486,7 +486,7 @@ function showResult(won: boolean, score: number) {
     if (TTSManager && soundEnabled) {
         setTimeout(() => TTSManager.speak(currentWord.toLowerCase(), 'sv'), 500);
     }
-    
+
     // Apply dynamic text sizing
     if (resultWord) {
         resultWord.querySelectorAll('div').forEach((el, index) => {
@@ -572,7 +572,7 @@ function createConfetti() {
 
     setTimeout(() => {
         if (container) container.innerHTML = '';
-    }, 4000);
+    }, 2000);
 }
 
 // ========== KEYBOARD SUPPORT ==========
