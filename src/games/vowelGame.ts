@@ -70,14 +70,25 @@ if (container) {
 }
 
 function startGame() {
-    startScreen.style.opacity = '0';
-    setTimeout(() => {
+    // Hide start screen if it exists
+    if (startScreen) {
         startScreen.style.display = 'none';
+    }
+    // Show play area
+    if (playArea) {
         playArea.style.display = 'block';
-        hasStarted = true;
-        initGame();
-    }, 500);
+    }
+    hasStarted = true;
+    initGame();
 }
+
+// Auto-start game when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure everything is loaded
+    setTimeout(() => {
+        startGame();
+    }, 100);
+});
 
 function initGame() {
     // Load Saved Stage
