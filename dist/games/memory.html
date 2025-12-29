@@ -17,59 +17,77 @@
 
     <!-- Confetti Animation -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script type="module" crossorigin src="/assets/games-memory-D3ial_8f.js"></script>
+  <script type="module" crossorigin src="/assets/games-memory-DScGm_Rj.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/loader-B7oZEySq.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/games-memory-CIW-3glQ.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-memory-DoFNNngq.css">
+  <link rel="stylesheet" crossorigin href="/assets/style-BxR19fyv.css">
+  <link rel="stylesheet" crossorigin href="/assets/title-styles-BRYkk_MN.css">
 </head>
 
 <body>
     <div class="particles"></div>
 
     <header>
-        <div class="header-title-row">
-            <button class="back-btn" onclick="window.location.href='games.html'" aria-label="Back / رجوع">
+        <!-- 1. Top Nav Bar -->
+        <div class="header-nav">
+            <button class="back-btn" onclick="window.location.href='games.html'" aria-label="Back">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
-            <h1 class="game-title">🃏 <span class="sv-text">Memory</span><span class="ar-text">مطابقة الذاكرة</span>
+            <h1 class="game-title">
+                🃏 <span class="sv-text">Memory</span><span class="ar-text">الذاكرة</span>
             </h1>
-        </div>
-        <div class="header-top">
-            <div class="header-stats">
-                <div class="stat-item">
-                    <span class="stat-label"><span class="sv-text">Poäng</span><span class="ar-text">نقاط</span></span>
-                    <span class="stat-val" id="scoreValue">0</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-label"><span class="sv-text">Drag</span><span class="ar-text">حركات</span></span>
-                    <span class="stat-val" id="movesValue">0</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-label"><span class="sv-text">Tid</span><span class="ar-text">الوقت</span></span>
-                    <span class="stat-val" id="timerValue">0:00</span>
-                </div>
-            </div>
             <div class="action-group">
-                <button class="restart-btn" onclick="restartGame()">
-                    🔄 <span class="sv-text">Börja om</span><span class="ar-text">إعادة</span>
-                </button>
+                <button id="soundToggleBtn" class="icon-btn" onclick="toggleSound()" title="Sound">🔊</button>
+                <button class="icon-btn" onclick="restartGame()" title="Restart">🔄</button>
             </div>
         </div>
-        <div class="stat-box pill-box">
-            <div class="category-pills" id="categorySelector">
-                <button class="pill active" data-category="all" onclick="selectCategory('all', this)">📚</button>
-                <button class="pill" data-category="substantiv" onclick="selectCategory('substantiv', this)">📦</button>
-                <button class="pill" data-category="verb" onclick="selectCategory('verb', this)">⚡</button>
-                <button class="pill" data-category="adjektiv" onclick="selectCategory('adjektiv', this)">🎨</button>
+
+        <!-- 2. Glass Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Poäng/نقاط</span>
+                <span class="stat-value" id="scoreValue">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Drag/حركات</span>
+                <span class="stat-value" id="movesValue">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Tid/الوقت</span>
+                <span class="stat-value" id="timerValue">0:00</span>
+            </div>
+        </div>
+
+        <!-- 3. Control Panel (Settings) -->
+        <div class="controls-area">
+            <!-- Difficulty -->
+            <div class="control-group">
+                <span class="control-label">Nivå / المستوى</span>
+                <div class="pill-group" id="difficultySelector">
+                    <button class="pill active" onclick="setDifficulty('easy', this)">😊 Lätt/سهل</button>
+                    <button class="pill" onclick="setDifficulty('hard', this)">🧠 Svår/صعب</button>
+                </div>
+            </div>
+
+            <!-- Category -->
+            <div class="control-group">
+                <span class="control-label">Kategori / التصنيف</span>
+                <div class="pill-group" id="categorySelector">
+                    <button class="pill active" onclick="selectCategory('all', this)">📚 Alla/الكل</button>
+                    <button class="pill" onclick="selectCategory('substantiv', this)">📦 Substantiv</button>
+                    <button class="pill" onclick="selectCategory('verb', this)">⚡ Verb</button>
+                    <button class="pill" onclick="selectCategory('adjektiv', this)">🎨 Adjektiv</button>
+                </div>
             </div>
         </div>
     </header>

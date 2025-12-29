@@ -144,7 +144,7 @@ class VisualFX {
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
         });
         this.texts.forEach(t => {
-            ctx.globalAlpha = t.life; ctx.fillStyle = t.color; ctx.font = 'bold 20px Inter';
+            ctx.globalAlpha = t.life; ctx.fillStyle = t.color; ctx.font = 'bold 20px Inter, system-ui, sans-serif';
             ctx.textAlign = 'center'; ctx.fillText(t.text, t.x, t.y);
         });
         ctx.globalAlpha = 1.0;
@@ -455,7 +455,7 @@ class Game {
             const cx = this.metrics.gridX + this.metrics.gridSize / 2;
             const cy = this.metrics.gridY + this.metrics.gridSize / 2;
             this.fx.spawnText(cx, cy, `+${bonus}`, '#fff');
-            if (scoreMult > 1) this.fx.spawnText(cx, cy - 30, 'COLOR MATCH!', CONFIG.colors.palette[3]);
+            if (scoreMult > 1) this.fx.spawnText(cx, cy - 30, 'Färgmatch! / تطابق!', CONFIG.colors.palette[3]);
         }
     }
 
@@ -541,7 +541,55 @@ class Game {
         return true;
     }
 
+    // Predict if placing shape at (r,c) will clear any rows/columns/squares
+    predictWillClear(shape: number[][], r: number, c: number): { willClear: boolean, clearCount: number, cleared: { rows: number[], cols: number[], sqs: { r: number, c: number }[] } } {
+        // Create temporary grid copy
+        const tempGrid: (GridCell | null)[][] = this.grid.map(row => row.map(cell => cell ? { ...cell } : null));
+
+        // Place shape on temp grid
+        for (let i = 0; i < shape.length; i++) {
+            for (let j = 0; j < shape[0].length; j++) {
+                if (shape[i][j]) {
+                    tempGrid[r + i][c + j] = { color: '#fff', bomb: null, ice: false, rock: false };
+                }
+            }
+        }
+
+        const cleared = { rows: [] as number[], cols: [] as number[], sqs: [] as { r: number, c: number }[] };
+
+        // Check rows
+        for (let row = 0; row < 9; row++) {
+            if (tempGrid[row].every(cell => cell !== null)) cleared.rows.push(row);
+        }
+
+        // Check columns  
+        for (let col = 0; col < 9; col++) {
+            let full = true;
+            for (let row = 0; row < 9; row++) if (!tempGrid[row][col]) full = false;
+            if (full) cleared.cols.push(col);
+        }
+
+        // Check 3x3 squares
+        for (let sr = 0; sr < 3; sr++) {
+            for (let sc = 0; sc < 3; sc++) {
+                let full = true;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (!tempGrid[sr * 3 + row][sc * 3 + col]) full = false;
+                    }
+                }
+                if (full) cleared.sqs.push({ r: sr, c: sc });
+            }
+        }
+
+        const clearCount = cleared.rows.length + cleared.cols.length + cleared.sqs.length;
+        return { willClear: clearCount > 0, clearCount, cleared };
+    }
+
     checkGameOver() {
+        // If hand is empty, it's not game over (waiting for spawn or start)
+        if (this.hand.every(item => item === null)) return false;
+
         for (let i = 0; i < 3; i++) {
             const item = this.hand[i];
             if (item && item.shape) {
@@ -556,6 +604,10 @@ class Game {
         this.finalScoreEl.textContent = this.score.toString();
         if (this.score >= this.highScore && this.score > 0) (document.getElementById('newHighScoreLabel') as HTMLElement).style.display = 'block';
         else (document.getElementById('newHighScoreLabel') as HTMLElement).style.display = 'none';
+
+        // Hide Main Menu if active (just in case)
+        document.getElementById('mainMenu')!.classList.remove('active');
+
         document.getElementById('gameOverModal')!.classList.add('active');
         this.sound.playGameOver();
         localStorage.removeItem(CONFIG.storageKeys.gameState);
@@ -565,8 +617,10 @@ class Game {
         this.grid = Array(9).fill(null).map(() => Array(9).fill(null));
         this.score = 0;
         this.moves = 0;
+        this.timeLeft = 120; // Reset time
         this.scoreEl.textContent = '0';
         document.getElementById('gameOverModal')!.classList.remove('active');
+        // Main Menu handling is done in startMode/resume
         this.spawnShapes();
         this.saveState();
     }
@@ -650,7 +704,7 @@ class Game {
 
                 if (cell.bomb !== null) {
                     this.ctx.fillStyle = CONFIG.colors.bombText;
-                    this.ctx.font = 'bold 20px Inter';
+                    this.ctx.font = 'bold 20px Inter, system-ui, sans-serif';
                     this.ctx.textAlign = 'center';
                     this.ctx.textBaseline = 'middle';
                     this.ctx.fillText(cell.bomb.toString(), gridX + c * cellSize + cellSize / 2, gridY + r * cellSize + cellSize / 2);
@@ -685,6 +739,27 @@ class Game {
                 const gp = this.getGridPos(dx, dy, shape);
                 if (gp && this.canPlace(shape, gp.r, gp.c)) {
                     this.drawShape(shape, gridX + gp.c * cellSize, gridY + gp.r * cellSize, cellSize, CONFIG.colors.ghost);
+
+                    // Prediction Highlight
+                    const prediction = this.predictWillClear(shape, gp.r, gp.c);
+                    if (prediction.willClear) {
+                        this.ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+
+                        // Highlight Rows
+                        prediction.cleared.rows.forEach(r => {
+                            this.ctx.fillRect(gridX, gridY + r * cellSize, gridSize, cellSize);
+                        });
+
+                        // Highlight Cols
+                        prediction.cleared.cols.forEach(c => {
+                            this.ctx.fillRect(gridX + c * cellSize, gridY, cellSize, gridSize);
+                        });
+
+                        // Highlight Squares
+                        prediction.cleared.sqs.forEach(sq => {
+                            this.ctx.fillRect(gridX + sq.c * 3 * cellSize, gridY + sq.r * 3 * cellSize, cellSize * 3, cellSize * 3);
+                        });
+                    }
                 }
 
                 const sw = shape[0].length * cellSize;
@@ -732,11 +807,11 @@ class Game {
 }
 
 let game: Game;
-window.onload = () => {
+window.addEventListener('load', () => {
     game = new Game();
     // Expose game globally for onclick handlers
     (window as any).game = game;
-};
+});
 
 // Toggle Mobile View Function
 function toggleMobileView() {

@@ -98,7 +98,7 @@ class ProgressManager {
         this.addXP(10, 'كلمة جديدة / Nytt ord');
     }
 
-    public completeGame(gameId: string): void {
+    public completeGame(_gameId: string): void {
         this.progress.gamesCompleted++;
         this.addXP(25, 'لعبة مكتملة / Spel klart');
     }
