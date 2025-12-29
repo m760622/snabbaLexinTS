@@ -11795,3 +11795,127 @@ body {
     opacity: 0.1 !important;
 }
 
+
+/* ========================================
+   MOBILE ENHANCEMENTS - Phase 6
+   Better Touch Interactions & Responsive Design
+   ======================================== */
+
+/* Improved Touch Targets */
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    .hud-btn,
+    .stat-pill,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Better spacing */
+    .game-cards-grid {
+        gap: 12px;
+        padding: 0 12px;
+    }
+
+    .game-card-item {
+        padding: 1rem;
+    }
+
+    /* Larger game icons on mobile */
+    .game-icon-large {
+        font-size: 2.5rem;
+    }
+
+    /* Full-width buttons on mobile */
+    .wc-btn,
+    .sp-btn,
+    .gr-btn {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    /* Better readable text */
+    .wc-slot,
+    .sp-hint-text {
+        font-size: 1.2rem;
+    }
+
+    /* Simplified HUD */
+    .memory-hud {
+        padding: 0.5rem;
+    }
+
+    .hud-title-inline {
+        font-size: 0.9rem;
+    }
+}
+
+/* Touch-friendly letter nodes */
+.wc-letter-node,
+.ww-letter {
+    min-width: 50px;
+    min-height: 50px;
+}
+
+/* Swipe gestures support */
+.games-container {
+    overscroll-behavior-y: contain;
+}
+
+/* Safe area insets for notched phones */
+@supports (padding: max(0px)) {
+    .memory-hud {
+        padding-top: max(0.5rem, env(safe-area-inset-top));
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .wc-game-container,
+    .sp-game-container {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* Prevent text selection during gameplay */
+.wc-wheel-container,
+.wc-letter-node,
+.sp-options-container,
+.sp-option-btn {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Smooth momentum scrolling */
+.games-container,
+.wc-slots-area {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Active state feedback */
+.hud-btn:active,
+.game-card-item:active,
+.stat-pill:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+/* Prevent double-tap zoom */
+.game-card-item,
+.wc-letter-node,
+.sp-option-btn {
+    touch-action: manipulation;
+}
+
+/* Better contrast for outdoor visibility */
+@media (prefers-contrast: more) {
+    .wc-letter-node {
+        border-width: 3px;
+    }
+    
+    .wc-slot {
+        border-width: 2px;
+    }
+}
+
