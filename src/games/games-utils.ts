@@ -348,6 +348,42 @@ function initMobileView(): void {
 }
 
 // ========================================
+// Focus Mode Toggle
+// ========================================
+export function toggleFocusMode(): void {
+    const body = document.body;
+    const isFocusMode = body.classList.toggle('focus-mode');
+
+    localStorage.setItem('focusMode', String(isFocusMode));
+
+    const btn = document.getElementById('focusModeToggle');
+    if (btn) {
+        btn.textContent = isFocusMode ? '🎯' : '👁️';
+        btn.title = isFocusMode ? 'وضع التركيز مفعّل / Focus Mode On' : 'وضع التركيز / Focus Mode';
+    }
+
+    showToast(
+        isFocusMode
+            ? '🎯 وضع التركيز مفعّل / Focus Mode On'
+            : '👁️ الوضع العادي / Normal Mode',
+        'success'
+    );
+}
+
+function initFocusMode(): void {
+    const savedMode = localStorage.getItem('focusMode') === 'true';
+
+    if (savedMode) {
+        document.body.classList.add('focus-mode');
+        const btn = document.getElementById('focusModeToggle');
+        if (btn) {
+            btn.textContent = '🎯';
+            btn.title = 'وضع التركيز مفعّل / Focus Mode On';
+        }
+    }
+}
+
+// ========================================
 // Game Prioritization
 // ========================================
 function trackGameUsage(gameId: string): void {
@@ -429,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadScores();
     initDarkMode();
     initMobileView();
+    initFocusMode();
     initScrollAnimations();
 });
 
@@ -438,6 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
 (window as any).startGame = startGame;
 (window as any).showGameMenu = showGameMenu;
 (window as any).toggleMobileView = toggleMobileView;
+(window as any).toggleFocusMode = toggleFocusMode;
 (window as any).showToast = showToast;
 (window as any).saveScore = saveScore;
 (window as any).triggerConfetti = triggerConfetti;
+

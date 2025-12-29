@@ -5,12 +5,13 @@
 
 import { WCTheme, WCLevel, WCDictionaryEntry } from '../types';
 import { WC_THEMES, WC_PREDEFINED_LEVELS, WC_DICTIONARY, getThemeForChapter } from '../data/wordConnectData';
-import { showToast, saveScore, toggleMobileView } from './games-utils';
+import { showToast, saveScore, toggleMobileView, toggleFocusMode } from './games-utils';
 // Import games-utils module to trigger theme initialization
 import './games-utils';
 
-// Expose toggleMobileView globally
+// Expose toggle functions globally
 (window as any).toggleMobileView = toggleMobileView;
+(window as any).toggleFocusMode = toggleFocusMode;
 
 // Theme Toggle Function
 function toggleTheme(): void {
