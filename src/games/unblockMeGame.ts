@@ -551,6 +551,21 @@ function toggleMobileView() {
 // Expose toggleMobileView globally
 (window as any).toggleMobileView = toggleMobileView;
 
+// Toggle Focus Mode Function
+function toggleFocusMode() {
+    document.body.classList.toggle('focus-mode');
+    const isActive = document.body.classList.contains('focus-mode');
+    localStorage.setItem('unblockFocusMode', isActive ? 'true' : 'false');
+    const btn = document.getElementById('focusModeToggle');
+    if (btn) {
+        btn.textContent = isActive ? '🎯' : '👁️';
+        btn.classList.toggle('active', isActive);
+    }
+}
+
+// Expose toggleFocusMode globally
+(window as any).toggleFocusMode = toggleFocusMode;
+
 // Apply mobile view from localStorage
 if (localStorage.getItem('mobileView') === 'true') {
     document.body.classList.add('iphone-view');
@@ -558,5 +573,18 @@ if (localStorage.getItem('mobileView') === 'true') {
     document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('mobileToggle');
         if (btn) btn.classList.add('active');
+    });
+}
+
+// Apply focus mode from localStorage
+if (localStorage.getItem('unblockFocusMode') === 'true') {
+    document.body.classList.add('focus-mode');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('focusModeToggle');
+        if (btn) {
+            btn.textContent = '🎯';
+            btn.classList.add('active');
+        }
     });
 }
