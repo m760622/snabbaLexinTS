@@ -6,7 +6,11 @@
 import { minimalPairsData, MinimalPair } from '../data/vowelGameData';
 
 import { speakSwedish } from '../tts';
-import { toggleMobileView } from './games-utils';
+import { toggleMobileView, toggleFocusMode } from './games-utils';
+
+// Expose toggle functions globally
+(window as any).toggleMobileView = toggleMobileView;
+(window as any).toggleFocusMode = toggleFocusMode;
 
 function shuffleArray<T>(arr: T[]): T[] {
     const a = [...arr];

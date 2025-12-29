@@ -845,3 +845,69 @@ body.boss-mode .missing-vowel {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }
+/* ========================================
+   FOCUS MODE FOR VOWEL GAME
+   Distraction-free learning
+   ======================================== */
+
+body.focus-mode .ambient-bg,
+body.focus-mode .orb,
+body.focus-mode .orb-1,
+body.focus-mode .orb-2,
+body.focus-mode .start-orb-large {
+    display: none !important;
+}
+
+body.focus-mode {
+    background: #f8fafc !important;
+}
+
+body.focus-mode[data-theme="dark"] {
+    background: #0f172a !important;
+}
+
+body.focus-mode .pair-card,
+body.focus-mode .back-face {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.focus-mode[data-theme="dark"] .pair-card,
+body.focus-mode[data-theme="dark"] .back-face {
+    border: 1px solid #334155 !important;
+}
+
+body.focus-mode .word-text {
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+}
+
+body.focus-mode .vowel-btn {
+    font-size: 2.5rem !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+}
+
+/* Hide boss effects in focus mode */
+body.focus-mode.boss-mode .boss-banner {
+    display: none !important;
+}
+
+body.focus-mode .speed-badge,
+body.focus-mode .combo-text {
+    display: none !important;
+}
+
+/* Simpler feedback */
+body.focus-mode .feedback-icon {
+    font-size: 4rem !important;
+}
+
+/* Focus mode respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    body .orb,
+    body .particle {
+        animation: none !important;
+    }
+}
+
