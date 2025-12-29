@@ -932,3 +932,14 @@ console.log("Vowel Game Loaded");
 (window as any).startDailyChallenge = startDailyChallenge;
 (window as any).handleAnswer = handleAnswer;
 (window as any).playAudioForSlot = playAudioForSlot;
+
+// Vowel Demo for intro tutorial
+function playVowelDemo(vowel: string): void {
+    // Speak the vowel using TTS
+    if ((window as any).TTSManager) {
+        (window as any).TTSManager.speak(vowel, "sv-SE");
+    } else if (typeof speakSwedish === 'function') {
+        speakSwedish(vowel);
+    }
+}
+(window as any).playVowelDemo = playVowelDemo;

@@ -911,3 +911,78 @@ body.focus-mode .feedback-icon {
     }
 }
 
+
+/* ========================================
+   VOWEL INTRO TUTORIAL
+   Educational intro on start screen
+   ======================================== */
+
+.vowel-intro {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    max-width: 320px;
+}
+
+.intro-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+.vowel-comparison {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.vowel-demo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.vowel-demo:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.1);
+}
+
+.vowel-demo:active {
+    transform: scale(0.95);
+    background: var(--primary);
+    color: white;
+}
+
+.intro-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0 0;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* Secondary buttons row */
+.secondary-btns {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.secondary-btns .daily-btn,
+.secondary-btns .audio-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+}
+
