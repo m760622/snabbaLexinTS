@@ -1,0 +1,134 @@
+/**
+ * Title Styles Collection / مجموعة ستايلات العناوين
+ * 
+ * هذا الملف يحتوي على 5 ستايلات جاهزة للعناوين.
+ * لاستخدام أي ستايل، انسخ الكلاس والـ keyframes المرتبطة به.
+ * 
+ * Usage: Add the class and its @keyframes to your CSS file.
+ */
+
+/* ============================================
+   1️⃣ NEON GLOW / توهج نيون
+   ============================================ */
+.title-neon-glow {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    text-shadow:
+        0 0 10px #38bdf8,
+        0 0 20px #38bdf8,
+        0 0 40px #38bdf8,
+        0 0 80px #0ea5e9;
+    animation: neon-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neon-pulse {
+    from {
+        text-shadow:
+            0 0 10px #38bdf8,
+            0 0 20px #38bdf8;
+    }
+
+    to {
+        text-shadow:
+            0 0 20px #38bdf8,
+            0 0 40px #0ea5e9,
+            0 0 60px #0284c7;
+    }
+}
+
+
+/* ============================================
+   2️⃣ GRADIENT FLOW / تدرج متحرك
+   ============================================ */
+.title-gradient-flow {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #f97316, #38bdf8, #22c55e, #f97316);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-flow 4s linear infinite;
+}
+
+@keyframes gradient-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+
+/* ============================================
+   3️⃣ 3D EMBOSS / نقش ثلاثي الأبعاد
+   ============================================ */
+.title-3d-emboss {
+    color: #f8fafc;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-shadow:
+        2px 2px 0 #0f172a,
+        4px 4px 0 #1e293b,
+        6px 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ============================================
+   4️⃣ TYPEWRITER / الآلة الكاتبة
+   ============================================ */
+.title-typewriter {
+    color: #38bdf8;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid #38bdf8;
+    animation: typing 2s steps(20) 1, blink 0.5s step-end infinite;
+    width: fit-content;
+}
+
+@keyframes typing {
+    from {
+        max-width: 0;
+    }
+
+    to {
+        max-width: 100%;
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+
+/* ============================================
+   5️⃣ FLOATING BOUNCE / ارتداد عائم
+   ============================================ */
+.title-floating-bounce {
+    color: #38bdf8;
+    font-size: 22px;
+    font-weight: 700;
+    text-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
+    animation: float-bounce 3s ease-in-out infinite;
+}
+
+@keyframes float-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}

@@ -137,7 +137,14 @@ function checkAnswer(answer: string, btnEl: HTMLElement): void {
     blank?.classList.add('correct');
     showFeedback('✅');
 
-    TTSManager.speak(q.word, 'sv');
+    // Try to speak the word (may not be available on all pages)
+    try {
+      if (typeof TTSManager !== 'undefined' && TTSManager?.speak) {
+        TTSManager.speak(q.word, 'sv');
+      }
+    } catch (e) {
+      console.warn('[FillBlank] TTS not available:', e);
+    }
   } else {
     // Wrong
     errors++;
@@ -161,7 +168,7 @@ function checkAnswer(answer: string, btnEl: HTMLElement): void {
     currentIndex++;
     isProcessing = false;
     renderQuestion();
-  }, 1500);
+  }, 2000);
 }
 
 // Show feedback
@@ -222,5 +229,51 @@ function init(): void {
 // Export for HTML
 (window as any).startNewGame = startNewGame;
 
-// Auto-init on DOM ready
-document.addEventListener('DOMContentLoaded', init);
+// Flag to prevent multiple init calls
+let gameInitialized = false;
+
+// Wait for dictionary data to be loaded before starting the game
+function waitForDataAndInit(): void {
+  if (gameInitialized) return;
+
+  // Check if data is already available
+  if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+    console.log('[FillBlank] Data already available, starting game...');
+    gameInitialized = true;
+    init();
+    return;
+  }
+
+  // Fallback: poll for data availability
+  let attempts = 0;
+  const maxAttempts = 50; // 5 seconds max
+  const pollInterval = setInterval(() => {
+    if (gameInitialized) {
+      clearInterval(pollInterval);
+      return;
+    }
+    attempts++;
+    if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+      console.log('[FillBlank] Data found via polling, starting game...');
+      clearInterval(pollInterval);
+      gameInitialized = true;
+      init();
+    } else if (attempts >= maxAttempts) {
+      console.error('[FillBlank] Timeout waiting for dictionary data');
+      clearInterval(pollInterval);
+    }
+  }, 100);
+
+  // Also listen for the dictionaryLoaded event
+  console.log('[FillBlank] Waiting for dictionaryLoaded event...');
+  window.addEventListener('dictionaryLoaded', () => {
+    if (gameInitialized) return;
+    console.log('[FillBlank] dictionaryLoaded event received, starting game...');
+    clearInterval(pollInterval);
+    gameInitialized = true;
+    init();
+  }, { once: true });
+}
+
+// Auto-init when DOM is ready
+document.addEventListener('DOMContentLoaded', waitForDataAndInit);
