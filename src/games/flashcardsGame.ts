@@ -474,7 +474,7 @@ function updateAutoPlayButton(): void {
 // ========================================
 // Next Review Toast
 // ========================================
-function showNextReviewToast(box: number, isCorrect: boolean): void {
+function showNextReviewToast(_box: number, _isCorrect: boolean): void {
     // Toast removed as per user request
     return;
 }

@@ -3,6 +3,7 @@
  */
 
 import { showToast } from '../utils';
+import { triggerConfetti } from './games-utils';
 
 // Constants
 export const COL_ID = 0;
@@ -24,7 +25,7 @@ export const COL_IDIOM_ARB = 10;
 (window as any).startGame = function (gameType: string) {
     try {
         console.log("window.startGame called with:", gameType);
-        
+
         // Hide all active game containers
         document.querySelectorAll('.active-game-container').forEach(el => (el as HTMLElement).style.display = 'none');
 
@@ -90,68 +91,13 @@ function resetGameScore() {
     });
 }
 
-export function triggerConfetti() {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '9999';
-    document.body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles: any[] = [];
-    const colors = ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#8B5CF6'];
-
-    for (let i = 0; i < 100; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 10 + 5,
-            speed: Math.random() * 5 + 2,
-            angle: Math.random() * 6.2
-        });
-    }
-
-    function animate() {
-        if (!ctx) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        let active = false;
-
-        particles.forEach(p => {
-            p.y += p.speed;
-            p.x += Math.sin(p.angle) * 2;
-            p.angle += 0.1;
-
-            if (p.y < canvas.height) {
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-                active = true;
-            }
-        });
-
-        if (active) requestAnimationFrame(animate);
-        else canvas.remove();
-    }
-
-    animate();
-}
-
 function loadScores() {
     const scores = JSON.parse(localStorage.getItem('gameScores') || '{}');
     const gameTypes = [
-        'missing-word', 'flashcards', 'pronunciation', 'spelling', 
+        'missing-word', 'flashcards', 'pronunciation', 'spelling',
         'word-wheel', 'sentence', 'rain', 'wordle', 'grammar', 'word-connect'
     ];
-    
+
     gameTypes.forEach(type => {
         const el = document.getElementById(`score-${type}`);
         if (el) el.textContent = scores[type] || 0;

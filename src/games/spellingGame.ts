@@ -67,10 +67,14 @@ export function loadSpellingQuestion(): void {
     const nextBtn = document.getElementById('nextSpellingBtn');
     const hintBtn = document.getElementById('spHintBtn');
 
-    // Clear any pending auto-advance timer
+    // Clear any pending auto-advance timer and countdown
     if (spellingTimeout) {
         clearTimeout(spellingTimeout);
         spellingTimeout = null;
+    }
+    if ((window as any).spellingCountdownInterval) {
+        clearInterval((window as any).spellingCountdownInterval);
+        (window as any).spellingCountdownInterval = null;
     }
 
     if (!hintEl || !optionsEl || !feedbackEl) return;
@@ -78,7 +82,12 @@ export function loadSpellingQuestion(): void {
     // Reset UI
     feedbackEl.innerHTML = '';
     feedbackEl.className = 'sp-feedback';
-    if (nextBtn) nextBtn.classList.add('hidden');
+    // Show next button from the start (not hidden) - reset text
+    if (nextBtn) {
+        nextBtn.classList.remove('hidden');
+        nextBtn.style.setProperty('display', 'flex', 'important');
+        nextBtn.innerHTML = `<span data-i18n="games.next">Nästa</span> ➜`;
+    }
     if (hintBtn) hintBtn.classList.remove('hidden');
     optionsEl.innerHTML = `<div class="sp-loading"><div class="sp-loading-spinner"></div><span>${t('common.loading')}</span></div>`;
 
@@ -242,17 +251,40 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
         } catch (e) { console.error("Toast error", e); }
         */
 
-        // Auto-advance after 5 seconds
-        if (spellingTimeout) clearTimeout(spellingTimeout);
-        spellingTimeout = setTimeout(() => {
-            console.log("Auto-advancing...");
-            loadSpellingQuestion();
-        }, 5000);
-
-        // Show Next button immediately as well
+        // Show Next button with countdown timer
         if (nextBtn) {
             nextBtn.classList.remove('hidden');
             nextBtn.style.setProperty('display', 'flex', 'important');
+
+            // Start visible countdown
+            let countdown = 5;
+            const originalText = nextBtn.innerHTML;
+
+            const updateCountdown = () => {
+                if (countdown > 0) {
+                    nextBtn.innerHTML = `<span data-i18n="games.next">Nästa</span> (${countdown}s) ➜`;
+                    countdown--;
+                }
+            };
+
+            updateCountdown(); // Show immediately
+
+            // Clear any existing timer
+            if (spellingTimeout) clearTimeout(spellingTimeout);
+            if ((window as any).spellingCountdownInterval) {
+                clearInterval((window as any).spellingCountdownInterval);
+            }
+
+            // Update countdown every second
+            (window as any).spellingCountdownInterval = setInterval(() => {
+                if (countdown > 0) {
+                    updateCountdown();
+                } else {
+                    clearInterval((window as any).spellingCountdownInterval);
+                    nextBtn.innerHTML = originalText;
+                    loadSpellingQuestion();
+                }
+            }, 1000);
         }
 
     } else {
@@ -274,6 +306,42 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
         // Play error sound
         if (typeof soundManager !== 'undefined' && soundManager?.playError) {
             soundManager.playError();
+        }
+
+        // Show Next button with countdown timer (same as correct answer)
+        if (nextBtn) {
+            nextBtn.classList.remove('hidden');
+            nextBtn.style.setProperty('display', 'flex', 'important');
+
+            // Start visible countdown
+            let countdown = 5;
+            const originalText = nextBtn.innerHTML;
+
+            const updateCountdown = () => {
+                if (countdown > 0) {
+                    nextBtn.innerHTML = `<span data-i18n="games.next">Nästa</span> (${countdown}s) ➜`;
+                    countdown--;
+                }
+            };
+
+            updateCountdown(); // Show immediately
+
+            // Clear any existing timer
+            if (spellingTimeout) clearTimeout(spellingTimeout);
+            if ((window as any).spellingCountdownInterval) {
+                clearInterval((window as any).spellingCountdownInterval);
+            }
+
+            // Update countdown every second
+            (window as any).spellingCountdownInterval = setInterval(() => {
+                if (countdown > 0) {
+                    updateCountdown();
+                } else {
+                    clearInterval((window as any).spellingCountdownInterval);
+                    nextBtn.innerHTML = originalText;
+                    loadSpellingQuestion();
+                }
+            }, 1000);
         }
     }
 

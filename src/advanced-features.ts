@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
         RecommendationStars.init();
 
         // Phase 2: Visual Enhancements
-        ParticleBackground.init();
+        // ParticleBackground.init(); // DISABLED - removed floating particles
         GameMascot.init();
 
         // Phase 3: Engagement Features
@@ -826,7 +826,7 @@ if (typeof window !== 'undefined') {
     (window as any).DifficultyIndicator = DifficultyIndicator;
     (window as any).LastPlayedBadge = LastPlayedBadge;
     (window as any).RecommendationStars = RecommendationStars;
-    (window as any).ParticleBackground = ParticleBackground;
+    // (window as any).ParticleBackground = ParticleBackground; // DISABLED
     (window as any).LivePlayersCounter = LivePlayersCounter;
     (window as any).MotivationalQuotes = MotivationalQuotes;
     (window as any).ProgressDashboard = ProgressDashboard;

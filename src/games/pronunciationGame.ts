@@ -68,7 +68,19 @@ function initSpeechRecognition(): void {
 /**
  * Start Pronunciation Game
  */
-export function startPronunciationGame(): void {
+export function startPronunciationGame(retryCount = 0): void {
+    // Check if dictionary data is loaded
+    if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
+        if (retryCount < 20) {
+            console.log(`[Pronunciation] Data not ready. Retrying (${retryCount + 1}/20)...`);
+            setTimeout(() => startPronunciationGame(retryCount + 1), 500);
+        } else {
+            console.error('[Pronunciation] Data failed to load.');
+            showToast('Kunde inte ladda data.', 'error');
+        }
+        return;
+    }
+
     const wordEl = document.getElementById('pronunciationWord');
     const translationEl = document.getElementById('pronunciationTranslation');
     const feedbackEl = document.getElementById('pronunciationFeedback');
@@ -253,15 +265,65 @@ function levenshteinDistance(a: string, b: string): number {
     return matrix[b.length][a.length];
 }
 
+// Flag to prevent multiple init calls
+let gameInitialized = false;
+
+// Wait for dictionary data to be loaded before starting the game
+function waitForDataAndStart(): void {
+    if (gameInitialized) return;
+
+    // Check if data is already available
+    if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+        console.log('[Pronunciation] Data already available, starting game...');
+        gameInitialized = true;
+        startPronunciationGame();
+        return;
+    }
+
+    // Poll for data availability
+    let attempts = 0;
+    const maxAttempts = 50;
+    const pollInterval = setInterval(() => {
+        if (gameInitialized) {
+            clearInterval(pollInterval);
+            return;
+        }
+        attempts++;
+        if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+            console.log('[Pronunciation] Data found via polling, starting game...');
+            clearInterval(pollInterval);
+            gameInitialized = true;
+            startPronunciationGame();
+        } else if (attempts >= maxAttempts) {
+            console.error('[Pronunciation] Timeout waiting for dictionary data');
+            clearInterval(pollInterval);
+            showToast('Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.', 'error');
+        }
+    }, 100);
+
+    // Also listen for the dictionaryLoaded event
+    console.log('[Pronunciation] Waiting for dictionaryLoaded event...');
+    window.addEventListener('dictionaryLoaded', () => {
+        if (gameInitialized) return;
+        console.log('[Pronunciation] dictionaryLoaded event received, starting game...');
+        clearInterval(pollInterval);
+        gameInitialized = true;
+        startPronunciationGame();
+    }, { once: true });
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initSpeechRecognition();
-    
+
     // Bind mic button
     const micBtn = document.getElementById('micBtn');
     if (micBtn) {
         micBtn.onclick = toggleMic;
     }
+
+    // Start waiting for data
+    waitForDataAndStart();
 });
 
 // Expose to window

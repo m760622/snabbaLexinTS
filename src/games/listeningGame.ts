@@ -1,4 +1,4 @@
-export {};
+export { };
 
 /**
  * Listening Game / لعبة الاستماع
@@ -150,7 +150,7 @@ function checkAnswer(): void {
 function updateUI(): void {
   const currentEl = elements.currentEl();
   const progressFill = elements.progressFill();
-  
+
   if (currentEl) currentEl.textContent = String(currentIndex + 1);
   if (progressFill) progressFill.style.width = `${(currentIndex / TOTAL_QUESTIONS) * 100}%`;
 }
@@ -194,7 +194,7 @@ function startNewGame(): void {
   const scoreEl = elements.scoreEl();
   const wordInput = elements.wordInput();
   const progressFill = elements.progressFill();
-  
+
   if (scoreEl) scoreEl.textContent = '0';
   if (wordInput) wordInput.value = '';
   if (progressFill) progressFill.style.width = '0%';
@@ -209,13 +209,13 @@ function startNewGame(): void {
 // Initialize
 function init(): void {
   if (typeof ThemeManager !== 'undefined') (ThemeManager as any).init();
-  
+
   // Enter key submit
   const wordInput = elements.wordInput();
   wordInput?.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Enter') checkAnswer();
   });
-  
+
   startNewGame();
 }
 
@@ -225,5 +225,51 @@ function init(): void {
 (window as any).setDifficulty = setDifficulty;
 (window as any).startNewGame = startNewGame;
 
-// Auto-init on DOM ready
-document.addEventListener('DOMContentLoaded', init);
+// Flag to prevent multiple init calls
+let gameInitialized = false;
+
+// Wait for dictionary data to be loaded before starting the game
+function waitForDataAndInit(): void {
+  if (gameInitialized) return;
+
+  // Check if data is already available
+  if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+    console.log('[Listening] Data already available, starting game...');
+    gameInitialized = true;
+    init();
+    return;
+  }
+
+  // Poll for data availability
+  let attempts = 0;
+  const maxAttempts = 50;
+  const pollInterval = setInterval(() => {
+    if (gameInitialized) {
+      clearInterval(pollInterval);
+      return;
+    }
+    attempts++;
+    if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+      console.log('[Listening] Data found via polling, starting game...');
+      clearInterval(pollInterval);
+      gameInitialized = true;
+      init();
+    } else if (attempts >= maxAttempts) {
+      console.error('[Listening] Timeout waiting for dictionary data');
+      clearInterval(pollInterval);
+    }
+  }, 100);
+
+  // Also listen for the dictionaryLoaded event
+  console.log('[Listening] Waiting for dictionaryLoaded event...');
+  window.addEventListener('dictionaryLoaded', () => {
+    if (gameInitialized) return;
+    console.log('[Listening] dictionaryLoaded event received, starting game...');
+    clearInterval(pollInterval);
+    gameInitialized = true;
+    init();
+  }, { once: true });
+}
+
+// Auto-init when DOM is ready
+document.addEventListener('DOMContentLoaded', waitForDataAndInit);

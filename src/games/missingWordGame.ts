@@ -3,7 +3,7 @@
  * Extracted from games.js
  */
 
-import { 
+import {
     COL_ID, COL_TYPE, COL_SWE, COL_ARB, COL_ARB_DEF, COL_EX, COL_EX_ARB,
     showToast, saveScore, triggerConfetti
 } from './games-utils';
@@ -52,7 +52,10 @@ export function loadMissingWordQuestion(): void {
     const nextBtn = document.getElementById('nextQuestionBtn') as HTMLButtonElement | null;
 
     if (feedbackEl) feedbackEl.innerHTML = '';
-    if (nextBtn) nextBtn.style.display = 'none';
+    if (nextBtn) {
+        nextBtn.style.display = 'none';
+        nextBtn.classList.add('hidden');
+    }
     if (optionsEl) optionsEl.innerHTML = '<div class="skeleton-loader">Laddar...</div>';
 
     // Find a word with an example sentence
@@ -147,7 +150,7 @@ export function checkMissingWordAnswer(selected: string, correct: string, btnEl:
         missingWordScore++;
         const scoreEl = document.getElementById('gameScore');
         if (scoreEl) scoreEl.textContent = String(missingWordScore);
-        
+
         if (typeof saveScore === 'function') {
             saveScore('missing-word', missingWordScore);
         }
@@ -175,6 +178,7 @@ export function checkMissingWordAnswer(selected: string, correct: string, btnEl:
     }
 
     if (nextBtn) {
+        nextBtn.classList.remove('hidden');
         nextBtn.style.display = 'block';
         nextBtn.onclick = loadMissingWordQuestion;
     }

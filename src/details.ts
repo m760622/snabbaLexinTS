@@ -492,7 +492,7 @@ class PronunciationLab {
 
             // High score celebration with gold particles
             if (score > 80) {
-                Celebrations.confetti({ particleCount: 50, spread: 50 });
+                // Confetti removed per user request
                 HapticFeedback.success();
                 this.showGoldParticles();
             }

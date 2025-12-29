@@ -62,10 +62,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Init TTS
             if (typeof TTSManager !== 'undefined') TTSManager.init();
-
-            if (typeof startPronunciationGame === 'function') {
-                startPronunciationGame();
-            }
+            // Game start is now handled by pronunciationGame.ts event listeners
         });
     </script>
 </body>

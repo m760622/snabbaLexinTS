@@ -15,6 +15,8 @@
  * - Music Player
  */
 
+import { Celebrations } from './ui-enhancements';
+
 // ============================================================
 // TYPES & INTERFACES - الأنواع والواجهات
 // ============================================================
@@ -179,8 +181,7 @@ export const XPSystem = {
         `;
         document.body.appendChild(overlay);
 
-        // Confetti
-        Celebrations.confetti({ particleCount: 150, spread: 100 });
+        // Confetti removed per user request
 
         // Sound
         SoundEffects.play('levelUp');
@@ -294,7 +295,7 @@ export const Achievements = {
         document.body.appendChild(popup);
 
         SoundEffects.play('achievement');
-        Celebrations.confetti({ particleCount: 80, spread: 60 });
+        // Confetti removed per user request
 
         if ('vibrate' in navigator) {
             navigator.vibrate([30, 50, 30, 50, 30]);
@@ -490,7 +491,7 @@ export const MysteryBox = {
                 </div>
             `;
 
-            Celebrations.confetti({ particleCount: 100, spread: 80 });
+            // Confetti removed per user request
 
             if ('vibrate' in navigator) {
                 navigator.vibrate([50, 100, 50]);
@@ -823,47 +824,9 @@ export const SoundEffects = {
 };
 
 // ============================================================
-// CELEBRATIONS - الاحتفالات
+// CELEBRATIONS - الاحتفالات (imported from ui-enhancements.ts)
 // ============================================================
-
-export const Celebrations = {
-    confetti(options: { particleCount?: number; spread?: number; origin?: { x: number; y: number } } = {}): void {
-        const config = {
-            particleCount: options.particleCount || 100,
-            spread: options.spread || 70,
-            origin: options.origin || { x: 0.5, y: 0.6 }
-        };
-
-        // Use canvas-confetti if available
-        if (typeof (window as any).confetti === 'function') {
-            (window as any).confetti(config);
-            return;
-        }
-
-        // CSS Fallback
-        this.cssConfetti(config.particleCount);
-    },
-
-    cssConfetti(count: number = 50): void {
-        const container = document.createElement('div');
-        container.className = 'confetti-container';
-
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#fd79a8', '#a29bfe', '#6c5ce7'];
-
-        for (let i = 0; i < count; i++) {
-            const piece = document.createElement('div');
-            piece.className = 'confetti-piece';
-            piece.style.left = `${Math.random() * 100}%`;
-            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-            piece.style.animationDelay = `${Math.random() * 0.5}s`;
-            piece.style.animationDuration = `${2 + Math.random()}s`;
-            container.appendChild(piece);
-        }
-
-        document.body.appendChild(container);
-        setTimeout(() => container.remove(), 3000);
-    }
-};
+// export const Celebrations is now imported from './ui-enhancements'
 
 // ============================================================
 // TOAST NOTIFICATIONS - إشعارات Toast

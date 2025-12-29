@@ -68,7 +68,7 @@ export function initRainGame(retryCount = 0): void {
 
     const canvasEl = document.getElementById('rainCanvas') as HTMLCanvasElement | null;
     if (!canvasEl) return;
-    
+
     rainCanvas = canvasEl;
     rainCtx = rainCanvas.getContext('2d')!;
 
@@ -299,7 +299,7 @@ function spawnExplosion(x: number, y: number): void {
 function checkRainInput(): void {
     const inputEl = document.getElementById('rainInput') as HTMLInputElement | null;
     if (!inputEl) return;
-    
+
     const guess = inputEl.value.trim().toLowerCase();
     inputEl.value = '';
 
@@ -315,7 +315,7 @@ function checkRainInput(): void {
 
         rainWords.splice(matchIndex, 1);
         rainScore += 10;
-        
+
         const scoreEl = document.getElementById('rainScore');
         if (scoreEl) scoreEl.textContent = String(rainScore);
 
@@ -342,11 +342,11 @@ function endRainGame(): void {
     if (rainAnimationId) {
         cancelAnimationFrame(rainAnimationId);
     }
-    
+
     const finalScoreEl = document.getElementById('rainFinalScore');
     const gameOverEl = document.getElementById('rainGameOver');
     const inputEl = document.getElementById('rainInput') as HTMLInputElement | null;
-    
+
     if (finalScoreEl) finalScoreEl.textContent = String(rainScore);
     if (gameOverEl) gameOverEl.classList.remove('hidden');
     if (inputEl) inputEl.disabled = true;
@@ -355,6 +355,56 @@ function endRainGame(): void {
         saveScore('rain', rainScore);
     }
 }
+
+// Flag to prevent multiple init calls
+let gameInitialized = false;
+
+// Wait for dictionary data to be loaded before starting the game
+function waitForDataAndInit(): void {
+    if (gameInitialized) return;
+
+    // Check if data is already available
+    if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+        console.log('[WordRain] Data already available, initializing game...');
+        gameInitialized = true;
+        initRainGame();
+        return;
+    }
+
+    // Poll for data availability
+    let attempts = 0;
+    const maxAttempts = 50;
+    const pollInterval = setInterval(() => {
+        if (gameInitialized) {
+            clearInterval(pollInterval);
+            return;
+        }
+        attempts++;
+        if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+            console.log('[WordRain] Data found via polling, initializing game...');
+            clearInterval(pollInterval);
+            gameInitialized = true;
+            initRainGame();
+        } else if (attempts >= maxAttempts) {
+            console.error('[WordRain] Timeout waiting for dictionary data');
+            clearInterval(pollInterval);
+            showToast('Kunde inte ladda data. Uppdatera sidan. / تعذر تحميل البيانات.', 'error');
+        }
+    }, 100);
+
+    // Also listen for the dictionaryLoaded event
+    console.log('[WordRain] Waiting for dictionaryLoaded event...');
+    window.addEventListener('dictionaryLoaded', () => {
+        if (gameInitialized) return;
+        console.log('[WordRain] dictionaryLoaded event received, initializing game...');
+        clearInterval(pollInterval);
+        gameInitialized = true;
+        initRainGame();
+    }, { once: true });
+}
+
+// Auto-init when DOM is ready
+document.addEventListener('DOMContentLoaded', waitForDataAndInit);
 
 // Expose to window
 (window as any).initRainGame = initRainGame;

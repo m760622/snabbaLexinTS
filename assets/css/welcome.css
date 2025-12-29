@@ -1,0 +1,19 @@
+/**
+ * Welcome Page Specific Styles
+ * Extracted from welcome.html inline styles
+ */
+
+/* Force splash to fill viewport in welcome.html */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.splash-screen {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+}

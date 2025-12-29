@@ -194,12 +194,62 @@ export function showSentenceAnswer(): void {
     if (checkBtn) checkBtn.style.display = 'none';
 }
 
+// Flag to prevent multiple init calls
+let gameInitialized = false;
+
+// Wait for dictionary data to be loaded before starting the game
+function waitForDataAndStart(): void {
+    if (gameInitialized) return;
+
+    // Check if data is already available
+    if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+        console.log('[SentenceBuilder] Data already available, starting game...');
+        gameInitialized = true;
+        startSentenceGame();
+        return;
+    }
+
+    // Poll for data availability
+    let attempts = 0;
+    const maxAttempts = 50;
+    const pollInterval = setInterval(() => {
+        if (gameInitialized) {
+            clearInterval(pollInterval);
+            return;
+        }
+        attempts++;
+        if (typeof dictionaryData !== 'undefined' && dictionaryData.length > 0) {
+            console.log('[SentenceBuilder] Data found via polling, starting game...');
+            clearInterval(pollInterval);
+            gameInitialized = true;
+            startSentenceGame();
+        } else if (attempts >= maxAttempts) {
+            console.error('[SentenceBuilder] Timeout waiting for dictionary data');
+            clearInterval(pollInterval);
+            showToast(t('common.error'), 'error');
+        }
+    }, 100);
+
+    // Also listen for the dictionaryLoaded event
+    console.log('[SentenceBuilder] Waiting for dictionaryLoaded event...');
+    window.addEventListener('dictionaryLoaded', () => {
+        if (gameInitialized) return;
+        console.log('[SentenceBuilder] dictionaryLoaded event received, starting game...');
+        clearInterval(pollInterval);
+        gameInitialized = true;
+        startSentenceGame();
+    }, { once: true });
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     const nextBtn = document.getElementById('nextSentenceBtn');
     if (nextBtn) {
         nextBtn.onclick = () => startSentenceGame();
     }
+
+    // Start waiting for data
+    waitForDataAndStart();
 });
 
 // Expose to window
