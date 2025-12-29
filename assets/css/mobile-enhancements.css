@@ -89,6 +89,15 @@
     animation: loading-slide 1.5s ease-in-out infinite;
 }
 
+.splash-progress-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;

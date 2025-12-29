@@ -12,26 +12,139 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    /* Enabling absolute centering for title */
 }
 
-.header-top-row h1 {
+.header-left-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2;
+    /* Ensure above title if overlap */
+}
+
+/* Redesigned Hero Title */
+.game-hero-title {
     font-size: 1.5rem;
     margin: 0;
-    font-weight: 700;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+
+    /* Gradient Text */
+    background: linear-gradient(135deg, #fff 0%, #cbd5e1 50%, #fff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    /* Premium Glow */
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+
+    /* Entrance Animation */
+    animation: titleFloat 3s ease-in-out infinite alternate, titleGlow 2s ease-in-out infinite alternate !important;
+}
+
+@keyframes titleFloat {
+    0% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(-2px);
+    }
+}
+
+@keyframes titleGlow {
+    0% {
+        filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.2));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+    }
+}
+
+/* Adjust title size for small screens to prevent overlap */
+@media (max-width: 360px) {
+    .game-hero-title {
+        font-size: 1.2rem;
+    }
 }
 
 /* Spacer for better button touch area */
-.back-btn,
-.mobile-toggle-btn {
-    padding: 8px;
+/* Spacer for better button touch area */
+.back-btn {
     width: 44px;
-    /* Explicit width to match left/right balance */
     height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    background: linear-gradient(145deg, #1e1e2f, #151525);
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -2px -2px 6px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.15s ease;
+}
+
+#mobileToggle {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    /* Slightly squarish for 3D keycap look */
+    background: linear-gradient(145deg, #1e1e2f, #151525);
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+
+    /* 3D Effect - Raised State */
+    box-shadow:
+        5px 5px 10px rgba(0, 0, 0, 0.5),
+        -2px -2px 6px rgba(255, 255, 255, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+    transition: all 0.15s ease;
+    position: relative;
+    top: 0;
+}
+
+#mobileToggle:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow:
+        6px 6px 12px rgba(0, 0, 0, 0.6),
+        -2px -2px 8px rgba(255, 255, 255, 0.08);
+}
+
+#mobileToggle.active {
+    color: #4ade80;
+    /* Success green for active */
+    background: linear-gradient(145deg, #151525, #1e1e2f);
+
+    /* 3D Effect - Pressed State */
+    box-shadow:
+        inset 5px 5px 10px rgba(0, 0, 0, 0.6),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.05);
+
+    transform: translateY(2px);
+}
+
+#mobileToggle svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+#mobileToggle.active svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    transform: scale(0.95);
 }
 
 /* Compact Stats Grid */
@@ -184,7 +297,7 @@
 
 /* Scrollable Game Container */
 .game-menu-container {
-    height: 50vh;
+    height: 70vh;
     min-height: 300px;
     /* Fallback for very small screens */
     flex-shrink: 0;

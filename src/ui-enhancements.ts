@@ -8,24 +8,58 @@
 // ============================================================
 
 export const SplashManager = {
+    progressInterval: null as number | null,
+
     hide(): void {
         const splash = document.getElementById('splashScreen');
         if (splash) {
             splash.classList.add('hidden');
             setTimeout(() => splash.remove(), 600);
         }
+        if (this.progressInterval) clearInterval(this.progressInterval);
+    },
+
+    updateProgress(percent: number): void {
+        const bar = document.getElementById('splashProgressBar');
+        const text = document.getElementById('splashProgressText');
+
+        if (bar) {
+            bar.style.animation = 'none';
+            bar.style.width = `${percent}%`;
+            bar.style.transition = 'width 0.2s linear';
+        }
+        if (text) text.textContent = `${Math.round(percent)}%`;
     },
 
     // Show for minimum time then hide
     showUntilReady(minTime: number = 800): void {
         const startTime = Date.now();
+        let currentProgress = 0;
 
-        window.addEventListener('load', () => {
+        // Start simulation
+        this.progressInterval = window.setInterval(() => {
+            // Slow down as we get higher to simulate realism
+            const increment = Math.random() * (currentProgress > 80 ? 1 : 4);
+            currentProgress = Math.min(98, currentProgress + increment);
+            this.updateProgress(currentProgress);
+        }, 100);
+
+        const finish = () => {
             const elapsed = Date.now() - startTime;
             const remainingTime = Math.max(0, minTime - elapsed);
 
+            // Finish progress
+            if (this.progressInterval) clearInterval(this.progressInterval);
+            this.updateProgress(100);
+
             setTimeout(() => this.hide(), remainingTime);
-        });
+        };
+
+        if (document.readyState === 'complete') {
+            finish();
+        } else {
+            window.addEventListener('load', finish);
+        }
     }
 };
 

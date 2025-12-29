@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="../assets/css/flashcards_pro.css?v=8">
     <link rel="stylesheet" href="../assets/css/premium-design.css?v=1">
     <link rel="stylesheet" href="../assets/css/advanced-effects.css?v=1">
-    <link rel="stylesheet" href="../assets/css/games-compact.css?v=2">
+    <link rel="stylesheet" href="../assets/css/games-compact.css?v=5">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
@@ -43,6 +43,7 @@
             <div class="splash-loader">
                 <div class="splash-loader-bar" id="splashProgressBar"></div>
             </div>
+            <div id="splashProgressText" class="splash-progress-text">0%</div>
         </div>
     </div>
 
@@ -52,22 +53,26 @@
         <!-- Compact Header & Stats Section -->
         <header class="games-header compact-header">
             <div class="header-top-row">
-                <a href="../index.html" class="back-btn" aria-label="Tillbaka / رجوع">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                </a>
-                <h1><span class="sv-text">Spelzon</span><span class="ar-text">منطقة الألعاب</span></h1>
-                <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
-                    title="Mobilvy / وضع الموبايل">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                </button>
+                <div class="header-left-controls">
+                    <a href="../index.html" class="back-btn" aria-label="Tillbaka / رجوع">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                    </a>
+                    <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+                        title="Mobilvy / وضع الموبايل">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <h1 class="game-hero-title"><span class="sv-text">Spelzon</span><span class="ar-text">منطقة
+                        الألعاب</span></h1>
+
             </div>
 
             <!-- Compact XP & Stats Grid -->
