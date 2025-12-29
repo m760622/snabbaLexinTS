@@ -185,6 +185,10 @@
 /* Scrollable Game Container */
 .game-menu-container {
     height: 50vh;
+    min-height: 300px;
+    /* Fallback for very small screens */
+    flex-shrink: 0;
+    /* Prevent squashing in flex column */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 20px;
