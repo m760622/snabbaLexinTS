@@ -65,10 +65,24 @@ let wheelWordsSolved = 0;
  */
 export function startWordWheelGame(retryCount = 0): void {
     if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
-        if (retryCount < 10) {
-            console.warn(`Data not ready for Word Wheel. Retrying (${retryCount + 1}/10)...`);
-            if (typeof showToast === 'function') showToast(t('common.loading'), 'info');
-            setTimeout(() => startWordWheelGame(retryCount + 1), 500);
+        // Use event listener pattern instead of showing multiple toasts
+        console.log("Data not ready for Word Wheel. Waiting for dictionaryLoaded event...");
+
+        const onDataLoaded = () => {
+            console.log("dictionaryLoaded event received in Word Wheel Game");
+            window.removeEventListener('dictionaryLoaded', onDataLoaded);
+            startWordWheelGame(0);
+        };
+
+        window.addEventListener('dictionaryLoaded', onDataLoaded);
+
+        // Keep polling as fallback (silent - no toast spam)
+        if (retryCount < 20) {
+            setTimeout(() => {
+                if (typeof dictionaryData === 'undefined' || dictionaryData.length === 0) {
+                    startWordWheelGame(retryCount + 1);
+                }
+            }, 500);
         } else {
             console.error("Critical: Data failed to load for Word Wheel.");
             if (typeof showToast === 'function') showToast(t('common.error'), 'error');

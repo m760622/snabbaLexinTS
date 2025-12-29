@@ -5,7 +5,41 @@
 
 import { WCTheme, WCLevel, WCDictionaryEntry } from '../types';
 import { WC_THEMES, WC_PREDEFINED_LEVELS, WC_DICTIONARY, getThemeForChapter } from '../data/wordConnectData';
-import { showToast, saveScore } from './games-utils';
+import { showToast, saveScore, toggleMobileView } from './games-utils';
+// Import games-utils module to trigger theme initialization
+import './games-utils';
+
+// Expose toggleMobileView globally
+(window as any).toggleMobileView = toggleMobileView;
+
+// Theme Toggle Function
+function toggleTheme(): void {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    document.documentElement.setAttribute('data-theme', newTheme);
+    document.body.setAttribute('data-theme', newTheme);
+
+    if (newTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark-mode');
+    }
+
+    localStorage.setItem('theme', newTheme);
+
+    // Update button icon
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    showToast(newTheme === 'dark' ? '🌙 الوضع الليلي / Mörkt läge' : '☀️ الوضع النهاري / Ljust läge', 'success');
+}
+
+(window as any).toggleTheme = toggleTheme;
 
 // ========================================
 // Types & Interfaces
@@ -228,7 +262,16 @@ export function initWordConnect(): void {
     buildOptimizedDictionary();
     initParticles();
     loadProgress();
+    initThemeToggleIcon();
     startLevel(wcState.chapter, wcState.stage);
+}
+
+function initThemeToggleIcon(): void {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
 }
 
 function initParticles(): void {
@@ -712,6 +755,7 @@ function renderWheel(): void {
     svg.style.top = "0";
     svg.style.left = "0";
     svg.style.pointerEvents = "none";
+    svg.style.zIndex = "20"; // Above hint button (z-index: 10)
 
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     defs.innerHTML = `
@@ -771,29 +815,34 @@ function renderWheel(): void {
         wheelContainer.appendChild(btn);
     });
 
-    wheelContainer.addEventListener('mousedown', handleInputStart);
-    wheelContainer.addEventListener('touchstart', handleInputStart, { passive: false });
-    wheelContainer.addEventListener('mousemove', handleInputMove);
-    wheelContainer.addEventListener('touchmove', handleInputMove, { passive: false });
-    document.addEventListener('mouseup', handleInputEnd);
-    document.addEventListener('touchend', handleInputEnd);
+    wheelContainer.addEventListener('pointerdown', handleInputStart);
+    wheelContainer.addEventListener('pointermove', handleInputMove);
+    wheelContainer.addEventListener('pointerup', handleInputEnd);
+    wheelContainer.addEventListener('pointercancel', handleInputEnd);
+    wheelContainer.addEventListener('pointerleave', handleInputEnd);
 }
 
 // ========================================
 // Input Handling
 // ========================================
 
-function handleInputStart(e: MouseEvent | TouchEvent): void {
-    e.preventDefault();
-    const touch = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : e as MouseEvent;
+function handleInputStart(e: Event): void {
+    const event = e as PointerEvent;
+    event.preventDefault();
     const container = document.getElementById('wcWheel');
     if (!container) return;
+
+    try {
+        container.setPointerCapture(event.pointerId);
+    } catch (e) {
+        console.warn("Pointer capture failed:", e);
+    }
 
     const rect = container.getBoundingClientRect();
     const scaleX = 286 / rect.width;
     const scaleY = 286 / rect.height;
-    const mouseX = (touch.clientX - rect.left) * scaleX;
-    const mouseY = (touch.clientY - rect.top) * scaleY;
+    const mouseX = (event.clientX - rect.left) * scaleX;
+    const mouseY = (event.clientY - rect.top) * scaleY;
 
     const hitRadius = 50;
     const letters = container.querySelectorAll('.wc-letter-node');
@@ -830,10 +879,10 @@ function handleInputStart(e: MouseEvent | TouchEvent): void {
     }
 }
 
-function handleInputMove(e: MouseEvent | TouchEvent): void {
+function handleInputMove(e: Event): void {
     if (!wcState.isDragging) return;
-    e.preventDefault();
-    const touch = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : e as MouseEvent;
+    const event = e as PointerEvent;
+    event.preventDefault();
 
     const container = document.getElementById('wcWheel');
     if (!container) return;
@@ -841,8 +890,8 @@ function handleInputMove(e: MouseEvent | TouchEvent): void {
     const rect = container.getBoundingClientRect();
     const scaleX = 286 / rect.width;
     const scaleY = 286 / rect.height;
-    const mouseX = (touch.clientX - rect.left) * scaleX;
-    const mouseY = (touch.clientY - rect.top) * scaleY;
+    const mouseX = (event.clientX - rect.left) * scaleX;
+    const mouseY = (event.clientY - rect.top) * scaleY;
 
     if (wcState.visitedNodes.length > 0) {
         const lastIndex = wcState.visitedNodes[wcState.visitedNodes.length - 1];
@@ -895,8 +944,20 @@ function handleInputMove(e: MouseEvent | TouchEvent): void {
     });
 }
 
-function handleInputEnd(_e: MouseEvent | TouchEvent): void {
+function handleInputEnd(e: Event): void {
     if (!wcState.isDragging) return;
+    const event = e as PointerEvent;
+
+    const container = document.getElementById('wcWheel');
+    if (container) {
+        try {
+            if (container.hasPointerCapture(event.pointerId)) {
+                container.releasePointerCapture(event.pointerId);
+            }
+        } catch (e) {
+            // Ignore release errors
+        }
+    }
 
     if (wcState.visitedNodes.length >= 2) {
         wcState.isDragging = false;

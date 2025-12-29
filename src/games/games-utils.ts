@@ -9,6 +9,38 @@ import { AppConfig } from '../config';
 import '../i18n'; // Initialize LanguageManager
 
 // ========================================
+// Theme Initialization for Game Pages
+// ========================================
+function initGameTheme(): void {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedColorTheme = localStorage.getItem('colorTheme') || 'default';
+
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
+    // Apply color theme
+    if (savedColorTheme && savedColorTheme !== 'default') {
+        document.documentElement.setAttribute('data-color-theme', savedColorTheme);
+        document.body.setAttribute('data-color-theme', savedColorTheme);
+    }
+
+    // Also add/remove dark-mode class for compatibility
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark-mode');
+    }
+
+    console.log(`[Games] Theme initialized: ${savedTheme}, color: ${savedColorTheme}`);
+}
+
+// Initialize theme immediately
+initGameTheme();
+
+// ========================================
 // Constants (from AppConfig)
 // ========================================
 export const COL_ID = AppConfig.COLUMNS.ID;

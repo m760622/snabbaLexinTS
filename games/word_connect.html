@@ -32,6 +32,9 @@
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
             </button>
+            <button id="themeToggle" class="hud-btn" onclick="toggleTheme()" aria-label="Toggle Theme / تبديل السمة">
+                🌙
+            </button>
             <button id="mobileToggle" class="hud-btn" onclick="toggleMobileView()" aria-label="Mobile View">
                 📱
             </button>
@@ -186,6 +189,20 @@
 
 
     <script type="module" src="../src/games/wordConnectGame.ts"></script>
+    <script type="module" src="/src/games/games-utils.ts"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for module to load and expose initWordConnect
+            const checkInit = () => {
+                if (typeof initWordConnect === 'function') {
+                    initWordConnect();
+                } else {
+                    setTimeout(checkInit, 100);
+                }
+            };
+            checkInit();
+        });
+    </script>
 
     <script type="module" src="/src/pwa.ts"></script>
 </body>
