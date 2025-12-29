@@ -986,3 +986,68 @@ body.focus-mode .feedback-icon {
     font-size: 0.9rem;
 }
 
+
+/* ========================================
+   MOBILE IMPROVEMENTS - Phase 4
+   Better touch targets and UX
+   ======================================== */
+
+/* Larger vowel buttons on mobile */
+@media (max-width: 600px) {
+    .vowel-btn {
+        min-width: 70px !important;
+        min-height: 70px !important;
+        font-size: 2.5rem !important;
+    }
+    
+    .missing-vowel {
+        width: 52px;
+        height: 52px;
+        line-height: 48px;
+    }
+    
+    .word-text {
+        font-size: 1.6rem;
+    }
+    
+    .word-item {
+        padding: 1rem 0.5rem;
+    }
+    
+    /* Start screen improvements */
+    .start-title {
+        font-size: 2rem;
+    }
+    
+    .vowel-demo {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Touch feedback */
+.vowel-btn:active,
+.vowel-demo:active,
+.listen-btn:active {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+}
+
+/* Prevent accidental double-tap zoom */
+.vowel-btn,
+.word-item,
+.vowel-demo,
+.listen-btn {
+    touch-action: manipulation;
+}
+
+/* Better haptic feedback indicator */
+@keyframes haptic-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+}
+
+.word-item.wrong {
+    animation: haptic-pulse 0.3s ease-out;
+}
+
