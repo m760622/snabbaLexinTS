@@ -2,51 +2,56 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@300;500&display=swap');
 
 :root {
-    --bg-gradient-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --bg-gradient-dark: linear-gradient(135deg, #000000 0%, #111111 100%);
-    /* OLED Black */
+    --bg-gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --bg-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     --card-bg-light: #ffffff;
-    --card-bg-dark: #121212;
-    /* Material Dark */
-    --glass-border-light: rgba(255, 255, 255, 0.5);
+    --card-bg-dark: #1e293b;
+    --glass-border-light: rgba(255, 255, 255, 0.3);
     --glass-border-dark: rgba(255, 255, 255, 0.08);
-    --text-main-light: #1f2937;
-    --text-main-dark: #ffffff;
-    --text-sub-light: #6b7280;
-    --text-sub-dark: #a1a1aa;
+    --text-main-light: #1e293b;
+    --text-main-dark: #f1f5f9;
+    --text-sub-light: #64748b;
+    --text-sub-dark: #94a3b8;
     --font-main: 'Inter', sans-serif;
     --font-arabic: 'Cairo', sans-serif;
-    --font-main: 'Inter', sans-serif;
-    --font-arabic: 'Cairo', sans-serif;
-    --glass-blur: blur(16px);
+    --glass-blur: blur(12px);
 
-    /* Fun & Alive Gradients */
-    --mesh-gradient-light: radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
-    --mesh-gradient-dark: radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+    /* ===== UNIFIED COLOR PALETTE (Calmer) ===== */
+    --primary: #3b82f6;
+    --primary-soft: #dbeafe;
+    --primary-dark: #1d4ed8;
+    --success: #10b981;
+    --success-soft: #d1fae5;
+    --warning: #f59e0b;
+    --warning-soft: #fef3c7;
+    --error: #ef4444;
+    --error-soft: #fee2e2;
+    --accent: #06b6d4;
+    --accent-soft: #cffafe;
 
-    /* Spring Physics */
+    /* ===== ANIMATION CONTROL ===== */
+    /* Set to 'none' to disable all decorative animations */
+    --animation-decorative: running;
+    /* Set to 'none' to disable pulse/glow effects */
+    --animation-pulse: none;
+    /* Reduced glow intensity */
+    --glow-intensity: 0.15;
+    --glow-spread: 8px;
+
+    /* Spring Physics (kept for meaningful interactions) */
     --spring-easing: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --bounce-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /* Game Theme Colors - Refined to Blue/Cool Palette */
+    /* Game Theme Colors - Unified Blue Palette */
     --color-grammar: #3b82f6;
-    /* Blue */
-    --color-missing: #ea580c;
-    /* Orange */
-    --color-flashcards: #059669;
-    /* Emerald */
+    --color-missing: #f97316;
+    --color-flashcards: #10b981;
     --color-spelling: #06b6d4;
-    /* Cyan */
-    --color-wheel: #0284c7;
-    /* Sky */
+    --color-wheel: #0ea5e9;
     --color-sentence: #0284c7;
-    /* Sky */
     --color-rain: #2563eb;
-    /* Dark Blue */
-    --color-wordle: #65a30d;
-    /* Lime */
+    --color-wordle: #22c55e;
     --color-pronunciation: #ef4444;
-    /* Red */
 }
 
 body {
@@ -790,21 +795,21 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 }
 
 .game-card-item {
-    /* ... existing styles ... */
-    animation: game-pulse 8s infinite linear;
-    /* Faster, smoother cycle */
+    /* Removed infinite pulse animation for cleaner look */
+    /* animation: game-pulse 8s infinite linear; */
+    transition: transform 0.3s var(--spring-easing), box-shadow 0.3s ease;
 }
 
 .game-card-item:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.4);
-    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 24px -8px rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
 [data-theme="dark"] .game-card-item:hover {
-    box-shadow: 0 25px 50px rgba(37, 99, 235, 0.3);
-    border-color: #818cf8;
-    background: rgba(31, 41, 55, 0.8);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.2);
+    border-color: rgba(96, 165, 250, 0.4);
+    background: rgba(30, 41, 59, 0.9);
 }
 
 /* Particle Utilities to resolve inline style lints */
@@ -11729,3 +11734,64 @@ body.memory-game-page::before {
     font-size: 0.95rem;
     margin: 0;
 }
+
+/* ========================================
+   REDUCED VISUAL NOISE OVERRIDES
+   Phase 1: Calmer, Less Distracting UI
+   ======================================== */
+
+/* Disable decorative infinite animations */
+.game-card-item,
+.stat-pill,
+.wc-wheel-ring,
+.sp-particle,
+.wc-wheel-glow {
+    animation-play-state: var(--animation-decorative) !important;
+}
+
+/* Reduce glow intensity globally */
+.memory-hud,
+.game-card-item,
+.stat-pill,
+.wc-wheel-container,
+.sp-game-container {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Calmer text shadows */
+.hud-title,
+.wc-celebrate-title,
+.sp-screen-title h1 {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Reduce border glow on cards */
+.game-card-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .game-card-item {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Disable moving dots animation on cards */
+.premium-moving-dots::before {
+    animation: none !important;
+    background: none !important;
+}
+
+/* Simpler backgrounds */
+body {
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.15) 0, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(30, 64, 175, 0.1) 0, transparent 50%);
+}
+
+/* Reduce particle opacity */
+.particle,
+.sp-particle,
+.wc-particle {
+    opacity: 0.1 !important;
+}
+
