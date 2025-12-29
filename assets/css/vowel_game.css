@@ -101,27 +101,34 @@ body.iphone-view .ambient-bg {
 .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
+    filter: blur(60px);
+    /* Reduced from 80px */
+    opacity: 0.25;
+    /* Reduced from 0.4 */
     transition: all 1s ease;
 }
 
 .orb-1 {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    /* Reduced */
+    height: 250px;
     top: -50px;
     left: -50px;
-    background: #2563eb;
-    animation: float 10s infinite alternate;
+    background: #3b82f6;
+    /* Unified blue */
+    animation: float 15s infinite alternate;
+    /* Slower */
 }
 
 .orb-2 {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    /* Reduced */
+    height: 300px;
     bottom: -100px;
     right: -100px;
-    background: #3b82f6;
-    animation: float 12s infinite alternate-reverse;
+    background: #2563eb;
+    animation: float 18s infinite alternate-reverse;
+    /* Slower */
 }
 
 @keyframes float {
@@ -130,28 +137,34 @@ body.iphone-view .ambient-bg {
     }
 
     to {
-        transform: translate(30px, 30px);
+        transform: translate(15px, 15px);
+        /* Reduced movement */
     }
 }
 
-/* BOSS MODE STYLING */
+/* BOSS MODE STYLING - Calmer version */
 body.boss-mode .ambient-bg .orb-1 {
     background: var(--boss-red);
-    opacity: 0.6;
-    animation-duration: 2s;
+    opacity: 0.35;
+    /* Reduced from 0.6 */
+    animation-duration: 4s;
+    /* Slower from 2s */
 }
 
 body.boss-mode .ambient-bg .orb-2 {
     background: #7f1d1d;
-    opacity: 0.8;
-    animation-duration: 3s;
+    opacity: 0.4;
+    /* Reduced from 0.8 */
+    animation-duration: 5s;
+    /* Slower from 3s */
 }
 
 body.boss-mode .level-badge {
     background: var(--boss-red);
     color: white;
-    box-shadow: 0 0 15px var(--boss-red);
-    animation: pulse-red 1s infinite;
+    box-shadow: 0 0 8px var(--boss-red);
+    /* Reduced glow */
+    /* Removed infinite pulse animation */
 }
 
 @keyframes pulse-red {
@@ -785,13 +798,13 @@ body.boss-mode .missing-vowel {
     color: rgba(255, 255, 255, 0.7) !important;
     padding: 0 !important;
     font-size: 20px !important;
-    
+
     /* 3D Effect - Raised State */
-    box-shadow: 
+    box-shadow:
         5px 5px 10px rgba(0, 0, 0, 0.5),
         -2px -2px 6px rgba(255, 255, 255, 0.05),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-        
+
     transition: all 0.15s ease !important;
     position: relative !important;
     margin-left: 0.5rem !important;
@@ -801,7 +814,7 @@ body.boss-mode .missing-vowel {
 #mobileToggle:hover {
     color: #fff !important;
     transform: translateY(-1px) !important;
-    box-shadow: 
+    box-shadow:
         6px 6px 12px rgba(0, 0, 0, 0.6),
         -2px -2px 8px rgba(255, 255, 255, 0.08) !important;
 }
@@ -810,12 +823,12 @@ body.boss-mode .missing-vowel {
 #mobileToggle.active {
     background: linear-gradient(145deg, #151525, #1e1e2f) !important;
     color: #4ade80 !important;
-    
+
     /* 3D Effect - Pressed State */
-    box-shadow: 
+    box-shadow:
         inset 5px 5px 10px rgba(0, 0, 0, 0.6),
         inset -2px -2px 6px rgba(255, 255, 255, 0.05) !important;
-        
+
     transform: translateY(2px) !important;
 }
 
@@ -823,12 +836,12 @@ body.boss-mode .missing-vowel {
 #mobileToggle svg {
     width: 24px !important;
     height: 24px !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
 }
 
 .mobile-toggle-btn.active svg,
 #mobileToggle.active svg {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }
