@@ -33,7 +33,9 @@ export default defineConfig({
         'games-fill-blank': './games/fill_blank.html',
         'games-listening': './games/listening.html',
         'games-memory': './games/memory.html',
-        'games-quran': './games/quran.html'
+        'games-quran': './games/quran.html',
+        'games-word-search': './games/word_search.html',
+        'games-hangman': './games/hangman.html'
       }
     }
   },

@@ -605,15 +605,30 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.05);
+    font-size: 1.2rem;
+    /* Increased font size */
+    font-weight: 900;
+    /* Extra bold */
+    background: rgba(30, 30, 40, 0.8);
+    /* Darker, more opaque background */
     border-radius: 6px;
-    color: #b8b8cc;
+    color: #ffffff !important;
+    /* Force white text */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+    /* Text shadow for contrast */
     cursor: pointer;
     transition: background 0.1s;
     -webkit-user-select: none;
     user-select: none;
+    z-index: 20;
+    /* Ensure above overlay */
+}
+
+/* Force Fog Overlay Hidden */
+#fog-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .cell.selected-pending {
@@ -897,13 +912,13 @@ h1 {
     color: rgba(255, 255, 255, 0.7) !important;
     padding: 0 !important;
     font-size: 20px !important;
-    
+
     /* 3D Effect - Raised State */
-    box-shadow: 
+    box-shadow:
         5px 5px 10px rgba(0, 0, 0, 0.5),
         -2px -2px 6px rgba(255, 255, 255, 0.05),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-        
+
     transition: all 0.15s ease !important;
     position: relative !important;
     margin-left: 0.5rem !important;
@@ -913,7 +928,7 @@ h1 {
 #mobileToggle:hover {
     color: #fff !important;
     transform: translateY(-1px) !important;
-    box-shadow: 
+    box-shadow:
         6px 6px 12px rgba(0, 0, 0, 0.6),
         -2px -2px 8px rgba(255, 255, 255, 0.08) !important;
 }
@@ -922,12 +937,12 @@ h1 {
 #mobileToggle.active {
     background: linear-gradient(145deg, #151525, #1e1e2f) !important;
     color: #4ade80 !important;
-    
+
     /* 3D Effect - Pressed State */
-    box-shadow: 
+    box-shadow:
         inset 5px 5px 10px rgba(0, 0, 0, 0.6),
         inset -2px -2px 6px rgba(255, 255, 255, 0.05) !important;
-        
+
     transform: translateY(2px) !important;
 }
 
@@ -935,12 +950,12 @@ h1 {
 #mobileToggle svg {
     width: 24px !important;
     height: 24px !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
 }
 
 .mobile-toggle-btn.active svg,
 #mobileToggle.active svg {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }
