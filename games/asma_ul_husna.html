@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسماء الله الحسنى - Guds Vackraste Namn</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/games.css">
+    <link rel="stylesheet" href="../assets/css/mobile-enhancements.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/title-styles.css">
+    <style>
+        /* Navigation Bar */
+        .asma-nav-bar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .asma-nav-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            color: #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .asma-nav-btn:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
+            transform: scale(1.05);
+        }
+
+        .asma-nav-btn svg {
+            stroke: #e2e8f0;
+        }
+
+        /* Asma ul Husna Specific Styles */
+        .asma-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+            padding-top: 80px;
+            /* Space for nav bar */
+            padding-bottom: 100px;
+        }
+
+        .asma-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .asma-title-ar {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        .asma-title-sv {
+            font-size: 1.2rem;
+            color: #94a3b8;
+        }
+
+        /* Search Bar */
+        .asma-search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .asma-search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            color: #e2e8f0;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .asma-search-input::placeholder {
+            color: #64748b;
+        }
+
+        .asma-search-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        /* Cards Grid */
+        .asma-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Name Card */
+        .asma-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .asma-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+
+        .asma-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.15);
+        }
+
+        /* Card Header */
+        .asma-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .asma-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .asma-speak-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(251, 191, 36, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .asma-speak-btn:hover {
+            background: rgba(251, 191, 36, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* Name Display */
+        .asma-name-ar {
+            font-family: 'Amiri', serif;
+            font-size: 2.2rem;
+            color: #fbbf24;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            direction: rtl;
+        }
+
+        .asma-name-sv {
+            text-align: center;
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Meaning Section */
+        .asma-meaning {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .asma-meaning-ar {
+            font-family: 'Amiri', serif;
+            font-size: 1rem;
+            color: #cbd5e1;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .asma-meaning-sv {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Conjugation Table */
+        .asma-conjugation {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .conj-item {
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .conj-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-bottom: 0.2rem;
+        }
+
+        .conj-ar {
+            font-family: 'Amiri', serif;
+            font-size: 1rem;
+            color: #fbbf24;
+        }
+
+        .conj-sv {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Quran Verse */
+        .asma-verse {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+            border-left: 3px solid #fbbf24;
+            border-radius: 0 12px 12px 0;
+            padding: 1rem;
+        }
+
+        .verse-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verse-ar {
+            font-family: 'Amiri', serif;
+            font-size: 1.1rem;
+            color: #fbbf24;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .verse-sv {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Stats Counter */
+        .asma-stats {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .asma-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .asma-name-ar {
+                font-size: 1.8rem;
+            }
+
+            .asma-conjugation {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="memory-game-page">
+
+    <!-- Navigation Buttons -->
+    <div class="asma-nav-bar">
+        <button class="asma-nav-btn" onclick="window.location.href='../learn/learn.html'" aria-label="Back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        <button id="themeToggle" class="asma-nav-btn" onclick="toggleTheme()" aria-label="Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+        <button id="mobileToggle" class="asma-nav-btn" onclick="toggleMobileView()" aria-label="Mobile View">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+
+    <!-- Main Container -->
+    <div class="asma-container">
+        <!-- Header -->
+        <div class="asma-header">
+            <div class="asma-title-ar">أَسْمَاءُ اللَّهِ الْحُسْنَى</div>
+            <div class="asma-title-sv">Guds Vackraste Namn</div>
+        </div>
+
+        <!-- Search -->
+        <div class="asma-search-bar">
+            <input type="text" id="asmaSearch" class="asma-search-input" placeholder="🔍 Sök / ابحث..."
+                oninput="filterNames()">
+        </div>
+
+        <!-- Stats -->
+        <div class="asma-stats" id="asmaStats">Visar 99 namn</div>
+
+        <!-- Cards Grid -->
+        <div class="asma-cards-grid" id="asmaCardsGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script type="module" src="/src/loader.ts"></script>
+    <script type="module" src="/src/games/asmaUlHusnaGame.ts"></script>
+</body>
+
+</html>
