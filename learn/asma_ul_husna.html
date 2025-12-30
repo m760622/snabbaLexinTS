@@ -1544,6 +1544,154 @@
             color: #94a3b8;
             font-size: 0.75rem;
         }
+
+        /* Category Badges on Cards */
+        .category-badge {
+            position: absolute;
+            top: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-family: 'Amiri', serif;
+            color: #fff;
+            opacity: 0.8;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category-badge.jalal {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: rgba(220, 38, 38, 0.4);
+            color: #fca5a5;
+        }
+
+        .category-badge.jamal {
+            background: rgba(147, 51, 234, 0.2);
+            border-color: rgba(147, 51, 234, 0.4);
+            color: #d8b4fe;
+        }
+
+        .category-badge.kamal {
+            background: rgba(37, 99, 235, 0.2);
+            border-color: rgba(37, 99, 235, 0.4);
+            color: #93c5fd;
+        }
+
+        /* Audio Player Bar */
+        .audio-player-bar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .audio-player-bar.hidden {
+            bottom: -100px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .audio-info {
+            flex: 1;
+        }
+
+        .audio-name-ar {
+            color: #fbbf24;
+            font-family: 'Amiri', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .audio-status {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-btn {
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .audio-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fbbf24;
+        }
+
+        .audio-btn.active {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .audio-btn.play-pause {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .audio-btn.play-pause:hover {
+            transform: scale(1.1);
+        }
+
+        .speed-btn {
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 0 0.8rem;
+        }
+
+        /* Fixed Scroll for Mobile View Mode */
+        body.iphone-view .asma-container {
+            height: 100%;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding-top: 20px;
+            padding-bottom: 120px;
+            border-radius: 25px;
+        }
+
+        body.iphone-view .asma-container::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 
@@ -1596,14 +1744,24 @@
         </div>
 
         <!-- Filter Buttons -->
-        <div class="asma-filter-bar" id="filterBar">
-            <button class="asma-filter-btn active" data-filter="all" onclick="setFilter('all')">الكل (99)</button>
-            <button class="asma-filter-btn" data-filter="favorites" onclick="setFilter('favorites')">❤️ المفضلة</button>
-            <button class="asma-filter-btn" data-filter="memorized" onclick="setFilter('memorized')">✓ المحفوظة</button>
+        <div class="asma-filter-bar" id="filterBar" style="flex-wrap: wrap;">
+            <button class="asma-filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
+            <button class="asma-filter-btn" data-filter="favorites" onclick="setFilter('favorites')">❤️</button>
+            <button class="asma-filter-btn" data-filter="memorized" onclick="setFilter('memorized')">✓</button>
+            <button class="asma-filter-btn" data-filter="jalal" onclick="setFilter('jalal')"
+                style="color: #fca5a5; border-color: rgba(220, 38, 38, 0.4);">الجلال</button>
+            <button class="asma-filter-btn" data-filter="jamal" onclick="setFilter('jamal')"
+                style="color: #d8b4fe; border-color: rgba(147, 51, 234, 0.4);">الجمال</button>
+            <button class="asma-filter-btn" data-filter="kamal" onclick="setFilter('kamal')"
+                style="color: #93c5fd; border-color: rgba(37, 99, 235, 0.4);">الكمال</button>
         </div>
 
         <!-- Mode Selection Bar -->
         <div class="asma-mode-bar">
+            <button class="asma-mode-btn" onclick="startAudio()">
+                <span>▶️</span>
+                <span>تشغيل الكل</span>
+            </button>
             <button class="asma-mode-btn" onclick="startQuiz()">
                 <span>📝</span>
                 <span>اختبار المعاني</span>
@@ -1737,11 +1895,41 @@
                     <!-- Badges generated by JS -->
                 </div>
             </div>
+
+            <div class="stats-actions" style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                <button class="asma-mode-btn" onclick="shareStats()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    <span>📤</span>
+                    <span>مشاركة إنجازي</span>
+                </button>
+                <button class="asma-mode-btn" onclick="exportMemorizedList()"
+                    style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    <span>📋</span>
+                    <span>نسخ قائمة الحفظ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Player Bar -->
+    <div class="audio-player-bar hidden" id="audioPlayer">
+        <div class="audio-info">
+            <div class="audio-name-ar" id="playerTitle">الرحمن</div>
+            <div class="audio-status" id="playerStatus">جاري التشغيل...</div>
+        </div>
+
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="toggleLoop()" id="loopBtn" title="تكرار">🔁</button>
+            <button class="audio-btn prev" onclick="playPrev()" title="السابق">⏮️</button>
+            <button class="audio-btn play-pause" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+            <button class="audio-btn next" onclick="playNext()" title="التالي">⏭️</button>
+            <div class="speed-control">
+                <button class="audio-btn speed-btn" onclick="toggleSpeed()" id="speedBtn">1x</button>
+            </div>
         </div>
     </div>
 
     <script type="module" src="/src/loader.ts"></script>
-    <script type="module" src="/src/games/asmaUlHusnaGame.ts"></script>
+    <script type="module" src="/src/learn/asmaUlHusnaGame.ts"></script>
 </body>
 
 </html>

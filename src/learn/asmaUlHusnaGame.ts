@@ -10,8 +10,27 @@ let filteredNames: AsmaName[] = [];
 // State for favorites and memorized
 let favorites: Set<number> = new Set();
 let memorized: Set<number> = new Set();
-let currentFilter: 'all' | 'favorites' | 'memorized' = 'all';
+type FilterType = 'all' | 'favorites' | 'memorized' | 'jalal' | 'jamal' | 'kamal';
+let currentFilter: FilterType = 'all';
 let currentTheme: 'neon' | 'calm' | 'islamic-night' = 'neon';
+
+// Categories Mapping
+// Jalal (Majesty/Power), Jamal (Beauty/Mercy), Kamal (Perfection/Essence)
+const NAME_CATEGORIES: Record<number, 'jalal' | 'jamal' | 'kamal'> = {
+    1: 'jamal', 2: 'jamal', 3: 'jamal', 4: 'jalal', 5: 'jalal', // Allah, Rahman, Rahim, Malik, Quddus
+    6: 'jalal', 7: 'jamal', 8: 'jalal', 9: 'jalal', 10: 'jalal', // Salam, Mumin, Muhaymin, Aziz, Jabbar
+    11: 'jalal', 12: 'kamal', 13: 'kamal', 14: 'jamal', 15: 'jalal', // Mutakabbir, Khaliq, Bari, Musawwir, Ghaffar
+    16: 'jalal', 17: 'jamal', 18: 'jamal', 19: 'kamal', 20: 'jalal', // Qahhar, Wahhab, Razzaq, Fattah, Alim
+    21: 'jalal', 22: 'jalal', 23: 'jalal', 24: 'jalal', 25: 'jalal', // Qabid, Basit, Khafid, Rafi, Muizz, Mudhill
+    26: 'jalal', 27: 'kamal', 28: 'kamal', 29: 'jalal', 30: 'jamal', // Sami, Basir, Hakam, Adl, Latif
+    31: 'kamal', 32: 'jamal', 33: 'jalal', 34: 'jamal', 35: 'jamal', // Khabir, Halim, Azim, Ghafur, Shakur
+    40: 'jalal', 41: 'jalal', 47: 'kamal', 48: 'jamal', // Hasib, Jalil, Haqq, Wadud
+    // Defaulting others to Kamal for now if not specified (will be refined)
+};
+
+function getCategory(nr: number): 'jalal' | 'jamal' | 'kamal' {
+    return NAME_CATEGORIES[nr] || 'kamal';
+}
 
 // Quiz State
 let quizQuestions: AsmaName[] = [];
@@ -23,6 +42,14 @@ let flashcardQueue: AsmaName[] = [];
 let currentFlashcardIndex = 0;
 let isFlashcardFlipped = false;
 let repeatCount = 1;
+
+// Audio Player State
+let isPlaying = false;
+let isLoopEnabled = false;
+let playbackSpeed = 1.0;
+let currentPlayIndex = 0;
+let audioCycleTimer: any = null;
+
 
 // Stats & Badges State
 let streakDays = 0;
@@ -130,7 +157,7 @@ function toggleMemorized(nr: number): void {
 }
 
 // Set filter
-function setFilter(filter: 'all' | 'favorites' | 'memorized'): void {
+function setFilter(filter: FilterType): void {
     currentFilter = filter;
 
     // Update button states
@@ -154,6 +181,8 @@ function applyFilters(): void {
         result = result.filter(name => favorites.has(name.nr));
     } else if (currentFilter === 'memorized') {
         result = result.filter(name => memorized.has(name.nr));
+    } else if (currentFilter === 'jalal' || currentFilter === 'jamal' || currentFilter === 'kamal') {
+        result = result.filter(name => getCategory(name.nr) === currentFilter);
     }
 
     // Apply search filter
@@ -177,11 +206,22 @@ function updateFilterCounts(): void {
     const allBtn = document.querySelector('[data-filter="all"]');
     const favBtn = document.querySelector('[data-filter="favorites"]');
     const memBtn = document.querySelector('[data-filter="memorized"]');
+    const jalalBtn = document.querySelector('[data-filter="jalal"]');
+    const jamalBtn = document.querySelector('[data-filter="jamal"]');
+    const kamalBtn = document.querySelector('[data-filter="kamal"]');
+
+    const jalalCount = allNames.filter(n => getCategory(n.nr) === 'jalal').length;
+    const jamalCount = allNames.filter(n => getCategory(n.nr) === 'jamal').length;
+    const kamalCount = allNames.filter(n => getCategory(n.nr) === 'kamal').length;
 
     if (allBtn) allBtn.textContent = `الكل (${allNames.length})`;
-    if (favBtn) favBtn.textContent = `❤️ المفضلة (${favorites.size})`;
-    if (memBtn) memBtn.textContent = `✓ المحفوظة (${memorized.size})`;
+    if (favBtn) favBtn.textContent = `❤️ (${favorites.size})`;
+    if (memBtn) memBtn.textContent = `✓ (${memorized.size})`;
+    if (jalalBtn) jalalBtn.textContent = `الجلال (${jalalCount})`;
+    if (jamalBtn) jamalBtn.textContent = `الجمال (${jamalCount})`;
+    if (kamalBtn) kamalBtn.textContent = `الكمال (${kamalCount})`;
 }
+
 
 // Initialize
 function init(): void {
@@ -213,6 +253,9 @@ function createCardHTML(name: AsmaName): string {
     return `
         <div class="asma-card${isMemorized ? ' memorized' : ''}" data-nr="${name.nr}">
             ${isMemorized ? '<div class="memorized-badge">✓ محفوظ</div>' : ''}
+            
+            <div class="category-badge ${getCategory(name.nr)}">${getCategory(name.nr) === 'jalal' ? 'الجلال' : getCategory(name.nr) === 'jamal' ? 'الجمال' : 'الكمال'}</div>
+
             <div class="asma-card-header">
                 <div class="asma-number">${name.nr}</div>
                 <div style="display: flex; gap: 0.5rem;">
@@ -291,7 +334,14 @@ function updateStats(): void {
 }
 
 // Speak name using TTS with enhanced visual effects
-function speakName(text: string, nr: number): void {
+// Speak name using TTS with enhanced visual effects
+function speakName(text: string, nr: number, isAutoPlay: boolean = false): void {
+    // If manually clicked and player is running, stop player unless it's the current one?
+    // User expectation: Click stops auto-play and plays clicked item.
+    if (!isAutoPlay && isPlaying) {
+        stopAudio();
+    }
+
     // Find the card and button
     const card = document.querySelector(`[data-nr="${nr}"]`);
     const btn = card?.querySelector('.asma-speak-btn');
@@ -302,30 +352,37 @@ function speakName(text: string, nr: number): void {
 
     // Use TTS
     const doSpeak = () => {
+        const rate = playbackSpeed;
         if (typeof TTSManager !== 'undefined' && TTSManager) {
-            TTSManager.speak(text, 'ar');
+            TTSManager.speak(text, 'ar', { speed: rate });
         } else {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ar-SA';
-            utterance.rate = 0.8;
+            utterance.rate = rate * 0.8;
             speechSynthesis.speak(utterance);
         }
     };
 
-    // Repeat logic
+    // Repeat logic - Only use repeat settings if NOT in Auto Play
+    // In Auto Play, we play once (or maybe user wants repeat in auto play too? 
+    // Usually "Play All" implies continuous flow. Sticking to 1x for auto play for now).
+    const effectiveRepeat = isAutoPlay ? 1 : repeatCount;
+
     let count = 0;
     const speakLoop = () => {
-        if (count < repeatCount) {
+        if (count < effectiveRepeat) {
             doSpeak();
             count++;
-            // Estimate duration or use event? Simplified with delay
-            setTimeout(speakLoop, 2500);
-        } else {
-            // Remove classes after a delay
-            setTimeout(() => {
-                btn?.classList.remove('speaking');
-                card?.classList.remove('card-speaking');
-            }, 1000);
+            // Delay for next repeat
+            if (count < effectiveRepeat) {
+                setTimeout(speakLoop, 2500 / playbackSpeed);
+            } else {
+                // Done
+                setTimeout(() => {
+                    btn?.classList.remove('speaking');
+                    card?.classList.remove('card-speaking');
+                }, 1000 / playbackSpeed);
+            }
         }
     };
 
@@ -704,6 +761,173 @@ function renderBadges(): void {
     }).join('');
 }
 
+// ========== AUDIO PLAYER LOGIC ==========
+
+function togglePlay(): void {
+    if (isPlaying) {
+        stopAudio();
+    } else {
+        startAudio();
+    }
+}
+
+function startAudio(): void {
+    if (filteredNames.length === 0) return;
+
+    isPlaying = true;
+    updatePlayerUI();
+    playCurrentAudio();
+
+    // Show player bar if hidden
+    const player = document.getElementById('audioPlayer');
+    if (player) player.classList.remove('hidden');
+}
+
+function stopAudio(): void {
+    isPlaying = false;
+    clearTimeout(audioCycleTimer);
+    updatePlayerUI();
+    TTSManager.stop();
+}
+
+function playCurrentAudio(): void {
+    if (!isPlaying) return;
+
+    // Ensure index is valid
+    if (currentPlayIndex >= filteredNames.length) {
+        currentPlayIndex = 0;
+        if (!isLoopEnabled) {
+            stopAudio();
+            return;
+        }
+    }
+
+    const name = filteredNames[currentPlayIndex];
+    updatePlayerUI();
+
+    // Speak name
+    // Using speakName internally but managing the sequence
+    speakName(name.nameAr, name.nr, true); // true = called from player
+
+    // Calculate delay based on speed (approx 2-3 seconds per name normal speed)
+    const baseDelay = 3000;
+    const delay = baseDelay / playbackSpeed;
+
+    // Schedule next
+    clearTimeout(audioCycleTimer);
+    audioCycleTimer = setTimeout(() => {
+        if (!isLoopEnabled) {
+            currentPlayIndex++;
+        }
+        // If loop is enabled, we stay on same index? 
+        // No, "Loop" usually means "Loop List". "Repeat One" is different.
+        // Let's implement: Loop = Loop List.
+        // So we always increment, but wrap around.
+
+        if (isLoopEnabled && currentPlayIndex >= filteredNames.length) {
+            currentPlayIndex = 0;
+        }
+
+        playCurrentAudio();
+    }, delay);
+}
+
+function playNext(): void {
+    currentPlayIndex++;
+    if (currentPlayIndex >= filteredNames.length) currentPlayIndex = 0;
+    playCurrentAudio();
+    updatePlayerUI(); // Update UI immediately
+}
+
+function playPrev(): void {
+    currentPlayIndex--;
+    if (currentPlayIndex < 0) currentPlayIndex = filteredNames.length - 1;
+    playCurrentAudio();
+    updatePlayerUI();
+}
+
+function toggleLoop(): void {
+    isLoopEnabled = !isLoopEnabled;
+    const btn = document.getElementById('loopBtn');
+    if (btn) btn.classList.toggle('active', isLoopEnabled);
+}
+
+function toggleSpeed(): void {
+    // Cycle: 1 -> 0.75 -> 0.5 -> 1.5 -> 1
+    if (playbackSpeed === 1.0) playbackSpeed = 0.75;
+    else if (playbackSpeed === 0.75) playbackSpeed = 0.5;
+    else if (playbackSpeed === 0.5) playbackSpeed = 1.5;
+    else playbackSpeed = 1.0;
+
+    const btn = document.getElementById('speedBtn');
+    if (btn) btn.textContent = `${playbackSpeed}x`;
+
+    // Update TTS rate?
+    // TTSManager needs to support rate. 
+    // For now we just control delay between names.
+    // Ideally we should set TTS rate too.
+}
+
+function updatePlayerUI(): void {
+    const playBtn = document.getElementById('playPauseBtn');
+    const title = document.getElementById('playerTitle');
+    const status = document.getElementById('playerStatus');
+
+    if (playBtn) playBtn.textContent = isPlaying ? '⏸️' : '▶️';
+
+    if (filteredNames[currentPlayIndex]) {
+        if (title) title.textContent = filteredNames[currentPlayIndex].nameAr;
+    }
+
+    if (status) status.textContent = isPlaying ? `جاري التشغيل (${playbackSpeed}x)` : 'متوقف';
+}
+
+// Social Features
+async function shareStats(): Promise<void> {
+    const text = `🌟 إنجازي في أسماء الله الحسنى 🌟\n\n✅ حفظت: ${memorized.size} / 99 اسم\n❤️ المفضلة: ${favorites.size} اسم\n🔥 أيام متواصلة: ${streakDays} يوم\n\nتعلم أسماء الله الحسنى مع snabbaLexin!`;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'إنجازي في أسماء الله الحسنى',
+                text: text,
+            });
+            return;
+        } catch (e) {
+            console.log('Share failed', e);
+        }
+    }
+
+    // Fallback
+    try {
+        await navigator.clipboard.writeText(text);
+        alert('تم نسخ النص إلى الحافظة! يمكنك مشاركته الآن.');
+    } catch (e) {
+        alert('عذراً، لم نتمكن من النسخ.');
+    }
+}
+
+async function exportMemorizedList(): Promise<void> {
+    if (memorized.size === 0) {
+        alert('لم تقم بحفظ أي أسماء بعد.');
+        return;
+    }
+
+    const list = allNames
+        .filter(n => memorized.has(n.nr))
+        .map(n => `${n.nr}. ${n.nameAr} (${n.meaningAr})`)
+        .join('\n');
+
+    const text = `📋 قائمة حفظي لأسماء الله الحسنى:\n\n${list}`;
+
+    try {
+        await navigator.clipboard.writeText(text);
+        alert('تم نسخ قائمة الأسماء المحفوظة إلى الحافظة! 📋');
+    } catch (e) {
+        alert('عذراً، حدث خطأ في النسخ.');
+    }
+}
+
 // DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[AsmaUlHusna] DOM Ready');
@@ -737,3 +961,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // Stats exports
 (window as any).openStats = openStats;
 (window as any).closeStats = closeStats;
+
+// Audio Player exports
+(window as any).togglePlay = togglePlay;
+(window as any).playNext = playNext;
+(window as any).playPrev = playPrev;
+(window as any).toggleLoop = toggleLoop;
+(window as any).toggleSpeed = toggleSpeed;
+(window as any).startAudio = startAudio;
+// Social exports
+(window as any).shareStats = shareStats;
+(window as any).exportMemorizedList = exportMemorizedList;
