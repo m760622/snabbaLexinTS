@@ -24,6 +24,28 @@ let currentFlashcardIndex = 0;
 let isFlashcardFlipped = false;
 let repeatCount = 1;
 
+// Stats & Badges State
+let streakDays = 0;
+let lastVisitDate = '';
+
+interface Badge {
+    id: string;
+    icon: string;
+    name: string;
+    desc: string;
+    condition: () => boolean;
+}
+
+const BADGES: Badge[] = [
+    { id: 'b_start', icon: '🌱', name: 'البداية', desc: 'حفظ أول اسم', condition: () => memorized.size >= 1 },
+    { id: 'b_10', icon: '🥉', name: 'المبتدئ', desc: 'حفظ 10 أسماء', condition: () => memorized.size >= 10 },
+    { id: 'b_33', icon: '🥈', name: 'المثابر', desc: 'حفظ 33 اسم', condition: () => memorized.size >= 33 },
+    { id: 'b_50', icon: '🥇', name: 'المجتهد', desc: 'حفظ 50 اسم', condition: () => memorized.size >= 50 },
+    { id: 'b_99', icon: '👑', name: 'الخاتم', desc: 'حفظ جميع الأسماء', condition: () => memorized.size >= 99 },
+    { id: 'b_streak3', icon: '🔥', name: 'حماس', desc: 'استمرار 3 أيام', condition: () => streakDays >= 3 },
+    { id: 'b_streak7', icon: '⚡', name: 'التزام', desc: 'استمرار 7 أيام', condition: () => streakDays >= 7 }
+];
+
 // Load saved state from localStorage
 function loadSavedState(): void {
     try {
@@ -35,9 +57,42 @@ function loadSavedState(): void {
         if (savedMemorized) memorized = new Set(JSON.parse(savedMemorized));
         if (savedRepeat) repeatCount = parseInt(savedRepeat);
 
+        // Load Streak
+        streakDays = parseInt(localStorage.getItem('asma_streak') || '0');
+        lastVisitDate = localStorage.getItem('asma_last_visit') || '';
+
+        calculateStreak();
         updateRepeatButtons();
     } catch (e) {
         console.error('[AsmaUlHusna] Failed to load saved state:', e);
+    }
+}
+
+function calculateStreak(): void {
+    const today = new Date().toISOString().split('T')[0];
+
+    if (lastVisitDate !== today) {
+        if (lastVisitDate) {
+            const lastDate = new Date(lastVisitDate);
+            const currentDate = new Date(today);
+            const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                // Consecutive day
+                streakDays++;
+            } else if (diffDays > 1) {
+                // Streak broken
+                streakDays = 1;
+            }
+            // If diffDays == 0 (same day), do nothing
+        } else {
+            // First visit ever
+            streakDays = 1;
+        }
+
+        lastVisitDate = today;
+        saveState();
     }
 }
 
@@ -46,6 +101,8 @@ function saveState(): void {
     localStorage.setItem('asma_favorites', JSON.stringify([...favorites]));
     localStorage.setItem('asma_memorized', JSON.stringify([...memorized]));
     localStorage.setItem('asma_repeat', repeatCount.toString());
+    localStorage.setItem('asma_streak', streakDays.toString());
+    localStorage.setItem('asma_last_visit', lastVisitDate);
 }
 
 // Toggle favorite
@@ -586,6 +643,66 @@ function speakCurrentFlashcard(): void {
     speakName(name.nameAr, name.nr);
 }
 
+// ========== STATS LOGIC ==========
+
+function openStats(): void {
+    const modal = document.getElementById('statsModal');
+    if (modal) {
+        modal.classList.add('active');
+        updateStatsUI();
+    }
+}
+
+function closeStats(): void {
+    const modal = document.getElementById('statsModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function updateStatsUI(): void {
+    // 1. Update Streak
+    const streakEl = document.getElementById('streakCounter');
+    if (streakEl) streakEl.textContent = `🔥 ${streakDays} يوم متواصل`;
+
+    // 2. Update Progress Rings
+    updateProgressRing('ringMemorized', 'textMemorized', memorized.size, 99, true);
+    updateProgressRing('ringFavorites', 'textFavorites', favorites.size, 99, false);
+
+    // 3. Render Badges
+    renderBadges();
+}
+
+function updateProgressRing(ringId: string, textId: string, value: number, max: number, isPercent: boolean): void {
+    const ring = document.getElementById(ringId);
+    const text = document.getElementById(textId);
+
+    if (ring && text) {
+        const radius = 40;
+        const circumference = 2 * Math.PI * radius;
+        const percent = Math.min(100, (value / max) * 100);
+        const offset = circumference - (percent / 100) * circumference;
+
+        ring.style.strokeDasharray = `${circumference} ${circumference}`;
+        ring.style.strokeDashoffset = offset.toString();
+
+        text.textContent = isPercent ? `${Math.round(percent)}%` : value.toString();
+    }
+}
+
+function renderBadges(): void {
+    const grid = document.getElementById('badgesGrid');
+    if (!grid) return;
+
+    grid.innerHTML = BADGES.map(badge => {
+        const isUnlocked = badge.condition();
+        return `
+            <div class="badge-item ${isUnlocked ? 'unlocked' : ''}">
+                <span class="badge-icon">${badge.icon}</span>
+                <div class="badge-name">${badge.name}</div>
+                <div class="badge-desc">${badge.desc}</div>
+            </div>
+        `;
+    }).join('');
+}
 
 // DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -616,3 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
 (window as any).flashcardDontKnow = flashcardDontKnow;
 (window as any).speakCurrentFlashcard = speakCurrentFlashcard;
 (window as any).setRepeatCount = setRepeatCount;
+
+// Stats exports
+(window as any).openStats = openStats;
+(window as any).closeStats = closeStats;
