@@ -1,12 +1,12 @@
-import './utils';
 import { initProfileUI } from './profile-ui';
-import { LanguageManager } from './i18n';
 
 // Initialize Profile UI
-if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-        // Initialize language first
-        LanguageManager.init();
-        initProfileUI();
-    });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[ProfileApp] DOMContentLoaded');
+    initProfileUI();
+});
+
+// Also listen for load event as fallback
+window.addEventListener('load', () => {
+    console.log('[ProfileApp] Window loaded');
+});

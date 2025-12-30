@@ -1,5 +1,5 @@
 /* Games Page Styles */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@300;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@300;500&display=swap');
 
 :root {
     --bg-gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -13,7 +13,7 @@
     --text-sub-light: #64748b;
     --text-sub-dark: #94a3b8;
     --font-main: 'Inter', sans-serif;
-    --font-arabic: 'Cairo', sans-serif;
+    --font-arabic: 'Tajawal', sans-serif;
     --glass-blur: blur(12px);
 
     /* ===== UNIFIED COLOR PALETTE (Calmer) ===== */
@@ -1823,7 +1823,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .flashcard-back h2 {
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     color: #be123c;
     background: none;
     -webkit-text-fill-color: #be123c;
@@ -2005,7 +2005,7 @@ body.iphone-view.dark-mode .high-score {
 .game-hint {
     font-size: 1.4rem;
     color: var(--text-sub-light);
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     margin-top: 0.5rem;
 }
 
@@ -2396,7 +2396,7 @@ body.iphone-view.dark-mode .high-score {
     color: #fbbf24;
     /* Golden Amber */
     margin-bottom: 1.5rem;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     min-height: 1.5em;
     text-align: center;
     text-shadow: 0 4px 10px rgba(251, 191, 36, 0.4);
@@ -3260,7 +3260,7 @@ body.iphone-view.dark-mode .high-score {
     display: block;
     font-size: 0.8rem;
     color: #6b7280;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .dashboard-title h3 {
@@ -3410,7 +3410,7 @@ body.iphone-view.dark-mode .high-score {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .rain-option-btn {
@@ -3485,7 +3485,7 @@ body.iphone-view.dark-mode .high-score {
     display: block;
     font-size: 0.8rem;
     color: #6b7280;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .dashboard-title h3 {
@@ -3636,7 +3636,7 @@ body.iphone-view.dark-mode .high-score {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .rain-option-btn {
@@ -3711,7 +3711,7 @@ body.iphone-view.dark-mode .high-score {
     display: block;
     font-size: 0.8rem;
     color: #6b7280;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .dashboard-title h3 {
@@ -3997,7 +3997,7 @@ body.iphone-view.dark-mode .high-score {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 [data-theme="dark"] .rain-option-btn {
@@ -4066,7 +4066,7 @@ body.iphone-view.dark-mode .high-score {
     overflow: hidden;
     /* No scrolling allowed */
     box-sizing: border-box;
-    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+    font-family: 'Inter', 'Tajawal', sans-serif;
 }
 
 /* 1. Header Area */
@@ -4173,7 +4173,7 @@ body.iphone-view.dark-mode .high-score {
 
 .lang-ar {
     font-size: 1.8rem;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     line-height: 1;
 }
 
@@ -4195,7 +4195,7 @@ body.iphone-view.dark-mode .high-score {
     border: 1px solid var(--rain-glass-border);
     color: var(--rain-ar-color);
     /* Arabic Text Color */
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-weight: 700;
     font-size: 1.2rem;
     padding: 1rem;
@@ -4224,7 +4224,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .rain-word-ar {
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-weight: 700;
     /* Bold */
     color: var(--rain-ar-color);
@@ -5298,7 +5298,7 @@ body.iphone-view.dark-mode .high-score {
 .wc-reward-translation {
     color: #888;
     font-size: 0.85rem;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 /* Dark mode adjustments */
@@ -5637,7 +5637,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .wc-lib-trans {
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     color: #e2e8f0;
     font-size: 1.1rem;
     font-weight: 500;
@@ -5662,7 +5662,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .wc-lib-sentence-ar {
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     color: #64748b;
     font-size: 0.9rem;
     line-height: 1.4;
@@ -7131,7 +7131,7 @@ body.memory-game-page::before {
 .mw-hint-text {
     color: #fbbf24;
     font-size: 1.2rem;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-weight: 600;
 }
 
@@ -7537,7 +7537,7 @@ body.memory-game-page::before {
 .game-hint.large {
     font-size: 1.5rem;
     color: #fbbf24;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-weight: 700;
     text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
@@ -7784,7 +7784,7 @@ body.memory-game-page::before {
     min-height: 2rem;
     text-align: center;
     color: #fbbf24;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-size: 1.1rem;
     font-weight: 600;
     text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
@@ -8249,7 +8249,7 @@ body.memory-game-page::before {
 .wc-celebrate-subtitle {
     font-size: 1.5rem;
     color: #cbd5e1;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 .wc-modal-actions {
@@ -9806,7 +9806,7 @@ body.memory-game-page::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1.6rem;
     font-weight: 700;
     color: #3b4b9f;
@@ -11164,7 +11164,7 @@ body.memory-game-page::before {
     font-size: 1.2rem;
     color: #fbbf24;
     direction: rtl;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     line-height: 1.6;
 }
 

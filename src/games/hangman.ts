@@ -476,7 +476,7 @@ function showResult(won: boolean, score: number) {
         resultWord.innerHTML = `
             <div style="margin-bottom: 0.5rem; font-size: 1.4rem; color: #4ade80;">${currentWord}</div>
             <div style="font-size: 1.1rem; color: #cbd5e1;">${sent.s}</div>
-            <div style="font-size: 1rem; color: #fbbf24; margin-top: 0.3rem; font-family: 'IBM Plex Sans Arabic', sans-serif;">${sent.a}</div>
+            <div style="font-size: 1rem; color: #fbbf24; margin-top: 0.3rem; font-family: 'Tajawal', sans-serif;">${sent.a}</div>
         `;
     }
 

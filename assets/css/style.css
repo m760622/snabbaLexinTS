@@ -1,3 +1,6 @@
+/* Noto Color Emoji for cross-platform emoji support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+
 @view-transition {
   navigation: auto;
 }
@@ -22,7 +25,7 @@
   --radius: 1rem;
   --header-font: "Inter", sans-serif;
   --body-font: "Inter", sans-serif;
-  --arabic-font: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-family: "Tajawal", sans-serif;
 }
 
 [data-theme="dark"] {
@@ -132,6 +135,9 @@
    NATIVE APP FEEL
    ======================================== */
 body {
+  /* Emoji font support for cross-platform compatibility */
+  font-family: "Inter", "Tajawal", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+
   /* Prevent text selection */
   -webkit-user-select: none;
   user-select: none;
@@ -144,6 +150,26 @@ body {
 
   /* Improve touch response */
   touch-action: manipulation;
+}
+
+/* Ensure emoji text renders with emoji fonts */
+.quick-icon,
+.stat-icon,
+.challenge-icon,
+.path-icon,
+.wod-speak-btn,
+.fc-emoji,
+.icon-box {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+}
+
+/* Twemoji emoji images - global styling */
+img.emoji,
+.emoji {
+  height: 1em;
+  width: 1em;
+  vertical-align: -0.1em;
+  display: inline-block;
 }
 
 /* Global Text Sizing Classes (Managed by TextSizeManager) */
@@ -4523,7 +4549,7 @@ h1 {
 .subtitle {
   color: var(--text-secondary);
   font-size: 1.2rem;
-  font-family: "Noto Sans Arabic", sans-serif;
+  font-family: "Tajawal", sans-serif;
   animation: float 6s ease-in-out infinite;
   animation-delay: 1s;
   /* Slight delay for wave effect */
@@ -9491,7 +9517,7 @@ html:not([data-theme="dark"]) #nextQuestion:hover {
   color: #2563eb;
   font-size: 1.2rem;
   margin: 0 0 1rem 0;
-  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-family: "Tajawal", sans-serif;
 }
 
 .onboarding-slide p {
@@ -10174,7 +10200,7 @@ footer,
 }
 
 .splash-subtitle {
-  font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-family: "Tajawal", sans-serif;
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.7);
   margin: 0 0 2rem 0;
@@ -10674,7 +10700,7 @@ footer,
 }
 
 .splash-subtitle {
-  font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-family: "Tajawal", sans-serif;
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.8);
   margin: 0 0 1.5rem 0;
@@ -11586,7 +11612,7 @@ footer,
   color: #2563eb;
   font-size: 1.2rem;
   margin: 0 0 1rem 0;
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-family: 'Tajawal', sans-serif;
 }
 
 .onboarding-slide p {
@@ -12177,7 +12203,7 @@ body.lang-sv [data-tooltip-sv]::after {
 body.lang-ar [data-tooltip-ar]::after {
   content: attr(data-tooltip-ar);
   direction: rtl;
-  font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+  font-family: 'Tajawal', sans-serif;
 }
 
 /* Both languages mode - show both separated by slash */

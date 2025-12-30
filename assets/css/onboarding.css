@@ -63,7 +63,7 @@
 }
 
 .onboarding-title .ar {
-    font-family: var(--font-arabic, 'Cairo', sans-serif);
+    font-family: var(--font-arabic, 'Tajawal', sans-serif);
     font-size: 1.1rem;
     color: #64748b;
     display: block;
@@ -86,7 +86,7 @@
 }
 
 .onboarding-desc .ar {
-    font-family: var(--font-arabic, 'Cairo', sans-serif);
+    font-family: var(--font-arabic, 'Tajawal', sans-serif);
     display: block;
     margin-top: 0.5rem;
     direction: rtl;
