@@ -9,6 +9,38 @@ import { AppConfig } from '../config';
 import '../i18n'; // Initialize LanguageManager
 
 // ========================================
+// Theme Initialization for Game Pages
+// ========================================
+function initGameTheme(): void {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedColorTheme = localStorage.getItem('colorTheme') || 'default';
+
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
+    // Apply color theme
+    if (savedColorTheme && savedColorTheme !== 'default') {
+        document.documentElement.setAttribute('data-color-theme', savedColorTheme);
+        document.body.setAttribute('data-color-theme', savedColorTheme);
+    }
+
+    // Also add/remove dark-mode class for compatibility
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark-mode');
+    }
+
+    console.log(`[Games] Theme initialized: ${savedTheme}, color: ${savedColorTheme}`);
+}
+
+// Initialize theme immediately
+initGameTheme();
+
+// ========================================
 // Constants (from AppConfig)
 // ========================================
 export const COL_ID = AppConfig.COLUMNS.ID;
@@ -316,6 +348,42 @@ function initMobileView(): void {
 }
 
 // ========================================
+// Focus Mode Toggle
+// ========================================
+export function toggleFocusMode(): void {
+    const body = document.body;
+    const isFocusMode = body.classList.toggle('focus-mode');
+
+    localStorage.setItem('focusMode', String(isFocusMode));
+
+    const btn = document.getElementById('focusModeToggle');
+    if (btn) {
+        btn.textContent = isFocusMode ? '🎯' : '👁️';
+        btn.title = isFocusMode ? 'وضع التركيز مفعّل / Focus Mode On' : 'وضع التركيز / Focus Mode';
+    }
+
+    showToast(
+        isFocusMode
+            ? '🎯 وضع التركيز مفعّل / Focus Mode On'
+            : '👁️ الوضع العادي / Normal Mode',
+        'success'
+    );
+}
+
+function initFocusMode(): void {
+    const savedMode = localStorage.getItem('focusMode') === 'true';
+
+    if (savedMode) {
+        document.body.classList.add('focus-mode');
+        const btn = document.getElementById('focusModeToggle');
+        if (btn) {
+            btn.textContent = '🎯';
+            btn.title = 'وضع التركيز مفعّل / Focus Mode On';
+        }
+    }
+}
+
+// ========================================
 // Game Prioritization
 // ========================================
 function trackGameUsage(gameId: string): void {
@@ -397,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadScores();
     initDarkMode();
     initMobileView();
+    initFocusMode();
     initScrollAnimations();
 });
 
@@ -406,6 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
 (window as any).startGame = startGame;
 (window as any).showGameMenu = showGameMenu;
 (window as any).toggleMobileView = toggleMobileView;
+(window as any).toggleFocusMode = toggleFocusMode;
 (window as any).showToast = showToast;
 (window as any).saveScore = saveScore;
 (window as any).triggerConfetti = triggerConfetti;
+

@@ -6,7 +6,11 @@
 import { minimalPairsData, MinimalPair } from '../data/vowelGameData';
 
 import { speakSwedish } from '../tts';
-import { toggleMobileView } from './games-utils';
+import { toggleMobileView, toggleFocusMode } from './games-utils';
+
+// Expose toggle functions globally
+(window as any).toggleMobileView = toggleMobileView;
+(window as any).toggleFocusMode = toggleFocusMode;
 
 function shuffleArray<T>(arr: T[]): T[] {
     const a = [...arr];
@@ -66,14 +70,25 @@ if (container) {
 }
 
 function startGame() {
-    startScreen.style.opacity = '0';
-    setTimeout(() => {
+    // Hide start screen if it exists
+    if (startScreen) {
         startScreen.style.display = 'none';
+    }
+    // Show play area
+    if (playArea) {
         playArea.style.display = 'block';
-        hasStarted = true;
-        initGame();
-    }, 500);
+    }
+    hasStarted = true;
+    initGame();
 }
+
+// Auto-start game when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure everything is loaded
+    setTimeout(() => {
+        startGame();
+    }, 100);
+});
 
 function initGame() {
     // Load Saved Stage
@@ -928,3 +943,14 @@ console.log("Vowel Game Loaded");
 (window as any).startDailyChallenge = startDailyChallenge;
 (window as any).handleAnswer = handleAnswer;
 (window as any).playAudioForSlot = playAudioForSlot;
+
+// Vowel Demo for intro tutorial
+function playVowelDemo(vowel: string): void {
+    // Speak the vowel using TTS
+    if ((window as any).TTSManager) {
+        (window as any).TTSManager.speak(vowel, "sv-SE");
+    } else if (typeof speakSwedish === 'function') {
+        speakSwedish(vowel);
+    }
+}
+(window as any).playVowelDemo = playVowelDemo;

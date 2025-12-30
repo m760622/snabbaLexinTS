@@ -13,6 +13,72 @@ let sentenceTarget: string[] = [];
 let sentenceCurrent: string[] = [];
 let sentenceScore = 0;
 let _currentSentenceItem: any[] | null = null;
+let sentenceStartTime = 0;
+let hintsUsed = 0;
+
+// Theme Management
+function loadTheme(): void {
+    const savedTheme = localStorage.getItem('gameTheme') || 'neon';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButton(savedTheme);
+}
+
+function toggleTheme(): void {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'calm' ? 'neon' : 'calm';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('gameTheme', newTheme);
+    updateThemeButton(newTheme);
+}
+
+function updateThemeButton(theme: string): void {
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.textContent = theme === 'calm' ? '☀️' : '🌙';
+        btn.title = theme === 'calm' ? 'وضع نيون' : 'وضع هادئ';
+    }
+}
+
+// Speak individual word
+function speakWord(word: string): void {
+    if (typeof TTSManager !== 'undefined' && TTSManager) {
+        TTSManager.speak(word, 'sv');
+    }
+}
+
+// Star Rating Calculation
+function calculateStars(timeElapsed: number, hintsUsed: number): number {
+    let stars = 3;
+
+    // Deduct for time (>60s = -1, >120s = -2)
+    if (timeElapsed > 120) stars--;
+    if (timeElapsed > 60) stars--;
+
+    // Deduct for showing answer
+    if (hintsUsed > 0) stars--;
+
+    return Math.max(1, stars);
+}
+
+// Progress Tracking
+function trackSentenceDifficulty(sentence: string, timeToComplete: number, wasCorrect: boolean): void {
+    const stats = JSON.parse(localStorage.getItem('sentenceBuilderStats') || '{}');
+
+    if (!stats[sentence]) {
+        stats[sentence] = { attempts: 0, correct: 0, totalTime: 0 };
+    }
+
+    stats[sentence].attempts++;
+    if (wasCorrect) stats[sentence].correct++;
+    stats[sentence].totalTime += timeToComplete;
+    stats[sentence].lastSeen = Date.now();
+
+    localStorage.setItem('sentenceBuilderStats', JSON.stringify(stats));
+}
+
+// Expose to window
+(window as any).toggleTheme = toggleTheme;
+(window as any).speakWord = speakWord;
 
 /**
  * Start Sentence Builder Game
@@ -77,14 +143,19 @@ export function startSentenceGame(retryCount = 0): void {
     sentenceTarget = sentence.split(' ').filter((w: string) => w.length > 0);
     const shuffled = [...sentenceTarget].sort(() => Math.random() - 0.5);
 
-    // Create word buttons
+    // Create word buttons with TTS on double-click
     shuffled.forEach(word => {
         const btn = document.createElement('button');
         btn.className = 'sentence-word';
         btn.textContent = word;
         btn.onclick = () => moveWord(btn, word);
+        btn.ondblclick = () => speakWord(word); // Speak on double-click
         wordBank.appendChild(btn);
     });
+
+    // Track start time for star rating
+    sentenceStartTime = Date.now();
+    hintsUsed = 0;
 
     // Bind check button
     if (checkBtn) {
@@ -137,7 +208,10 @@ function checkSentence(): void {
     const targetStr = sentenceTarget.join(' ');
 
     if (currentStr === targetStr) {
-        feedbackEl.textContent = `✅ ${t('games.perfect')}`;
+        const timeElapsed = (Date.now() - sentenceStartTime) / 1000;
+        const stars = calculateStars(timeElapsed, hintsUsed);
+
+        feedbackEl.innerHTML = `✅ ${t('games.perfect')} ${'⭐'.repeat(stars)}`;
         feedbackEl.className = 'game-feedback success';
         sentenceScore++;
         if (scoreEl) scoreEl.textContent = String(sentenceScore);
@@ -145,6 +219,9 @@ function checkSentence(): void {
         if (typeof saveScore === 'function') {
             saveScore('sentence', sentenceScore);
         }
+
+        // Track progress
+        trackSentenceDifficulty(targetStr, timeElapsed, true);
 
         // Speak the sentence
         if (typeof TTSManager !== 'undefined' && TTSManager) {
@@ -170,6 +247,9 @@ export function showSentenceAnswer(): void {
     const checkBtn = document.getElementById('checkSentenceBtn') as HTMLButtonElement | null;
 
     if (!dropZone || !wordBank || !feedbackEl) return;
+
+    // Mark as hint used (affects star rating)
+    hintsUsed++;
 
     // Clear and show correct order
     dropZone.innerHTML = '';
@@ -243,6 +323,9 @@ function waitForDataAndStart(): void {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+    // Load saved theme
+    loadTheme();
+
     const nextBtn = document.getElementById('nextSentenceBtn');
     if (nextBtn) {
         nextBtn.onclick = () => startSentenceGame();

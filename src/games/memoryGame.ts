@@ -22,6 +22,9 @@ let timer: ReturnType<typeof setInterval> | null = null;
 let seconds = 0;
 let isProcessing = false;
 let currentCategory = 'all';
+let comboChain = 0;
+let lastMatchTime = 0;
+let difficulty: 'easy' | 'hard' = 'easy';
 let gameData: any[] = [];
 
 // Apply theme from localStorage (Default: Dark)
@@ -50,8 +53,20 @@ function waitForData(): Promise<any[]> {
 // Initialize game
 async function initGame() {
     try {
+        // soundManager.init() moved to user interaction
         const data = await waitForData();
         gameData = data;
+
+        // Initialize Audio on first interaction
+        const enableAudio = () => {
+            soundManager.init();
+            soundManager.resume();
+            document.removeEventListener('click', enableAudio);
+            document.removeEventListener('touchstart', enableAudio);
+        };
+        document.addEventListener('click', enableAudio);
+        document.addEventListener('touchstart', enableAudio);
+
         startGame();
     } catch (error) {
         console.error('Error initializing memory game:', error);
@@ -70,8 +85,11 @@ function resetGame() {
     matchedPairs = 0;
     moves = 0;
     score = 0;
+    score = 0;
     isProcessing = false;
     seconds = 0;
+    comboChain = 0;
+    lastMatchTime = 0;
 
     if (timer) {
         clearInterval(timer);
@@ -91,8 +109,9 @@ function getFilteredWords(): any[] {
         });
     }
 
-    // Shuffle and take 6 pairs (12 cards)
-    return shuffleArray(filtered).slice(0, 6);
+    // Shuffle and take pairs based on difficulty
+    const count = difficulty === 'hard' ? 12 : 6;
+    return shuffleArray(filtered).slice(0, count);
 }
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -143,6 +162,10 @@ function createCards() {
         card.style.animationDelay = `${index * 0.05}s`;
         card.style.animation = 'cardEntrance 0.5s ease-out forwards';
 
+        card.addEventListener('animationend', () => {
+            card.style.animation = '';
+        });
+
         // Check if Arabic text is short
         const isShort = cardData.isArabic && cardData.text.length < 7;
 
@@ -155,9 +178,46 @@ function createCards() {
 
         card.addEventListener('click', () => handleCardClick(card, cardData));
 
+        // 3D Tilt Effect
+        card.addEventListener('mousemove', (e) => {
+            if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg
+            const rotateY = ((x - centerX) / centerX) * 10;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            if (!card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                card.style.transform = '';
+            }
+        });
+
         grid.appendChild(card);
         cards.push(card);
     });
+}
+
+function triggerLocalConfetti(x: number, y: number) {
+    if (typeof (window as any).confetti === 'function') {
+        const xNorm = x / window.innerWidth;
+        const yNorm = y / window.innerHeight;
+
+        (window as any).confetti({
+            particleCount: 30,
+            spread: 40,
+            startVelocity: 20,
+            origin: { x: xNorm, y: yNorm },
+            colors: ['#34d399', '#22d3ee', '#fbbf24']
+        });
+    }
 }
 
 function handleCardClick(card: HTMLElement, cardData: { pairId: number; wordData: any }) {
@@ -167,11 +227,12 @@ function handleCardClick(card: HTMLElement, cardData: { pairId: number; wordData
     }
 
     // Flip the card
+    card.style.transform = ''; // Clear 3D tilt
     card.classList.add('flipped');
     flippedCards.push(card);
 
     // Play flip sound
-    playSound('flip');
+    soundManager.playFlip();
 
     // Check if we have 2 flipped cards
     if (flippedCards.length === 2) {
@@ -194,26 +255,45 @@ function handleCardClick(card: HTMLElement, cardData: { pairId: number; wordData
 }
 
 function handleMatch(wordData: any) {
+    // Check for combo
+    const now = Date.now();
+    if (now - lastMatchTime < 5000) {
+        comboChain++;
+    } else {
+        comboChain = 1;
+    }
+    lastMatchTime = now;
+
     setTimeout(() => {
         flippedCards.forEach(card => {
             card.classList.add('matched');
+
+            // Trigger local particles on each card
+            const rect = card.getBoundingClientRect();
+            triggerLocalConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
         });
 
         matchedPairs++;
-        score += 100 + Math.max(0, 50 - moves * 2); // Bonus for fewer moves
+
+        // Score calculation with Combo
+        const baseScore = 100 + Math.max(0, 50 - moves * 2);
+        const comboBonus = (comboChain - 1) * 50;
+        score += baseScore + comboBonus;
 
         // Show feedback toast
-        showFeedbackToast(wordData);
+        showFeedbackToast(wordData, comboChain);
 
-        // Play match sound
-        playSound('match');
+        // Play match sound & Speak
+        soundManager.playMatch();
+        soundManager.speak(wordData[COL_SWE]);
 
         flippedCards = [];
         isProcessing = false;
         updateUI();
 
         // Check for game over
-        if (matchedPairs === 6) {
+        const totalPairs = difficulty === 'hard' ? 12 : 6;
+        if (matchedPairs === totalPairs) {
             handleGameOver();
         }
     }, 500);
@@ -229,21 +309,24 @@ function handleMismatch() {
         });
 
         // Play wrong sound
-        playSound('wrong');
+        soundManager.playWrong();
 
         flippedCards = [];
         isProcessing = false;
     }, 1000);
 }
 
-function showFeedbackToast(wordData: any) {
+function showFeedbackToast(wordData: any, combo: number = 0) {
     const toast = document.getElementById('feedbackToast');
     const wordEl = document.getElementById('ftWord');
     const sweEl = document.getElementById('ftSentenceSwe');
     const arbEl = document.getElementById('ftSentenceArb');
 
     if (toast && wordEl && sweEl && arbEl) {
-        wordEl.textContent = wordData[COL_SWE];
+        let text = wordData[COL_SWE];
+        if (combo > 1) text += ` (COMBO x${combo}!)`;
+
+        wordEl.textContent = text;
         sweEl.textContent = wordData[COL_EX] || '';
         arbEl.textContent = wordData[COL_EX_ARB] || '';
 
@@ -276,6 +359,7 @@ function handleGameOver() {
 
         // Trigger confetti
         triggerConfetti();
+        soundManager.playWin();
     }
 
     // Save score
@@ -305,37 +389,123 @@ function updateUI() {
     if (timerEl) timerEl.textContent = formatTime(seconds);
 }
 
-function playSound(type: 'flip' | 'match' | 'wrong'): void {
-    // Optional: Add sound effects
-    try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+// --- Sound Manager ---
+class SoundManager {
+    private ctx: AudioContext | null = null;
+    private enabled: boolean = true;
+    private synthesis: SpeechSynthesis;
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+    constructor() {
+        this.synthesis = window.speechSynthesis;
+        // Load mute state
+        this.enabled = localStorage.getItem('memory_sound_enabled') !== 'false';
+    }
 
-        switch (type) {
-            case 'flip':
-                oscillator.frequency.value = 300;
-                gainNode.gain.value = 0.1;
-                break;
-            case 'match':
-                oscillator.frequency.value = 600;
-                gainNode.gain.value = 0.15;
-                break;
-            case 'wrong':
-                oscillator.frequency.value = 150;
-                gainNode.gain.value = 0.12;
-                break;
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
         }
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+        this.updateMuteIcon();
+    }
 
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.1);
-    } catch (e) {
-        // Ignore audio errors
+    resume() {
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    toggle() {
+        this.enabled = !this.enabled;
+        localStorage.setItem('memory_sound_enabled', String(this.enabled));
+        this.updateMuteIcon();
+    }
+
+    private updateMuteIcon() {
+        const btn = document.getElementById('soundToggleBtn');
+        if (btn) {
+            btn.innerHTML = this.enabled ? '🔊' : '🔇';
+            btn.classList.toggle('muted', !this.enabled);
+        }
+    }
+
+    playFlip() {
+        if (!this.enabled || !this.ctx) return;
+        this.playTone(400, 'sine', 0.1, 0, 0.05);
+        this.playTone(600, 'triangle', 0.05, 0.05, 0.02);
+    }
+
+    playMatch() {
+        if (!this.enabled || !this.ctx) return;
+        // Major Chord (C E G) - Bright and Happy
+        this.playTone(523.25, 'sine', 0.4, 0, 0.1);   // C5
+        this.playTone(659.25, 'sine', 0.4, 0.1, 0.1); // E5
+        this.playTone(783.99, 'sine', 0.6, 0.2, 0.1); // G5
+        this.playTone(1046.50, 'sine', 0.8, 0.3, 0.05); // C6 (Sparkle)
+    }
+
+    playWrong() {
+        if (!this.enabled || !this.ctx) return;
+        // Dissonant - Gentle warning
+        this.playTone(300, 'sawtooth', 0.3, 0, 0.05);
+        this.playTone(280, 'sawtooth', 0.3, 0.1, 0.05);
+    }
+
+    playWin() {
+        if (!this.enabled || !this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+        notes.forEach((freq, i) => {
+            this.playTone(freq, 'sine', 0.6, i * 0.15, 0.1);
+        });
+    }
+
+    private playTone(freq: number, type: OscillatorType, duration: number, delay: number, vol: number) {
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+        // Envelope: Soft Attack -> Decay
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + delay);
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(this.ctx.currentTime + delay);
+        osc.stop(this.ctx.currentTime + delay + duration + 0.1);
+    }
+
+    speak(text: string, lang: string = 'sv-SE') {
+        if (!this.enabled) return;
+
+        // Cancel current speech
+        this.synthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.pitch = 1.0;
+
+        // Try to find a good voice
+        const voices = this.synthesis.getVoices();
+        const voice = voices.find(v => v.lang.includes(lang));
+        if (voice) utterance.voice = voice;
+
+        this.synthesis.speak(utterance);
     }
 }
+
+const soundManager = new SoundManager();
+
+// Expose toggle globally
+(window as any).toggleSound = () => soundManager.toggle();
 
 function triggerConfetti() {
     if (typeof (window as any).confetti === 'function') {
@@ -359,15 +529,18 @@ function saveGameStats() {
     }
 }
 
-// Category selection
+// Category & Difficulty
 function selectCategory(category: string, element: HTMLElement) {
     currentCategory = category;
-
-    // Update active state
-    document.querySelectorAll('.pill').forEach(pill => pill.classList.remove('active'));
+    document.querySelectorAll('#categorySelector .pill').forEach(pill => pill.classList.remove('active'));
     element.classList.add('active');
+    startGame();
+}
 
-    // Restart game with new category
+function setDifficulty(diff: 'easy' | 'hard', element: HTMLElement) {
+    difficulty = diff;
+    document.querySelectorAll('#difficultySelector .pill').forEach(pill => pill.classList.remove('active'));
+    element.classList.add('active');
     startGame();
 }
 
@@ -382,6 +555,7 @@ function restartGame() {
 
 // Expose to window
 (window as any).selectCategory = selectCategory;
+(window as any).setDifficulty = setDifficulty;
 (window as any).restartGame = restartGame;
 
 // Initialize on load

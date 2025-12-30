@@ -101,27 +101,34 @@ body.iphone-view .ambient-bg {
 .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.4;
+    filter: blur(60px);
+    /* Reduced from 80px */
+    opacity: 0.25;
+    /* Reduced from 0.4 */
     transition: all 1s ease;
 }
 
 .orb-1 {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    /* Reduced */
+    height: 250px;
     top: -50px;
     left: -50px;
-    background: #2563eb;
-    animation: float 10s infinite alternate;
+    background: #3b82f6;
+    /* Unified blue */
+    animation: float 15s infinite alternate;
+    /* Slower */
 }
 
 .orb-2 {
-    width: 400px;
-    height: 400px;
+    width: 300px;
+    /* Reduced */
+    height: 300px;
     bottom: -100px;
     right: -100px;
-    background: #3b82f6;
-    animation: float 12s infinite alternate-reverse;
+    background: #2563eb;
+    animation: float 18s infinite alternate-reverse;
+    /* Slower */
 }
 
 @keyframes float {
@@ -130,28 +137,34 @@ body.iphone-view .ambient-bg {
     }
 
     to {
-        transform: translate(30px, 30px);
+        transform: translate(15px, 15px);
+        /* Reduced movement */
     }
 }
 
-/* BOSS MODE STYLING */
+/* BOSS MODE STYLING - Calmer version */
 body.boss-mode .ambient-bg .orb-1 {
     background: var(--boss-red);
-    opacity: 0.6;
-    animation-duration: 2s;
+    opacity: 0.35;
+    /* Reduced from 0.6 */
+    animation-duration: 4s;
+    /* Slower from 2s */
 }
 
 body.boss-mode .ambient-bg .orb-2 {
     background: #7f1d1d;
-    opacity: 0.8;
-    animation-duration: 3s;
+    opacity: 0.4;
+    /* Reduced from 0.8 */
+    animation-duration: 5s;
+    /* Slower from 3s */
 }
 
 body.boss-mode .level-badge {
     background: var(--boss-red);
     color: white;
-    box-shadow: 0 0 15px var(--boss-red);
-    animation: pulse-red 1s infinite;
+    box-shadow: 0 0 8px var(--boss-red);
+    /* Reduced glow */
+    /* Removed infinite pulse animation */
 }
 
 @keyframes pulse-red {
@@ -785,13 +798,13 @@ body.boss-mode .missing-vowel {
     color: rgba(255, 255, 255, 0.7) !important;
     padding: 0 !important;
     font-size: 20px !important;
-    
+
     /* 3D Effect - Raised State */
-    box-shadow: 
+    box-shadow:
         5px 5px 10px rgba(0, 0, 0, 0.5),
         -2px -2px 6px rgba(255, 255, 255, 0.05),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-        
+
     transition: all 0.15s ease !important;
     position: relative !important;
     margin-left: 0.5rem !important;
@@ -801,7 +814,7 @@ body.boss-mode .missing-vowel {
 #mobileToggle:hover {
     color: #fff !important;
     transform: translateY(-1px) !important;
-    box-shadow: 
+    box-shadow:
         6px 6px 12px rgba(0, 0, 0, 0.6),
         -2px -2px 8px rgba(255, 255, 255, 0.08) !important;
 }
@@ -810,12 +823,12 @@ body.boss-mode .missing-vowel {
 #mobileToggle.active {
     background: linear-gradient(145deg, #151525, #1e1e2f) !important;
     color: #4ade80 !important;
-    
+
     /* 3D Effect - Pressed State */
-    box-shadow: 
+    box-shadow:
         inset 5px 5px 10px rgba(0, 0, 0, 0.6),
         inset -2px -2px 6px rgba(255, 255, 255, 0.05) !important;
-        
+
     transform: translateY(2px) !important;
 }
 
@@ -823,12 +836,218 @@ body.boss-mode .missing-vowel {
 #mobileToggle svg {
     width: 24px !important;
     height: 24px !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
 }
 
 .mobile-toggle-btn.active svg,
 #mobileToggle.active svg {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }
+/* ========================================
+   FOCUS MODE FOR VOWEL GAME
+   Distraction-free learning
+   ======================================== */
+
+body.focus-mode .ambient-bg,
+body.focus-mode .orb,
+body.focus-mode .orb-1,
+body.focus-mode .orb-2,
+body.focus-mode .start-orb-large {
+    display: none !important;
+}
+
+body.focus-mode {
+    background: #f8fafc !important;
+}
+
+body.focus-mode[data-theme="dark"] {
+    background: #0f172a !important;
+}
+
+body.focus-mode .pair-card,
+body.focus-mode .back-face {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.focus-mode[data-theme="dark"] .pair-card,
+body.focus-mode[data-theme="dark"] .back-face {
+    border: 1px solid #334155 !important;
+}
+
+body.focus-mode .word-text {
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+}
+
+body.focus-mode .vowel-btn {
+    font-size: 2.5rem !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+}
+
+/* Hide boss effects in focus mode */
+body.focus-mode.boss-mode .boss-banner {
+    display: none !important;
+}
+
+body.focus-mode .speed-badge,
+body.focus-mode .combo-text {
+    display: none !important;
+}
+
+/* Simpler feedback */
+body.focus-mode .feedback-icon {
+    font-size: 4rem !important;
+}
+
+/* Focus mode respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    body .orb,
+    body .particle {
+        animation: none !important;
+    }
+}
+
+
+/* ========================================
+   VOWEL INTRO TUTORIAL
+   Educational intro on start screen
+   ======================================== */
+
+.vowel-intro {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    max-width: 320px;
+}
+
+.intro-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+.vowel-comparison {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.vowel-demo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.vowel-demo:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.1);
+}
+
+.vowel-demo:active {
+    transform: scale(0.95);
+    background: var(--primary);
+    color: white;
+}
+
+.intro-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0 0;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* Secondary buttons row */
+.secondary-btns {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.secondary-btns .daily-btn,
+.secondary-btns .audio-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+}
+
+
+/* ========================================
+   MOBILE IMPROVEMENTS - Phase 4
+   Better touch targets and UX
+   ======================================== */
+
+/* Larger vowel buttons on mobile */
+@media (max-width: 600px) {
+    .vowel-btn {
+        min-width: 70px !important;
+        min-height: 70px !important;
+        font-size: 2.5rem !important;
+    }
+    
+    .missing-vowel {
+        width: 52px;
+        height: 52px;
+        line-height: 48px;
+    }
+    
+    .word-text {
+        font-size: 1.6rem;
+    }
+    
+    .word-item {
+        padding: 1rem 0.5rem;
+    }
+    
+    /* Start screen improvements */
+    .start-title {
+        font-size: 2rem;
+    }
+    
+    .vowel-demo {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Touch feedback */
+.vowel-btn:active,
+.vowel-demo:active,
+.listen-btn:active {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+}
+
+/* Prevent accidental double-tap zoom */
+.vowel-btn,
+.word-item,
+.vowel-demo,
+.listen-btn {
+    touch-action: manipulation;
+}
+
+/* Better haptic feedback indicator */
+@keyframes haptic-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+}
+
+.word-item.wrong {
+    animation: haptic-pulse 0.3s ease-out;
+}
+
