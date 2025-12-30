@@ -302,7 +302,7 @@ main {
 }
 
 .word-arb {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     font-size: 1rem;
 }
 
@@ -439,7 +439,7 @@ main {
 
 .flashcard-translation {
     font-size: 1.5rem;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }
 
 .flashcard-type {
@@ -595,7 +595,7 @@ main {
 }
 
 .option-btn.arb {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     direction: rtl;
 }
 
@@ -827,5 +827,5 @@ main {
 }
 
 .arabic-font {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
 }

@@ -264,7 +264,7 @@ function drawRainCanvas(): void {
 
         rainCtx.shadowBlur = 0;
 
-        rainCtx.font = 'bold 20px "Noto Sans Arabic", sans-serif';
+        rainCtx.font = 'bold 20px "Tajawal", sans-serif';
         rainCtx.fillStyle = '#fbbf24';
         rainCtx.textAlign = 'center';
         rainCtx.fillText(word.arabic, word.x, word.y + 10);

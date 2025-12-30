@@ -327,7 +327,7 @@ header {
 
 /* Translation hint (shown after wrong) */
 .translation-hint {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     color: #fbbf24;
     font-size: 1.2rem;
     direction: rtl;

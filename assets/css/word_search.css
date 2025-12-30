@@ -63,7 +63,7 @@ body {
     padding: 10px;
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+    font-family: 'Inter', 'Tajawal', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -148,7 +148,7 @@ header {
 }
 
 .game-title {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1.2rem;
     /* Reduced from 1.8rem */
     color: var(--primary-neon);
@@ -165,7 +165,7 @@ header {
 }
 
 #header-title {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.8rem;
     /* Even smaller font size */
     color: #fff;
@@ -815,7 +815,7 @@ h1 {
 .panel-translation {
     font-size: 1.2rem;
     color: #fff;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     direction: rtl;
 }
 
@@ -828,7 +828,7 @@ h1 {
 .panel-sentence-ar {
     font-size: 1rem;
     color: #aaa;
-    font-family: 'Noto Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     direction: rtl;
 }
 

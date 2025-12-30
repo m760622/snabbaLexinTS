@@ -1,139 +1,104 @@
-import { TextSizeManager } from './utils';
-/**
- * UI Logic for the Profile section
- */
-export function initProfileUI() {
+
+export function initProfileUI(): void {
     console.log('[ProfileUI] Initializing...');
-
-    applyTheme();
-    loadStats();
-    renderWeeklyChart();
-    renderLeaderboard();
+    loadProfileStats();
     renderAchievements();
-
-    // Export to window for potential legacy hooks (though not strictly needed here)
-    (window as any).loadStats = loadStats;
+    createParticles();
 }
 
-function applyTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-}
+function loadProfileStats(): void {
+    // Load state from localStorage
+    const currentXP = parseInt(localStorage.getItem('learn_xp') || '0');
+    const level = parseInt(localStorage.getItem('learn_level') || '1');
+    const streak = parseInt(localStorage.getItem('learn_streak') || '0');
+    // Assuming 'words' stat isn't tracked yet, defaulting to 0 or XP/10
+    const words = Math.floor(currentXP / 10);
 
-function loadStats() {
-    const learningStats = JSON.parse(localStorage.getItem('learningStats') || '{"streak": 0, "totalXP": 0}');
-    const gamesStats = JSON.parse(localStorage.getItem('gamesStats') || '{"totalScore": 0}');
-    const progressData = JSON.parse(localStorage.getItem('progressData') || '{"uniqueWords": 0}');
+    // Update Stats Grid
+    updateElement('xpValue', currentXP.toString());
+    updateElement('streakValue', streak.toString());
+    updateElement('wordsValue', words.toString());
 
-    const streakEl = document.getElementById('streakValue');
-    const wordsEl = document.getElementById('wordsValue');
-    const xpEl = document.getElementById('xpValue');
-    const levelEl = document.getElementById('userLevel');
-
-    if (streakEl) streakEl.textContent = (learningStats.streak || 0).toString();
-    if (wordsEl) wordsEl.textContent = (progressData.uniqueWords || 0).toString();
-
-    const totalXP = (learningStats.totalXP || 0) + (gamesStats.totalScore || 0);
-    if (xpEl) xpEl.textContent = totalXP.toString();
-
-    // Level calculation with bilingual names
-    const level = Math.floor(totalXP / 100) + 1;
-    const levelNames = [
-        { sv: 'Nybörjare', ar: 'مبتدئ' },
-        { sv: 'Studerande', ar: 'طالب' },
-        { sv: 'Kunnig', ar: 'متقدم' },
-        { sv: 'Expert', ar: 'خبير' },
-        { sv: 'Mästare', ar: 'ماهر' }
-    ];
-    const levelData = levelNames[Math.min(level - 1, levelNames.length - 1)];
-    const levelLabel = `🌟 <span class="sv-text">Nivå ${level} - ${levelData.sv}</span><span class="ar-text">المستوى ${level} - ${levelData.ar}</span>`;
-    if (levelEl) {
-        levelEl.innerHTML = levelLabel;
+    // Update Header Info
+    const levelName = getLevelName(level);
+    const userLevelEl = document.getElementById('userLevel');
+    if (userLevelEl) {
+        userLevelEl.innerHTML = `🌟 <span class="sv-text">Nivå ${level} - ${levelName.sv}</span><span class="ar-text">المستوى ${level} - ${levelName.ar}</span>`;
     }
 }
 
-function renderWeeklyChart() {
-    const chart = document.getElementById('weeklyChart');
-    if (!chart) return;
-
-    const weekData = JSON.parse(localStorage.getItem('weeklyActivity') || '[]');
-    const data = weekData.length === 7 ? weekData : [3, 7, 5, 8, 4, 2, 6];
-    const maxVal = Math.max(...data, 1);
-
-    chart.innerHTML = data.map((val: number) => {
-        const height = (val / maxVal) * 100;
-        return `<div class="chart-bar" style="height: ${Math.max(height, 5)}%;" data-value="${val}"></div>`;
-    }).join('');
+function getLevelName(level: number): { sv: string, ar: string } {
+    if (level < 5) return { sv: 'Nybörjare', ar: 'مبتدئ' };
+    if (level < 10) return { sv: 'Lärling', ar: 'متعلم' };
+    if (level < 20) return { sv: 'Expert', ar: 'خبير' };
+    return { sv: 'Mästare', ar: 'محترف' };
 }
 
-function renderLeaderboard() {
-    const container = document.getElementById('leaderboard');
-    if (!container) return;
+function renderAchievements(): void {
+    const grid = document.getElementById('achievementsGrid');
+    const countEl = document.getElementById('achievementCount');
+    if (!grid) return;
 
-    const xpValueEl = document.getElementById('xpValue');
-    const myXP = xpValueEl ? parseInt(xpValueEl.textContent || '0') : 0;
+    // Determine unlocked badges
+    const currentXP = parseInt(localStorage.getItem('learn_xp') || '0');
+    const streak = parseInt(localStorage.getItem('learn_streak') || '0');
+    const level = parseInt(localStorage.getItem('learn_level') || '1');
 
-    const leaders = [
-        { name: 'Ahmad', score: 2450, isYou: false },
-        { name: 'Sara', score: 1890, isYou: false },
-        { name: 'Mohammed', score: 1650, isYou: false },
-        { name: 'Du / أنت', score: myXP, isYou: true },
-        { name: 'Emma', score: Math.max(myXP - 50, 0), isYou: false }
-    ].sort((a, b) => b.score - a.score);
-
-    container.innerHTML = leaders.slice(0, 5).map((user, i) => {
-        const rankClasses = ['gold', 'silver', 'bronze', 'other', 'other'];
-        return `
-            <div class="leaderboard-item ${user.isYou ? 'you' : ''}">
-                <div class="rank ${rankClasses[i]}">${i + 1}</div>
-                <div class="leaderboard-name">${user.name}</div>
-                <div class="leaderboard-score">${user.score} XP</div>
-            </div>`;
-    }).join('');
-
-    // Apply sizing to leaderboard names
-    container.querySelectorAll('.leaderboard-name').forEach(el => {
-        TextSizeManager.apply(el as HTMLElement, el.textContent || '');
-    });
-}
-
-function renderAchievements() {
-    const container = document.getElementById('achievementsGrid');
-    if (!container) return;
-
-    const unlockedSet = new Set(JSON.parse(localStorage.getItem('unlockedAchievements') || '[]'));
-
-    const achievements = [
-        { id: 'first_word', icon: '📖', sv: 'Första ordet', ar: 'أول كلمة' },
-        { id: 'streak_3', icon: '🔥', sv: '3 dagar', ar: '3 أيام' },
-        { id: 'streak_7', icon: '🏆', sv: '7 dagar', ar: '7 أيام' },
-        { id: 'words_50', icon: '📚', sv: '50 ord', ar: '50 كلمة' },
-        { id: 'words_100', icon: '💯', sv: '100 ord', ar: '100 كلمة' },
-        { id: 'game_first', icon: '🎮', sv: 'Första spelet', ar: 'أول لعبة' },
-        { id: 'quiz_perfect', icon: '⭐', sv: '100% quiz', ar: '100% اختبار' },
-        { id: 'lesson_5', icon: '📝', sv: '5 lektioner', ar: '5 دروس' },
-        { id: 'cognates_50', icon: '🔤', sv: '50 liknande', ar: '50 متشابه' },
-        { id: 'daily_3', icon: '🏅', sv: '3 utmaningar', ar: '3 تحديات' },
-        { id: 'flashcard_100', icon: '🃏', sv: '100 kort', ar: '100 بطاقة' },
-        { id: 'master', icon: '👑', sv: 'Mästare', ar: 'ماهر' }
+    const badges = [
+        { icon: '🚀', name: { sv: 'Nykomling', ar: 'بداية موفقة' }, condition: currentXP > 0 },
+        { icon: '⚡', name: { sv: 'Snabb', ar: 'سريع' }, condition: streak >= 3 },
+        { icon: '🧠', name: { sv: 'Genius', ar: 'عبقري' }, condition: level >= 5 },
+        { icon: '🔥', name: { sv: 'On Fire', ar: 'حماس' }, condition: streak >= 7 },
+        { icon: '🏆', name: { sv: 'Champion', ar: 'بطل' }, condition: level >= 10 },
+        { icon: '📚', name: { sv: 'Bokmask', ar: 'دودة كتب' }, condition: currentXP >= 500 }
     ];
 
-    let unlockedCount = 0;
-    container.innerHTML = achievements.map(a => {
-        const isUnlocked = unlockedSet.has(a.id);
-        if (isUnlocked) unlockedCount++;
-        return `
-            <div class="achievement ${isUnlocked ? 'unlocked' : ''}">
-                <span class="achievement-icon">${a.icon}</span>
-                <span class="achievement-name"><span class="sv-text">${a.sv}</span><span class="ar-text">${a.ar}</span></span>
-            </div>`;
-    }).join('');
+    const unlockedCount = badges.filter(b => b.condition).length;
+    if (countEl) countEl.textContent = `(${unlockedCount}/${badges.length})`;
 
-    const countEl = document.getElementById('achievementCount');
-    if (countEl) countEl.textContent = `(${unlockedCount}/${achievements.length})`;
+    grid.innerHTML = badges.map(badge => `
+        <div class="achievement-card ${badge.condition ? 'unlocked' : ''}">
+            <div class="achievement-icon">${badge.icon}</div>
+            <div class="achievement-name">
+                <span class="sv-text">${badge.name.sv}</span>
+                <span class="ar-text">${badge.name.ar}</span>
+            </div>
+        </div>
+    `).join('');
+}
 
-    // Apply sizing to achievement names
-    container.querySelectorAll('.achievement-name').forEach(el => {
-        TextSizeManager.apply(el as HTMLElement, el.textContent || '');
-    });
+function updateElement(id: string, text: string): void {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+// Background particles specific for profile
+function createParticles() {
+    // If we want particles on this page, ensure container exists
+    let container = document.getElementById('particlesContainer');
+    if (!container) {
+        // Create if missing (root profile might not have it)
+        container = document.createElement('div');
+        container.id = 'particlesContainer';
+        container.className = 'particles-container';
+        document.body.insertBefore(container, document.body.firstChild);
+    }
+
+    const colors = ['#60a5fa', '#34d399', '#fbfb8c'];
+
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'learn-particle'; // Reusing learn css class if available
+        particle.style.background = colors[i % 3];
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.width = `${Math.random() * 10 + 5}px`;
+        particle.style.height = particle.style.width;
+        particle.style.opacity = '0.1';
+        particle.style.position = 'absolute';
+        particle.style.borderRadius = '50%';
+        particle.style.animation = `float ${10 + Math.random() * 10}s infinite linear`;
+
+        container.appendChild(particle);
+    }
 }
