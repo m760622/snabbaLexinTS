@@ -15,6 +15,43 @@
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* Calm Theme - Softer, Educational Focus */
+[data-theme="calm"] {
+    --bg-color: #1a1a2e;
+    --grid-bg: #16213e;
+    --text-color: #e8e8e8;
+    --primary-neon: #4a9eff;
+    --secondary-neon: #7b68ee;
+    --accent-neon: #6c5ce7;
+    --cell-size: 42px;
+    --gap: 4px;
+    --panel-bg: #1f2937;
+    --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Calm Theme: Disable intense animations */
+[data-theme="calm"] #grid {
+    animation: none !important;
+    box-shadow: 0 4px 20px rgba(74, 158, 255, 0.15);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+}
+
+[data-theme="calm"] .cell {
+    transition: all 0.2s ease;
+    background: rgba(31, 41, 55, 0.9);
+}
+
+[data-theme="calm"] .cell:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: scale(1.05);
+}
+
+[data-theme="calm"] .hint-btn,
+[data-theme="calm"] #mystery-hint {
+    animation: none !important;
+    box-shadow: 0 2px 10px rgba(74, 158, 255, 0.2);
+}
+
 * {
     box-sizing: border-box;
     -webkit-user-select: none;
@@ -44,10 +81,32 @@ body.iphone-view {
 
 /* Mobile Toggle Button */
 
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
 
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
 
-
-
+/* Calm Mode: Gradient Background */
+[data-theme="calm"] body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
 
 
 /* --- Header & Layout --- */
@@ -801,6 +860,10 @@ h1 {
     backdrop-filter: blur(5px);
 }
 
+.modal-overlay.active {
+    display: flex;
+}
+
 .modal-content {
     background: #1e1e24;
     border: 1px solid var(--primary-neon);
@@ -958,4 +1021,133 @@ h1 {
 #mobileToggle.active svg {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
+}
+
+/* Mode Grid Layout */
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.mode-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.mode-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--primary-neon);
+}
+
+.mode-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.mode-name {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.mode-desc {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.star {
+    font-size: 2rem;
+    color: #444;
+    transition: all 0.3s ease;
+}
+
+.star.earned {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    animation: starPop 0.5s ease-out;
+}
+
+@keyframes starPop {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Colorblind Mode */
+[data-colorblind="deuteranopia"] {
+    --primary-neon: #0077bb;
+    --secondary-neon: #ee7733;
+    --accent-neon: #0077bb;
+}
+
+[data-colorblind="protanopia"] {
+    --primary-neon: #33bbee;
+    --secondary-neon: #ee3377;
+    --accent-neon: #33bbee;
+}
+
+[data-colorblind="tritanopia"] {
+    --primary-neon: #009988;
+    --secondary-neon: #cc3311;
+    --accent-neon: #009988;
+}
+
+/* High Contrast for colorblind */
+[data-colorblind] .cell.found {
+    background: var(--accent-neon) !important;
+    border: 3px solid #fff !important;
+}
+
+[data-colorblind] .cell.selected-pending {
+    border: 3px dashed #fff !important;
+}
+
+/* Adjustable Font Sizes */
+[data-fontsize="small"] {
+    --cell-size: 32px;
+}
+
+[data-fontsize="small"] .cell {
+    font-size: 0.9rem;
+}
+
+[data-fontsize="large"] {
+    --cell-size: 48px;
+}
+
+[data-fontsize="large"] .cell {
+    font-size: 1.4rem;
+}
+
+[data-fontsize="xlarge"] {
+    --cell-size: 56px;
+}
+
+[data-fontsize="xlarge"] .cell {
+    font-size: 1.8rem;
 }

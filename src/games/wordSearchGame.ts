@@ -274,6 +274,7 @@ class WordSearchGame {
     lastWordTime: number = 0;
     comboTimer: any = null;
     bombSpawnerInterval: any = null;
+    levelStartTime: number = 0;
 
     constructor() {
         this.currentTopicIndex = 0;
@@ -344,9 +345,9 @@ class WordSearchGame {
         window.addEventListener('mousedown', this.handleInteraction);
         window.addEventListener('keydown', this.handleInteraction);
 
-        // Initial State: SKIP MENU FOR DEBUGGING
-        // this.showMenu();
-        this.closeMenu();
+        // Initial State: Show Menu
+        this.showMenu();
+        // this.closeMenu();
 
         // Start Dynamic Lighting
         this.startDynamicLighting();
@@ -354,6 +355,45 @@ class WordSearchGame {
         // Attach UI Sounds
         // Setup Global Input Listeners (Sounds & Effects)
         this.setupGlobalInputListeners();
+
+        // Load saved theme
+        this.loadTheme();
+    }
+
+    // Theme Management
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'calm' ? 'neon' : 'calm';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('wordSearchTheme', newTheme);
+
+        // Update toggle button icon
+        const themeBtn = document.getElementById('themeToggle');
+        if (themeBtn) {
+            themeBtn.textContent = newTheme === 'calm' ? '☀️' : '🌙';
+            themeBtn.title = newTheme === 'calm' ? 'وضع نيون' : 'وضع هادئ';
+        }
+
+        // Stop dynamic lighting in calm mode
+        if (newTheme === 'calm') {
+            this.gridEl.style.animation = 'none';
+        }
+    }
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('wordSearchTheme') || 'neon';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        const themeBtn = document.getElementById('themeToggle');
+        if (themeBtn) {
+            themeBtn.textContent = savedTheme === 'calm' ? '☀️' : '🌙';
+            themeBtn.title = savedTheme === 'calm' ? 'وضع نيون' : 'وضع هادئ';
+        }
+
+        if (savedTheme === 'calm') {
+            this.gridEl.style.animation = 'none';
+        }
     }
 
     startDynamicLighting() {
@@ -447,6 +487,51 @@ class WordSearchGame {
         };
         localStorage.setItem('neonSearch_progress', JSON.stringify(this.progress));
         this.updateScoreUI();
+    }
+
+    // Track word difficulty for spaced repetition
+    trackWordDifficulty(word: string, timeToFind: number) {
+        const wordStats = JSON.parse(localStorage.getItem('wordSearchStats') || '{}');
+
+        if (!wordStats[word]) {
+            wordStats[word] = {
+                attempts: 0,
+                totalTime: 0,
+                lastSeen: null,
+                difficulty: 1 // 1-5 scale
+            };
+        }
+
+        wordStats[word].attempts++;
+        wordStats[word].totalTime += timeToFind;
+        wordStats[word].lastSeen = Date.now();
+
+        // Calculate difficulty (higher time = harder word)
+        const avgTime = wordStats[word].totalTime / wordStats[word].attempts;
+        if (avgTime > 30000) wordStats[word].difficulty = 5;
+        else if (avgTime > 20000) wordStats[word].difficulty = 4;
+        else if (avgTime > 10000) wordStats[word].difficulty = 3;
+        else if (avgTime > 5000) wordStats[word].difficulty = 2;
+        else wordStats[word].difficulty = 1;
+
+        localStorage.setItem('wordSearchStats', JSON.stringify(wordStats));
+    }
+
+    // Get learning progress report
+    getLearningStats() {
+        const wordStats = JSON.parse(localStorage.getItem('wordSearchStats') || '{}');
+        const words = Object.keys(wordStats);
+
+        return {
+            totalWordsLearned: words.length,
+            easyWords: words.filter(w => wordStats[w].difficulty <= 2).length,
+            mediumWords: words.filter(w => wordStats[w].difficulty === 3).length,
+            hardWords: words.filter(w => wordStats[w].difficulty >= 4).length,
+            wordsToReview: words.filter(w => {
+                const daysSinceSeen = (Date.now() - wordStats[w].lastSeen) / (1000 * 60 * 60 * 24);
+                return daysSinceSeen > 3 || wordStats[w].difficulty >= 4;
+            })
+        };
     }
 
     updateScoreUI() {
@@ -569,29 +654,27 @@ class WordSearchGame {
         this.stopTimer();
         this.stopShifting();
         this.updateSettingsUI();
+        this.setupMenuListeners(); // Ensure listeners are attached
         this.mainMenu.classList.add('active');
     }
 
-    updateSettingsUI() {
-        const updateBtn = (id: string, enabled: boolean) => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                if (enabled) {
-                    btn.classList.add('active');
-                    const icon = btn.querySelector('.toggle-icon');
-                    if (icon) icon.textContent = '🟢';
-                } else {
-                    btn.classList.remove('active');
-                    const icon = btn.querySelector('.toggle-icon');
-                    if (icon) icon.textContent = '⚪';
-                }
-            }
-        };
+    setupMenuListeners() {
+        const playBtn = document.getElementById('btn-play-game');
+        if (playBtn) {
+            // Remove old listeners to prevent duplicates (though showMenu calls it, better safe)
+            const newBtn = playBtn.cloneNode(true);
+            playBtn.parentNode?.replaceChild(newBtn, playBtn);
 
-        updateBtn('btn-mystery', this.mysteryEnabled);
-        updateBtn('btn-fog', this.fogEnabled);
-        updateBtn('btn-bomb', this.bombEnabled);
-        updateBtn('btn-frozen', this.frozenEnabled);
+            newBtn.addEventListener('click', () => {
+                this.closeMenu();
+            });
+        } else {
+            // Fallback: button not found
+        }
+    }
+
+    updateSettingsUI() {
+        // ...
     }
 
     closeMenu() {
@@ -602,7 +685,40 @@ class WordSearchGame {
 
     setMode(mode: string) {
         this.mode = mode;
+
+        // Mode-specific settings
+        if (mode === 'learning') {
+            // Learning Mode: No timer, free hints
+            this.stopTimer();
+            this.timerEl.style.display = 'none';
+            this.hintBtn.disabled = false;
+        } else if (mode === 'review') {
+            // Review Mode: Load hard/forgotten words
+            this.loadReviewWords();
+            this.timerEl.style.display = 'none';
+        } else if (mode === 'timerush') {
+            this.timerEl.style.display = 'block';
+        } else {
+            this.timerEl.style.display = 'none';
+        }
+
         this.closeMenu();
+    }
+
+    // Load difficult words for review mode
+    loadReviewWords() {
+        const stats = this.getLearningStats();
+        const hardWords = stats.wordsToReview;
+
+        if (hardWords.length < 5) {
+            // Not enough hard words, show message and use classic mode
+            console.log('Not enough words to review. Play more levels first!');
+            this.mode = 'classic';
+            return;
+        }
+
+        // Store review words for the game session
+        (this as any).reviewWordsPool = hardWords;
     }
 
     toggleMystery(enabled: boolean) {
@@ -639,6 +755,11 @@ class WordSearchGame {
     }
 
     initLevel() {
+
+        // Force Fog OFF (Double Safety)
+        this.fogEnabled = false;
+
+        // Update Nav
         this.updateNavButtons();
         const topic = TOPICS[this.currentTopicIndex];
 
@@ -943,28 +1064,6 @@ class WordSearchGame {
             }
         }
         this.gridEl.appendChild(fragment);
-
-        // DEBUG: Force check visibility
-        setTimeout(() => {
-            const firstCell = this.gridEl.querySelector('.cell') as HTMLElement;
-            if (firstCell) {
-                const style = window.getComputedStyle(firstCell);
-                console.log("DEBUG CHECK:", {
-                    text: firstCell.textContent,
-                    color: style.color,
-                    bg: style.backgroundColor,
-                    width: style.width,
-                    height: style.height,
-                    display: style.display,
-                    visibility: style.visibility,
-                    opacity: style.opacity
-                });
-                alert(`DEBUG REPORT:\nText: "${firstCell.textContent}"\nColor: ${style.color}\nSize: ${style.width} x ${style.height}\nDisplay: ${style.display}\nVisibility: ${style.visibility}`);
-            } else {
-                console.error("DEBUG: No cells found!");
-                alert("DEBUG ERROR: No cells found in grid!");
-            }
-        }, 500);
     }
 
     renderWordBank() {
@@ -992,6 +1091,25 @@ class WordSearchGame {
             document.getElementById('panel-sentence-sv')!.textContent = wordData.s;
             document.getElementById('panel-sentence-ar')!.textContent = wordData.st;
             this.bottomInfoPanel.classList.add('active');
+
+            // Speak the word in Swedish
+            this.speakWord(wordData.w);
+        }
+    }
+
+    // Text-to-Speech for word pronunciation
+    speakWord(word: string) {
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'sv-SE'; // Swedish
+            utterance.rate = 0.8; // Slightly slower for learning
+            utterance.pitch = 1;
+            utterance.volume = 0.8;
+
+            window.speechSynthesis.speak(utterance);
         }
     }
 
@@ -1158,6 +1276,10 @@ class WordSearchGame {
         this.score += points;
         this.saveProgress(); // Updates UI and saves
 
+        // Track word difficulty for spaced repetition
+        const timeToFind = Date.now() - (this.levelStartTime || Date.now());
+        this.trackWordDifficulty(word, timeToFind);
+
         this.currentSelection.forEach(el => el.classList.add('found'));
 
         // Defuse Bombs
@@ -1193,8 +1315,43 @@ class WordSearchGame {
             this.unlockNextLevel();
             setTimeout(() => {
                 this.soundManager.playLevelComplete();
+                this.updateStarDisplay(); // Show star rating
                 this.levelModal.classList.add('active');
             }, 500);
+        }
+    }
+
+    // Calculate stars based on performance
+    calculateStars(): number {
+        const timeElapsed = (Date.now() - this.levelStartTime) / 1000; // seconds
+        const hintsUsed = (this as any).hintsUsedThisLevel || 0;
+
+        let stars = 3;
+
+        // Deduct for time (more than 2 mins = -1, more than 5 mins = -2)
+        if (timeElapsed > 300) stars--;
+        if (timeElapsed > 120) stars--;
+
+        // Deduct for hints used
+        if (hintsUsed > 0) stars--;
+        if (hintsUsed > 2) stars--;
+
+        return Math.max(1, stars); // Minimum 1 star
+    }
+
+    // Update star display in modal
+    updateStarDisplay() {
+        const stars = this.calculateStars();
+
+        for (let i = 1; i <= 3; i++) {
+            const starEl = document.getElementById(`star-${i}`);
+            if (starEl) {
+                if (i <= stars) {
+                    starEl.classList.add('earned');
+                } else {
+                    starEl.classList.remove('earned');
+                }
+            }
         }
     }
 
@@ -1501,14 +1658,21 @@ class WordSearchGame {
 }
 
 // Start Game
-// Start Game - Immediate Initialization for Module
-try {
-    const gameInstance = new WordSearchGame();
-    (window as any).game = gameInstance;
-    console.log("WordSearchGame initialized and attached to window.game");
-} catch (e) {
-    console.error("Failed to initialize WordSearchGame:", e);
-}
+// Initialize game when DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure all styles and layout are calculated
+    setTimeout(() => {
+        try {
+            console.log("Initializing WordSearchGame...");
+            const gameInstance = new WordSearchGame();
+            (window as any).game = gameInstance;
+            console.log("WordSearchGame initialized and attached to window.game");
+
+        } catch (e) {
+            console.error("Failed to initialize WordSearchGame:", e);
+        }
+    }, 100);
+});
 
 // Apply mobile view from localStorage
 const mobileView = localStorage.getItem('mobileView');

@@ -19,9 +19,11 @@
         <!-- Row 1: Back Button + Mobile Toggle + Game Title -->
         <div class="header-row-1">
             <button class="back-btn" onclick="window.location.href='games.html'">←</button>
+            <button id="themeToggle" class="theme-toggle-btn" onclick="game.toggleTheme()" title="وضع هادئ">🌙</button>
             <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
                 title="وضع الموبايل">📱</button>
-            <h1 class="game-title title-neon-search"><span class="sv-text">Neon Search</span><span class="ar-text">البحث عن الكلمات</span>
+            <h1 class="game-title title-neon-search"><span class="sv-text">Neon Search</span><span class="ar-text">البحث
+                    عن الكلمات</span>
             </h1>
         </div>
 
@@ -92,6 +94,11 @@
                     <div class="mode-icon">🧩</div>
                     <div class="mode-name">Classic</div>
                 </div>
+                <div class="mode-card" onclick="game.setMode('learning')">
+                    <div class="mode-icon">📚</div>
+                    <div class="mode-name">Learning</div>
+                    <div class="mode-desc">No Timer</div>
+                </div>
                 <div class="mode-card" onclick="game.setMode('flashlight')">
                     <div class="mode-icon">🔦</div>
                     <div class="mode-name">Flashlight</div>
@@ -100,9 +107,14 @@
                     <div class="mode-icon">⏳</div>
                     <div class="mode-name">Time Rush</div>
                 </div>
+                <div class="mode-card" onclick="game.setMode('review')">
+                    <div class="mode-icon">🔄</div>
+                    <div class="mode-name">Review</div>
+                    <div class="mode-desc">Hard Words</div>
+                </div>
                 <div class="mode-card" onclick="game.setMode('shifting')">
                     <div class="mode-icon">🌊</div>
-                    <div class="mode-name">Shifting Grid</div>
+                    <div class="mode-name">Shifting</div>
                 </div>
             </div>
 
@@ -131,7 +143,7 @@
                 </div>
             </div>
 
-            <button class="modal-btn modal-btn-styled" onclick="game.closeMenu()">Play /
+            <button id="btn-play-game" class="modal-btn modal-btn-styled">Play /
                 العب</button>
         </div>
     </div>
@@ -168,6 +180,11 @@
         <div class="modal-content">
             <h2 class="level-complete-title"><span class="sv-text">Nivå Klar!</span><span class="ar-text">اكتمل
                     المستوى!</span> 🎉</h2>
+            <div id="star-rating" class="star-rating">
+                <span class="star" id="star-1">⭐</span>
+                <span class="star" id="star-2">⭐</span>
+                <span class="star" id="star-3">⭐</span>
+            </div>
             <p><span class="sv-text">Bra jobbat!</span><span class="ar-text">أحسنت!</span></p>
             <button class="modal-btn" onclick="game.nextLevel()">Nästa Nivå / التالي</button>
             <button class="btn-exit-modern" onclick="game.showNavigation()">Levels / المستويات</button>
