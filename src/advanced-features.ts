@@ -239,12 +239,14 @@ export const LivePlayersCounter = {
 
         const widget = this.createWidget();
         const xpWidget = document.getElementById('xpWidget');
-        if (xpWidget && xpWidget.nextSibling) {
+        if (xpWidget && xpWidget.parentNode === container) {
             container.insertBefore(widget, xpWidget.nextSibling);
         } else {
             const header = document.querySelector('.games-header');
-            if (header && header.nextSibling) {
+            if (header && header.parentNode === container) {
                 container.insertBefore(widget, header.nextSibling);
+            } else {
+                container.prepend(widget);
             }
         }
 
@@ -323,12 +325,14 @@ export const MotivationalQuotes = {
         const widget = this.createWidget();
 
         const liveWidget = document.querySelector('.live-players-widget');
-        if (liveWidget && liveWidget.nextSibling) {
+        if (liveWidget && liveWidget.parentNode === container) {
             container.insertBefore(widget, liveWidget.nextSibling);
         } else {
             const statsHero = document.querySelector('.stats-hero');
-            if (statsHero) {
+            if (statsHero && statsHero.parentNode === container) {
                 container.insertBefore(widget, statsHero);
+            } else {
+                container.prepend(widget);
             }
         }
     },
@@ -730,8 +734,12 @@ export const AIRecommendations = {
         const widget = this.createWidget(recommendation);
 
         const categoryFilter = document.querySelector('.category-filter-container');
-        if (categoryFilter) {
-            container.insertBefore(widget, categoryFilter.nextSibling);
+        if (categoryFilter && categoryFilter.parentNode) {
+            // Safe insertion: Insert into the actual parent of categoryFilter
+            categoryFilter.parentNode.insertBefore(widget, categoryFilter.nextSibling);
+        } else {
+            // Fallback: Just append to container
+            container.appendChild(widget);
         }
     },
 
