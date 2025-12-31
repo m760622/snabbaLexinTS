@@ -71,6 +71,19 @@ Located in the **Learn** section, these chips use a semantic color-coded system 
 
 This system helps users quickly identify word types at a glance without reading the labels.
 
+### Search Result Cards (Bilingual & Compact)
+
+The dictionary search interface uses a highly optimized compact card layout (`120px` fixed height) designed for rapid scanning:
+
+* **Bilingual Display:**
+  * **Swedish:** Single line, bold, truncated with ellipsis if too long.
+  * **Arabic:** Multi-line (max 2 lines), right-aligned, ensuring visibility of translations.
+* **Grammar Badges:**
+  * Dynamically colored badges based on word type (Green for *Ett*, Red for *En*, Blue for *Verb*).
+  * Robut detection logic handles compound words and various forms.
+* **Sorting:**
+  * **Relevance First:** Exact matches (e.g., "Hus") always appear at the top, followed by starts-with matches.
+
 ## 📦 Setup & Run
 
 1. **Install Dependencies:**

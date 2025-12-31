@@ -353,15 +353,25 @@ export const GrammarHelper = {
         const formParts = formsLower.split(',').map(f => f.trim());
         if (formParts.length >= 2) {
             const definiteSingular = formParts[1];
-            if (definiteSingular.match(/\w+(an|en)$/) && !definiteSingular.match(/\w+et$/)) return '<span class="grammar-badge grammar-en">En</span>';
-            if (definiteSingular.match(/\w+et$/)) return '<span class="grammar-badge grammar-ett">Ett</span>';
+            // Fix: Use endsWith or unicode friendly regex instead of \w
+            if ((definiteSingular.endsWith('en') || definiteSingular.endsWith('an')) && !definiteSingular.endsWith('et')) return '<span class="grammar-badge grammar-en">En</span>';
+            if (definiteSingular.endsWith('et')) return '<span class="grammar-badge grammar-ett">Ett</span>';
         }
 
-        if (formsLower.startsWith('en ') || formsLower.match(/\ben\s+\w+/)) return '<span class="grammar-badge grammar-en">En</span>';
-        if (formsLower.startsWith('ett ') || formsLower.match(/\bett\s+\w+/)) return '<span class="grammar-badge grammar-ett">Ett</span>';
+        if (formsLower.startsWith('en ') || formsLower.match(/\ben\s+/)) return '<span class="grammar-badge grammar-en">En</span>';
+        if (formsLower.startsWith('ett ') || formsLower.match(/\bett\s+/)) return '<span class="grammar-badge grammar-ett">Ett</span>';
 
+        // Fallbacks
         if (normalizedType.includes('verb')) return '<span class="grammar-badge grammar-verb">Verb</span>';
         if (normalizedType.includes('subst')) return '<span class="grammar-badge grammar-en">Subst</span>';
+        if (normalizedType.includes('prep')) return '<span class="grammar-badge">Prep</span>';
+        if (normalizedType.includes('konj')) return '<span class="grammar-badge">Konj</span>';
+        if (normalizedType.includes('pron')) return '<span class="grammar-badge">Pron</span>';
+
+        // Generic fallback for any other type
+        if (type && type.length > 0 && type.length < 10) {
+            return `<span class="grammar-badge">${type}</span>`;
+        }
 
         return '';
     }
