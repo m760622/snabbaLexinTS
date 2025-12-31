@@ -1,0 +1,156 @@
+/* Compact Card Improvements */
+
+/* Increase specificity to override potential conflicts */
+/* Increase specificity to override potential conflicts */
+.card.compact-card,
+.card.card-link.compact-card {
+    height: 120px !important;
+    min-height: 120px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.compact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-hover);
+}
+
+/* Ensure actions don't break layout */
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    /* Space between badge (left) and actions (right) */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+.card-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.word-header-group {
+    /* Deprecated, but keeping for safety if reused elsewhere */
+    width: 100%;
+    margin-bottom: 4px;
+    overflow: hidden;
+}
+
+/* Force single line for Swedish text */
+.word-swe {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+    text-align: left;
+    /* Ensure it starts from left */
+}
+
+/* Allow Arabic text to take remaining space but valid truncation */
+.word-arb {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    /* Allow wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+    /* Ensure it aligns right */
+    max-height: none !important;
+    /* Override any global max-height */
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+/* Override global button styles for compact cards */
+.compact-card .action-button {
+    padding: 0 !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    border-radius: 8px !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.compact-card .action-button svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 2.5 !important;
+}
+
+/* Grammar Badge Styles */
+.grammar-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-right: 4px;
+    background: var(--surface-secondary);
+    /* Default fallback */
+    color: var(--text-secondary);
+}
+
+/* Specific Grammar Colors - Using !important to override generic styles */
+.grammar-en {
+    color: #e11d48 !important;
+    /* Rose Red */
+    background: rgba(225, 29, 72, 0.1) !important;
+    border: 1px solid rgba(225, 29, 72, 0.2) !important;
+}
+
+.grammar-ett {
+    color: #16a34a !important;
+    /* Green */
+    background: rgba(22, 163, 74, 0.1) !important;
+    border: 1px solid rgba(22, 163, 74, 0.2) !important;
+}
+
+.grammar-verb {
+    color: #2563eb !important;
+    /* Blue */
+    background: rgba(37, 99, 235, 0.1) !important;
+    border: 1px solid rgba(37, 99, 235, 0.2) !important;
+}
+
+.grammar-adj {
+    color: #9333ea !important;
+    /* Purple */
+    background: rgba(147, 51, 234, 0.1) !important;
+    border: 1px solid rgba(147, 51, 234, 0.2) !important;
+}
+
+.grammar-adv {
+    color: #ea580c !important;
+    /* Orange */
+    background: rgba(234, 88, 12, 0.1) !important;
+    border: 1px solid rgba(234, 88, 12, 0.2) !important;
+}

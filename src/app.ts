@@ -347,6 +347,25 @@ export class App {
                 const bLen = (b[5] || '').length + (b[7] || '').length;
                 return bLen - aLen;
             });
+        } else {
+            // Default: Relevance (Exact match > Starts with > Original)
+            filtered = [...filtered].sort((a, b) => {
+                const aSwe = a[2].toLowerCase();
+                const bSwe = b[2].toLowerCase();
+                const q = normalizedQuery;
+
+                // Exact match priority
+                if (aSwe === q && bSwe !== q) return -1;
+                if (bSwe === q && aSwe !== q) return 1;
+
+                // Starts with priority
+                const aStarts = aSwe.startsWith(q);
+                const bStarts = bSwe.startsWith(q);
+                if (aStarts && !bStarts) return -1;
+                if (bStarts && !aStarts) return 1;
+
+                return 0;
+            });
         }
 
         this.currentResults = filtered;
@@ -409,12 +428,9 @@ export class App {
         // Optimized: Condense by removing examples/idioms from list view as requested
         return `
             <div class="card card-link compact-card" data-type="${category}" onclick="if(!event.target.closest('button')) window.location.href='details.html?id=${id}'">
-                <div class="card-header">
-                    <div class="word-header-group">
-                        <h2 class="word-swe" dir="ltr" data-auto-size data-max-lines="2">${swe}</h2>
-                    </div>
+                <div class="card-top-row">
+                    ${grammarBadge}
                     <div class="card-actions">
-                        ${grammarBadge}
                         <button class="copy-btn action-button" onclick="copyWord('${swe.replace(/'/g, "\\'")}', event)" title="Kopiera">
                             ${copyIcon}
                         </button>
@@ -423,10 +439,14 @@ export class App {
                         </button>
                     </div>
                 </div>
-                <p class="word-arb" dir="rtl" data-auto-size data-max-lines="2">${arb}</p>
+                <div class="card-main-content">
+                    <h2 class="word-swe" dir="ltr" data-auto-size data-max-lines="1">${swe}</h2>
+                    <p class="word-arb" dir="rtl" data-auto-size data-max-lines="1">${arb}</p>
+                </div>
             </div>
         `;
     }
+
 
     private setupInfiniteScroll() {
         window.addEventListener('scroll', () => {
