@@ -43,6 +43,10 @@ An interactive, gamified language learning application for Swedish and Arabic sp
   * **Font:** **Amiri** (أمييري)
   * **Usage:** Exclusively for Quranic verses, *Asma Ul Husna*, and religious text to maintain traditional calligraphy aesthetics.
   * **Fallback:** `serif`.
+* **Quranic Text (النصوص القرآنية):**
+  * **Font:** **Amiri** (أمييري)
+  * **Usage:** Exclusively for Quranic verses, *Asma Ul Husna*, and religious text to maintain traditional calligraphy aesthetics.
+  * **Fallback:** `serif`.
 
 ### 3. Deprecated Fonts (خطوط محظورة)
 
@@ -50,6 +54,22 @@ The following fonts have been removed and should **NOT** be introduced back:
 
 * ❌ `Outfit`, `Poppins`, `Orbitron` (Replaced by **Inter**)
 * ❌ `Cairo`, `Noto Sans Arabic`, `IBM Plex Sans Arabic` (Replaced by **Tajawal**)
+
+## 🎨 UI Components & Design System
+
+### Filter Chips (أزرار التصفية)
+
+Located in the **Learn** section, these chips use a semantic color-coded system to categorized words visually:
+
+* **Design:** Pill-shaped buttons with colored borders and transparent backgrounds.
+* **Active State:** When selected, the background fills with a faint semantic color, and the border glows.
+* **Color Coding:**
+  * **Nouns (Substantiv):** <span style="color: #fca5a5">Red/Pink</span> - Representing objects and implementation.
+  * **Verbs (Verb):** <span style="color: #86efac">Green</span> - Representing action and movement.
+  * **Adjectives (Adjektiv):** <span style="color: #93c5fd">Blue</span> - Describing properties.
+  * **Common Phrases:** <span style="color: #fcd34d">Gold/Yellow</span> - Essential daily expressions.
+
+This system helps users quickly identify word types at a glance without reading the labels.
 
 ## 📦 Setup & Run
 

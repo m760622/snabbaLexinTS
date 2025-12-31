@@ -90,7 +90,7 @@ function addXP(amount: number): void {
     }
 
     saveState();
-    updateStatsUI();
+    // updateStatsUI(); // Removed - moved to profile-ui
 }
 
 // Show level up animation
@@ -101,9 +101,6 @@ function showLevelUpAnimation(): void {
         setTimeout(() => levelBadge.classList.remove('level-up'), 1000);
     }
 }
-
-// Update stats UI
-// function updateStatsUI removed - moved to profile-ui.ts
 
 // Render lessons grid
 function renderLessons(): void {
@@ -153,24 +150,85 @@ function createLessonCardHTML(lesson: Lesson): string {
         'advanced': '🔴'
     };
 
+    // Mastery Stars - Only show if completed
+    let starsHtml = '';
+    if (isCompleted) {
+        starsHtml = `
+            <div class="mastery-stars">
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+            </div>
+        `;
+    }
+
+    // Layout matching 'Results Card' style from main App
+    const tFn = (window as any).t;
+    const rawLabel = tFn ? tFn('learn.sections') : 'avsnitt';
+    // If translation is missing (returns key) or empty, use fallback
+    const sectionLabel = (rawLabel === 'learn.sections' || !rawLabel) ? 'avsnitt' : rawLabel;
+
+    const sectionsText = `${lesson.sections.length} ${sectionLabel}`;
+    const timeText = `${Math.max(3, lesson.sections.length * 2)} min`;
+
+    // Arabic title or description if available
+    const subTitle = lesson.id === 'wordOrder' ? 'ترتيب الكلمات - قاعدة V2' :
+        lesson.id === 'verbs' ? 'الأفعال والأزمنة' :
+            lesson.id === 'pronouns' ? 'الضمائر الشخصية' :
+                lesson.id === 'adjectives' ? 'الصفات - التذكير والتأنيث' : '&nbsp;'; /* Use space directly */
+
     return `
-        <div class="lesson-card ${isCompleted ? 'completed' : ''}" onclick="openLesson('${lesson.id}')" data-level="${lesson.level}">
+        <div class="lesson-card search-result-style ${isCompleted ? 'completed' : ''}"
+             onclick="openLesson('${lesson.id}')"
+             data-level="${lesson.level}"
+             onmousemove="handleCardTilt(event, this)"
+             onmouseleave="resetCardTilt(this)">
+             
             <div class="lesson-card-header">
-                <span class="lesson-level" style="background: ${levelColors[lesson.level] || '#6366f1'}40; color: ${levelColors[lesson.level] || '#6366f1'}">
-                    ${levelEmoji[lesson.level] || '📚'} ${lesson.level}
-                </span>
-                ${isCompleted ? '<span class="lesson-complete-badge">✓</span>' : ''}
+                <div class="lesson-text-group">
+                    <h2 class="lesson-title search-result-title">${lesson.title}</h2>
+                    <span class="lesson-level-badge ${lesson.level}">${levelEmoji[lesson.level] || '📚'} ${lesson.level}</span>
+                </div>
+                ${isCompleted ? '<span class="check-icon">✓</span>' : ''}
             </div>
-            <h3 class="lesson-title">${lesson.title}</h3>
-            <div class="lesson-meta">
-                <span>${lesson.sections.length} avsnitt</span>
-                <span>~${Math.max(5, lesson.sections.length * 3)} min</span>
+            
+            <p class="lesson-subtitle-arb" dir="rtl">${subTitle}</p>
+            
+            <div class="lesson-meta-row">
+                <span class="meta-item"><span class="icon">📄</span> ${sectionsText}</span>
+                <span class="meta-item"><span class="icon">⚡</span> ${timeText}</span>
             </div>
+
+            ${starsHtml}
+
             <div class="lesson-progress-bar">
                 <div class="lesson-progress-fill" style="width: ${isCompleted ? '100' : '0'}%"></div>
             </div>
         </div>
     `;
+}
+
+// 3D Tilt Effect
+function handleCardTilt(e: MouseEvent, card: HTMLElement) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Calculate percentage for gradient
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+
+    // Calculate rotation
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg
+    const rotateY = ((x - centerX) / centerX) * 10;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+}
+
+function resetCardTilt(card: HTMLElement) {
+    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
 }
 
 // Open lesson
@@ -240,7 +298,7 @@ function renderLessonContent(lesson: Lesson): string {
                     ` : ''}
                 </div>
             `).join('')}
-            
+
             <div class="lesson-actions">
                 <button class="complete-lesson-btn" onclick="completeLesson('${lesson.id}')">
                     ✅ <span class="sv-text">Markera som klar</span><span class="ar-text">اكتمل</span>
@@ -299,6 +357,24 @@ function setupSearch(): void {
         searchInput.addEventListener('input', () => {
             searchQuery = searchInput.value;
             renderLessons();
+        });
+    }
+
+    // Filter Toggle Logic
+    const filterBtn = document.getElementById('filterToggleBtn');
+    const filterContainer = document.querySelector('.filter-scroll-container');
+
+    if (filterBtn && filterContainer) {
+        filterBtn.addEventListener('click', () => {
+            const isExpanded = filterContainer.classList.contains('expanded');
+
+            if (isExpanded) {
+                filterContainer.classList.remove('expanded');
+                filterBtn.classList.remove('active');
+            } else {
+                filterContainer.classList.add('expanded');
+                filterBtn.classList.add('active');
+            }
         });
     }
 }
@@ -375,6 +451,8 @@ function exportToWindow(): void {
     (window as any).speakWordOfDay = speakWordOfDay;
     (window as any).setPathFilter = setPathFilter;
     (window as any).openReviewSession = openReviewSession;
+    (window as any).handleCardTilt = handleCardTilt;
+    (window as any).resetCardTilt = resetCardTilt;
 }
 
 // Initialize Word of the Day (Random on each page load)
@@ -440,94 +518,191 @@ export function initLearnUI(): void {
 // Add CSS for lesson cards
 const style = document.createElement('style');
 style.textContent = `
+    /* --- Premium Lesson Card Styling --- */
     .lesson-card {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Force children to left */
+        text-align: left;        /* Force text to left */
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
+        border-radius: 24px;
         padding: 1.5rem;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease, 
+                    border-color 0.3s ease;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transform-style: preserve-3d;
+    }
+    
+    .lesson-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                                  rgba(96, 165, 250, 0.15) 0%, 
+                                  transparent 50%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .lesson-card:hover::before {
+        opacity: 1;
     }
     
     .lesson-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2), 
+                    0 0 15px rgba(96, 165, 250, 0.1);
         border-color: rgba(96, 165, 250, 0.3);
     }
     
     .lesson-card.completed {
-        border-color: rgba(34, 197, 94, 0.3);
+        border-color: rgba(34, 197, 94, 0.4);
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.05), rgba(30, 41, 59, 0.7));
     }
-    
-    .lesson-card.completed::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #22c55e, #34d399);
-    }
-    
-    .lesson-card-header {
+
+    /* Mastery Stars */
+    .mastery-stars {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.8rem;
-    }
-    
-    .lesson-level {
-        padding: 0.3rem 0.8rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: capitalize;
-    }
-    
-    .lesson-complete-badge {
-        background: #22c55e;
-        color: white;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
         justify-content: center;
-        font-size: 0.8rem;
     }
-    
-    .lesson-title {
-        color: #e2e8f0;
+
+    .star {
         font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-        line-height: 1.4;
+        color: #475569;
+        transition: color 0.3s, transform 0.3s;
     }
-    
-    .lesson-meta {
-        display: flex;
-        gap: 1rem;
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-bottom: 0.8rem;
+
+    .star.active {
+        color: #fbbf24;
+        filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+        animation: starPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    
+
+    @keyframes starPop {
+        50% { transform: scale(1.4); }
+    }
+
+    /* Neon Progress */
     .lesson-progress-bar {
         height: 4px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 4px;
-        overflow: hidden;
+        overflow: visible;
+        margin-top: 12px;
+        position: relative;
     }
     
     .lesson-progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #60a5fa, #34d399);
+        background: #60a5fa;
         border-radius: 4px;
         transition: width 0.5s ease;
+        position: relative;
+        box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
     }
     
-    /* Lesson content styles */
+    .lesson-card.completed .lesson-progress-fill {
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    }
+    
+    /* --- Search Result Style Layout --- */
+    .lesson-card-header {
+        display: flex;
+        justify-content: space-between; /* Push checkmark to right */
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        width: 100%; /* Ensure header takes full width */
+    }
+
+    .lesson-text-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Align Title and Badge to Left */
+        gap: 0.5rem;
+        flex: 1; /* Take available space */
+        min-width: 0; /* Prevent overflow issues */
+    }
+
+    .lesson-title.search-result-title {
+        font-size: 1.3rem; 
+        font-weight: 700;
+        color: #f8fafc;
+        margin: 0;
+        line-height: 1.2;
+        width: 100%;
+        white-space: nowrap;       /* Keep text on one line */
+        overflow: hidden;          /* Hide overflow */
+        text-overflow: ellipsis;   /* Add ... if too long */
+        text-align: left;          /* Force left alignment */
+    }
+
+    .lesson-level-badge {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+        width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        text-transform: capitalize;
+    }
+
+    .lesson-subtitle-arb {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        font-family: 'Tajawal', sans-serif;
+        min-height: 1.4em; /* Ensure space is reserved even if empty */
+    }
+
+    .lesson-meta-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748b;
+        font-size: 0.85rem;
+        background: rgba(15, 23, 42, 0.4);
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+    
+    .meta-item .icon {
+        opacity: 0.8;
+    }
+
+    .check-icon {
+        color: #4ade80;
+        font-weight: bold;
+        background: rgba(74, 222, 128, 0.1);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    /* Lesson Modal Styles */
     .lesson-sections {
         padding-bottom: 2rem;
     }
