@@ -722,4 +722,71 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expand first section by default
     const firstSection = document.querySelector('.settings-section');
     if (firstSection) firstSection.classList.add('expanded');
+
+    // Setup Install App Button
+    setupInstallAppButton();
 });
+
+// ============================================================
+// INSTALL APP BUTTON HANDLER
+// ============================================================
+
+let deferredInstallPrompt: any = null;
+
+function setupInstallAppButton(): void {
+    const installItem = document.getElementById('installAppItem');
+    if (!installItem) return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isInStandaloneMode =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (navigator as any).standalone;
+
+    // Don't show if already installed
+    if (isInStandaloneMode) {
+        installItem.style.display = 'none';
+        return;
+    }
+
+    // Show on iOS
+    if (isIOS) {
+        installItem.style.display = 'flex';
+        installItem.addEventListener('click', () => {
+            showIOSInstallInstructions();
+        });
+        return;
+    }
+
+    // Listen for install prompt event (Android/Desktop)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        installItem.style.display = 'flex';
+    });
+
+    // Handle click
+    installItem.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            if (outcome === 'accepted') {
+                showToast('✅ Appen installeras! / يتم تثبيت التطبيق!');
+                installItem.style.display = 'none';
+            }
+            deferredInstallPrompt = null;
+        } else if (isIOS) {
+            showIOSInstallInstructions();
+        }
+    });
+}
+
+function showIOSInstallInstructions(): void {
+    showConfirmModal(
+        '📲',
+        'Installera SnabbaLexin / تثبيت سنابا لكسين',
+        '1. Tryck på dela-knappen (□↑) / اضغط على زر المشاركة\n2. Välj "Lägg till på hemskärmen" / اختر "إضافة إلى الشاشة الرئيسية"\n3. Tryck "Lägg till" / اضغط "إضافة"',
+        () => {
+            closeConfirmModal();
+        }
+    );
+}
