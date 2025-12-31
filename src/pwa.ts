@@ -26,7 +26,7 @@ if ("serviceWorker" in navigator) {
       registration.addEventListener("updatefound", () => {
         const newWorker = registration.installing;
         if (!newWorker) return;
-        
+
         console.log("[PWA] New service worker installing...");
 
         newWorker.addEventListener("statechange", () => {
@@ -164,6 +164,23 @@ if (isIOS && !isInStandaloneMode) {
   if (iosPrompt && !localStorage.getItem("ios-prompt-dismissed")) {
     setTimeout(() => {
       iosPrompt.classList.remove("hidden");
+
+      // Auto-hide with smooth fade-out after 15 seconds on iPhone
+      setTimeout(() => {
+        // Apply smooth fade-out transition
+        iosPrompt.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+        iosPrompt.style.opacity = '0';
+        iosPrompt.style.transform = 'translateY(20px)';
+
+        // Hide completely after animation completes
+        setTimeout(() => {
+          iosPrompt.classList.add("hidden");
+          // Reset styles for potential future display
+          iosPrompt.style.opacity = '';
+          iosPrompt.style.transform = '';
+          iosPrompt.style.transition = '';
+        }, 500);
+      }, 15000);
     }, 10000);
 
     const closeBtn = document.getElementById("closeIosPrompt");

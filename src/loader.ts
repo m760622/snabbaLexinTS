@@ -12,12 +12,13 @@ class LoaderClass {
             console.log('[Loader] Initializing DB...');
             await DictionaryDB.init();
 
-            const cachedVersion = await DictionaryDB.getDataVersion();
-            const hasCached = await DictionaryDB.hasCachedData();
+            // Use localStorage as single source of truth for version (matches welcome.ts)
+            const storedVersion = localStorage.getItem('snabbaLexin_version');
             const hasFlag = localStorage.getItem('snabbaLexin_dataReady') === 'true';
+            const hasCached = await DictionaryDB.hasCachedData();
 
-            // Check validity
-            const isReturningUser = hasCached && cachedVersion === AppConfig.DATA_VERSION && hasFlag;
+            // Check validity - all three conditions must be true
+            const isReturningUser = hasCached && storedVersion === AppConfig.DATA_VERSION && hasFlag;
 
             if (isReturningUser) {
                 console.log('[Loader] Data ready - loading from cache...');
@@ -26,7 +27,8 @@ class LoaderClass {
                 window.dispatchEvent(new Event('dictionaryLoaded'));
                 return;
             } else {
-                console.log('[Loader] Data missing - Redirecting to Welcome...');
+                console.log('[Loader] Data missing or outdated - Redirecting to Welcome...');
+                console.log('[Loader] Debug: hasCached=', hasCached, 'storedVersion=', storedVersion, 'hasFlag=', hasFlag);
                 const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
                 window.location.replace(`welcome.html?redirect=${redirectUrl}`);
             }

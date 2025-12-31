@@ -175,11 +175,11 @@ function createLessonCardHTML(lesson: Lesson): string {
     const subTitle = lesson.id === 'wordOrder' ? 'ترتيب الكلمات - قاعدة V2' :
         lesson.id === 'verbs' ? 'الأفعال والأزمنة' :
             lesson.id === 'pronouns' ? 'الضمائر الشخصية' :
-                lesson.id === 'adjectives' ? 'الصفات - التذكير والتأنيث' : '&nbsp;'; /* Use space directly */
+                lesson.id === 'adjectives' ? 'الصفات - التذكير والتأنيث' : 'درس قواعد';
 
     return `
-        <div class="lesson-card search-result-style ${isCompleted ? 'completed' : ''}"
-             onclick="openLesson('${lesson.id}')"
+        <div class="lesson-card search-result-style ${isCompleted ? 'completed' : ''}" 
+             onclick="openLesson('${lesson.id}')" 
              data-level="${lesson.level}"
              onmousemove="handleCardTilt(event, this)"
              onmouseleave="resetCardTilt(this)">
@@ -666,7 +666,6 @@ style.textContent = `
         font-size: 0.95rem;
         margin-bottom: 1rem;
         font-family: 'Tajawal', sans-serif;
-        min-height: 1.4em; /* Ensure space is reserved even if empty */
     }
 
     .lesson-meta-row {

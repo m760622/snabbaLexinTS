@@ -155,6 +155,7 @@ const translations: Record<string, TranslationEntry> = {
     'games.timeUp': { sv: 'Tiden är ute!', ar: 'انتهى الوقت!' },
     'games.next': { sv: 'Nästa', ar: 'التالي' },
     'games.hint': { sv: 'Ledtråd', ar: 'تلميح' },
+    'games.completed': { sv: 'Klar', ar: 'مكتمل' },
 
     // Learn section
     'learn.title': { sv: 'Lär dig', ar: 'تعلم' },
@@ -187,6 +188,7 @@ const translations: Record<string, TranslationEntry> = {
     'learn.quranWords': { sv: 'Koranord', ar: 'كلمات القرآن' },
     'learn.randomQuiz': { sv: 'Slumpmässig Quiz', ar: 'اختبار عشوائي' },
     'learn.lessons': { sv: 'Lektioner', ar: 'الدروس' },
+    'learn.sections': { sv: 'avsnitt', ar: 'أقسام' },
     'learn.learnSwedish': { sv: 'Lär dig Svenska', ar: 'تعلم السويدية' },
 
     // Common
