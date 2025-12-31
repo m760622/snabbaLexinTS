@@ -94,12 +94,30 @@
      flex: 1;
      font-size: 1.1rem;
      text-align: center;
-     background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #60a5fa 100%);
-     -webkit-background-clip: text;
-     -webkit-text-fill-color: transparent;
-     background-clip: text;
-     font-weight: 700;
+     /* Switched to solid color to fix visibility issues in Chrome */
+     color: #38bdf8;
      letter-spacing: 0.02em;
+ }
+
+ /* Ensure text remains visible if gradient clipping fails or in specific modes */
+ header h1 span {
+     display: inline-block;
+     /* Ensure spans behave well with transforming/clipping */
+ }
+
+ /* Fix for specific visibility issues in Swedish/Arabic only modes */
+ body.lang-sv header h1 .sv-text {
+     display: inline !important;
+     visibility: visible !important;
+     opacity: 1 !important;
+     color: inherit !important;
+ }
+
+ body.lang-ar header h1 .ar-text {
+     display: inline !important;
+     visibility: visible !important;
+     opacity: 1 !important;
+     color: inherit !important;
  }
 
  /* Progress Hero */
@@ -191,14 +209,29 @@
  }
 
  main {
-     padding: 0 1rem 1rem;
+     padding: 1rem 1rem 6rem;
+     /* Top padding handled by margin in search-filter, but added bottom padding for scrolling */
      max-width: 700px;
      margin: 0 auto;
+     /* Ensure content isn't hidden by fixed header if any */
+ }
+
+ /* Add spacing to first child of grid to avoid overlap if sticky logic fails */
+ .lessons-grid {
+     margin-top: 1rem;
  }
 
  /* Search & Filter */
  .search-container {
      margin: 1rem 0 0.75rem;
+     display: flex;
+     /* Ensure flex layout */
+     flex-direction: row;
+     /* Standard row */
+     direction: ltr;
+     /* Force LTR to keep Button on Right */
+     align-items: center;
+     gap: 0.5rem;
  }
 
  /* Search Filter Section (outside main) */
@@ -213,7 +246,8 @@
  }
 
  #lessonSearchInput {
-     width: 100%;
+     flex: 1;
+     width: auto;
      padding: 0.75rem 1.25rem;
      border-radius: 50px;
      border: 2px solid rgba(59, 130, 246, 0.2);
@@ -229,13 +263,7 @@
      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
  }
 
- .filter-scroll-container {
-     display: flex;
-     overflow-x: auto;
-     gap: 0.5rem;
-     padding: 0.5rem 0;
-     scrollbar-width: none;
- }
+ /* filter-scroll-container moved to search section styling */
 
  .filter-scroll-container::-webkit-scrollbar {
      display: none;
@@ -251,6 +279,17 @@
      white-space: nowrap;
      cursor: pointer;
      transition: all 0.2s;
+
+     /* Enforce Centering */
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     text-align: center;
+ }
+
+ .filter-chip span {
+     margin: 0;
+     padding: 0;
  }
 
  .filter-chip.active {
@@ -1980,13 +2019,13 @@
      }
 
      header h1 {
-         display: none;
-         /* Hide title on mobile to make space for buttons */
-     }
-
-     header h1.mobile-visible {
-         display: block;
-         /* Can be toggled if needed */
+         /* Keep title visible on mobile, just make it smaller */
+         font-size: 0.9rem;
+         flex: 1;
+         text-align: center;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
      }
 
      .header-quick-access {
@@ -2475,10 +2514,13 @@
  /* Search Container */
  .search-container {
      padding: 1rem;
+     display: flex;
+     gap: 0.75rem;
+     align-items: center;
  }
 
  .search-container input {
-     width: 100%;
+     flex: 1;
      padding: 1rem 1.5rem;
      border-radius: 16px;
      border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2496,6 +2538,62 @@
 
  .search-container input::placeholder {
      color: #64748b;
+ }
+
+ .filter-toggle-btn {
+     width: 50px;
+     height: 50px;
+     background: rgba(30, 41, 59, 0.6);
+     border: 1px solid rgba(255, 255, 255, 0.1);
+     border-radius: 14px;
+     color: #94a3b8;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ }
+
+ .filter-toggle-btn:hover {
+     background: rgba(96, 165, 250, 0.15);
+     color: #60a5fa;
+     transform: translateY(-2px);
+ }
+
+ .filter-toggle-btn.active {
+     background: #60a5fa;
+     color: white;
+     box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+     border-color: #60a5fa;
+ }
+
+ .filter-scroll-container {
+     display: flex;
+     overflow-x: auto;
+     gap: 0.5rem;
+     padding: 0 0.5rem;
+     /* Reduced padding when closed */
+     scrollbar-width: none;
+
+     /* Magical Reveal Animation Props */
+     max-height: 0;
+     opacity: 0;
+     transform: translateY(-20px) scale(0.95);
+     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+     /* Custom spring-like bezier */
+     pointer-events: none;
+     visibility: hidden;
+ }
+
+ .filter-scroll-container.expanded {
+     max-height: 80px;
+     /* Enough for chips */
+     opacity: 1;
+     transform: translateY(0) scale(1);
+     pointer-events: auto;
+     visibility: visible;
+     padding: 0.5rem;
+     margin-bottom: 0.5rem;
  }
 
  /* Review Banner Enhanced */
