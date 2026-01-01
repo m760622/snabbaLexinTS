@@ -260,7 +260,7 @@ body.focus-mode .focus-mode-toggle {
 
 .switch-neumorphic.active::before {
     left: calc(100% - 32px);
-    background: linear-gradient(145deg, #2563eb, #4f46e5);
+    background: linear-gradient(145deg, #dc2626, #4f46e5);
 }
 
 /* ============================================================
@@ -409,7 +409,7 @@ body.focus-mode .focus-mode-toggle {
 
 .xp-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #2563eb, #ec4899, #f59e0b);
+    background: linear-gradient(90deg, #dc2626, #ec4899, #f59e0b);
     background-size: 200% 100%;
     border-radius: 6px;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -906,7 +906,7 @@ body.focus-mode .focus-mode-toggle {
 .mystery-box {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    background: linear-gradient(135deg, #1d4ed8, #dc2626);
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -1096,7 +1096,7 @@ body.focus-mode .focus-mode-toggle {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     border: none;
     cursor: pointer;
     display: flex;
@@ -1126,7 +1126,7 @@ body.focus-mode .focus-mode-toggle {
 
 .music-player-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #2563eb, #ec4899);
+    background: linear-gradient(90deg, #dc2626, #ec4899);
     width: 0%;
     transition: width 0.3s linear;
 }
@@ -1195,7 +1195,7 @@ body.focus-mode .focus-mode-toggle {
     font-weight: 800;
     text-align: center;
     font-family: 'SF Mono', 'Fira Code', monospace;
-    background: linear-gradient(135deg, #2563eb, #ec4899);
+    background: linear-gradient(135deg, #dc2626, #ec4899);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1218,7 +1218,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-btn-primary {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     color: white;
 }
 
@@ -1257,7 +1257,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-session-dot.active {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     animation: pulseDot 1s ease-in-out infinite;
 }
 
@@ -1562,7 +1562,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .tour-next {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     border: none;
     color: white;
     padding: 10px 24px;
@@ -1593,7 +1593,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .tour-dot.active {
-    background: #2563eb;
+    background: #dc2626;
     width: 24px;
     border-radius: 4px;
 }
@@ -1618,7 +1618,7 @@ body.focus-mode .focus-mode-toggle {
     width: 30px;
     height: 30px;
     border: 3px solid rgba(37, 99, 235, 0.2);
-    border-top-color: #2563eb;
+    border-top-color: #dc2626;
     border-radius: 50%;
 }
 

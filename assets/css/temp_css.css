@@ -1602,7 +1602,7 @@
 
 .expand-btn {
     pointer-events: auto;
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    background: linear-gradient(135deg, #dc2626, #4f46e5);
     /* Fallback to explicit colors */
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -4364,7 +4364,7 @@ button:active,
 }
 
 .save-notes-btn {
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    background: linear-gradient(135deg, #dc2626, #4f46e5);
     color: white;
     border: none;
     padding: 0.5rem 1.25rem;
@@ -4535,7 +4535,7 @@ button:active,
 }
 
 .details-tab-btn.active {
-    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    background: linear-gradient(135deg, #dc2626, #4f46e5);
     color: white;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
 }
@@ -4618,7 +4618,7 @@ button:active,
 /* Word Type Badge in Quiz */
 .quiz-word-type {
     display: inline-block;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     color: white;
     font-size: 0.7rem;
     font-weight: 700;
@@ -4640,7 +4640,7 @@ button:active,
     border-radius: 12px;
     margin: 1rem 0;
     line-height: 1.8;
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid #dc2626;
     font-style: italic;
 }
 
@@ -4663,7 +4663,7 @@ button:active,
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     color: white;
     border: none;
     border-radius: 50px;
@@ -4750,7 +4750,7 @@ button:active,
     width: 100%;
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     color: white;
     border: none;
     border-radius: 12px;
@@ -4839,7 +4839,7 @@ button:active,
     padding: 0.5rem 1rem;
     background: rgba(37, 99, 235, 0.1);
     border-radius: 20px;
-    color: #2563eb;
+    color: #dc2626;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -4847,7 +4847,7 @@ button:active,
 }
 
 .swipe-hint:hover {
-    background: #2563eb;
+    background: #dc2626;
     color: white;
 }
 
@@ -4909,7 +4909,7 @@ button:active,
 .mastery-percent {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #dc2626;
 }
 
 .mastery-bar {
@@ -4922,7 +4922,7 @@ button:active,
 
 .mastery-progress {
     height: 100%;
-    background: linear-gradient(90deg, #2563eb, #1d4ed8, #3b82f6);
+    background: linear-gradient(90deg, #dc2626, #1d4ed8, #3b82f6);
     border-radius: 5px;
     transition: width 0.5s ease;
 }
@@ -5569,7 +5569,7 @@ button:active,
 .fc-word-back-ar {
     font-size: 2rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #dc2626;
     direction: rtl;
 }
 
@@ -6504,7 +6504,7 @@ button:active,
     padding: 1.5rem;
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(30, 58, 138, 0.1));
     border-radius: 16px;
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid #dc2626;
     margin: 1rem 0;
 }
 

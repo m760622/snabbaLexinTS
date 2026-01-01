@@ -49,7 +49,7 @@
     --color-spelling: #06b6d4;
     --color-wheel: #0ea5e9;
     --color-sentence: #0284c7;
-    --color-rain: #2563eb;
+    --color-rain: #dc2626;
     --color-wordle: #22c55e;
     --color-pronunciation: #ef4444;
 }
@@ -404,7 +404,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     /* Responsive font size */
     white-space: nowrap;
     /* Force single line */
-    background: linear-gradient(45deg, #2563eb, #22d3ee, #ec4899);
+    background: linear-gradient(45deg, #dc2626, #22d3ee, #ec4899);
     /* More vibrant gradient */
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -583,7 +583,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 
 /* Individual Game Colors via nth-child */
 .game-card-item:nth-child(1) .game-icon-large {
-    color: #2563eb;
+    color: #dc2626;
     /* Blue */
     filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.4));
 }
@@ -901,7 +901,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 .high-score {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #2563eb;
+    color: #dc2626;
     background: rgba(37, 99, 235, 0.1);
     padding: 0.25rem 0.75rem;
     border-radius: 1rem;
@@ -1110,7 +1110,7 @@ html[data-theme="light"] body {
 /* Check Button - Primary Action */
 .check-btn {
     padding: 0.8rem 1.5rem;
-    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%);
     border: none;
     color: white;
     border-radius: 1rem;
@@ -1305,7 +1305,7 @@ html[data-theme="light"] body {
     margin: 0;
     font-size: 1.5rem;
     white-space: nowrap;
-    background: linear-gradient(to right, #2563eb, #1d4ed8, #ec4899);
+    background: linear-gradient(to right, #dc2626, #1d4ed8, #ec4899);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1898,7 +1898,7 @@ body.iphone-view.dark-mode .high-score {
 
 .wc-level-btn.unlocked:hover {
     transform: scale(1.05);
-    background: #2563eb;
+    background: #dc2626;
 }
 
 .wc-level-btn.locked {
@@ -1976,7 +1976,7 @@ body.iphone-view.dark-mode .high-score {
     width: 100px;
     height: 1.5em;
     background: rgba(37, 99, 235, 0.1);
-    border-bottom: 3px solid #2563eb;
+    border-bottom: 3px solid #dc2626;
     vertical-align: bottom;
     margin: 0 5px;
     border-radius: 4px;
@@ -1990,7 +1990,7 @@ body.iphone-view.dark-mode .high-score {
 
 @keyframes pulse-border {
     0% {
-        border-color: #2563eb;
+        border-color: #dc2626;
     }
 
     50% {
@@ -1998,7 +1998,7 @@ body.iphone-view.dark-mode .high-score {
     }
 
     100% {
-        border-color: #2563eb;
+        border-color: #dc2626;
     }
 }
 
@@ -2172,7 +2172,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .grammar-explanation strong {
-    color: #2563eb;
+    color: #dc2626;
     font-weight: 700;
 }
 
@@ -2238,7 +2238,7 @@ body.iphone-view.dark-mode .high-score {
 
 .spelling-option-btn:hover {
     transform: translateY(-4px) scale(1.02);
-    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
     box-shadow:
         0 20px 25px -5px rgba(0, 0, 0, 0.3),
         0 10px 10px -5px rgba(0, 0, 0, 0.2);
@@ -2366,7 +2366,7 @@ body.iphone-view.dark-mode .high-score {
 
 .wheel-answer-letter:hover {
     transform: translateY(-4px);
-    background: #2563eb;
+    background: #dc2626;
     color: white;
 }
 
@@ -2446,7 +2446,7 @@ body.iphone-view.dark-mode .high-score {
     /* Increased */
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     color: white;
     border: none;
     font-size: 1.8rem;
@@ -2507,10 +2507,10 @@ body.iphone-view.dark-mode .high-score {
 
 .wheel-letter:hover {
     transform: translate(-50%, -50%) scale(1.15) !important;
-    color: #2563eb;
+    color: #dc2626;
     z-index: 20;
     box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-    border-color: #2563eb;
+    border-color: #dc2626;
 }
 
 .wheel-letter.used {
@@ -2788,7 +2788,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .sentence-drop-zone.drag-over {
-    border-color: #2563eb;
+    border-color: #dc2626;
     background: rgba(37, 99, 235, 0.1);
     transform: scale(1.02);
 }
@@ -2806,7 +2806,7 @@ body.iphone-view.dark-mode .high-score {
 #wheelShowAnswerBtn {
     padding: 0;
     /* Remove padding for circle */
-    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%) !important;
     border: 2px solid rgba(255, 255, 255, 0.3);
     /* Thicker border */
     color: white !important;
@@ -2895,7 +2895,7 @@ body.iphone-view.dark-mode .high-score {
 
 .sentence-word:hover {
     transform: translateY(-2px);
-    border-color: #2563eb;
+    border-color: #dc2626;
     box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
 }
 
@@ -3016,7 +3016,7 @@ body.iphone-view.dark-mode .high-score {
     padding: 1rem;
     font-size: 1.1rem;
     font-weight: 600;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #3b82f6, #dc2626);
     color: white;
     border: none;
     border-radius: 0.75rem;
@@ -3292,7 +3292,7 @@ body.iphone-view.dark-mode .high-score {
 .stat-value {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #dc2626;
 }
 
 /* --- Main Content (Canvas) --- */
@@ -3335,7 +3335,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -3517,7 +3517,7 @@ body.iphone-view.dark-mode .high-score {
 .stat-value {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #dc2626;
 }
 
 /* --- Main Content (Canvas) --- */
@@ -3561,7 +3561,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -3743,7 +3743,7 @@ body.iphone-view.dark-mode .high-score {
 .stat-value {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #dc2626;
 }
 
 /* =========================================
@@ -3922,7 +3922,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -4240,7 +4240,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .score-badge {
-    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%);
     color: white;
     padding: 0.75rem 1.25rem;
     border-radius: 2rem;
@@ -4275,14 +4275,14 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .game-filter-select:hover {
-    border-color: #2563eb;
+    border-color: #dc2626;
     box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15);
     transform: translateY(-1px);
 }
 
 .game-filter-select:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: #dc2626;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
@@ -4344,7 +4344,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .word-wheel-controls .score-badge {
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
     box-shadow: 0 2px 5px rgba(14, 165, 233, 0.3);
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -4358,7 +4358,7 @@ body.iphone-view.dark-mode .high-score {
     padding: 0.5rem;
     border-radius: 0.5rem;
     background: rgba(37, 99, 235, 0.1);
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid #dc2626;
 }
 
 [data-theme="dark"] .game-example {
@@ -4385,7 +4385,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.4rem;
     /* Smaller to fit on one line */
     white-space: nowrap;
-    background: linear-gradient(to right, #2563eb, #1d4ed8, #ec4899);
+    background: linear-gradient(to right, #dc2626, #1d4ed8, #ec4899);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -5940,7 +5940,7 @@ body.iphone-view.dark-mode .high-score {
 .wc-map-node.current {
     transform: scale(1.2);
     box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #3b82f6, #dc2626);
     /* Blue for current */
     border-color: #bfdbfe;
     color: white;
@@ -6000,7 +6000,7 @@ body.iphone-view.dark-mode .high-score {
 
 /* --- Map Icon Button in Header --- */
 .wc-map-icon-btn {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #1d4ed8);
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -7866,7 +7866,7 @@ body.memory-game-page::before {
 }
 
 .wc-letters .letter-btn.selected {
-    background: linear-gradient(145deg, #4f46e5, #2563eb);
+    background: linear-gradient(145deg, #4f46e5, #dc2626);
     border-color: #818cf8;
     box-shadow: 0 0 25px rgba(37, 99, 235, 0.6);
     transform: scale(1.1);
@@ -9398,7 +9398,7 @@ body.memory-game-page::before {
 }
 
 .wc-sound-toggle:hover {
-    border-color: #2563eb !important;
+    border-color: #dc2626 !important;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
@@ -10015,7 +10015,7 @@ body.memory-game-page::before {
 .wc-night-mode {
     --wc-bg-primary: #0a0a15;
     --wc-text-primary: #a0aec0;
-    --wc-accent: #2563eb;
+    --wc-accent: #dc2626;
 }
 
 .wc-night-mode .wc-game-container {
@@ -10041,7 +10041,7 @@ body.memory-game-page::before {
 
 .wc-progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, #22d3ee, #2563eb);
+    background: linear-gradient(90deg, #22d3ee, #dc2626);
     border-radius: 4px;
     transition: width 0.3s ease;
 }
@@ -10230,7 +10230,7 @@ body.memory-game-page::before {
 
 .wc-stat-bar {
     flex: 1;
-    background: linear-gradient(to top, #22d3ee, #2563eb);
+    background: linear-gradient(to top, #22d3ee, #dc2626);
     border-radius: 4px 4px 0 0;
     min-height: 5px;
     transition: height 0.5s ease;
@@ -10319,7 +10319,7 @@ body.memory-game-page::before {
 }
 
 .wc-level-intermediate {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #3b82f6, #dc2626);
 }
 
 .wc-level-expert {
@@ -11353,7 +11353,7 @@ body.memory-game-page::before {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: conic-gradient(#2563eb 0deg 60deg,
+    background: conic-gradient(#dc2626 0deg 60deg,
             #22d3ee 60deg 120deg,
             #22c55e 120deg 180deg,
             #eab308 180deg 240deg,
@@ -11670,7 +11670,7 @@ body.memory-game-page::before {
 }
 
 .game-card-item[data-category="grammar"] .game-icon-large svg {
-    stroke: #2563eb;
+    stroke: #dc2626;
 }
 
 .game-card-item[data-category="listening"] .game-icon-large svg {
@@ -11790,7 +11790,7 @@ body.memory-game-page::before {
 }
 
 .wotd-speak-btn:hover {
-    background: #2563eb;
+    background: #dc2626;
     color: white;
     transform: scale(1.1);
 }

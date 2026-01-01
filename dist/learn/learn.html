@@ -10,22 +10,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/learn-BJjxvquc.js"></script>
+    <!-- Twemoji for cross-platform emoji support -->
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <!-- Styles moved to assets/css/learn.css -->
+  <script type="module" crossorigin src="/assets/learn-DpXmNKOO.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-JAWsQOk8.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-CYB7AyD1.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BuOrQ7kI.js">
-  <link rel="modulepreload" crossorigin href="/assets/i18n-Dru8U3nj.js">
-  <link rel="modulepreload" crossorigin href="/assets/pwa-Bxh5GLjF.js">
-  <link rel="stylesheet" crossorigin href="/assets/learn-CA3Hhp6k.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-BxR19fyv.css">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-BpwFYk4h.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bn3RWWLO.js">
+  <link rel="stylesheet" crossorigin href="/assets/learn-D8orIIGz.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-BiABEEgf.css">
 </head>
 
-<body>
+<body class="memory-game-page">
+    <!-- Animated Background -->
+    <div class="learn-bg-layer"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+
     <header>
         <button class="back-btn" onclick="window.location.href='../index.html'" aria-label="Tillbaka / رجوع"
             title="Tillbaka / رجوع">
@@ -35,32 +42,68 @@
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()">📱</button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+            style="margin-left: 0.5rem;">📱</button>
         <h1><span class="sv-text">Lär dig Svenska</span><span class="ar-text">تعلم السويدية</span></h1>
+
+        <div style="flex: 1;"></div>
+
+        <button class="mobile-toggle-btn" onclick="window.location.href='../profile.html'"
+            title="Profil / الملف الشخصي">
+            👤
+        </button>
     </header>
 
-    <!-- Progress Hero -->
-    <div class="progress-hero">
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="value" id="streakCount">0</div>
-                <div class="label">🔥 <span class="sv-text">Dagar</span><span class="ar-text">أيام</span></div>
-            </div>
-            <div class="hero-stat">
-                <div class="value" id="totalXP">0</div>
-                <div class="label">⭐ XP</div>
-            </div>
-            <div class="hero-stat">
-                <div class="value" id="completedCount">0</div>
-                <div class="label">✅ <span class="sv-text">Klara</span><span class="ar-text">مكتمل</span></div>
-            </div>
-        </div>
-        <div class="overall-progress">
-            <div class="fill" id="overallProgress"></div>
-        </div>
-        <div class="progress-text" id="progressText">0% <span class="sv-text">klar</span><span
-                class="ar-text">مكتمل</span></div>
+    <!-- Quick Access Row (Separate Line) -->
+    <div class="quick-access-row">
+        <button class="quick-btn" onclick="window.location.href='../games/quran.html'" title="Koranord / كلمات القرآن">
+            <span class="quick-icon">📖</span>
+            <span class="quick-label sv-text">Koranord</span>
+            <span class="quick-label ar-text">كلمات القرآن</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='asma_ul_husna.html'"
+            title="Guds 99 Namn / أسماء الله الحسنى">
+            <span class="quick-icon">📿</span>
+            <span class="quick-label sv-text">99 Namn</span>
+            <span class="quick-label ar-text">أسماء الله</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='cognates.html'" title="Liknande Ord / المتشابهات">
+            <span class="quick-icon">🔤</span>
+            <span class="quick-label sv-text">Liknande</span>
+            <span class="quick-label ar-text">متشابهات</span>
+        </button>
+        <button class="quick-btn" onclick="openRandomQuiz()" title="Slumpmässig Quiz / اختبار عشوائي">
+            <span class="quick-icon">🎲</span>
+            <span class="quick-label sv-text">Quiz</span>
+            <span class="quick-label ar-text">اختبار</span>
+        </button>
     </div>
+
+    <!-- Search & Filters (Right after Quick Access) -->
+    <div class="search-filter-section">
+        <div class="search-container">
+            <input type="text" id="lessonSearchInput" placeholder="Sök lektioner / ابحث عن درس..."
+                data-i18n-placeholder="learn.searchPlaceholder">
+            <button id="filterToggleBtn" class="filter-toggle-btn" aria-label="Toggle Filters">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+            </button>
+        </div>
+        <div class="filter-scroll-container">
+            <button class="filter-chip active" data-filter="all"><span class="sv-text">Alla</span><span
+                    class="ar-text">الكل</span></button>
+            <button class="filter-chip filter-beginner" data-filter="beginner"><span
+                    class="sv-text">Nybörjare</span><span class="ar-text">مبتدئ</span></button>
+            <button class="filter-chip filter-intermediate" data-filter="intermediate"><span
+                    class="sv-text">Medel</span><span class="ar-text">متوسط</span></button>
+            <button class="filter-chip filter-advanced" data-filter="advanced"><span
+                    class="sv-text">Avancerad</span><span class="ar-text">متقدم</span></button>
+        </div>
+    </div>
+
+
 
     <!-- Review Banner -->
     <div class="review-banner hidden" id="reviewBanner" onclick="openReviewSession()">
@@ -74,51 +117,163 @@
     </div>
 
     <main>
-        <div class="search-container">
-            <input type="text" id="lessonSearchInput" placeholder="Sök lektioner / ابحث عن درس..."
-                data-i18n-placeholder="learn.searchPlaceholder">
-        </div>
 
-        <div class="filter-scroll-container">
-            <button class="filter-chip active" data-filter="all"><span class="sv-text">Alla</span><span
-                    class="ar-text">الكل</span></button>
-            <button class="filter-chip" data-filter="beginner">🟢 <span class="sv-text">Nybörjare</span><span
-                    class="ar-text">مبتدئ</span></button>
-            <button class="filter-chip" data-filter="intermediate">🟡 <span class="sv-text">Medel</span><span
-                    class="ar-text">متوسط</span></button>
-            <button class="filter-chip" data-filter="advanced">🔴 <span class="sv-text">Avancerad</span><span
-                    class="ar-text">متقدم</span></button>
-        </div>
-
-        <!-- Special Cards -->
-        <div class="special-section">
-            <div class="section-title">🌟 <span class="sv-text">Snabbspår</span><span class="ar-text">الوصول
-                    السريع</span></div>
-            <div class="special-cards">
-                <div class="special-card" onclick="window.location.href='cognates.html'">
-                    <div class="icon">🔤</div>
-                    <div class="title"><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span>
+        <!-- Daily Challenge Card (Compact) -->
+        <div class="daily-challenge compact" id="dailyChallenge" onclick="openDailyChallenge()">
+            <div class="challenge-header">
+                <div class="challenge-icon">🎯</div>
+                <div class="challenge-info">
+                    <div class="challenge-title">
+                        <span class="sv-text">Dagens Utmaning</span><span class="ar-text">تحدي اليوم</span>
+                    </div>
+                    <div class="challenge-desc" id="challengeDesc">
+                        <span class="sv-text">Slutför 3 lektioner!</span>
+                        <span class="ar-text">أكمل 3 دروس!</span>
                     </div>
                 </div>
-                <!-- New Quran Card -->
-                <div class="special-card" onclick="window.location.href='../games/quran.html'">
-                    <div class="icon">📖</div>
-                    <div class="title"><span class="sv-text">Koranord</span><span class="ar-text">كلمات القرآن</span>
-                    </div>
-                </div>
-                <div class="special-card" onclick="openRandomQuiz()">
-                    <div class="icon">🎲</div>
-                    <div class="title"><span class="sv-text">Slumpmässig Quiz</span><span class="ar-text">اختبار
-                            عشوائي</span></div>
+                <div class="challenge-reward">
+                    <div class="reward-value">+50</div>
+                    <div class="reward-label">XP</div>
                 </div>
             </div>
         </div>
 
         <!-- Lessons Section -->
-        <div class="section-title">📚 <span class="sv-text">Lektioner</span><span class="ar-text">الدروس</span></div>
+        <div class="section-title" style="padding: 0 1rem; margin-top: 0.75rem;">📚 <span
+                class="sv-text">Lektioner</span><span class="ar-text">الدروس</span></div>
         <div class="lessons-grid" id="lessonsGrid">
             <!-- Dynamic -->
         </div>
+
+        <!-- Collapsible Extra Sections -->
+        <details class="collapsible-section" id="extraSectionsToggle">
+            <summary class="expand-toggle">
+                <span class="sv-text">📌 Visa mer (Dagens ord, Aktivitet...)</span>
+                <span class="ar-text">📌 عرض المزيد (كلمة اليوم، النشاط...)</span>
+            </summary>
+
+            <!-- Word of the Day Section -->
+            <div class="word-of-day-section" id="wordOfDaySection">
+                <div class="section-title">📝 <span class="sv-text">Dagens Ord</span><span class="ar-text">كلمة
+                        اليوم</span>
+                </div>
+                <div class="wod-card" onclick="speakWordOfDay()">
+                    <div class="wod-header">
+                        <span class="wod-date" id="wodDate"></span>
+                        <button class="wod-speak-btn">🔊</button>
+                    </div>
+                    <div class="wod-content">
+                        <div class="wod-word" id="wodWord">välkommen</div>
+                        <div class="wod-translation" id="wodTranslation">مرحباً</div>
+                        <div class="wod-example">
+                            <div class="wod-example-swe" id="wodExampleSwe">Välkommen till Sverige!</div>
+                            <div class="wod-example-arb" id="wodExampleArb">مرحباً بك في السويد!</div>
+                        </div>
+                    </div>
+                    <div class="wod-footer">
+                        <span class="wod-category">🏷️ hälsning</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Paths Section -->
+            <div class="learning-paths-section">
+                <div class="section-title">🛤️ <span class="sv-text">Lärstigar</span><span class="ar-text">مسارات
+                        التعلم</span></div>
+                <div class="paths-container">
+                    <div class="learning-path beginner-path" onclick="setPathFilter('beginner')">
+                        <div class="path-icon">🌱</div>
+                        <div class="path-info">
+                            <div class="path-name"><span class="sv-text">Nybörjare</span><span
+                                    class="ar-text">مبتدئ</span>
+                            </div>
+                            <div class="path-desc"><span class="sv-text">Grundläggande grammatik</span><span
+                                    class="ar-text">أساسيات القواعد</span></div>
+                            <div class="path-progress">
+                                <div class="path-progress-fill" id="beginnerProgress"></div>
+                            </div>
+                            <div class="path-stats"><span id="beginnerCompleted">0</span>/6</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                    </div>
+                    <div class="learning-path intermediate-path" onclick="setPathFilter('intermediate')">
+                        <div class="path-icon">📈</div>
+                        <div class="path-info">
+                            <div class="path-name"><span class="sv-text">Medel</span><span class="ar-text">متوسط</span>
+                            </div>
+                            <div class="path-desc"><span class="sv-text">Verb & tempus</span><span
+                                    class="ar-text">الأفعال
+                                    والأزمنة</span></div>
+                            <div class="path-progress">
+                                <div class="path-progress-fill" id="intermediateProgress"></div>
+                            </div>
+                            <div class="path-stats"><span id="intermediateCompleted">0</span>/6</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                    </div>
+                    <div class="learning-path advanced-path" onclick="setPathFilter('advanced')">
+                        <div class="path-icon">🎓</div>
+                        <div class="path-info">
+                            <div class="path-name"><span class="sv-text">Avancerad</span><span
+                                    class="ar-text">متقدم</span>
+                            </div>
+                            <div class="path-desc"><span class="sv-text">Idiom & vardagsfraser</span><span
+                                    class="ar-text">التعبيرات والعبارات</span></div>
+                            <div class="path-progress">
+                                <div class="path-progress-fill" id="advancedProgress"></div>
+                            </div>
+                            <div class="path-stats"><span id="advancedCompleted">0</span>/5</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Activity Chart -->
+            <div class="activity-section">
+                <div class="section-title">📊 <span class="sv-text">Veckoaktivitet</span><span class="ar-text">نشاط
+                        الأسبوع</span></div>
+                <div class="activity-chart" id="activityChart">
+                    <div class="activity-bar" data-day="0">
+                        <div class="bar-fill"></div><span class="day-label">Mån</span>
+                    </div>
+                    <div class="activity-bar" data-day="1">
+                        <div class="bar-fill"></div><span class="day-label">Tis</span>
+                    </div>
+                    <div class="activity-bar" data-day="2">
+                        <div class="bar-fill"></div><span class="day-label">Ons</span>
+                    </div>
+                    <div class="activity-bar" data-day="3">
+                        <div class="bar-fill"></div><span class="day-label">Tor</span>
+                    </div>
+                    <div class="activity-bar" data-day="4">
+                        <div class="bar-fill"></div><span class="day-label">Fre</span>
+                    </div>
+                    <div class="activity-bar" data-day="5">
+                        <div class="bar-fill"></div><span class="day-label">Lör</span>
+                    </div>
+                    <div class="activity-bar today" data-day="6">
+                        <div class="bar-fill" style="height: 60%"></div><span class="day-label">Sön</span>
+                    </div>
+                </div>
+                <div class="activity-summary">
+                    <div class="activity-stat">
+                        <span class="stat-value" id="weekLessons">0</span>
+                        <span class="stat-label"><span class="sv-text">Lektioner</span><span
+                                class="ar-text">دروس</span></span>
+                    </div>
+                    <div class="activity-stat">
+                        <span class="stat-value" id="weekMinutes">0</span>
+                        <span class="stat-label"><span class="sv-text">minuter</span><span
+                                class="ar-text">دقيقة</span></span>
+                    </div>
+                    <div class="activity-stat">
+                        <span class="stat-value" id="weekXP">0</span>
+                        <span class="stat-label">XP</span>
+                    </div>
+                </div>
+            </div>
+        </details>
     </main>
 
     <!-- Lesson Modal -->
@@ -126,10 +281,57 @@
         <div class="modal-header">
             <button class="close-lesson" onclick="closeLessonModal()">×</button>
             <h2 id="modalTitle">Lektion</h2>
+            <div style="width: 44px;"></div>
         </div>
 
         <div id="lessonContent" class="lesson-content"></div>
     </div>
+
+    <!-- Particles Script -->
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particlesContainer');
+            if (!container) return;
+
+            const colors = ['blue', 'green', 'gold'];
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = `learn-particle ${colors[i % 3]}`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.animationDuration = `${15 + Math.random() * 10}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Mobile view toggle
+        function toggleMobileView() {
+            const isMobile = document.body.classList.toggle('iphone-view');
+            localStorage.setItem('learnMobileView', isMobile.toString());
+        }
+
+        // Load mobile view preference
+        function loadMobileView() {
+            const saved = localStorage.getItem('learnMobileView') === 'true';
+            if (saved) document.body.classList.add('iphone-view');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            loadMobileView();
+            // Parse emojis using Twemoji for cross-platform support
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(document.body, {
+                    folder: 'svg',
+                    ext: '.svg'
+                });
+            }
+        });
+    </script>
 
 </body>
 

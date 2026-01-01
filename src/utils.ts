@@ -378,9 +378,22 @@ export const GrammarHelper = {
 };
 
 export const CategoryHelper = {
-    getCategory(type: string, word: string = '', _forms: string = ''): string {
+    getCategory(type: string, word: string = '', forms: string = ''): string {
         const normalizedType = (type || '').toLowerCase().replace('.', '');
         const wordLower = (word || '').toLowerCase();
+        const formsLower = (forms || '').toLowerCase();
+
+        // === VERB DETECTION BY FORMS (same as GrammarHelper) ===
+        // Group 1: -ar, -ade
+        if (formsLower.match(/\w+ar[,\s]/) && formsLower.match(/\w+ade[,\s]/)) return 'verb';
+        // Group 2: -er, -de/-te
+        if (formsLower.match(/\w+er[,\s]/) && (formsLower.match(/\w+de[,\s]/) || formsLower.match(/\w+te[,\s]/))) return 'verb';
+        // Group 3: -dde
+        if (formsLower.match(/\w+dde[,\s]/)) return 'verb';
+        // Group 4: -it/-its/-ats/-ett
+        if (formsLower.match(/\w+(it|its|ats|ett)[,\s]/) || formsLower.match(/\w+(it|its|ats|ett)$/)) return 'verb';
+        // Passive verbs ending in -as
+        if (wordLower.endsWith('as') && formsLower.match(/\w+ades[,\s]|\w+des[,\s]/)) return 'verb';
 
         if (normalizedType.includes('verbmn') || (normalizedType.includes('verb') && word.includes(' '))) return 'phrasal';
         if (normalizedType === 'verb' || normalizedType.includes('verb')) return 'verb';

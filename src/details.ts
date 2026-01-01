@@ -1,13 +1,14 @@
 import './config';
 // import './loader'; // Optimized: Load only specific word
 import { DictionaryDB } from './db';
-import { ThemeManager, CategoryHelper, GrammarHelper, showToast, TextSizeManager } from './utils';
+import { ThemeManager, showToast, TextSizeManager } from './utils';
 import { TTSManager } from './tts';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { t, tLang, LanguageManager } from './i18n';
 import { AudioVisualizer, PronunciationRecorder, HapticFeedback, Celebrations, MasteryBadges } from './ui-enhancements';
 import { PronunciationHelper } from './pronunciation-data';
+import { TypeColorSystem } from './type-color-system';
 
 // ... (Previous imports)
 
@@ -1737,15 +1738,9 @@ class FlashcardManager {
     private static startTime = Date.now();
     private static currentWordData: any[] | null = null;
 
-    // Map word types to glow classes
-    private static getTypeGlowClass(type: string): string {
-        const t = type.toLowerCase();
-        if (t.includes('verb')) return 'glow-verb';
-        if (t.includes('subst') || t.includes('noun')) return 'glow-noun';
-        if (t.includes('adj')) return 'glow-adjective';
-        if (t.includes('adv')) return 'glow-adverb';
-        if (t.includes('prep')) return 'glow-preposition';
-        return 'glow-default';
+    // Map word types to glow classes using TypeColorSystem
+    private static getTypeGlowClass(type: string, forms: string = ''): string {
+        return TypeColorSystem.getGlowClass(type, '', forms);
     }
 
     // Dynamic text sizing based on text length
@@ -1827,7 +1822,9 @@ class FlashcardManager {
         const type = wordData[1];
         const exSwe = wordData[7] || '';
 
-        const glowClass = this.getTypeGlowClass(type);
+        const forms = wordData[6] || '';
+
+        const glowClass = this.getTypeGlowClass(type, forms);
         const sweSizeClass = this.getTextSizeClass(swe);
         const arbSizeClass = this.getTextSizeClass(arb);
 
@@ -2234,16 +2231,18 @@ export class DetailsManager {
         const idiomSwe = row[9] || '';
         const idiomArb = row[10] || '';
 
-        const category = CategoryHelper.getCategory(type, swe, forms);
+        const gender = row[13] || ''; // en/ett from dictionary
+
+        const category = TypeColorSystem.getCategory(type, swe, forms);
         const isFav = FavoritesManager.has(id);
-        const glowClass = this.getTypeGlowClass(type);
+        const glowClass = this.getTypeGlowClass(type, forms);
 
         this.setupHeaderActions(row, isFav);
 
         const detailsArea = document.getElementById('detailsArea');
         if (!detailsArea) return;
 
-        const grammarBadge = GrammarHelper.getBadge(type, forms, swe);
+        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender);
 
         // Process definition and examples for smart links
         const processedDef = SmartLinkProcessor.process(def);
@@ -2478,14 +2477,8 @@ export class DetailsManager {
         FavoritesManager.updateButtonIcon(btn, isFavNow);
     }
 
-    private getTypeGlowClass(type: string): string {
-        const t = type.toLowerCase();
-        if (t.includes('verb')) return 'glow-verb';
-        if (t.includes('subst') || t.includes('noun')) return 'glow-noun';
-        if (t.includes('adj')) return 'glow-adjective';
-        if (t.includes('adv')) return 'glow-adverb';
-        if (t.includes('prep')) return 'glow-preposition';
-        return 'glow-default';
+    private getTypeGlowClass(type: string, forms: string = ''): string {
+        return TypeColorSystem.getGlowClass(type, '', forms);
     }
 }
 

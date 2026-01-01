@@ -58,7 +58,7 @@
     font-weight: 700;
     color: white;
     margin: 0 0 0.5rem;
-    background: linear-gradient(135deg, #2563eb, #3b82f6, #ec4899);
+    background: linear-gradient(135deg, #dc2626, #3b82f6, #ec4899);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -84,7 +84,7 @@
 .splash-loader-bar {
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, #2563eb, #3b82f6, #ec4899);
+    background: linear-gradient(90deg, #dc2626, #3b82f6, #ec4899);
     border-radius: 4px;
     animation: loading-slide 1.5s ease-in-out infinite;
 }
