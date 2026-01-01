@@ -383,6 +383,20 @@ export const TypeColorSystem = {
         if (normalizedType.includes('adjektiv') || normalizedType === 'adj') {
             return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
         }
+        // Protect Adverbs, Prepositions, Conjunctions from being misclassified as verbs
+        if (normalizedType.includes('adverb') || normalizedType === 'adv') {
+            return { type: 'adverb', color: TypeColors.adverb, specializedLabel };
+        }
+        if (normalizedType.includes('preposition') || normalizedType === 'prep') {
+            return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
+        }
+        if (normalizedType.includes('konjunktion') || normalizedType === 'konj') {
+            return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
+        }
+        if (normalizedType.includes('interjektion') || normalizedType === 'interj') {
+            return { type: 'interjection', color: TypeColors.interjection, specializedLabel };
+        }
+
         if (normalizedType.includes('verb') || normalizedType === 'v') {
             // Try to get verb group, but ensure it's returned as verb
             const group = this.detectVerbGroup(formsLower, wordLower);
@@ -420,7 +434,10 @@ export const TypeColorSystem = {
             'system': 'ett', 'program': 'ett', 'problem': 'ett', 'rum': 'ett', 'vatten': 'ett',
             'land': 'ett', 'språk': 'ett', 'fond': 'en', 'fonden': 'en', 'dator': 'en',
             'skiva': 'en', 'pengar': 'en', 'konto': 'ett', 'kort': 'ett',
-            'trakasserier': 'ett', 'kuren': 'en', 'lån': 'ett', 'risk': 'en' // risk matches 'isk' otherwise
+            'trakasserier': 'ett', 'kuren': 'en', 'lån': 'ett',
+            'risk': 'en', // risk matches 'isk' otherwise
+            'disk': 'en', // disk matches 'isk' otherwise (Medicinsk term: Disk)
+            'mäktig': 'en' // fullmäktig matches 'ig' otherwise (Juridisk term)
         };
 
         for (const suffix in specificSuffixes) {
@@ -469,10 +486,13 @@ export const TypeColorSystem = {
         // 3. Adjective Suffixes (User suggestion)
         const adjectiveSuffixes = ['lig', 'ig', 'isk', 'sam', 'bar']; // e.g. trevlig, rolig, typisk, långsam, underbar
         if (adjectiveSuffixes.some(s => wordLower.endsWith(s))) {
+            if (wordLower.includes('utmärker')) console.log('Matched adjectve suffix');
             // EXCEPTION: 'sig' ends in 'ig' but causes reflexive verbs to be seen as adjectives
             if (wordLower.endsWith('sig')) {
+                if (wordLower.includes('utmärker')) console.log('...but ignored because of SIG');
                 // Ignore, let it fall through to verb detection or default
             } else {
+                if (wordLower.includes('utmärker')) console.log('...returned ADJECTIVE');
                 return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
             }
         }
@@ -733,6 +753,10 @@ export const TypeColorSystem = {
             wordLower.endsWith('sam') || wordLower.endsWith('full') ||
             wordLower.endsWith('lös') || wordLower.endsWith('bar') ||
             wordLower.endsWith('aktig') || wordLower.endsWith('mässig')) {
+
+            // EXCEPTION: 'sig' ends in 'ig' but is reflexive verb marker
+            if (wordLower.endsWith('sig')) return false;
+
             return true;
         }
 
