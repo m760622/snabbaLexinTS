@@ -1739,9 +1739,7 @@ class FlashcardManager {
     private static currentWordData: any[] | null = null;
 
     // Map word types to glow classes using TypeColorSystem
-    private static getTypeGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        return TypeColorSystem.getGlowClass(type, word, forms, gender);
-    }
+
 
     // Dynamic text sizing based on text length
     private static getTextSizeClass(text: string): string {
@@ -1825,7 +1823,7 @@ class FlashcardManager {
         const forms = wordData[6] || '';
 
         const gender = wordData[13] || '';
-        const glowClass = this.getTypeGlowClass(type, swe, forms, gender);
+        const glowClass = TypeColorSystem.getGlowClass(type, swe, forms, gender, arb);
         const sweSizeClass = this.getTextSizeClass(swe);
         const arbSizeClass = this.getTextSizeClass(arb);
 
@@ -2234,16 +2232,16 @@ export class DetailsManager {
 
         const gender = row[13] || ''; // en/ett from dictionary
 
-        const category = TypeColorSystem.getCategory(type, swe, forms);
+        const category = TypeColorSystem.getCategory(type, swe, forms, gender, arb);
         const isFav = FavoritesManager.has(id);
-        const glowClass = this.getTypeGlowClass(type, swe, forms, gender);
+        const glowClass = TypeColorSystem.getGlowClass(type, swe, forms, gender, arb);
 
         this.setupHeaderActions(row, isFav);
 
         const detailsArea = document.getElementById('detailsArea');
         if (!detailsArea) return;
 
-        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender);
+        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender, arb);
 
         // Process definition and examples for smart links
         const processedDef = SmartLinkProcessor.process(def);
@@ -2478,9 +2476,7 @@ export class DetailsManager {
         FavoritesManager.updateButtonIcon(btn, isFavNow);
     }
 
-    private getTypeGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        return TypeColorSystem.getGlowClass(type, word, forms, gender);
-    }
+
 }
 
 // Instantiate

@@ -331,7 +331,7 @@ export const TypeColorSystem = {
      * @param gender - Optional explicit gender from dictionary ('en' or 'ett')
      * @returns WordTypeResult with detected type and color
      */
-    detect(type: string, word: string = '', forms: string = '', gender: string = ''): WordTypeResult {
+    detect(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): WordTypeResult {
         const wordLower = (word || '').trim().toLowerCase();
         const formsLower = (forms || '').toLowerCase();
         const normalizedType = (type || '').toLowerCase().replace(/[.()]/g, '').trim();
@@ -354,32 +354,13 @@ export const TypeColorSystem = {
             specializedLabel = labelMap[possibleSpecType];
         }
 
-        // ============================================
-        // STEP 0: CLOSED CLASSES CHECK (Fast Path - Gate 0)
-        // User-provided optimization for O(1) lookup of common closed-class words.
-        // ============================================
-        const CLOSED_CLASSES = {
-            pronouns: new Set([
-                "jag", "du", "han", "hon", "den", "det", "vi", "ni", "de", "honom", "henne",
-                "oss", "er", "dem", "min", "din", "sin", "vår", "er", "deras", "någon", "ingen", "alla", "man", "själv"
-            ]),
-            prepositions: new Set([
-                "i", "på", "till", "från", "med", "utan", "av", "under", "över", "vid", "för", "om", "mellan", "hos", "genom", "mot"
-            ]),
-            conjunctions: new Set([
-                "och", "men", "eller", "att", "om", "eftersom", "när", "då", "medan", "fast", "samt"
-            ])
-        };
 
-        if (CLOSED_CLASSES.pronouns.has(wordLower)) return { type: 'pronoun', color: TypeColors.pronoun, specializedLabel, gender: 'en' as 'en' | 'ett' };
-        if (CLOSED_CLASSES.prepositions.has(wordLower)) return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
-        if (CLOSED_CLASSES.conjunctions.has(wordLower)) return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
 
         // ============================================
         // STEP 0.5: RESPECT DICTIONARY TYPE IF KNOWN (HIGHEST PRIORITY)
         // ============================================
         // If dictionary explicitly says Adjektiv, believe it! 
-        // This MUST come before suffix rules to prevent "Alarmerande" (Adj) -> "Ett" (-ande rule)
+        // This MUST come before closed classes and suffix rules.
         if (normalizedType.includes('adjektiv') || normalizedType === 'adj') {
             return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
         }
@@ -407,9 +388,51 @@ export const TypeColorSystem = {
                 specializedLabel
             };
         }
-        // If dictionary says Explicit SUBSTANTIV (but no gender provided yet), 
-        // we should prevent it from falling into Verb detection later.
-        // We let it fall through to Gender detection steps, but checking type allows us to be smarter.
+
+        // ============================================
+        // STEP 0: CLOSED CLASSES CHECK (Fast Path - Gate 0)
+        // User-provided optimization for O(1) lookup of common closed-class words.
+        // ============================================
+        const CLOSED_CLASSES = {
+            pronouns: new Set([
+                "jag", "du", "han", "hon", "den", "det", "vi", "ni", "de", "honom", "henne",
+                "oss", "er", "dem", "min", "din", "sin", "vår", "er", "deras", "någon", "ingen", "alla", "man", "själv"
+            ]),
+            prepositions: new Set([
+                "i", "på", "till", "från", "med", "utan", "av", "under", "över", "vid", "för", "om", "mellan", "hos", "genom", "mot"
+            ]),
+            conjunctions: new Set([
+                "och", "men", "eller", "att", "om", "eftersom", "när", "då", "medan", "fast", "samt"
+            ])
+        };
+
+        if (CLOSED_CLASSES.pronouns.has(wordLower)) return { type: 'pronoun', color: TypeColors.pronoun, specializedLabel, gender: 'en' as 'en' | 'ett' };
+        if (CLOSED_CLASSES.prepositions.has(wordLower)) return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
+        if (CLOSED_CLASSES.conjunctions.has(wordLower)) return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
+
+
+
+        // ============================================
+        // STEP 0.8: ARABIC TRANSLATION HEURISTIC (Strong Signal)
+        // ============================================
+        // If Swedish type is ambiguous (e.g. 'Medicin', 'Tekn') AND Arabic starts with 'Ya' (ي) or 'Ta' (ت),
+        // it is highly likely a Verb (Present tense).
+        // This MUST be checked early to override ambiguous/incorrect metadata types.
+        if (arabic && arabic.trim().length > 0) {
+            // Remove common control characters (LTRM, RTLM, etc) and whitespace
+            const cleanArabic = arabic.replace(/[\u200E\u200F\u202A-\u202E]/g, '').trim();
+
+            // Check if it starts with 'ي' (Ya) or 'ت' (Ta) - Typical present tense verb markers in Arabic
+            if (cleanArabic.startsWith('ي') || cleanArabic.startsWith('ت')) {
+                // Check Swedish indicators
+                // Must end in 'r' (present), 's' (deponent/reflexive), 'sig' (reflexive pronoun), or start with 'att'
+                if (wordLower.endsWith('r') || wordLower.endsWith('s') || wordLower.startsWith('att ') || wordLower.endsWith('sig')) {
+                    // Safety: Ensure it's not "sig" on its own (though that would be pronoun)
+                    // This combination is a very strong signal for a Verb.
+                    return { type: 'verb', color: TypeColors.verb, specializedLabel };
+                }
+            }
+        }
 
         // ============================================
         // STEP 1: USE EXPLICIT GENDER IF PROVIDED (from column 13)
@@ -486,13 +509,10 @@ export const TypeColorSystem = {
         // 3. Adjective Suffixes (User suggestion)
         const adjectiveSuffixes = ['lig', 'ig', 'isk', 'sam', 'bar']; // e.g. trevlig, rolig, typisk, långsam, underbar
         if (adjectiveSuffixes.some(s => wordLower.endsWith(s))) {
-            if (wordLower.includes('utmärker')) console.log('Matched adjectve suffix');
             // EXCEPTION: 'sig' ends in 'ig' but causes reflexive verbs to be seen as adjectives
             if (wordLower.endsWith('sig')) {
-                if (wordLower.includes('utmärker')) console.log('...but ignored because of SIG');
                 // Ignore, let it fall through to verb detection or default
             } else {
-                if (wordLower.includes('utmärker')) console.log('...returned ADJECTIVE');
                 return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
             }
         }
@@ -578,11 +598,13 @@ export const TypeColorSystem = {
             return { type: 'en', color: TypeColors.en, gender: 'en', specializedLabel };
         }
 
+
+
+
         // ============================================
         // STEP 5: FALLBACK TO TYPE FIELD (LAST RESORT)
         // Only use if all forms-based detection failed
         // ============================================
-        // normalizedType is already defined at the top of the function
 
 
         // Phrasal verbs
@@ -805,24 +827,24 @@ export const TypeColorSystem = {
     /**
      * Get CSS class for grammar badge (e.g., 'grammar-verb', 'grammar-en')
      */
-    getGrammarClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getGrammarClass(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         return `grammar-${result.color.classToken}`;
     },
 
     /**
      * Get CSS class for data-type attribute (used in search cards)
      */
-    getTypeClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getTypeClass(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         return `type-${result.color.classToken}`;
     },
 
     /**
      * Get CSS glow class for hero sections (e.g., 'glow-verb', 'glow-noun')
      */
-    getGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getGlowClass(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
 
         // Map to glow classes - PRIORITIZE GRAMMAR
         const glowMap: Record<string, string> = {
@@ -868,8 +890,8 @@ export const TypeColorSystem = {
     /**
      * Get CSS type class for hero sections (e.g., 'type-verb', 'type-noun')
      */
-    getHeroTypeClass(type: string, word: string = '', forms: string = ''): string {
-        const result = this.detect(type, word, forms);
+    getHeroTypeClass(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
 
         // Priority 1: Grammar Types
         if (['verb', 'en', 'ett', 'noun', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection', 'phrasal', 'pronoun'].includes(result.type)) {
@@ -901,8 +923,8 @@ export const TypeColorSystem = {
          * Note: This combines en/ett into 'subst' for filtering purposes (Substantiv)
          * Specialized labels (Jur, Med) are ignored - only grammatical type matters for filtering
          */
-    getCategory(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getCategory(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
 
         // Map detected types to filter values (matches index.html typeSelect)
         const categoryMap: Record<string, string> = {
@@ -929,8 +951,8 @@ export const TypeColorSystem = {
      * Get data-type string for CSS styling (keeps en/ett distinct)
      * Use this for card borders and visual styling
      */
-    getDataType(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getDataType(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
 
         // Priority 1: Standard Grammar Types - Map to CSS-friendly values
         // If we identified a specific valid grammar type, use it.
@@ -981,32 +1003,32 @@ export const TypeColorSystem = {
     /**
      * Get inline CSS for border color
      */
-    getBorderStyle(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getBorderStyle(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         return `border-color: ${result.color.primary}`;
     },
 
     /**
      * Get inline CSS for text color
      */
-    getTextStyle(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    getTextStyle(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         return `color: ${result.color.primary}`;
     },
 
     /**
      * Get CSS custom property for glow color
      */
-    getGlowColorVar(type: string, word: string = '', forms: string = ''): string {
-        const result = this.detect(type, word, forms);
+    getGlowColorVar(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         return `--glow-color: ${result.color.primary}`;
     },
 
     /**
      * Get full color definition for custom styling
      */
-    getColor(type: string, word: string = '', forms: string = ''): ColorDefinition {
-        const result = this.detect(type, word, forms);
+    getColor(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): ColorDefinition {
+        const result = this.detect(type, word, forms, gender, arabic);
         return result.color;
     },
 
@@ -1017,8 +1039,8 @@ export const TypeColorSystem = {
     /**
      * Generate HTML badge for search cards
      */
-    generateBadge(type: string, word: string = '', forms: string = '', gender: string = ''): string {
-        const result = this.detect(type, word, forms, gender);
+    generateBadge(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         let color = result.color;
 
         let label = color.label.sv;
@@ -1058,8 +1080,8 @@ export const TypeColorSystem = {
     /**
      * Generate badge for Details page (usually larger)
      */
-    generateTypeBadge(type: string, word: string = '', forms: string = '', isLarge = false): string {
-        const result = this.detect(type, word, forms);
+    generateTypeBadge(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = '', isLarge = false): string {
+        const result = this.detect(type, word, forms, gender, arabic);
         const color = result.color;
 
         let label = isLarge ? (color.label.sv) : (color.label.sv.substring(0, 3).toUpperCase());

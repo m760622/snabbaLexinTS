@@ -382,7 +382,7 @@ export class App {
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
             filtered = filtered.filter((row: any[]) => {
-                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '');
+                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
                 return cat === this.activeTypeFilter;
             });
         }
@@ -479,8 +479,8 @@ export class App {
         const forms = row[6] || '';
         const gender = row[13] || ''; // en/ett from dictionary
 
-        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender);
-        const dataType = TypeColorSystem.getDataType(type, swe, forms, gender); // For CSS styling (keeps en/ett distinct)
+        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender, arb);
+        const dataType = TypeColorSystem.getDataType(type, swe, forms, gender, arb); // For CSS styling (keeps en/ett distinct)
         const isFav = FavoritesManager.has(id.toString());
 
         const starIcon = isFav
