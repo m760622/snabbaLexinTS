@@ -121,7 +121,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.details-header-sticky.glow-noun {
+.details-header-sticky.glow-en {
     background: linear-gradient(to bottom, rgba(13, 148, 136, 0.15), rgba(13, 148, 136, 0.05)), rgba(15, 23, 42, 0.9) !important;
     border-bottom-color: rgba(13, 148, 136, 0.3) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -134,14 +134,20 @@
 }
 
 .details-header-sticky.glow-adverb {
-    background: linear-gradient(to bottom, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05)), rgba(15, 23, 42, 0.9) !important;
-    border-bottom-color: rgba(234, 179, 8, 0.3) !important;
+    background: linear-gradient(to bottom, rgba(234, 88, 12, 0.15), rgba(234, 88, 12, 0.05)), rgba(15, 23, 42, 0.9) !important;
+    border-bottom-color: rgba(234, 88, 12, 0.3) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .details-header-sticky.glow-preposition {
-    background: linear-gradient(to bottom, rgba(13, 148, 136, 0.15), rgba(13, 148, 136, 0.05)), rgba(15, 23, 42, 0.9) !important;
-    border-bottom-color: rgba(13, 148, 136, 0.3) !important;
+    background: linear-gradient(to bottom, rgba(250, 204, 21, 0.15), rgba(250, 204, 21, 0.05)), rgba(15, 23, 42, 0.9) !important;
+    border-bottom-color: rgba(250, 204, 21, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.details-header-sticky.glow-ett {
+    background: linear-gradient(to bottom, rgba(22, 163, 74, 0.15), rgba(22, 163, 74, 0.05)), rgba(15, 23, 42, 0.9) !important;
+    border-bottom-color: rgba(22, 163, 74, 0.3) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -177,7 +183,7 @@
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.1);
 }
 
-.details-tabs.glow-noun {
+.details-tabs.glow-en {
     background: rgba(13, 148, 136, 0.15);
     border-color: rgba(13, 148, 136, 0.3);
     box-shadow: 0 4px 15px rgba(13, 148, 136, 0.1);
@@ -190,15 +196,21 @@
 }
 
 .details-tabs.glow-adverb {
-    background: rgba(234, 179, 8, 0.15);
-    border-color: rgba(234, 179, 8, 0.3);
-    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.1);
+    background: rgba(234, 88, 12, 0.15);
+    border-color: rgba(234, 88, 12, 0.3);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.1);
 }
 
 .details-tabs.glow-preposition {
-    background: rgba(13, 148, 136, 0.15);
-    border-color: rgba(13, 148, 136, 0.3);
-    box-shadow: 0 4px 15px rgba(13, 148, 136, 0.1);
+    background: rgba(250, 204, 21, 0.15);
+    border-color: rgba(250, 204, 21, 0.3);
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.1);
+}
+
+.details-tabs.glow-ett {
+    background: rgba(22, 163, 74, 0.15);
+    border-color: rgba(22, 163, 74, 0.3);
+    box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1);
 }
 
 .details-tabs.glow-default {
@@ -373,13 +385,13 @@
 }
 
 .details-hero.glow-adverb {
-    box-shadow: 0 4px 30px rgba(234, 179, 8, 0.15);
-    border-color: rgba(234, 179, 8, 0.3);
+    box-shadow: 0 4px 30px rgba(234, 88, 12, 0.15);
+    border-color: rgba(234, 88, 12, 0.3);
 }
 
 .details-hero.glow-preposition {
-    box-shadow: 0 4px 30px rgba(13, 148, 136, 0.15);
-    border-color: rgba(13, 148, 136, 0.3);
+    box-shadow: 0 4px 30px rgba(250, 204, 21, 0.15);
+    border-color: rgba(250, 204, 21, 0.3);
 }
 
 .details-hero.glow-default {
@@ -511,31 +523,31 @@
     animation: hero-entrance 0.6s ease-out, glow-pulse-blue 4s ease-in-out infinite;
 }
 
-/* Verbs - Dark Blue #1e3a8a - Faster wave (2.5s) */
+/* Verbs - Red #dc2626 - Faster wave (2.5s) */
 .details-hero.type-verb {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
-        0 0 0 0.5px rgba(30, 58, 138, 0.8),
-        0 0 10px rgba(30, 58, 138, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-darkblue 2.5s ease-in-out infinite;
+        0 0 0 0.5px rgba(220, 38, 38, 0.8),
+        0 0 10px rgba(220, 38, 38, 0.4);
+    animation: hero-entrance 0.6s ease-out, glow-pulse-red 2.5s ease-in-out infinite;
 }
 
-/* Adjectives - Amber #F59E0B - Gentle shimmer (5s) */
+/* Adjectives - Blue #3b82f6 - Gentle shimmer (5s) */
 .details-hero.type-adjective {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
-        0 0 0 0.5px rgba(245, 158, 11, 0.8),
-        0 0 10px rgba(245, 158, 11, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-amber 5s ease-in-out infinite;
+        0 0 0 0.5px rgba(59, 130, 246, 0.8),
+        0 0 10px rgba(59, 130, 246, 0.4);
+    animation: hero-entrance 0.6s ease-out, glow-pulse-blue 5s ease-in-out infinite;
 }
 
-/* Adverbs - Pink #EC4899 - Medium rhythm (3.5s) */
+/* Adverbs - Orange #ea580c - Medium rhythm (3.5s) */
 .details-hero.type-adverb {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
-        0 0 0 0.5px rgba(236, 72, 153, 0.8),
-        0 0 10px rgba(236, 72, 153, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-pink 3.5s ease-in-out infinite;
+        0 0 0 0.5px rgba(234, 88, 12, 0.8),
+        0 0 10px rgba(234, 88, 12, 0.4);
+    animation: hero-entrance 0.6s ease-out, glow-pulse-orange 3.5s ease-in-out infinite;
 }
 
 /* Legal/Juridik - Red - Very slow formal (6s) */
@@ -557,12 +569,13 @@
     animation: hero-entrance 0.6s ease-out, glow-pulse-cyan 2s ease-in-out infinite;
 }
 
-/* Prepositions - Gray - Static (no animation) */
+/* Prepositions - Yellow #facc15 - Static (no animation) */
 .details-hero.type-preposition {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
-        0 0 0 0.5px rgba(100, 116, 139, 0.6),
-        0 0 8px rgba(100, 116, 139, 0.25);
+        0 0 0 0.5px rgba(250, 204, 21, 0.8),
+        0 0 10px rgba(250, 204, 21, 0.25);
+    animation: hero-entrance 0.6s ease-out, glow-pulse-amber 6s ease-in-out infinite;
 }
 
 /* Pronouns - Indigo - Distinct from Cyan */
@@ -574,13 +587,13 @@
     animation: hero-entrance 0.6s ease-out, glow-pulse-indigo 3s ease-in-out infinite;
 }
 
-/* Conjunctions - Teal - Distinct from Pink */
+/* Conjunctions - Light Yellow #fde047 - Distinct from Preposition */
 .details-hero.type-conjunction {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
-        0 0 0 0.5px rgba(20, 184, 166, 0.8),
-        0 0 10px rgba(20, 184, 166, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-teal 3s ease-in-out infinite;
+        0 0 0 0.5px rgba(253, 224, 71, 0.8),
+        0 0 10px rgba(253, 224, 71, 0.4);
+    animation: hero-entrance 0.6s ease-out, glow-pulse-amber 3s ease-in-out infinite;
 }
 
 /* Interjections - Pale Orange - Quick Pop */
@@ -900,9 +913,9 @@
 .word-type-badge.type-construction,
 .word-type-badge.type-bygg,
 .word-type-badge.grammar-bygg {
-    color: #78716c !important;
-    /* Stone/Gray */
-    border-color: #78716c !important;
+    color: #d97706 !important;
+    /* Gold */
+    border-color: #d97706 !important;
 }
 
 .word-type-badge.type-tech,
@@ -4789,7 +4802,7 @@ body .quiz-options {
 /* Word Type Badge in Quiz */
 .quiz-word-type {
     display: inline-block;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #64748b, #475569);
     color: white;
     font-size: 0.7rem;
     font-weight: 700;
@@ -4834,7 +4847,7 @@ body .quiz-options {
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     border: none;
     border-radius: 50px;
@@ -4921,7 +4934,7 @@ body .quiz-options {
     width: 100%;
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
     color: white;
     border: none;
     border-radius: 12px;
@@ -8121,4 +8134,130 @@ body .quiz-options {
     50% {
         opacity: 0.5;
     }
+}
+
+/* Conjunction Glow - Light Yellow */
+.details-header-sticky.glow-conjunction {
+    background: linear-gradient(to bottom, rgba(253, 224, 71, 0.15), rgba(253, 224, 71, 0.05)), rgba(15, 23, 42, 0.9) !important;
+    border-bottom-color: rgba(253, 224, 71, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.details-tabs.glow-conjunction {
+    background: rgba(253, 224, 71, 0.15);
+    border-color: rgba(253, 224, 71, 0.3);
+    box-shadow: 0 4px 15px rgba(253, 224, 71, 0.1);
+}
+
+.details-hero.glow-conjunction {
+    box-shadow: 0 4px 30px rgba(253, 224, 71, 0.15);
+    border-color: rgba(253, 224, 71, 0.3);
+}
+
+/* =========================================
+   SPECIALIZED GLOW EFFECTS (Automated Fix)
+   ========================================= */
+
+/* Medical - Cyan */
+.glow-medical,
+.details-hero.type-medical {
+    --glow-color: #06b6d4;
+    --hero-bg: radial-gradient(circle at top right, rgba(6, 182, 212, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 70%);
+}
+
+/* Legal - Brown */
+.glow-legal,
+.details-hero.type-legal {
+    --glow-color: #92400e;
+    --hero-bg: radial-gradient(circle at top right, rgba(146, 64, 14, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(146, 64, 14, 0.1), transparent 70%);
+}
+
+/* Construction - Gold */
+.glow-construction,
+.details-hero.type-construction {
+    --glow-color: #d97706;
+    --hero-bg: radial-gradient(circle at top right, rgba(217, 119, 6, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(217, 119, 6, 0.1), transparent 70%);
+}
+
+/* Tech - Teal */
+.glow-tech,
+.details-hero.type-tech {
+    --glow-color: #0891b2;
+    --hero-bg: radial-gradient(circle at top right, rgba(8, 145, 178, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(8, 145, 178, 0.1), transparent 70%);
+}
+
+/* Science - Dark Green */
+.glow-science,
+.details-hero.type-science {
+    --glow-color: #15803d;
+    --hero-bg: radial-gradient(circle at top right, rgba(21, 128, 61, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(21, 128, 61, 0.1), transparent 70%);
+}
+
+/* Religion - Violet */
+.glow-religion,
+.details-hero.type-religion {
+    --glow-color: #7c3aed;
+    --hero-bg: radial-gradient(circle at top right, rgba(124, 58, 237, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.1), transparent 70%);
+}
+
+/* Politics - Red */
+.glow-politics,
+.details-hero.type-politics {
+    --glow-color: #dc2626;
+    --hero-bg: radial-gradient(circle at top right, rgba(220, 38, 38, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(220, 38, 38, 0.1), transparent 70%);
+}
+
+/* Economy - Gold */
+.glow-economy,
+.details-hero.type-economy {
+    --glow-color: #ca8a04;
+    --hero-bg: radial-gradient(circle at top right, rgba(202, 138, 4, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(202, 138, 4, 0.1), transparent 70%);
+}
+
+/* Military - Dark Stone */
+.glow-military,
+.details-hero.type-military {
+    --glow-color: #44403c;
+    --hero-bg: radial-gradient(circle at top right, rgba(68, 64, 60, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(68, 64, 60, 0.1), transparent 70%);
+}
+
+/* Interjection - Pale Orange */
+.glow-interjection,
+.details-hero.type-interjection {
+    --glow-color: #fdba74;
+    --hero-bg: radial-gradient(circle at top right, rgba(253, 186, 116, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(253, 186, 116, 0.1), transparent 70%);
+}
+
+/* Phrasal - Cyan */
+.glow-phrasal,
+.details-hero.type-phrasal {
+    --glow-color: #06b6d4;
+    --hero-bg: radial-gradient(circle at top right, rgba(6, 182, 212, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 70%);
+}
+
+/* Pronoun - Indigo */
+.glow-pronoun,
+.details-hero.type-pronoun {
+    --glow-color: #2563eb;
+    --hero-bg: radial-gradient(circle at top right, rgba(37, 99, 235, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.1), transparent 70%);
+}
+
+/* Ett - Green */
+.glow-ett,
+.details-hero.type-ett {
+    --glow-color: #16a34a;
+    --hero-bg: radial-gradient(circle at top right, rgba(22, 163, 74, 0.15), transparent 70%),
+        radial-gradient(circle at bottom left, rgba(22, 163, 74, 0.1), transparent 70%);
 }
