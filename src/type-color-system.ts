@@ -376,9 +376,29 @@ export const TypeColorSystem = {
         if (CLOSED_CLASSES.conjunctions.has(wordLower)) return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
 
         // ============================================
+        // STEP 0.5: RESPECT DICTIONARY TYPE IF KNOWN (HIGHEST PRIORITY)
+        // ============================================
+        // If dictionary explicitly says Adjektiv, believe it! 
+        // This MUST come before suffix rules to prevent "Alarmerande" (Adj) -> "Ett" (-ande rule)
+        if (normalizedType.includes('adjektiv') || normalizedType === 'adj') {
+            return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
+        }
+        if (normalizedType.includes('verb') || normalizedType === 'v') {
+            // Try to get verb group, but ensure it's returned as verb
+            const group = this.detectVerbGroup(formsLower, wordLower);
+            return {
+                type: 'verb',
+                color: TypeColors.verb,
+                verbGroup: group || undefined,
+                specializedLabel
+            };
+        }
+        // If dictionary says Explicit SUBSTANTIV (but no gender provided yet), 
+        // we should prevent it from falling into Verb detection later.
+        // We let it fall through to Gender detection steps, but checking type allows us to be smarter.
+
+        // ============================================
         // STEP 1: USE EXPLICIT GENDER IF PROVIDED (from column 13)
-        // This is THE MOST reliable data source. If dictionary says 'en'/'ett', it IS a noun.
-        // This prevents Nouns with verb-like forms (e.g. "Kassett") from being misidentified.
         // ============================================
         if (genderLower === 'ett') {
             return { type: 'ett', color: TypeColors.ett, gender: 'ett', specializedLabel };
@@ -400,7 +420,7 @@ export const TypeColorSystem = {
             'system': 'ett', 'program': 'ett', 'problem': 'ett', 'rum': 'ett', 'vatten': 'ett',
             'land': 'ett', 'språk': 'ett', 'fond': 'en', 'fonden': 'en', 'dator': 'en',
             'skiva': 'en', 'pengar': 'en', 'konto': 'ett', 'kort': 'ett',
-            'trakasserier': 'ett', 'kuren': 'en', 'lån': 'ett'
+            'trakasserier': 'ett', 'kuren': 'en', 'lån': 'ett', 'risk': 'en' // risk matches 'isk' otherwise
         };
 
         for (const suffix in specificSuffixes) {
@@ -449,8 +469,15 @@ export const TypeColorSystem = {
         // 3. Adjective Suffixes (User suggestion)
         const adjectiveSuffixes = ['lig', 'ig', 'isk', 'sam', 'bar']; // e.g. trevlig, rolig, typisk, långsam, underbar
         if (adjectiveSuffixes.some(s => wordLower.endsWith(s))) {
-            return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
+            // EXCEPTION: 'sig' ends in 'ig' but causes reflexive verbs to be seen as adjectives
+            if (wordLower.endsWith('sig')) {
+                // Ignore, let it fall through to verb detection or default
+            } else {
+                return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
+            }
         }
+
+        // (Step 1.5 moved to top)
 
         // ============================================
         // STEP 2: VERB DETECTION BY FORMS
