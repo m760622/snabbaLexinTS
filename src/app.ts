@@ -382,7 +382,7 @@ export class App {
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
             filtered = filtered.filter((row: any[]) => {
-                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6]);
+                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '');
                 return cat === this.activeTypeFilter;
             });
         }

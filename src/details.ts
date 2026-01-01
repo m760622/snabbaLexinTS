@@ -1739,8 +1739,8 @@ class FlashcardManager {
     private static currentWordData: any[] | null = null;
 
     // Map word types to glow classes using TypeColorSystem
-    private static getTypeGlowClass(type: string, forms: string = ''): string {
-        return TypeColorSystem.getGlowClass(type, '', forms);
+    private static getTypeGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
+        return TypeColorSystem.getGlowClass(type, word, forms, gender);
     }
 
     // Dynamic text sizing based on text length
@@ -1824,7 +1824,8 @@ class FlashcardManager {
 
         const forms = wordData[6] || '';
 
-        const glowClass = this.getTypeGlowClass(type, forms);
+        const gender = wordData[13] || '';
+        const glowClass = this.getTypeGlowClass(type, swe, forms, gender);
         const sweSizeClass = this.getTextSizeClass(swe);
         const arbSizeClass = this.getTextSizeClass(arb);
 
@@ -2235,7 +2236,7 @@ export class DetailsManager {
 
         const category = TypeColorSystem.getCategory(type, swe, forms);
         const isFav = FavoritesManager.has(id);
-        const glowClass = this.getTypeGlowClass(type, forms);
+        const glowClass = this.getTypeGlowClass(type, swe, forms, gender);
 
         this.setupHeaderActions(row, isFav);
 
@@ -2477,8 +2478,8 @@ export class DetailsManager {
         FavoritesManager.updateButtonIcon(btn, isFavNow);
     }
 
-    private getTypeGlowClass(type: string, forms: string = ''): string {
-        return TypeColorSystem.getGlowClass(type, '', forms);
+    private getTypeGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
+        return TypeColorSystem.getGlowClass(type, word, forms, gender);
     }
 }
 

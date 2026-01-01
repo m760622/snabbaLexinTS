@@ -117,14 +117,14 @@ export const TypeColors: Record<string, ColorDefinition> = {
         label: { sv: 'Medicinsk', ar: 'طبي', en: 'Medical' }
     },
     legal: {
-        primary: '#b91c1c',      // Dark Red
-        background: 'rgba(185, 28, 28, 0.15)',
+        primary: '#92400e',      // Brown (amber-800)
+        background: 'rgba(146, 64, 14, 0.15)',
         classToken: 'legal',
         label: { sv: 'Juridisk', ar: 'قانوني', en: 'Legal' }
     },
     construction: {
-        primary: '#78716c',      // Stone Gray
-        background: 'rgba(120, 113, 108, 0.15)',
+        primary: '#d97706',      // Gold (amber-600)
+        background: 'rgba(217, 119, 6, 0.15)',
         classToken: 'construction',
         label: { sv: 'Bygg', ar: 'بناء', en: 'Construction' }
     },
@@ -167,8 +167,8 @@ export const TypeColors: Record<string, ColorDefinition> = {
 
     // === OTHER GRAMMAR TYPES ===
     preposition: {
-        primary: '#64748b',      // Slate
-        background: 'rgba(100, 116, 139, 0.15)',
+        primary: '#facc15',      // Yellow
+        background: 'rgba(250, 204, 21, 0.15)',
         classToken: 'preposition',
         label: { sv: 'Preposition', ar: 'حرف جر', en: 'Preposition' }
     },
@@ -179,8 +179,8 @@ export const TypeColors: Record<string, ColorDefinition> = {
         label: { sv: 'Pronomen', ar: 'ضمير', en: 'Pronoun' }
     },
     conjunction: {
-        primary: '#14b8a6',      // Teal
-        background: 'rgba(20, 184, 166, 0.15)',
+        primary: '#fde047',      // Light Yellow (yellow-300)
+        background: 'rgba(253, 224, 71, 0.15)',
         classToken: 'conjunction',
         label: { sv: 'Konjunktion', ar: 'حرف عطف', en: 'Conjunction' }
     },
@@ -211,36 +211,87 @@ const TYPE_ALIASES: Record<string, string> = {
     // Swedish abbreviations
     'subst': 'noun',
     'subst.': 'noun',
+    'substantiv': 'noun',
+    'substantivr': 'noun',
+    'substantivmn': 'noun',
     'adj': 'adjective',
     'adj.': 'adjective',
+    'adjektiv': 'adjective',
     'adv': 'adverb',
     'adv.': 'adverb',
+    'adverb': 'adverb',
     'prep': 'preposition',
     'prep.': 'preposition',
+    'preposition': 'preposition',
     'konj': 'conjunction',
     'konj.': 'conjunction',
+    'konjunktion': 'conjunction',
     'pron': 'pronoun',
     'pron.': 'pronoun',
+    'pronomen': 'pronoun',
     'interj': 'interjection',
     'interj.': 'interjection',
+    'interjektion': 'interjection',
     'verbmn': 'phrasal',
+    'förled': 'phrasal',
+    'efterled': 'phrasal',
+    'förkortning': 'noun',
+    'namn': 'noun',
+    'räkning': 'numeral',
 
     // Specialized abbreviations
     'med': 'medical',
+    'medicin': 'medical',
+    'medicinr': 'medical',
+    'medicinmr': 'medical',
+    'medicinmn': 'medical',
+    'medicintb': 'medical',
+    'tandvård': 'medical',
     'jur': 'legal',
     'juridik': 'legal',
+    'juridikr': 'legal',
+    'juridiks': 'legal',
+    'juridiktb': 'legal',
+    'juridikmn': 'legal',
     'bygg': 'construction',
     'tekn': 'tech',
     'teknik': 'tech',
+    'teknikmn': 'tech',
     'nat': 'science',
     'natur': 'science',
     'rel': 'religion',
+    'religion': 'religion',
     'pol': 'politics',
     'politik': 'politics',
     'ekon': 'economy',
     'ekonomi': 'economy',
+    'ekobrott': 'economy',
     'mil': 'military',
     'militär': 'military',
+    'hbtq': 'medical',
+    'hbtqi': 'medical',
+    'hbtqs': 'medical',
+    'samhälle': 'politics',
+    'samhälletb': 'politics',
+    'samhäller': 'politics',
+    'samhällemn': 'politics',
+    'migration': 'politics',
+    'migrationtb': 'politics',
+    'arbetsmarknad': 'economy',
+    'arbetsmarknadr': 'economy',
+    'arbetsmarknadmn': 'economy',
+    'försäkring': 'economy',
+    'försäkringr': 'economy',
+    'försäkringskassan': 'economy',
+    'utbildning': 'politics',
+    'utbildningmn': 'politics',
+    'körkorttb': 'legal',
+    'körkortmn': 'legal',
+    'ministeriet': 'politics',
+    'multikulturella': 'politics',
+    'övrega': 'default',
+    'övregatb': 'default',
+    'se': 'default'
 };
 
 // ============================================
@@ -281,7 +332,7 @@ export const TypeColorSystem = {
      * @returns WordTypeResult with detected type and color
      */
     detect(type: string, word: string = '', forms: string = '', gender: string = ''): WordTypeResult {
-        const wordLower = (word || '').toLowerCase();
+        const wordLower = (word || '').trim().toLowerCase();
         const formsLower = (forms || '').toLowerCase();
         const normalizedType = (type || '').toLowerCase().replace(/[.()]/g, '').trim();
         const genderLower = (gender || '').toLowerCase().trim();
@@ -304,8 +355,105 @@ export const TypeColorSystem = {
         }
 
         // ============================================
-        // STEP 1: VERB DETECTION BY FORMS (highest priority)
-        // This is the most reliable method
+        // STEP 0: CLOSED CLASSES CHECK (Fast Path - Gate 0)
+        // User-provided optimization for O(1) lookup of common closed-class words.
+        // ============================================
+        const CLOSED_CLASSES = {
+            pronouns: new Set([
+                "jag", "du", "han", "hon", "den", "det", "vi", "ni", "de", "honom", "henne",
+                "oss", "er", "dem", "min", "din", "sin", "vår", "er", "deras", "någon", "ingen", "alla", "man", "själv"
+            ]),
+            prepositions: new Set([
+                "i", "på", "till", "från", "med", "utan", "av", "under", "över", "vid", "för", "om", "mellan", "hos", "genom", "mot"
+            ]),
+            conjunctions: new Set([
+                "och", "men", "eller", "att", "om", "eftersom", "när", "då", "medan", "fast", "samt"
+            ])
+        };
+
+        if (CLOSED_CLASSES.pronouns.has(wordLower)) return { type: 'pronoun', color: TypeColors.pronoun, specializedLabel, gender: 'en' as 'en' | 'ett' };
+        if (CLOSED_CLASSES.prepositions.has(wordLower)) return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
+        if (CLOSED_CLASSES.conjunctions.has(wordLower)) return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
+
+        // ============================================
+        // STEP 1: USE EXPLICIT GENDER IF PROVIDED (from column 13)
+        // This is THE MOST reliable data source. If dictionary says 'en'/'ett', it IS a noun.
+        // This prevents Nouns with verb-like forms (e.g. "Kassett") from being misidentified.
+        // ============================================
+        if (genderLower === 'ett') {
+            return { type: 'ett', color: TypeColors.ett, gender: 'ett', specializedLabel };
+        }
+        if (genderLower === 'en') {
+            return { type: 'en', color: TypeColors.en, gender: 'en', specializedLabel };
+        }
+
+        // ============================================
+        // STEP 1.5: SMART MORPHOLOGICAL ANALYSIS (The "Intelligence" Layer)
+        // Infer gender based on Swedish grammar rules and common suffixes.
+        // ============================================
+
+        // 1. Specific Word Endings (Compounds & Helper List)
+        const specificSuffixes: Record<string, 'en' | 'ett'> = {
+            'vitamin': 'ett', 'kassett': 'en', 'station': 'en', 'blomma': 'en', 'skola': 'en',
+            'hus': 'ett', 'ljus': 'ett', 'bord': 'ett', 'stol': 'en', 'boll': 'en', 'bok': 'en',
+            'tidning': 'en', 'bil': 'en', 'båt': 'en', 'tåg': 'ett', 'flyg': 'ett', 'jobb': 'ett',
+            'system': 'ett', 'program': 'ett', 'problem': 'ett', 'rum': 'ett', 'vatten': 'ett',
+            'land': 'ett', 'språk': 'ett', 'fond': 'en', 'fonden': 'en', 'dator': 'en',
+            'skiva': 'en', 'pengar': 'en', 'konto': 'ett', 'kort': 'ett',
+            'trakasserier': 'ett', 'kuren': 'en', 'lån': 'ett'
+        };
+
+        for (const suffix in specificSuffixes) {
+            if (wordLower.endsWith(suffix)) {
+                const g = specificSuffixes[suffix];
+                return { type: g, color: TypeColors[g], gender: g, specializedLabel };
+            }
+        }
+
+        // 2. Grammatical Suffixes (Noun Morphology Rules)
+        const nounMorphologyRules: { endsWith: string, gender: 'en' | 'ett' }[] = [
+            // EN words
+            { endsWith: 'het', gender: 'en' },    // nyhet, frihet (User suggestion)
+            { endsWith: 'ing', gender: 'en' },    // tidning, parkering (User suggestion)
+            { endsWith: 'ning', gender: 'en' },   // d:o
+            { endsWith: 'tion', gender: 'en' },   // station, lektion (User suggestion)
+            { endsWith: 'ssion', gender: 'en' },  // diskussion
+            { endsWith: 'sion', gender: 'en' },   // vision
+            { endsWith: 'else', gender: 'en' },   // händelse (User suggestion)
+            { endsWith: 'nad', gender: 'en' },    // skillnad
+            { endsWith: 'ism', gender: 'en' },    // realism
+            { endsWith: 'ist', gender: 'en' },    // artist
+            { endsWith: 'lek', gender: 'en' },    // storlek (User suggestion)
+
+            { endsWith: 'logi', gender: 'en' },   // biologi
+            { endsWith: 'grafi', gender: 'en' },  // geografi
+            { endsWith: 'ans', gender: 'en' },    // balans, ambulans
+            { endsWith: 'ens', gender: 'en' },    // konferens
+
+            // ETT words
+            { endsWith: 'ande', gender: 'ett' },  // meddelande (verb nouns)
+            { endsWith: 'ende', gender: 'ett' },  // utseende
+            { endsWith: 'um', gender: 'ett' },    // museum, datum
+            { endsWith: 'em', gender: 'ett' },    // problem, system
+            { endsWith: 'eri', gender: 'ett' },   // bageri
+            { endsWith: 'tek', gender: 'ett' },   // bibliotek, apotek
+            { endsWith: 'ment', gender: 'ett' }   // instrument, dokument
+        ];
+
+        for (const rule of nounMorphologyRules) {
+            if (wordLower.endsWith(rule.endsWith)) {
+                return { type: rule.gender, color: TypeColors[rule.gender], gender: rule.gender, specializedLabel };
+            }
+        }
+
+        // 3. Adjective Suffixes (User suggestion)
+        const adjectiveSuffixes = ['lig', 'ig', 'isk', 'sam', 'bar']; // e.g. trevlig, rolig, typisk, långsam, underbar
+        if (adjectiveSuffixes.some(s => wordLower.endsWith(s))) {
+            return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
+        }
+
+        // ============================================
+        // STEP 2: VERB DETECTION BY FORMS
         // ============================================
         const verbGroup = this.detectVerbGroup(formsLower, wordLower);
         if (verbGroup) {
@@ -316,6 +464,7 @@ export const TypeColorSystem = {
                 specializedLabel
             };
         }
+
 
         // ============================================
         // STEP 2: USE EXPLICIT GENDER IF PROVIDED (from column 13)
@@ -395,6 +544,11 @@ export const TypeColorSystem = {
         }
 
         // Basic type matching (unreliable but better than nothing)
+        if (normalizedType === 'adv' || normalizedType.includes('adverb')) {
+            return { type: 'adverb', color: TypeColors.adverb, specializedLabel };
+        }
+
+        // Basic type matching (unreliable but better than nothing)
         if (normalizedType === 'verb' || normalizedType.includes('verb')) {
             return { type: 'verb', color: TypeColors.verb, specializedLabel };
         }
@@ -404,9 +558,6 @@ export const TypeColorSystem = {
         }
         if (normalizedType === 'adj' || normalizedType.startsWith('adj ') || normalizedType.includes('adjektiv')) {
             return { type: 'adjective', color: TypeColors.adjective, specializedLabel };
-        }
-        if (normalizedType === 'adv' || normalizedType.includes('adverb')) {
-            return { type: 'adverb', color: TypeColors.adverb, specializedLabel };
         }
         if (normalizedType.includes('prep')) {
             return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
@@ -430,6 +581,27 @@ export const TypeColorSystem = {
         }
 
         // ============================================
+        // STEP 6: TYPE_ALIASES FALLBACK
+        // Use TYPE_ALIASES to detect uncommon types like phrasal, numeral, etc.
+        // ============================================
+        const aliasType = TYPE_ALIASES[normalizedType];
+        if (aliasType && TypeColors[aliasType]) {
+            return { type: aliasType, color: TypeColors[aliasType], specializedLabel };
+        }
+        // Handle alias types that map to standard types with different names
+        const aliasTypeMap: Record<string, string> = {
+            'noun': 'en',
+            'numeral': 'numeral'
+        };
+        if (aliasType && aliasTypeMap[aliasType] && TypeColors[aliasTypeMap[aliasType]]) {
+            return { type: aliasTypeMap[aliasType], color: TypeColors[aliasTypeMap[aliasType]], specializedLabel };
+        }
+        // If alias exists but no color, at least return the alias type  
+        if (aliasType) {
+            return { type: aliasType, color: TypeColors.default, specializedLabel };
+        }
+
+        // ============================================
         // DEFAULT: Unknown type
         // ============================================
         return { type: 'default', color: TypeColors.default };
@@ -446,7 +618,13 @@ export const TypeColorSystem = {
      */
     detectVerbGroup(formsLower: string, wordLower: string): number | null {
         const parts = formsLower.split(',').map(f => f.trim());
-        if (parts.length === 0) return null;
+
+        // CRITICAL: Forms must contain at least 2 comma-separated parts to be valid verb forms
+        // Descriptive text like "Juridisk term: Brottsplats" has no commas and should not be detected as verb
+        if (parts.length < 2) return null;
+
+        // Also skip if forms contain "term:" or similar descriptive patterns
+        if (formsLower.includes('term:') || formsLower.includes('term ')) return null;
 
         const firstForm = parts[0];
 
@@ -473,7 +651,8 @@ export const TypeColorSystem = {
         // Group 4: -it/-its/-ats/-ett strong/irregular verbs
         if (formsLower.match(/\w+(it|its|ats|ett)[,\s]/) || formsLower.match(/\w+(it|its|ats|ett)$/)) {
             // Ensure not a noun ending in -et (huset)
-            if (!firstForm.endsWith('et')) {
+            // Also ensure not a noun ending in -it (Bronkit, Bandit, Merit) - Lemmas ending in -it are rarely verbs
+            if (!firstForm.endsWith('et') && !wordLower.endsWith('it')) {
                 return 4;
             }
         }
@@ -593,19 +772,46 @@ export const TypeColorSystem = {
      */
     getGlowClass(type: string, word: string = '', forms: string = '', gender: string = ''): string {
         const result = this.detect(type, word, forms, gender);
-        // Map to glow classes
+
+        // Map to glow classes - PRIORITIZE GRAMMAR
         const glowMap: Record<string, string> = {
             'verb': 'glow-verb',
-            'en': 'glow-noun',
-            'ett': 'glow-noun',
-            'noun': 'glow-noun',
+            'en': 'glow-en', // Use Turquoise glow for en
+            'ett': 'glow-ett', // Use explicit Green glow for ett
+            'noun': 'glow-en', // Noun defaults to glow-en (Turquoise)
             'adjective': 'glow-adjective',
             'adj': 'glow-adjective',
             'adverb': 'glow-adverb',
             'adv': 'glow-adverb',
             'preposition': 'glow-preposition',
+            'conjunction': 'glow-conjunction',
+            'interjection': 'glow-interjection',
+            'phrasal': 'glow-phrasal',
+            'pronoun': 'glow-pronoun',
         };
-        return glowMap[result.type] || 'glow-default';
+
+        if (glowMap[result.type]) {
+            return glowMap[result.type];
+        }
+
+        // Fallback: Specialized Types
+        if (result.specializedLabel) {
+            const labelMap: Record<string, string> = {
+                'Med': 'glow-medical',
+                'Jur': 'glow-legal',
+                'Bygg': 'glow-construction',
+                'Tekn': 'glow-tech',
+                'Nat': 'glow-science',
+                'Rel': 'glow-religion',
+                'Pol': 'glow-politics',
+                'Ekon': 'glow-economy',
+                'Mil': 'glow-military'
+            };
+            if (labelMap[result.specializedLabel]) {
+                return labelMap[result.specializedLabel];
+            }
+        }
+        return 'glow-default';
     },
 
     /**
@@ -613,24 +819,58 @@ export const TypeColorSystem = {
      */
     getHeroTypeClass(type: string, word: string = '', forms: string = ''): string {
         const result = this.detect(type, word, forms);
+
+        // Priority 1: Grammar Types
+        if (['verb', 'en', 'ett', 'noun', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection', 'phrasal', 'pronoun'].includes(result.type)) {
+            return `type-${result.type}`;
+        }
+
+        // Priority 2: Specialized Types
+        if (result.specializedLabel) {
+            const labelMap: Record<string, string> = {
+                'Med': 'type-medical',
+                'Jur': 'type-legal',
+                'Bygg': 'type-construction',
+                'Tekn': 'type-tech',
+                'Nat': 'type-science',
+                'Rel': 'type-religion',
+                'Pol': 'type-politics',
+                'Ekon': 'type-economy',
+                'Mil': 'type-military'
+            };
+            if (labelMap[result.specializedLabel]) {
+                return labelMap[result.specializedLabel];
+            }
+        }
         return `type-${result.type}`;
     },
 
     /**
-     * Get category string for filtering (e.g., 'verb', 'noun', 'adj')
-     * Note: This combines en/ett into 'noun' for filtering purposes
-     */
-    getCategory(type: string, word: string = '', forms: string = ''): string {
-        const result = this.detect(type, word, forms);
-        // Normalize for filter compatibility
+         * Get category string for filtering (e.g., 'verb', 'noun', 'adj')
+         * Note: This combines en/ett into 'subst' for filtering purposes (Substantiv)
+         * Specialized labels (Jur, Med) are ignored - only grammatical type matters for filtering
+         */
+    getCategory(type: string, word: string = '', forms: string = '', gender: string = ''): string {
+        const result = this.detect(type, word, forms, gender);
+
+        // Map detected types to filter values (matches index.html typeSelect)
         const categoryMap: Record<string, string> = {
-            'en': 'noun',
-            'ett': 'noun',
+            // Basic grammatical types - ALWAYS use these for filtering
+            'en': 'subst',
+            'ett': 'subst',
+            'noun': 'subst',
             'adjective': 'adj',
             'adverb': 'adv',
             'preposition': 'prep',
-            'conjunction': 'conj',
+            'conjunction': 'konj',
+            'pronoun': 'pron',
+            'interjection': 'interj',
+            'numeral': 'num',
+            'phrasal': 'fras',
+            'verb': 'verb',
         };
+
+        // Always return grammatical type, ignore specialized labels for filtering
         return categoryMap[result.type] || result.type;
     },
 
@@ -640,14 +880,47 @@ export const TypeColorSystem = {
      */
     getDataType(type: string, word: string = '', forms: string = '', gender: string = ''): string {
         const result = this.detect(type, word, forms, gender);
-        // Map to CSS-friendly values, keeping en/ett distinct
+
+        // Priority 1: Standard Grammar Types - Map to CSS-friendly values
+        // If we identified a specific valid grammar type, use it.
         const typeMap: Record<string, string> = {
             'adjective': 'adj',
             'adverb': 'adv',
             'preposition': 'prep',
             'conjunction': 'conj',
+            'interjection': 'interj',
+            'phrasal': 'phrasal',
+            'number': 'num',
+            'pronoun': 'pronoun',
+            // En/Ett are distinct types in CSS
+            'en': 'en',
+            'ett': 'ett',
+            'verb': 'verb'
         };
-        return typeMap[result.type] || result.type;
+
+        if (typeMap[result.type]) {
+            return typeMap[result.type];
+        }
+
+        // Priority 2: Specialized Label (Medical, Legal, etc.) - Fallback if grammar is generic or unknown
+        if (result.specializedLabel) {
+            const labelMap: Record<string, string> = {
+                'Med': 'medical',
+                'Jur': 'legal',
+                'Bygg': 'construction',
+                'Tekn': 'tech',
+                'Nat': 'science',
+                'Rel': 'religion',
+                'Pol': 'politics',
+                'Ekon': 'economy',
+                'Mil': 'military'
+            };
+            if (labelMap[result.specializedLabel]) {
+                return labelMap[result.specializedLabel];
+            }
+        }
+
+        return result.type;
     },
 
     // ============================================
