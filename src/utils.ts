@@ -119,6 +119,15 @@ export function generateEducationalSentence(word: string, translation: string, e
     return { s: sweTemplate, a: translation };
 }
 
+// --- Text Helper ---
+
+export function normalizeArabic(text: string): string {
+    if (!text) return '';
+    // Remove Tashkeel (diacritics): Fatha, Damma, Kasra, Sukun, Shadda, Tanwin, etc.
+    // Range includes: 064B-065F (Tashkeel) and 0670 (Superscript Alef)
+    return text.replace(/[\u064B-\u065F\u0670]/g, '');
+}
+
 // --- Toast System ---
 // Using unified ToastManager for consistent notifications across all pages
 
