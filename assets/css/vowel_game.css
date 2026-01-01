@@ -1,5 +1,5 @@
 :root {
-    --primary: #2563eb;
+    --primary: #dc2626;
     --primary-dark: #4f46e5;
     --bg-color: #0f172a;
     --card-bg: #1e293b;
@@ -126,7 +126,7 @@ body.iphone-view .ambient-bg {
     height: 300px;
     bottom: -100px;
     right: -100px;
-    background: #2563eb;
+    background: #dc2626;
     animation: float 18s infinite alternate-reverse;
     /* Slower */
 }

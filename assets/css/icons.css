@@ -50,7 +50,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--icon-color, #3b82f6) 0%, var(--icon-color-dark, #2563eb) 100%);
+    background: linear-gradient(135deg, var(--icon-color, #3b82f6) 0%, var(--icon-color-dark, #dc2626) 100%);
     color: white;
     margin-bottom: 0.75rem;
     box-shadow: 0 4px 12px rgba(var(--icon-shadow, 59, 130, 246), 0.25);
@@ -65,7 +65,7 @@
 /* Icon Colors by Game Type */
 .game-icon--grammar {
     --icon-color: #3b82f6;
-    --icon-color-dark: #2563eb;
+    --icon-color-dark: #dc2626;
 }
 
 .game-icon--spelling {
@@ -89,7 +89,7 @@
 }
 
 .game-icon--rain {
-    --icon-color: #2563eb;
+    --icon-color: #dc2626;
     --icon-color-dark: #1d4ed8;
 }
 

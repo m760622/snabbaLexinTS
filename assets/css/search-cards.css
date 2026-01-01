@@ -12,9 +12,14 @@
     padding: 10px 14px;
     background: var(--surface);
     border: 1px solid var(--border);
+    /* Dynamic Left Border Override */
+    border-left: 5px solid var(--glow-color, #ccc) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden !important;
 }
 
 .compact-card:hover {
@@ -114,43 +119,320 @@
     text-transform: uppercase;
     display: inline-block;
     margin-right: 4px;
-    background: var(--surface-secondary);
-    /* Default fallback */
+    background: transparent !important;
     color: var(--text-secondary);
+    border: 1.5px solid currentColor;
 }
 
-/* Specific Grammar Colors - Using !important to override generic styles */
-.grammar-en {
-    color: #e11d48 !important;
-    /* Rose Red */
-    background: rgba(225, 29, 72, 0.1) !important;
-    border: 1px solid rgba(225, 29, 72, 0.2) !important;
+/* Specific Grammar Colors - Border Only (No Background) */
+/* Unified: Both .grammar-* and .type-* work */
+
+.grammar-en,
+.type-en,
+.type-noun {
+    color: #0d9488 !important;
+    /* Dark Green */
+    border-color: #0d9488 !important;
 }
 
-.grammar-ett {
+.grammar-ett,
+.type-ett {
     color: #16a34a !important;
     /* Green */
-    background: rgba(22, 163, 74, 0.1) !important;
-    border: 1px solid rgba(22, 163, 74, 0.2) !important;
+    border-color: #16a34a !important;
 }
 
-.grammar-verb {
-    color: #2563eb !important;
+.grammar-verb,
+.type-verb {
+    color: #dc2626 !important;
     /* Blue */
-    background: rgba(37, 99, 235, 0.1) !important;
-    border: 1px solid rgba(37, 99, 235, 0.2) !important;
+    border-color: #dc2626 !important;
 }
 
-.grammar-adj {
-    color: #9333ea !important;
+.grammar-adj,
+.grammar-adjective, /* Added missing class */
+.type-adj,
+.type-adjective {
+    color: #3b82f6 !important;
     /* Purple */
-    background: rgba(147, 51, 234, 0.1) !important;
-    border: 1px solid rgba(147, 51, 234, 0.2) !important;
+    border-color: #3b82f6 !important;
 }
 
-.grammar-adv {
+.grammar-adv,
+.grammar-adverb, /* Added missing class */
+.type-adv,
+.type-adverb {
     color: #ea580c !important;
     /* Orange */
-    background: rgba(234, 88, 12, 0.1) !important;
-    border: 1px solid rgba(234, 88, 12, 0.2) !important;
+    border-color: #ea580c !important;
+}
+
+/* Specialized Types - New Colors */
+.grammar-medical,
+.grammar-med,
+.type-medical,
+.type-med {
+    color: #06b6d4 !important;
+    /* Cyan */
+    border-color: #06b6d4 !important;
+}
+
+.grammar-legal,
+.grammar-jur,
+.type-legal,
+.type-jur {
+    color: #b91c1c !important;
+    /* Dark Red */
+    border-color: #b91c1c !important;
+}
+
+.grammar-construction,
+.grammar-bygg,
+.type-construction,
+.type-bygg {
+    color: #78716c !important;
+    /* Stone/Gray */
+    border-color: #78716c !important;
+}
+
+.grammar-tech,
+.grammar-tekn,
+.type-tech,
+.type-tekn {
+    color: #0891b2 !important;
+    /* Teal */
+    border-color: #0891b2 !important;
+}
+
+.grammar-science,
+.grammar-nat,
+.type-science,
+.type-nat {
+    color: #15803d !important;
+    /* Dark Green */
+    border-color: #15803d !important;
+}
+
+.grammar-religion,
+.grammar-rel,
+.type-religion,
+.type-rel {
+    color: #7c3aed !important;
+    /* Violet */
+    border-color: #7c3aed !important;
+}
+
+.grammar-politics,
+.grammar-pol,
+.type-politics,
+.type-pol {
+    color: #dc2626 !important;
+    /* Red */
+    border-color: #dc2626 !important;
+}
+
+.grammar-economy,
+.grammar-ekon,
+.type-economy,
+.type-ekon {
+    color: #ca8a04 !important;
+    /* Yellow/Gold */
+    border-color: #ca8a04 !important;
+}
+
+.grammar-military,
+.grammar-mil,
+.type-military,
+.type-mil {
+    color: #44403c !important;
+    /* Dark Stone */
+    border-color: #44403c !important;
+}
+
+.grammar-default,
+.type-default {
+    color: #64748b !important;
+    /* Slate Gray */
+    border-color: #64748b !important;
+}
+
+/* =========================================
+   Professional Overhaul Styles
+   ========================================= */
+
+/* Relative positioning for watermark/mastery placement */
+.card.compact-card {
+    position: relative;
+    overflow: hidden !important;
+    /* Keep content clipped */
+    /* ambient glow transition */
+    transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    z-index: 1;
+}
+
+/* Watermark Background */
+.card.compact-card::before {
+    content: '';
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    width: 80px;
+    height: 80px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'%3E%3C/path%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.03;
+    /* Very subtle */
+    pointer-events: none;
+    z-index: 0;
+    transform: rotate(-10deg);
+}
+
+/* Ghost Forms */
+.ghost-forms {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94a3b8);
+    font-style: italic;
+    opacity: 0.8;
+    margin-top: -2px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* Audio Button Styling */
+.compact-card .action-button.audio-btn {
+    color: var(--primary-color, #3b82f6);
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    /* Strict layout enforcement */
+    position: static !important;
+    order: -1 !important;
+    /* Ensure it comes first visually even if DOM order varies */
+    margin-right: 4px !important;
+}
+
+.compact-card .action-button.audio-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    transform: scale(1.05);
+}
+
+/* Mastery Micro-Bar - Removed in favor of Left Border */
+.mastery-bar-container {
+    display: none;
+}
+
+/* Ambient Grammar Glow & Colors */
+/* UNIFIED: Colors now match badge colors exactly */
+
+/* Nouns (En/Subst) - Rose Red */
+.card.compact-card[data-type="subst"],
+.card.compact-card[data-type="noun"],
+.card.compact-card[data-type="en"] {
+    --glow-color: #0d9488;
+}
+
+/* Ett-words - Green */
+.card.compact-card[data-type*="ett"] {
+    --glow-color: #16a34a;
+}
+
+/* Verbs - Blue */
+.card.compact-card[data-type="verb"] {
+    --glow-color: #dc2626;
+}
+
+/* Adjectives - Purple */
+.card.compact-card[data-type="adj"],
+.card.compact-card[data-type="adjective"] {
+    --glow-color: #3b82f6;
+}
+
+/* Adverbs - Orange */
+.card.compact-card[data-type="adv"],
+.card.compact-card[data-type="adverb"] {
+    --glow-color: #ea580c;
+}
+
+/* Medical - Cyan */
+.card.compact-card[data-type="medical"],
+.card.compact-card[data-type="med"] {
+    --glow-color: #06b6d4;
+}
+
+/* Legal/Juridik - Dark Red */
+.card.compact-card[data-type="legal"],
+.card.compact-card[data-type="jur"],
+.card.compact-card[data-type="juridik"] {
+    --glow-color: #b91c1c;
+}
+
+/* Construction/Bygg - Stone Gray */
+.card.compact-card[data-type="construction"],
+.card.compact-card[data-type="bygg"] {
+    --glow-color: #78716c;
+}
+
+/* Tech - Teal */
+.card.compact-card[data-type="tech"],
+.card.compact-card[data-type="tekn"],
+.card.compact-card[data-type="teknik"] {
+    --glow-color: #0891b2;
+}
+
+/* Science/Nature - Dark Green */
+.card.compact-card[data-type="science"],
+.card.compact-card[data-type="nat"],
+.card.compact-card[data-type="natur"] {
+    --glow-color: #15803d;
+}
+
+/* Religion - Violet */
+.card.compact-card[data-type="religion"],
+.card.compact-card[data-type="rel"] {
+    --glow-color: #7c3aed;
+}
+
+/* Politics - Red */
+.card.compact-card[data-type="politics"],
+.card.compact-card[data-type="pol"],
+.card.compact-card[data-type="politik"] {
+    --glow-color: #dc2626;
+}
+
+/* Economy - Gold */
+.card.compact-card[data-type="economy"],
+.card.compact-card[data-type="ekon"],
+.card.compact-card[data-type="ekonomi"] {
+    --glow-color: #ca8a04;
+}
+
+/* Military - Dark Stone */
+.card.compact-card[data-type="military"],
+.card.compact-card[data-type="mil"],
+.card.compact-card[data-type="militär"] {
+    --glow-color: #44403c;
+}
+
+/* Default - Slate Gray */
+.card.compact-card[data-type="default"],
+.card.compact-card:not([data-type]) {
+    --glow-color: #64748b;
+}
+
+/* Hover Effect with Glow */
+.card.compact-card:hover {
+    border-color: var(--glow-color, var(--primary-hover));
+    box-shadow: 0 4px 20px -5px var(--glow-color, rgba(0, 0, 0, 0.1));
+}
+
+/* Small detail: Make text flow better */
+.card-main-content {
+    justify-content: center;
+    padding-right: 10px;
+    /* Avoid watermark overlap visually if opacity was higher */
+    z-index: 2;
+    /* Above watermark */
 }

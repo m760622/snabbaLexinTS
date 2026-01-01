@@ -2,12 +2,13 @@ import { Loader } from './loader';
 import './utils';
 import './quiz';
 import './confetti';
-import { ThemeManager, GrammarHelper, CategoryHelper, showToast, TextSizeManager, VoiceSearchManager } from './utils';
+import { ThemeManager, showToast, TextSizeManager, VoiceSearchManager } from './utils';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { initMainUI } from './main-ui';
 import { LanguageManager, t } from './i18n';
 import './i18n-apply';
+import { TypeColorSystem } from './type-color-system';
 
 /**
  * Main SnabbaLexin Application
@@ -63,6 +64,23 @@ export class App {
         if ((window as any).dictionaryData && (window as any).dictionaryData.length > 0) {
             this.handleDataLoaded();
         }
+
+        // BFCache support (Back button restoration)
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                console.log('[App] Restoring from BFCache');
+                // Re-read URL params and trigger search restoration if data is ready
+                if ((window as any).dictionaryData && (window as any).dictionaryData.length > 0) {
+                    const params = new URLSearchParams(window.location.search);
+                    const s = params.get('s');
+                    const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+                    if (s && searchInput) {
+                        searchInput.value = s;
+                        this.performSearch(s);
+                    }
+                }
+            }
+        });
     }
 
     private initStreaks() {
@@ -163,23 +181,48 @@ export class App {
     private handleDataLoaded() {
         if (!this.isLoading) return;
         this.isLoading = false;
-        console.log('[App] Initializing dictionary visual data...');
-        this.loadDictionaryData();
-    }
+        console.log('[App] Data loaded, initializing...');
 
-    private loadDictionaryData() {
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
+
         const data = (window as any).dictionaryData as any[][];
         if (!data) return;
+
         // Optimization: search index
         this.searchIndex = data.map(row => `${row[2]} ${row[3]}`.toLowerCase());
 
         // Initialize Word of the Day
         this.initWordOfTheDay();
 
-        // Initial state: hide results, show landing page, OR perform initial search
+        // STRICT Persistence Check: URL First, then sessionStorage, then Input
         const params = new URLSearchParams(window.location.search);
-        const searchQuery = params.get('s');
-        this.performSearch(searchQuery || '');
+        const urlQuery = params.get('s');
+        const sessionQuery = sessionStorage.getItem('snabbaLexin_lastSearch');
+        const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
+
+        // Priority: URL > sessionStorage > Input Field
+        const queryToRestore = urlQuery || sessionQuery || (searchInput?.value.trim() || '');
+
+        console.log('[Debug] Persistence | URL:', urlQuery, '| Session:', sessionQuery, '| Input:', searchInput?.value, '| Using:', queryToRestore);
+
+        if (queryToRestore) {
+            console.log('[Debug] Restoring search:', queryToRestore);
+            if (searchInput) {
+                searchInput.value = queryToRestore;
+            }
+            // Sync URL if it came from session
+            if (!urlQuery && sessionQuery && window.history.replaceState) {
+                const newUrl = `${window.location.pathname}?s=${encodeURIComponent(sessionQuery)}`;
+                window.history.replaceState({ path: newUrl }, '', newUrl);
+            }
+            this.performSearch(queryToRestore);
+        } else {
+            console.log('[Debug] No search state found, showing landing page.');
+            this.performSearch('');
+        }
+
+        this.updateDailyChallenge();
     }
 
     private initWordOfTheDay() {
@@ -288,15 +331,35 @@ export class App {
     }
 
     private handleSearch(e: Event) {
-        const query = (e.target as HTMLInputElement).value;
-        this.performSearch(query);
+        const input = e.target as HTMLInputElement;
+        const query = input.value.trim();
+
+        // Immediate URL + sessionStorage update for true persistence
+        if (window.history.replaceState) {
+            const newUrl = query
+                ? `${window.location.pathname}?s=${encodeURIComponent(query)}`
+                : window.location.pathname;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+        sessionStorage.setItem('snabbaLexin_lastSearch', query);
+
+        this.performSearch(input.value);
     }
 
-    private performSearch(query: string) {
-        const data = (window as any).dictionaryData as any[][];
+    public performSearch(query: string) {
+        const normalizedQuery = query.toLowerCase().trim();
+
+        // Update URL to persist state
+        if (window.history.replaceState) {
+            const newUrl = normalizedQuery
+                ? `${window.location.pathname}?s=${encodeURIComponent(normalizedQuery)}`
+                : window.location.pathname;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+
+        const data = (window as any).dictionaryData || [];
         if (!data) return;
 
-        const normalizedQuery = query.toLowerCase().trim();
         const landingPage = document.getElementById('landingPageContent');
         const searchResults = document.getElementById('searchResults');
         const emptyState = document.getElementById('emptyState');
@@ -308,18 +371,18 @@ export class App {
 
         // 1. Mode Filter (Favorites, etc)
         if (this.activeFilterMode === 'favorites') {
-            filtered = filtered.filter(row => FavoritesManager.has(row[0].toString()));
+            filtered = filtered.filter((row: any[]) => FavoritesManager.has(row[0].toString()));
         }
 
         // 2. Search Query Filter
         if (normalizedQuery) {
-            filtered = filtered.filter((_, i) => this.searchIndex[i].includes(normalizedQuery));
+            filtered = filtered.filter((_: any[], i: number) => this.searchIndex[i].includes(normalizedQuery));
         }
 
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
-            filtered = filtered.filter(row => {
-                const cat = CategoryHelper.getCategory(row[1], row[2], row[6]);
+            filtered = filtered.filter((row: any[]) => {
+                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6]);
                 return cat === this.activeTypeFilter;
             });
         }
@@ -328,7 +391,7 @@ export class App {
         const categorySelect = document.getElementById('categorySelect') as HTMLSelectElement | null;
         if (categorySelect && categorySelect.value !== 'all') {
             const topic = categorySelect.value;
-            filtered = filtered.filter(row => {
+            filtered = filtered.filter((row: any[]) => {
                 // Topic matches usually involve checking if the word belongs to a certain set
                 // For now we use the word category field if available (row[11] is usually tags/categories in Lexin)
                 const tags = (row[11] || '').toLowerCase();
@@ -414,9 +477,10 @@ export class App {
         const arb = row[3];
         const type = row[1];
         const forms = row[6] || '';
+        const gender = row[13] || ''; // en/ett from dictionary
 
-        const grammarBadge = GrammarHelper.getBadge(type, forms, swe);
-        const category = CategoryHelper.getCategory(type, swe, forms);
+        const grammarBadge = TypeColorSystem.generateBadge(type, swe, forms, gender);
+        const dataType = TypeColorSystem.getDataType(type, swe, forms, gender); // For CSS styling (keeps en/ett distinct)
         const isFav = FavoritesManager.has(id.toString());
 
         const starIcon = isFav
@@ -426,11 +490,20 @@ export class App {
         const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
 
         // Optimized: Condense by removing examples/idioms from list view as requested
+        const speakerIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+
+        const formsHtml = forms ? `<div class="ghost-forms">${forms}</div>` : '';
+        // Mock mastery for visual demonstration (based on ID to be consistent)
+        const mockMastery = (parseInt(id) % 4) * 33;
+
         return `
-            <div class="card card-link compact-card" data-type="${category}" onclick="if(!event.target.closest('button')) window.location.href='details.html?id=${id}'">
+            <div class="card card-link compact-card" data-type="${dataType}" onclick="if(!event.target.closest('button')) window.location.href='details.html?id=${id}'">
                 <div class="card-top-row">
                     ${grammarBadge}
                     <div class="card-actions">
+                        <button class="action-button audio-btn" onclick="speakText('${swe.replace(/'/g, "\\'")}', 'sv'); event.stopPropagation();" title="Lyssna">
+                            ${speakerIcon}
+                        </button>
                         <button class="copy-btn action-button" onclick="copyWord('${swe.replace(/'/g, "\\'")}', event)" title="Kopiera">
                             ${copyIcon}
                         </button>
@@ -441,8 +514,10 @@ export class App {
                 </div>
                 <div class="card-main-content">
                     <h2 class="word-swe" dir="ltr" data-auto-size data-max-lines="1">${swe}</h2>
+                    ${formsHtml}
                     <p class="word-arb" dir="rtl" data-auto-size data-max-lines="1">${arb}</p>
                 </div>
+                <div class="mastery-bar-container"><div class="mastery-fill" style="width: ${mockMastery}%"></div></div>
             </div>
         `;
     }
