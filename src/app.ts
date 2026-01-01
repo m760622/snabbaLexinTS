@@ -4,6 +4,7 @@ import './quiz';
 import './confetti';
 import { ThemeManager, showToast, TextSizeManager, VoiceSearchManager, normalizeArabic } from './utils';
 import { FavoritesManager } from './favorites';
+import { SearchHistoryManager } from './search-history';
 import { QuizStats } from './quiz-stats';
 import { initMainUI } from './main-ui';
 import { LanguageManager, t } from './i18n';
@@ -123,6 +124,16 @@ export class App {
         if (!searchInput) return;
 
         searchInput.addEventListener('input', (e) => this.handleSearch(e));
+
+        // Save to history only on Enter key
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.trim();
+                if (query) {
+                    SearchHistoryManager.add(query);
+                }
+            }
+        });
 
         const clearSearch = document.getElementById('clearSearch');
         searchInput.addEventListener('input', () => {
@@ -398,7 +409,6 @@ export class App {
         const input = e.target as HTMLInputElement;
         const query = input.value.trim();
 
-        // Immediate URL + sessionStorage update for true persistence
         if (window.history.replaceState) {
             const newUrl = query
                 ? `${window.location.pathname}?s=${encodeURIComponent(query)}`
@@ -540,6 +550,9 @@ export class App {
                 searchResults.innerHTML = '';
             }
             if (emptyState) emptyState.style.display = 'block';
+
+            // Render History
+            this.renderSearchHistory();
         } else {
             if (landingPage) landingPage.style.display = 'none';
             if (searchResults) {
@@ -774,6 +787,37 @@ export class App {
                 showToast(`🗣️ ${t('settings.voiceChanged') || 'Rösttyp ändrad'}`);
             });
         });
+    }
+
+    // History Renderer
+    private renderSearchHistory() {
+        const historyContainer = document.getElementById('searchHistoryContainer');
+        const historyList = document.getElementById('searchHistoryList');
+        const clearBtn = document.getElementById('clearHistoryBtn');
+
+        if (!historyContainer || !historyList) return;
+
+        const history = SearchHistoryManager.get();
+        if (history.length === 0) {
+            historyContainer.classList.add('hidden');
+            return;
+        }
+
+        historyContainer.classList.remove('hidden');
+        historyList.innerHTML = history.map(q => `
+            <button class="history-chip" onclick="window.location.href='?s=${encodeURIComponent(q)}'">
+                <span class="history-icon">🕒</span>
+                <span class="history-text">${q}</span>
+            </button>
+        `).join('');
+
+        // Clear button
+        if (clearBtn) {
+            clearBtn.onclick = () => {
+                SearchHistoryManager.clear();
+                this.renderSearchHistory();
+            };
+        }
     }
 }
 

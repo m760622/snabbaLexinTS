@@ -356,6 +356,32 @@ export const TypeColorSystem = {
         }
 
 
+        // ============================================
+        // STEP 0.1: USER FORCED VERBS (Manual Overrides)
+        // Words strictly identified by user as verbs despite dictionary type
+        // ============================================
+        const USER_FORCED_VERBS = new Set([
+            "toppmatad", "ifatt", "jämfota", "poste restante", "tillkänna",
+            "få förkylning", "få rätt till ersättning", "leda till fängelse",
+            "motsvarar en förtidspension i pengar",
+            "och kopplat ett grepp på mig",
+            "avlyssning", "bereda ett ärende", "framställa yrkande", "föredra ett ärende",
+            "begära omprövning", "bevilja permission", "göra gällande", "leva på existensminimum",
+            "avskiljes - avskiljning", "avsöndrar - avsöndring", "brista - bristning",
+            "komma smygande", "upprätthålla kroppens balans",
+            "dämpar sköldkörtelns hormonproduktion", "irriterar mig", "kläcks i sötvatten",
+            "led av depression", "lider av färgblindhet", "tar hela kuren",
+            "återfår normal funktion", "mäta barnets viktutveckling", "leda till blindhet",
+            "tillåter mig", "rörande", "skrattar åt mig",
+            "upprätta bouppteckning", "upprätta åtgärdsprogram", "höja sin kompetens",
+            "upprätta en handling", "ökar lusten till lärande",
+            "ankar", "avvägar", "blåsa", "flimmer", "jade", "ranka", "skäll", "styr"
+        ]);
+
+        if (USER_FORCED_VERBS.has(wordLower)) {
+            return { type: 'verb', color: TypeColors.verb, specializedLabel };
+        }
+
 
         // ============================================
         // STEP 0.5: RESPECT DICTIONARY TYPE IF KNOWN (HIGHEST PRIORITY)
@@ -429,6 +455,8 @@ export const TypeColorSystem = {
         if (CLOSED_CLASSES.pronouns.has(wordLower)) return { type: 'pronoun', color: TypeColors.pronoun, specializedLabel, gender: 'en' as 'en' | 'ett' };
         if (CLOSED_CLASSES.prepositions.has(wordLower)) return { type: 'preposition', color: TypeColors.preposition, specializedLabel };
         if (CLOSED_CLASSES.conjunctions.has(wordLower)) return { type: 'conjunction', color: TypeColors.conjunction, specializedLabel };
+
+
 
 
 

@@ -12350,3 +12350,65 @@ body.lang-ar .sv-text {
 .ar-text {
   /* Optional: transitions or display properties */
 }
+/* ========================================
+   SEARCH HISTORY
+   ======================================== */
+.history-container {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.history-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.clear-history-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.clear-history-btn:hover {
+    opacity: 1;
+}
+
+.history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.history-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--surface-secondary, rgba(255,255,255,0.05));
+    border: 1px solid var(--border, rgba(255,255,255,0.1));
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.history-chip:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+.history-icon {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
