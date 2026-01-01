@@ -1389,14 +1389,17 @@ class RelatedWordsManager {
             row[2] !== swe && row[1] === type && !compounds.includes(row) && !sameRoot.includes(row)
         ).sort(() => Math.random() - 0.5).slice(0, 4);
         if (sameType.length > 0) {
-            const typeLabels: Record<string, { sv: string; ar: string }> = {
-                'verb': { sv: 'Andra verb', ar: 'أفعال أخرى' },
-                'subst.': { sv: 'Andra substantiv', ar: 'أسماء أخرى' },
-                'adj.': { sv: 'Andra adjektiv', ar: 'صفات أخرى' },
-                'adv.': { sv: 'Andra adverb', ar: 'ظروف أخرى' },
-            };
-            const typeLabel = typeLabels[type] || { sv: `Samma typ (${type})`, ar: `نفس النوع (${type})` };
-            categories.push({ label: typeLabel.sv, labelAr: typeLabel.ar, icon: '📚', words: sameType });
+            // Unified: Use TypeColorSystem for labels
+            const colorDef = TypeColorSystem.getColor(type);
+
+            // sv: "Andra verbs" -> "Fler [Verb]" or "Andra [Verb]"
+            // We use "Andra" + lowercase label (e.g., "Andra substantiv")
+            const labelSv = `Andra ${colorDef.label.sv.toLowerCase()}`;
+
+            // ar: "[Verb] أخرى" (Other [Verb])
+            const labelAr = `${colorDef.label.ar} أخرى`;
+
+            categories.push({ label: labelSv, labelAr: labelAr, icon: '📚', words: sameType });
         }
 
         // 4. Random Discovery (if no other categories)

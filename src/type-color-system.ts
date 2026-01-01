@@ -96,15 +96,16 @@ export const TypeColors: Record<string, ColorDefinition> = {
     },
 
     // === ADVERBS ===
+    // === ADVERBS ===
     adverb: {
-        primary: '#ea580c',      // Orange
-        background: 'rgba(234, 88, 12, 0.15)',
+        primary: '#0ea5e9',      // Sky Blue (formerly Orange #ea580c)
+        background: 'rgba(14, 165, 233, 0.15)',
         classToken: 'adverb',
         label: { sv: 'Adverb', ar: 'ظرف', en: 'Adverb' }
     },
     adv: {
-        primary: '#ea580c',
-        background: 'rgba(234, 88, 12, 0.15)',
+        primary: '#0ea5e9',
+        background: 'rgba(14, 165, 233, 0.15)',
         classToken: 'adv',
         label: { sv: 'Adverb', ar: 'ظرف', en: 'Adverb' }
     },
@@ -378,6 +379,25 @@ export const TypeColorSystem = {
             return { type: 'interjection', color: TypeColors.interjection, specializedLabel };
         }
 
+        // CRITICAL FIX: Prioritize Explicit Nouns to prevent false positives in heuristic steps
+        // e.g. "Signatur" (ends in r, Arabic starts with Ta) -> Misclassified as Verb without this
+        if (normalizedType.includes('subst') || normalizedType === 'noun' ||
+            normalizedType === 'en' || normalizedType === 'ett') {
+            // We will refine gender later, but for now we know it is NOT a verb
+            // Fall through to gender detection BUT skip verb heuristics?
+            // Better to return early if we can deterministically find gender, 
+            // otherwise let it fall through but we need a flag? 
+            // Actually, we can just return a temporary "noun" type and let the caller/color system handle it, 
+            // or better yet, do the gender detection HERE.
+
+            // Try to find gender immediately to return valid result
+            const genderFromForms = this.detectNounGender(formsLower, wordLower);
+            const genderFromType = (genderLower === 'ett' || normalizedType === 'ett') ? 'ett' : 'en'; // Default to En if unsure
+
+            const finalGender = genderFromForms || genderFromType;
+            return { type: finalGender, color: TypeColors[finalGender], gender: finalGender, specializedLabel };
+        }
+
         if (normalizedType.includes('verb') || normalizedType === 'v') {
             // Try to get verb group, but ensure it's returned as verb
             const group = this.detectVerbGroup(formsLower, wordLower);
@@ -413,44 +433,15 @@ export const TypeColorSystem = {
 
 
         // ============================================
-        // STEP 0.8: ARABIC TRANSLATION HEURISTIC (Strong Signal)
-        // ============================================
-        // If Swedish type is ambiguous (e.g. 'Medicin', 'Tekn') AND Arabic starts with 'Ya' (ي) or 'Ta' (ت),
-        // it is highly likely a Verb (Present tense).
-        // This MUST be checked early to override ambiguous/incorrect metadata types.
-        if (arabic && arabic.trim().length > 0) {
-            // Remove common control characters (LTRM, RTLM, etc) and whitespace
-            const cleanArabic = arabic.replace(/[\u200E\u200F\u202A-\u202E]/g, '').trim();
-
-            // Check if it starts with 'ي' (Ya) or 'ت' (Ta) - Typical present tense verb markers in Arabic
-            if (cleanArabic.startsWith('ي') || cleanArabic.startsWith('ت')) {
-                // Check Swedish indicators
-                // Must end in 'r' (present), 's' (deponent/reflexive), 'sig' (reflexive pronoun), or start with 'att'
-                if (wordLower.endsWith('r') || wordLower.endsWith('s') || wordLower.startsWith('att ') || wordLower.endsWith('sig')) {
-                    // Safety: Ensure it's not "sig" on its own (though that would be pronoun)
-                    // This combination is a very strong signal for a Verb.
-                    return { type: 'verb', color: TypeColors.verb, specializedLabel };
-                }
-            }
-        }
-
-        // ============================================
-        // STEP 1: USE EXPLICIT GENDER IF PROVIDED (from column 13)
-        // ============================================
-        if (genderLower === 'ett') {
-            return { type: 'ett', color: TypeColors.ett, gender: 'ett', specializedLabel };
-        }
-        if (genderLower === 'en') {
-            return { type: 'en', color: TypeColors.en, gender: 'en', specializedLabel };
-        }
-
-        // ============================================
-        // STEP 1.5: SMART MORPHOLOGICAL ANALYSIS (The "Intelligence" Layer)
+        // STEP 0.7: SMART MORPHOLOGICAL ANALYSIS (The "Intelligence" Layer)
         // Infer gender based on Swedish grammar rules and common suffixes.
+        // MOVED UP: To catch suffix-based nouns (e.g. -ning, -else) before Arabic heuristic (Step 0.8)
+        // this fixes cases like "Signaturförfalskning" (starts with Ta in Arabic) being seen as a verb.
         // ============================================
 
         // 1. Specific Word Endings (Compounds & Helper List)
         const specificSuffixes: Record<string, 'en' | 'ett'> = {
+            'stajl': 'en', // User Request
             'vitamin': 'ett', 'kassett': 'en', 'station': 'en', 'blomma': 'en', 'skola': 'en',
             'hus': 'ett', 'ljus': 'ett', 'bord': 'ett', 'stol': 'en', 'boll': 'en', 'bok': 'en',
             'tidning': 'en', 'bil': 'en', 'båt': 'en', 'tåg': 'ett', 'flyg': 'ett', 'jobb': 'ett',
@@ -517,7 +508,41 @@ export const TypeColorSystem = {
             }
         }
 
-        // (Step 1.5 moved to top)
+
+        // If Swedish type is ambiguous (e.g. 'Medicin', 'Tekn') AND Arabic starts with 'Ya' (ي) or 'Ta' (ت),
+        // it is highly likely a Verb (Present tense).
+        // This MUST be checked early to override ambiguous/incorrect metadata types.
+        if (arabic && arabic.trim().length > 0) {
+            // Remove common control characters (LTRM, RTLM, etc) and whitespace
+            const cleanArabic = arabic.replace(/[\u200E\u200F\u202A-\u202E]/g, '').trim();
+
+            // Check if it starts with 'ي' (Ya) - Typical present tense verb marker in Arabic
+            if (cleanArabic.startsWith('ي')) {
+                // GENERALIZED RULE (User Request):
+                // If it starts with 'Ya' and wasn't caught by the explicit Noun check above, 
+                // we treat it as a Verb. This catches cases like "Bryta", "Berättigad till" (which might be adjectives/participles behaving as verbs or verb-like), etc.
+
+                // Optional: We can still check for 'sig' to prevent some issues, but the user asked for a broad rule.
+                // We trust the "Explicit Noun" block (step 0.5) to filter out actual nouns like "Januari", "Jubileum", etc.
+
+                return { type: 'verb', color: TypeColors.verb, specializedLabel };
+            }
+        }
+
+        // ============================================
+        // STEP 1: USE EXPLICIT GENDER IF PROVIDED (from column 13)
+        // ============================================
+        if (genderLower === 'ett') {
+            return { type: 'ett', color: TypeColors.ett, gender: 'ett', specializedLabel };
+        }
+        if (genderLower === 'en') {
+            return { type: 'en', color: TypeColors.en, gender: 'en', specializedLabel };
+        }
+
+        // ============================================
+        // STEP 1.5: SMART MORPHOLOGICAL ANALYSIS (The "Intelligence" Layer)
+        // MOVED TO STEP 0.7
+        // ============================================
 
         // ============================================
         // STEP 2: VERB DETECTION BY FORMS

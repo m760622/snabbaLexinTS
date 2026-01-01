@@ -2,7 +2,7 @@ import { Loader } from './loader';
 import './utils';
 import './quiz';
 import './confetti';
-import { ThemeManager, showToast, TextSizeManager, VoiceSearchManager } from './utils';
+import { ThemeManager, showToast, TextSizeManager, VoiceSearchManager, normalizeArabic } from './utils';
 import { FavoritesManager } from './favorites';
 import { QuizStats } from './quiz-stats';
 import { initMainUI } from './main-ui';
@@ -223,6 +223,70 @@ export class App {
         }
 
         this.updateDailyChallenge();
+
+        // Update Filter Counts
+        this.updateTypeCounts(data);
+    }
+
+    private updateTypeCounts(data: any[][]) {
+        const counts: Record<string, number> = {};
+
+        data.forEach(row => {
+            // Grammar Types
+            // Map TypeColorSystem categories to Select values
+            const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
+            let key = cat;
+            if (cat === 'noun') key = 'subst';
+            if (cat === 'conj') key = 'konj';
+            if (cat === 'pronoun') key = 'pron';
+            if (cat === 'phrase' || cat === 'phrasal') key = 'fras';
+
+            // Explicit Mappings for missing types
+            if (cat === 'prep') key = 'prep';
+            if (cat === 'adj') key = 'adj';
+            if (cat === 'adv') key = 'adv';
+
+            // Fallbacks for types not fully covered by getCategory string
+            const typeLower = (row[1] || '').toLowerCase();
+            if (typeLower.includes('interj')) key = 'interj';
+            if (typeLower.includes('räkne') || typeLower.includes('num')) key = 'num';
+
+            counts[key] = (counts[key] || 0) + 1;
+
+            // Specialized Topics (Simple keyword check in Type column)
+            // Specialized Topics (Robust Check)
+            if (typeLower.includes('juridik')) counts['juridik'] = (counts['juridik'] || 0) + 1;
+            if (typeLower.includes('medicin')) counts['medicin'] = (counts['medicin'] || 0) + 1;
+
+            // IT: Data, Dator, IT, Teknik
+            if (typeLower.includes('data') || typeLower.includes('dator') || typeLower.includes('it') || typeLower.includes('teknik')) {
+                counts['it'] = (counts['it'] || 0) + 1;
+            }
+            // Politik: Politik, Samhälle
+            if (typeLower.includes('politik') || typeLower.includes('samhäll')) {
+                counts['politik'] = (counts['politik'] || 0) + 1;
+            }
+            // Religion: Religion, Islam, Kristendom, Bibel, Koran...
+            if (typeLower.includes('religion') || typeLower.includes('islam') || typeLower.includes('krist') || typeLower.includes('bibel') || typeLower.includes('koran')) {
+                counts['religion'] = (counts['religion'] || 0) + 1;
+            }
+        });
+
+        const select = document.getElementById('typeSelect') as HTMLSelectElement;
+        if (!select) return;
+
+        Array.from(select.querySelectorAll('option')).forEach(opt => {
+            const val = opt.value;
+            if (val === 'all') {
+                opt.textContent = `Alla (${data.length})`;
+                return;
+            }
+            if (counts[val]) {
+                // Reset to base text if needed (simple approach: split by '(')
+                const baseText = opt.textContent?.split(' (')[0].trim();
+                opt.textContent = `${baseText} (${counts[val]})`;
+            }
+        });
     }
 
     private initWordOfTheDay() {
@@ -376,8 +440,33 @@ export class App {
 
         // 2. Search Query Filter
         if (normalizedQuery) {
-            filtered = filtered.filter((_: any[], i: number) => this.searchIndex[i].includes(normalizedQuery));
+            filtered = filtered.filter((row: any[]) => {
+                const swe = row[2].toLowerCase();
+
+                // Arabic: Normalize to ignore diacritics
+                const arb = normalizeArabic(row[3] || '').toLowerCase();
+
+                // Normalize query too (e.g. if user types diacritics, we match without)
+                const q = normalizeArabic(normalizedQuery);
+
+                if (this.activeFilterMode === 'start') {
+                    return swe.startsWith(q) || arb.startsWith(q);
+                }
+                if (this.activeFilterMode === 'end') {
+                    return swe.endsWith(q) || arb.endsWith(q);
+                }
+                if (this.activeFilterMode === 'exact') {
+                    return swe === q || arb === q;
+                }
+
+                // Default: Contains (Check both explicitly)
+                return swe.includes(q) || arb.includes(q);
+            });
         }
+
+        // NEW: Update counts based on query matches (before type filtering)
+        // This ensures the user sees how many Nouns/Verbs match the current search query
+        this.updateTypeCounts(filtered);
 
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
@@ -415,17 +504,26 @@ export class App {
             filtered = [...filtered].sort((a, b) => {
                 const aSwe = a[2].toLowerCase();
                 const bSwe = b[2].toLowerCase();
-                const q = normalizedQuery;
 
-                // Exact match priority
-                if (aSwe === q && bSwe !== q) return -1;
-                if (bSwe === q && aSwe !== q) return 1;
+                // Arabic: Normalize to ignore diacritics
+                const aArb = normalizeArabic(a[3] || '').toLowerCase();
+                const bArb = normalizeArabic(b[3] || '').toLowerCase();
 
-                // Starts with priority
-                const aStarts = aSwe.startsWith(q);
-                const bStarts = bSwe.startsWith(q);
+                const q = normalizeArabic(normalizedQuery);
+
+                // 1. Exact match priority (Check BOTH languages)
+                const aExact = (aSwe === q || aArb === q);
+                const bExact = (bSwe === q || bArb === q);
+
+                if (aExact && !bExact) return -1;
+                if (!aExact && bExact) return 1;
+
+                // 2. Starts with priority (Check BOTH languages)
+                const aStarts = (aSwe.startsWith(q) || aArb.startsWith(q));
+                const bStarts = (bSwe.startsWith(q) || bArb.startsWith(q));
+
                 if (aStarts && !bStarts) return -1;
-                if (bStarts && !aStarts) return 1;
+                if (!aStarts && bStarts) return 1;
 
                 return 0;
             });

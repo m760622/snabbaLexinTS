@@ -164,9 +164,9 @@
 /* Added missing class */
 .type-adv,
 .type-adverb {
-    color: #ea580c !important;
-    /* Orange */
-    border-color: #ea580c !important;
+    color: #0ea5e9 !important;
+    /* Sky Blue */
+    border-color: #0ea5e9 !important;
 }
 
 /* Specialized Types - New Colors */
@@ -355,7 +355,7 @@
 /* Adverbs - Orange */
 .card.compact-card[data-type="adv"],
 .card.compact-card[data-type="adverb"] {
-    --glow-color: #ea580c;
+    --glow-color: #0ea5e9;
 }
 
 /* Medical - Cyan */
@@ -471,6 +471,7 @@
 .card.compact-card[data-type="conj"] {
     --glow-color: #fde047;
 }
+
 /* =========================================
    MISSING TYPE DEFINITIONS (Automated Fix)
    ========================================= */
@@ -486,7 +487,7 @@
 
 .card.compact-card[data-type="interjection"],
 .card.compact-card[data-type="interj"] {
-   --glow-color: #fdba74; 
+    --glow-color: #fdba74;
 }
 
 /* Phrasal Verbs - Cyan */
@@ -497,7 +498,7 @@
 }
 
 .card.compact-card[data-type="phrasal"] {
-   --glow-color: #06b6d4;
+    --glow-color: #06b6d4;
 }
 
 /* Pronouns - Indigo */
@@ -508,7 +509,7 @@
 }
 
 .card.compact-card[data-type="pronoun"] {
-   --glow-color: #2563eb; 
+    --glow-color: #2563eb;
 }
 
 /* Numbers - Pale Green */
@@ -522,19 +523,45 @@
 
 .card.compact-card[data-type="number"],
 .card.compact-card[data-type="num"] {
-   --glow-color: #86efac;
+    --glow-color: #86efac;
 }
 
 /* Ensure Specialized Types behave correctly if they fall through */
-.card.compact-card[data-type="medical"] { --glow-color: #06b6d4; }
-.card.compact-card[data-type="legal"] { --glow-color: #92400e; }
-.card.compact-card[data-type="tech"] { --glow-color: #0891b2; }
-.card.compact-card[data-type="science"] { --glow-color: #15803d; }
-.card.compact-card[data-type="religion"] { --glow-color: #7c3aed; }
-.card.compact-card[data-type="politics"] { --glow-color: #dc2626; }
-.card.compact-card[data-type="economy"] { --glow-color: #ca8a04; }
-.card.compact-card[data-type="military"] { --glow-color: #44403c; }
-.card.compact-card[data-type="construction"] { --glow-color: #d97706; }
+.card.compact-card[data-type="medical"] {
+    --glow-color: #06b6d4;
+}
+
+.card.compact-card[data-type="legal"] {
+    --glow-color: #92400e;
+}
+
+.card.compact-card[data-type="tech"] {
+    --glow-color: #0891b2;
+}
+
+.card.compact-card[data-type="science"] {
+    --glow-color: #15803d;
+}
+
+.card.compact-card[data-type="religion"] {
+    --glow-color: #7c3aed;
+}
+
+.card.compact-card[data-type="politics"] {
+    --glow-color: #dc2626;
+}
+
+.card.compact-card[data-type="economy"] {
+    --glow-color: #ca8a04;
+}
+
+.card.compact-card[data-type="military"] {
+    --glow-color: #44403c;
+}
+
+.card.compact-card[data-type="construction"] {
+    --glow-color: #d97706;
+}
 
 /* En Noun - Turquoise */
 .card.compact-card[data-type="en"],
@@ -553,7 +580,7 @@
 }
 
 /* Adjective - Blue */
-.card.compact-card[data-type="adj"], 
+.card.compact-card[data-type="adj"],
 .card.compact-card[data-type="adjective"] {
     --glow-color: #3b82f6;
 }
@@ -561,5 +588,5 @@
 /* Adverb - Orange */
 .card.compact-card[data-type="adv"],
 .card.compact-card[data-type="adverb"] {
-    --glow-color: #ea580c;
+    --glow-color: #0ea5e9;
 }
