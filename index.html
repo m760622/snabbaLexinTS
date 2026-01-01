@@ -605,6 +605,18 @@
 
     <!-- Landing Page Content - Everything that shows when NOT searching -->
     <div id="landingPageContent">
+        <!-- Recent Search History -->
+        <div id="searchHistoryContainer" class="history-container hidden">
+            <div class="history-header">
+                <span class="history-title">🕒 <span class="sv-text">Senaste</span><span
+                        class="ar-text">الأخيرة</span></span>
+                <button id="clearHistoryBtn" class="clear-history-btn" title="Rensa / مسح">🗑️</button>
+            </div>
+            <div id="searchHistoryList" class="history-list">
+                <!-- Items injected here -->
+            </div>
+        </div>
+
         <!-- شريط التقدم اليومي -->
         <div class="daily-progress-bar" id="dailyProgressBar">
             <div class="progress-info">
