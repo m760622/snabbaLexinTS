@@ -269,7 +269,7 @@ function createCardHTML(name: AsmaName): string {
             <div class="asma-card-header">
                 <div class="asma-number">${name.nr}</div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="asma-speak-btn" onclick="speakName('${name.nameAr}', ${name.nr})" title="استمع">
+                    <button class="asma-speak-btn" onclick="speakName(${name.nr})" title="استمع">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -344,60 +344,69 @@ function updateStats(): void {
 }
 
 // Speak name using TTS with enhanced visual effects
-// Speak name using TTS with enhanced visual effects
-function speakName(text: string, nr: number, isAutoPlay: boolean = false): void {
-    // If manually clicked and player is running, stop player unless it's the current one?
-    // User expectation: Click stops auto-play and plays clicked item.
-    if (!isAutoPlay && isPlaying) {
-        stopAudio();
-    }
+let currentSpeakTimeout: any = null;
 
-    // Find the card and button
+function speakName(nr: number, isAutoPlay: boolean = false, onComplete?: () => void): void {
+    if (currentSpeakTimeout) {
+        clearTimeout(currentSpeakTimeout);
+        currentSpeakTimeout = null;
+    }
+    document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+    document.querySelectorAll('.card-speaking').forEach(el => el.classList.remove('card-speaking'));
+
+    if (!isAutoPlay && isPlaying) stopAudio();
+
+    const nameData = allNames.find(n => n.nr === nr);
+    if (!nameData) return;
+
+    const isArabic = currentLang === 'ar';
+    const text = isArabic ? nameData.nameAr : nameData.nameSv;
+    const lang = isArabic ? 'ar-SA' : 'sv-SE';
+
     const card = document.querySelector(`[data-nr="${nr}"]`);
     const btn = card?.querySelector('.asma-speak-btn');
-
-    // Add speaking classes
     btn?.classList.add('speaking');
     card?.classList.add('card-speaking');
 
-    // Use TTS
+    const effectiveRepeat = repeatCount;
+    let count = 0;
+
     const doSpeak = () => {
         const rate = playbackSpeed;
-        if (typeof TTSManager !== 'undefined' && TTSManager) {
+        if (isArabic && typeof TTSManager !== 'undefined' && TTSManager) {
             TTSManager.speak(text, 'ar', { speed: rate });
         } else {
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ar-SA';
-            utterance.rate = rate * 0.8;
+            utterance.lang = lang;
+            utterance.rate = isArabic ? rate * 0.8 : rate * 0.9;
             speechSynthesis.speak(utterance);
         }
     };
 
-    // Repeat logic - Only use repeat settings if NOT in Auto Play
-    // In Auto Play, we play once (or maybe user wants repeat in auto play too? 
-    // Usually "Play All" implies continuous flow. Sticking to 1x for auto play for now).
-    const effectiveRepeat = isAutoPlay ? 1 : repeatCount;
-
-    let count = 0;
     const speakLoop = () => {
+        if (isAutoPlay && !isPlaying) {
+            btn?.classList.remove('speaking');
+            card?.classList.remove('card-speaking');
+            return;
+        }
+
         if (count < effectiveRepeat) {
             doSpeak();
             count++;
-            // Delay for next repeat
             if (count < effectiveRepeat) {
-                setTimeout(speakLoop, 2500 / playbackSpeed);
+                currentSpeakTimeout = setTimeout(speakLoop, 2500 / playbackSpeed);
             } else {
-                // Done
-                setTimeout(() => {
+                currentSpeakTimeout = setTimeout(() => {
                     btn?.classList.remove('speaking');
                     card?.classList.remove('card-speaking');
-                }, 1000 / playbackSpeed);
+                    if (onComplete) onComplete();
+                }, 1500 / playbackSpeed);
             }
         }
     };
-
     speakLoop();
 }
+
 
 // Set Repeat Count
 function setRepeatCount(count: number): void {
@@ -411,6 +420,12 @@ function updateRepeatButtons(): void {
         const btnCount = parseInt(btn.getAttribute('data-count') || '1');
         btn.classList.toggle('active', btnCount === repeatCount);
     });
+
+    // Update Player Repeat Button
+    const playerRepeatBtn = document.getElementById('playerRepeatBtn');
+    if (playerRepeatBtn) {
+        playerRepeatBtn.textContent = `↻ ${repeatCount}x`;
+    }
 }
 
 // Golden Particles System
@@ -503,6 +518,7 @@ function toggleLang(): void {
     localStorage.setItem('asma_lang', currentLang);
     updateLangButton();
     renderCards(); // Re-render to show the selected language prominently
+    updatePlayerUI(); // Update player title if active
 }
 
 function loadLang(): void {
@@ -732,7 +748,7 @@ function speakCurrentFlashcard(): void {
     event?.stopPropagation();
 
     const name = flashcardQueue[currentFlashcardIndex];
-    speakName(name.nameAr, name.nr);
+    speakName(name.nr);
 }
 
 // ========== STATS LOGIC ==========
@@ -816,6 +832,10 @@ function startAudio(): void {
     // Show player bar if hidden
     const player = document.getElementById('audioPlayer');
     if (player) player.classList.remove('hidden');
+
+    // Update nav button state
+    const audioBtn = document.getElementById('audioBtn');
+    if (audioBtn) audioBtn.classList.add('playing');
 }
 
 function stopAudio(): void {
@@ -823,6 +843,10 @@ function stopAudio(): void {
     clearTimeout(audioCycleTimer);
     updatePlayerUI();
     TTSManager.stop();
+
+    // Update nav button state
+    const audioBtn = document.getElementById('audioBtn');
+    if (audioBtn) audioBtn.classList.remove('playing');
 }
 
 function playCurrentAudio(): void {
@@ -840,31 +864,27 @@ function playCurrentAudio(): void {
     const name = filteredNames[currentPlayIndex];
     updatePlayerUI();
 
-    // Speak name
-    // Using speakName internally but managing the sequence
-    speakName(name.nameAr, name.nr, true); // true = called from player
+    // Speak name with callback for next item
+    speakName(name.nr, true, () => {
+        // This callback runs after all repetitions are done
+        if (!isPlaying) return;
 
-    // Calculate delay based on speed (approx 2-3 seconds per name normal speed)
-    const baseDelay = 3000;
-    const delay = baseDelay / playbackSpeed;
+        // Increment index
+        currentPlayIndex++;
 
-    // Schedule next
-    clearTimeout(audioCycleTimer);
-    audioCycleTimer = setTimeout(() => {
-        if (!isLoopEnabled) {
-            currentPlayIndex++;
-        }
-        // If loop is enabled, we stay on same index? 
-        // No, "Loop" usually means "Loop List". "Repeat One" is different.
-        // Let's implement: Loop = Loop List.
-        // So we always increment, but wrap around.
-
-        if (isLoopEnabled && currentPlayIndex >= filteredNames.length) {
-            currentPlayIndex = 0;
+        // Check for end of list
+        if (currentPlayIndex >= filteredNames.length) {
+            if (isLoopEnabled) {
+                currentPlayIndex = 0;
+            } else {
+                stopAudio();
+                return;
+            }
         }
 
+        // Recursively play next
         playCurrentAudio();
-    }, delay);
+    });
 }
 
 function playNext(): void {
@@ -905,16 +925,49 @@ function toggleSpeed(): void {
 
 function updatePlayerUI(): void {
     const playBtn = document.getElementById('playPauseBtn');
-    const title = document.getElementById('playerTitle');
+    const titleAr = document.getElementById('playerTitleAr');
+    const titleSv = document.getElementById('playerTitleSv');
     const status = document.getElementById('playerStatus');
+    const navBtn = document.getElementById('audioBtn');
+
+    // Update bottom player button
+    if (playBtn) playBtn.textContent = isPlaying ? '⏸️' : '▶️';
+
+    // Update Nav Button Icon
+    if (navBtn) {
+        if (isPlaying) {
+            navBtn.classList.add('playing');
+            navBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>`; // Pause Icon
+            navBtn.title = 'إيقاف مؤقت';
+        } else {
+            navBtn.classList.remove('playing');
+            navBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>`; // Play Icon
+            navBtn.title = 'تشغيل';
+        }
+    }
 
     if (playBtn) playBtn.textContent = isPlaying ? '⏸️' : '▶️';
 
     if (filteredNames[currentPlayIndex]) {
-        if (title) title.textContent = filteredNames[currentPlayIndex].nameAr;
+        if (titleAr) titleAr.textContent = filteredNames[currentPlayIndex].nameAr;
+        if (titleSv) titleSv.textContent = filteredNames[currentPlayIndex].nameSv;
     }
 
     if (status) status.textContent = isPlaying ? `جاري التشغيل (${playbackSpeed}x)` : 'متوقف';
+}
+
+// Close Audio Player and hide UI
+function closeAudioPlayer(): void {
+    stopAudio();
+    const player = document.getElementById('audioPlayer');
+    if (player) player.classList.add('hidden');
 }
 
 // Social Features
@@ -979,6 +1032,31 @@ document.addEventListener('DOMContentLoaded', () => {
 (window as any).toggleMemorized = toggleMemorized;
 (window as any).setFilter = setFilter;
 
+// Toggle Player Repeat
+function togglePlayerRepeat(): void {
+    console.log('[AsmaUlHusna] Toggling repeat. Current:', repeatCount);
+    // Cycle 1 -> 3 -> 5 -> 7 -> 1
+    const counts = [1, 3, 5, 7];
+    const idx = counts.indexOf(repeatCount);
+    // If current count is not in list (e.g. customized?), default to 0
+    const currentIdx = idx === -1 ? 0 : idx;
+    const nextIdx = (currentIdx + 1) % counts.length;
+    console.log('[AsmaUlHusna] New count:', counts[nextIdx]);
+    setRepeatCount(counts[nextIdx]);
+}
+
+// Stats UI Updates
+// ... (rest of stats code is fine, no changes needed, just adding this new function)
+
+// Exports
+// Toggle filters visibility
+function toggleFilters(): void {
+    const filterBar = document.getElementById('filterBar');
+    if (filterBar) {
+        filterBar.classList.toggle('show');
+    }
+}
+
 // Quiz exports
 (window as any).startQuiz = startQuiz;
 (window as any).closeQuiz = closeQuiz;
@@ -993,20 +1071,18 @@ document.addEventListener('DOMContentLoaded', () => {
 (window as any).speakCurrentFlashcard = speakCurrentFlashcard;
 (window as any).setRepeatCount = setRepeatCount;
 
-// Stats exports
 (window as any).openStats = openStats;
 (window as any).closeStats = closeStats;
-
-// Audio Player exports
 (window as any).togglePlay = togglePlay;
 (window as any).playNext = playNext;
 (window as any).playPrev = playPrev;
 (window as any).toggleLoop = toggleLoop;
+(window as any).togglePlayerRepeat = togglePlayerRepeat;
 (window as any).toggleSpeed = toggleSpeed;
 (window as any).startAudio = startAudio;
-// Social exports
+(window as any).stopAudio = stopAudio;
+(window as any).closeAudioPlayer = closeAudioPlayer;
 (window as any).shareStats = shareStats;
 (window as any).exportMemorizedList = exportMemorizedList;
-
-// Language exports
 (window as any).toggleLang = toggleLang;
+(window as any).toggleFilters = toggleFilters;
