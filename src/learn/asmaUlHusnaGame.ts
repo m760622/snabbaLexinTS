@@ -246,12 +246,65 @@ function init(): void {
     createGoldenParticles();
 }
 
-// Render all cards
+// Render all cards with progressive loading
 function renderCards(): void {
     const grid = document.getElementById('asmaCardsGrid');
     if (!grid) return;
 
-    grid.innerHTML = filteredNames.map(name => createCardHTML(name)).join('');
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const loadingPercent = document.getElementById('loadingPercent');
+    const loadingProgress = document.getElementById('loadingProgress');
+
+    if (loadingIndicator) loadingIndicator.style.display = 'flex';
+
+    // Clear grid
+    grid.innerHTML = '';
+
+    const total = filteredNames.length;
+    const batchSize = 3; // Render 3 cards at a time for faster initial display
+    let currentIndex = 0;
+
+    function renderBatch(): void {
+        const fragment = document.createDocumentFragment();
+        const endIndex = Math.min(currentIndex + batchSize, total);
+
+        for (let i = currentIndex; i < endIndex; i++) {
+            const card = document.createElement('div');
+            card.innerHTML = createCardHTML(filteredNames[i]);
+            const cardElement = card.firstElementChild as HTMLElement;
+            if (cardElement) fragment.appendChild(cardElement);
+        }
+
+        if (grid) grid.appendChild(fragment);
+        currentIndex = endIndex;
+
+        // Update progress
+        const percent = Math.round((currentIndex / total) * 100);
+        if (loadingPercent) loadingPercent.textContent = `${percent}%`;
+        if (loadingProgress) loadingProgress.style.width = `${percent}%`;
+
+        if (currentIndex < total) {
+            // Continue with next batch
+            requestAnimationFrame(renderBatch);
+        } else {
+            // Done loading
+            if (loadingIndicator) {
+                loadingIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                    loadingIndicator.style.opacity = '1';
+                }, 300);
+            }
+        }
+    }
+
+    // Start rendering
+    if (total > 0) {
+        requestAnimationFrame(renderBatch);
+    } else {
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
 }
 
 // Create single card HTML
@@ -433,7 +486,7 @@ function createGoldenParticles(): void {
     const container = document.getElementById('particlesContainer');
     if (!container) return;
 
-    const particleCount = 15;
+    const particleCount = 8;
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
@@ -927,7 +980,6 @@ function updatePlayerUI(): void {
     const playBtn = document.getElementById('playPauseBtn');
     const titleAr = document.getElementById('playerTitleAr');
     const titleSv = document.getElementById('playerTitleSv');
-    const status = document.getElementById('playerStatus');
     const navBtn = document.getElementById('audioBtn');
 
     // Update bottom player button
@@ -959,8 +1011,6 @@ function updatePlayerUI(): void {
         if (titleAr) titleAr.textContent = filteredNames[currentPlayIndex].nameAr;
         if (titleSv) titleSv.textContent = filteredNames[currentPlayIndex].nameSv;
     }
-
-    if (status) status.textContent = isPlaying ? `جاري التشغيل (${playbackSpeed}x)` : 'متوقف';
 }
 
 // Close Audio Player and hide UI
