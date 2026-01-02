@@ -48,6 +48,11 @@ let repeatCount = 1;
 let isPlaying = false;
 let isLoopEnabled = false;
 let playbackSpeed = 1.0;
+
+// Lazy Loading State
+const ITEMS_PER_BATCH = 12; // Load 12 cards per batch
+let currentBatchIndex = 0;
+let loadMoreObserver: IntersectionObserver | null = null;
 let currentPlayIndex = 0;
 let audioCycleTimer: any = null;
 
@@ -246,64 +251,103 @@ function init(): void {
     createGoldenParticles();
 }
 
-// Render all cards with progressive loading
+// Render all cards with lazy loading using IntersectionObserver
 function renderCards(): void {
     const grid = document.getElementById('asmaCardsGrid');
     if (!grid) return;
 
-    // Show loading indicator
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const loadingPercent = document.getElementById('loadingPercent');
-    const loadingProgress = document.getElementById('loadingProgress');
-
-    if (loadingIndicator) loadingIndicator.style.display = 'flex';
+    // Reset lazy loading state
+    currentBatchIndex = 0;
 
     // Clear grid
     grid.innerHTML = '';
 
-    const total = filteredNames.length;
-    const batchSize = 3; // Render 3 cards at a time for faster initial display
-    let currentIndex = 0;
+    // Hide loading indicator immediately since we're using lazy loading
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
 
-    function renderBatch(): void {
-        const fragment = document.createDocumentFragment();
-        const endIndex = Math.min(currentIndex + batchSize, total);
-
-        for (let i = currentIndex; i < endIndex; i++) {
-            const card = document.createElement('div');
-            card.innerHTML = createCardHTML(filteredNames[i]);
-            const cardElement = card.firstElementChild as HTMLElement;
-            if (cardElement) fragment.appendChild(cardElement);
-        }
-
-        if (grid) grid.appendChild(fragment);
-        currentIndex = endIndex;
-
-        // Update progress
-        const percent = Math.round((currentIndex / total) * 100);
-        if (loadingPercent) loadingPercent.textContent = `${percent}%`;
-        if (loadingProgress) loadingProgress.style.width = `${percent}%`;
-
-        if (currentIndex < total) {
-            // Continue with next batch
-            requestAnimationFrame(renderBatch);
-        } else {
-            // Done loading
-            if (loadingIndicator) {
-                loadingIndicator.style.opacity = '0';
-                setTimeout(() => {
-                    loadingIndicator.style.display = 'none';
-                    loadingIndicator.style.opacity = '1';
-                }, 300);
-            }
-        }
+    if (filteredNames.length === 0) {
+        grid.innerHTML = '<div style="text-align:center; color:#ccc; padding:2rem;">لا توجد نتائج</div>';
+        return;
     }
 
-    // Start rendering
-    if (total > 0) {
-        requestAnimationFrame(renderBatch);
+    // Render first batch immediately
+    renderBatch(grid);
+
+    // Setup intersection observer for lazy loading
+    setupLazyLoading(grid);
+}
+
+// Render a batch of cards
+function renderBatch(container: HTMLElement): void {
+    const startIndex = currentBatchIndex * ITEMS_PER_BATCH;
+    const endIndex = Math.min(startIndex + ITEMS_PER_BATCH, filteredNames.length);
+
+    if (startIndex >= filteredNames.length) return;
+
+    const fragment = document.createDocumentFragment();
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const card = document.createElement('div');
+        card.innerHTML = createCardHTML(filteredNames[i]);
+        const cardElement = card.firstElementChild as HTMLElement;
+        if (cardElement) fragment.appendChild(cardElement);
+    }
+
+    // Remove old sentinel if exists
+    const oldSentinel = container.querySelector('.load-more-sentinel');
+    if (oldSentinel) oldSentinel.remove();
+
+    container.appendChild(fragment);
+    currentBatchIndex++;
+
+    // Add sentinel for next batch if more items exist
+    if (endIndex < filteredNames.length) {
+        const sentinel = document.createElement('div');
+        sentinel.className = 'load-more-sentinel';
+        sentinel.style.cssText = 'height: 50px; display: flex; align-items: center; justify-content: center; color: #fbbf24; opacity: 0.7;';
+        const remaining = filteredNames.length - endIndex;
+        sentinel.innerHTML = `<span>⏳ جاري تحميل ${Math.min(ITEMS_PER_BATCH, remaining)} اسماً آخر...</span>`;
+        container.appendChild(sentinel);
     } else {
-        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        // Show end message
+        const endMessage = document.createElement('div');
+        endMessage.className = 'end-of-list';
+        endMessage.style.cssText = 'text-align: center; padding: 1rem; color: #fbbf24; opacity: 0.6;';
+        endMessage.innerHTML = `✨ تم عرض ${filteredNames.length} اسماً`;
+        container.appendChild(endMessage);
+    }
+
+    // Re-observe the new sentinel for the next batch
+    const newSentinel = container.querySelector('.load-more-sentinel');
+    if (newSentinel && loadMoreObserver) {
+        loadMoreObserver.observe(newSentinel);
+    }
+}
+
+// Setup IntersectionObserver for lazy loading
+function setupLazyLoading(container: HTMLElement): void {
+    // Disconnect previous observer
+    if (loadMoreObserver) {
+        loadMoreObserver.disconnect();
+    }
+
+    loadMoreObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.classList.contains('load-more-sentinel')) {
+                renderBatch(container);
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '200px', // Load before user reaches sentinel
+        threshold: 0.1
+    });
+
+    // Observe sentinel
+    const sentinel = container.querySelector('.load-more-sentinel');
+    if (sentinel) {
+        loadMoreObserver.observe(sentinel);
     }
 }
 
