@@ -12412,3 +12412,45 @@ body.lang-ar .sv-text {
     opacity: 0.7;
 }
 
+
+/* ========================================
+   UTILITY CLASSES (Extracted from inline styles)
+   ======================================== */
+.ml-sm { margin-left: 0.5rem; }
+.flex-1 { flex: 1; }
+.w-44 { width: 44px; }
+.mb-lg { margin-bottom: 24px; }
+.flex-wrap { flex-wrap: wrap; }
+.section-title-padded { padding: 0 1rem; margin-top: 0.75rem; }
+
+/* Asma ul Husna Filter Button Variants */
+.filter-btn--jalal {
+    color: #fca5a5 !important;
+    border-color: rgba(220, 38, 38, 0.4) !important;
+}
+.filter-btn--jamal {
+    color: #d8b4fe !important;
+    border-color: rgba(147, 51, 234, 0.4) !important;
+}
+.filter-btn--kamal {
+    color: #93c5fd !important;
+    border-color: rgba(37, 99, 235, 0.4) !important;
+}
+
+/* Stats actions layout */
+.stats-actions-layout {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Compact button */
+.btn-compact {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+/* SVG stroke utilities */
+.stroke-red { stroke: #ef4444; }
+
