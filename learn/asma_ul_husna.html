@@ -1744,16 +1744,16 @@
         </div>
 
         <!-- Filter Buttons -->
-        <div class="asma-filter-bar" id="filterBar" style="flex-wrap: wrap;">
+        <div class="asma-filter-bar flex-wrap" id="filterBar">
             <button class="asma-filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
             <button class="asma-filter-btn" data-filter="favorites" onclick="setFilter('favorites')">❤️</button>
             <button class="asma-filter-btn" data-filter="memorized" onclick="setFilter('memorized')">✓</button>
-            <button class="asma-filter-btn" data-filter="jalal" onclick="setFilter('jalal')"
-                style="color: #fca5a5; border-color: rgba(220, 38, 38, 0.4);">الجلال</button>
-            <button class="asma-filter-btn" data-filter="jamal" onclick="setFilter('jamal')"
-                style="color: #d8b4fe; border-color: rgba(147, 51, 234, 0.4);">الجمال</button>
-            <button class="asma-filter-btn" data-filter="kamal" onclick="setFilter('kamal')"
-                style="color: #93c5fd; border-color: rgba(37, 99, 235, 0.4);">الكمال</button>
+            <button class="asma-filter-btn filter-btn--jalal" data-filter="jalal"
+                onclick="setFilter('jalal')">الجلال</button>
+            <button class="asma-filter-btn filter-btn--jamal" data-filter="jamal"
+                onclick="setFilter('jamal')">الجمال</button>
+            <button class="asma-filter-btn filter-btn--kamal" data-filter="kamal"
+                onclick="setFilter('kamal')">الكمال</button>
         </div>
 
         <!-- Mode Selection Bar -->
@@ -1880,8 +1880,7 @@
                     <div class="progress-circle">
                         <svg>
                             <circle class="progress-bg" cx="50" cy="50" r="40"></circle>
-                            <circle class="progress-bar" id="ringFavorites" cx="50" cy="50" r="40"
-                                style="stroke: #ef4444;"></circle>
+                            <circle class="progress-bar stroke-red" id="ringFavorites" cx="50" cy="50" r="40"></circle>
                         </svg>
                         <div class="progress-text" id="textFavorites">0</div>
                     </div>
@@ -1896,13 +1895,12 @@
                 </div>
             </div>
 
-            <div class="stats-actions" style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
-                <button class="asma-mode-btn" onclick="shareStats()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+            <div class="stats-actions stats-actions-layout">
+                <button class="asma-mode-btn btn-compact" onclick="shareStats()">
                     <span>📤</span>
                     <span>مشاركة إنجازي</span>
                 </button>
-                <button class="asma-mode-btn" onclick="exportMemorizedList()"
-                    style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                <button class="asma-mode-btn btn-compact" onclick="exportMemorizedList()">
                     <span>📋</span>
                     <span>نسخ قائمة الحفظ</span>
                 </button>

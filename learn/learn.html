@@ -36,11 +36,10 @@
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
-            style="margin-left: 0.5rem;">📱</button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()" class="ml-sm">📱</button>
         <h1><span class="sv-text">Lär dig Svenska</span><span class="ar-text">تعلم السويدية</span></h1>
 
-        <div style="flex: 1;"></div>
+        <div class="flex-1"></div>
 
         <button class="mobile-toggle-btn" onclick="window.location.href='../profile.html'"
             title="Profil / الملف الشخصي">
@@ -133,8 +132,8 @@
         </div>
 
         <!-- Lessons Section -->
-        <div class="section-title" style="padding: 0 1rem; margin-top: 0.75rem;">📚 <span
-                class="sv-text">Lektioner</span><span class="ar-text">الدروس</span></div>
+        <div class="section-title" class="section-title-padded">📚 <span class="sv-text">Lektioner</span><span
+                class="ar-text">الدروس</span></div>
         <div class="lessons-grid" id="lessonsGrid">
             <!-- Dynamic -->
         </div>
@@ -275,7 +274,7 @@
         <div class="modal-header">
             <button class="close-lesson" onclick="closeLessonModal()">×</button>
             <h2 id="modalTitle">Lektion</h2>
-            <div style="width: 44px;"></div>
+            <div class="w-44"></div>
         </div>
 
         <div id="lessonContent" class="lesson-content"></div>
