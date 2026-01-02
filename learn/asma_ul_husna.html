@@ -17,8 +17,24 @@
         .asma-nav-bar {
             position: fixed;
             top: 1rem;
-            left: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            /* Frosted Glass Effect */
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.75rem;
+            border-radius: 16px;
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons-row {
             display: flex;
             gap: 0.5rem;
         }
@@ -47,6 +63,39 @@
 
         .asma-nav-btn svg {
             stroke: #e2e8f0;
+        }
+
+        /* Nav Bar Search Input */
+        .nav-search-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-search-input {
+            width: 140px;
+            height: 38px;
+            padding: 0 0.75rem;
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            font-family: 'Amiri', serif;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .nav-search-input:focus {
+            outline: none;
+            width: 180px;
+            border-color: #fbbf24;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+        }
+
+        .nav-search-input::placeholder {
+            color: #64748b;
+            font-size: 0.8rem;
         }
 
         /* Asma ul Husna Specific Styles */
@@ -196,6 +245,34 @@
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1rem;
+        }
+
+        /* Language Size Modifiers */
+        .lang-primary {
+            font-size: 1.3em !important;
+            opacity: 1;
+        }
+
+        .lang-secondary {
+            font-size: 0.8em !important;
+            opacity: 0.7;
+        }
+
+        .asma-name-ar.lang-primary {
+            font-size: 2.5rem !important;
+        }
+
+        .asma-name-ar.lang-secondary {
+            font-size: 1.5rem !important;
+        }
+
+        .asma-name-sv.lang-primary {
+            font-size: 1.8rem !important;
+            font-weight: 700;
+        }
+
+        .asma-name-sv.lang-secondary {
+            font-size: 0.95rem !important;
         }
 
         /* Meaning Section */
@@ -372,6 +449,48 @@
 
         .asma-header {
             animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Header Search Styles */
+        .header-search-wrapper {
+            position: relative;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .header-search-wrapper .search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        .header-search-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            padding-right: 2.2rem;
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-family: 'Amiri', serif;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .header-search-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.15);
+        }
+
+        .header-search-input::placeholder {
+            color: #64748b;
         }
 
         .asma-card {
@@ -860,39 +979,163 @@
 
         /* ========== PHASE 2: QUIZ & MEMORIZATION SYSTEM ========== */
 
-        /* Mode Selection Bar */
-        .asma-mode-bar {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
+        /* Premium Mode Selection Panel */
+        .asma-mode-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+            border-radius: 16px;
+            padding: 1rem;
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
         }
 
-        .asma-mode-btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            border: 2px solid rgba(251, 191, 36, 0.3);
-            background: rgba(15, 23, 42, 0.8);
+        /* Search Wrapper */
+        .mode-search-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .mode-search-wrapper .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            opacity: 0.6;
+        }
+
+        .mode-search-input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            padding-right: 2.5rem;
+            border: 2px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-family: 'Amiri', serif;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .mode-search-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .mode-search-input::placeholder {
+            color: #64748b;
+        }
+
+        /* Action Buttons Grid */
+        .mode-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.9rem 0.5rem;
+            border: 2px solid rgba(251, 191, 36, 0.25);
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
             color: #fbbf24;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             font-family: 'Amiri', serif;
         }
 
-        .asma-mode-btn:hover {
-            background: rgba(251, 191, 36, 0.2);
-            transform: translateY(-2px);
+        .mode-action-btn:hover {
+            transform: translateY(-3px);
+            border-color: #fbbf24;
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
         }
 
-        .asma-mode-btn.active {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
+        .mode-action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .mode-action-btn .action-icon {
+            font-size: 1.5rem;
+        }
+
+        .mode-action-btn .action-text {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .mode-action-btn.play-btn:hover {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .mode-action-btn.quiz-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .mode-action-btn.flashcard-btn:hover {
             border-color: #fbbf24;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+        }
+
+        /* Repeat Controls Row */
+        .mode-repeat-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-repeat-row .repeat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-family: 'Amiri', serif;
+        }
+
+        .repeat-pills {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .repeat-pill {
+            min-width: 36px;
+            height: 32px;
+            padding: 0 0.5rem;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .repeat-pill:hover {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+        }
+
+        .repeat-pill.active {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-color: transparent;
+            color: #1e293b;
+        }
+
+        /* Legacy support */
+        .asma-mode-bar {
+            display: none;
         }
 
         /* Quiz Modal */
@@ -1704,28 +1947,41 @@
     <!-- Golden Particles Container -->
     <div class="particles-container" id="particlesContainer"></div>
 
-    <!-- Navigation Buttons -->
+    <!-- Navigation Bar with Search -->
     <div class="asma-nav-bar">
-        <button class="asma-nav-btn" onclick="window.location.href='../learn/learn.html'" aria-label="Back">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-        </button>
-        <button id="themeToggle" class="asma-nav-btn" onclick="toggleTheme()" aria-label="Theme">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-        </button>
-        <button id="mobileToggle" class="asma-nav-btn" onclick="toggleMobileView()" aria-label="Mobile View">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
-        </button>
+        <!-- Search Input (First Row) -->
+        <div class="nav-search-wrapper">
+            <input type="text" id="asmaModeSearch" class="nav-search-input" placeholder="🔍 ابحث..."
+                oninput="filterNames()">
+        </div>
+
+        <!-- Buttons (Second Row) -->
+        <div class="nav-buttons-row">
+            <button class="asma-nav-btn" onclick="window.location.href='../learn/learn.html'" aria-label="Back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="langToggle" class="asma-nav-btn" onclick="toggleLang()" aria-label="Language"
+                title="تبديل اللغة">
+                <span style="font-size: 14px; font-weight: bold;" id="langLabel">ع</span>
+            </button>
+            <button id="themeToggle" class="asma-nav-btn" onclick="toggleTheme()" aria-label="Theme">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="asma-nav-btn" onclick="toggleMobileView()" aria-label="Mobile View">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+            </button>
+        </div>
     </div>
 
 
@@ -1735,12 +1991,6 @@
         <div class="asma-header">
             <div class="asma-title-ar">أَسْمَاءُ اللَّهِ الْحُسْنَى</div>
             <div class="asma-title-sv">Guds Vackraste Namn</div>
-        </div>
-
-        <!-- Search -->
-        <div class="asma-search-bar">
-            <input type="text" id="asmaSearch" class="asma-search-input" placeholder="🔍 Sök / ابحث..."
-                oninput="filterNames()">
         </div>
 
         <!-- Filter Buttons -->
@@ -1756,27 +2006,33 @@
                 onclick="setFilter('kamal')">الكمال</button>
         </div>
 
-        <!-- Mode Selection Bar -->
-        <div class="asma-mode-bar">
-            <button class="asma-mode-btn" onclick="startAudio()">
-                <span>▶️</span>
-                <span>تشغيل الكل</span>
-            </button>
-            <button class="asma-mode-btn" onclick="startQuiz()">
-                <span>📝</span>
-                <span>اختبار المعاني</span>
-            </button>
-            <button class="asma-mode-btn" onclick="startFlashcards()">
-                <span>🎴</span>
-                <span>بطاقات الحفظ</span>
-            </button>
-            <div class="repeat-controls">
-                <span class="repeat-label">تكرار:</span>
-                <div class="repeat-count">
-                    <button class="repeat-count-btn active" data-count="1" onclick="setRepeatCount(1)">1</button>
-                    <button class="repeat-count-btn" data-count="3" onclick="setRepeatCount(3)">3</button>
-                    <button class="repeat-count-btn" data-count="5" onclick="setRepeatCount(5)">5</button>
-                    <button class="repeat-count-btn" data-count="7" onclick="setRepeatCount(7)">7</button>
+        <!-- Premium Mode Selection Panel -->
+        <div class="asma-mode-panel">
+
+            <!-- Action Buttons Grid -->
+            <div class="mode-actions-grid">
+                <button class="mode-action-btn play-btn" onclick="startAudio()">
+                    <span class="action-icon">▶️</span>
+                    <span class="action-text">تشغيل الكل</span>
+                </button>
+                <button class="mode-action-btn quiz-btn" onclick="startQuiz()">
+                    <span class="action-icon">📝</span>
+                    <span class="action-text">اختبار</span>
+                </button>
+                <button class="mode-action-btn flashcard-btn" onclick="startFlashcards()">
+                    <span class="action-icon">🎴</span>
+                    <span class="action-text">بطاقات</span>
+                </button>
+            </div>
+
+            <!-- Repeat Controls -->
+            <div class="mode-repeat-row">
+                <span class="repeat-label">🔁 تكرار:</span>
+                <div class="repeat-pills">
+                    <button class="repeat-pill active" data-count="1" onclick="setRepeatCount(1)">1×</button>
+                    <button class="repeat-pill" data-count="3" onclick="setRepeatCount(3)">3×</button>
+                    <button class="repeat-pill" data-count="5" onclick="setRepeatCount(5)">5×</button>
+                    <button class="repeat-pill" data-count="7" onclick="setRepeatCount(7)">7×</button>
                 </div>
             </div>
         </div>
