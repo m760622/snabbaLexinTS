@@ -13,6 +13,7 @@ let memorized: Set<number> = new Set();
 type FilterType = 'all' | 'favorites' | 'memorized' | 'jalal' | 'jamal' | 'kamal';
 let currentFilter: FilterType = 'all';
 let currentTheme: 'neon' | 'calm' | 'islamic-night' = 'neon';
+let currentLang: 'ar' | 'sv' = 'ar';  // Language to learn: Arabic or Swedish
 
 // Categories Mapping
 // Jalal (Majesty/Power), Jamal (Beauty/Mercy), Kamal (Perfection/Essence)
@@ -168,10 +169,18 @@ function setFilter(filter: FilterType): void {
     applyFilters();
 }
 
+// Remove Arabic diacritics (harakat) for search
+function normalizeArabic(text: string): string {
+    // Arabic diacritics: fatha, damma, kasra, sukun, shadda, tanwin, etc.
+    return text.replace(/[\u064B-\u065F\u0670]/g, '');
+}
+
 // Apply all filters (search + category filter)
 function applyFilters(): void {
     const searchInput = document.getElementById('asmaSearch') as HTMLInputElement;
-    const query = searchInput?.value.toLowerCase().trim() || '';
+    const modeSearchInput = document.getElementById('asmaModeSearch') as HTMLInputElement;
+    const rawQuery = (searchInput?.value || modeSearchInput?.value || '').trim();
+    const query = normalizeArabic(rawQuery).toLowerCase();
 
     // Start with all names
     let result = [...allNames];
@@ -185,14 +194,14 @@ function applyFilters(): void {
         result = result.filter(name => getCategory(name.nr) === currentFilter);
     }
 
-    // Apply search filter
+    // Apply search filter (with diacritics normalization)
     if (query) {
         result = result.filter(name =>
-            name.nameAr.includes(query) ||
+            normalizeArabic(name.nameAr).includes(query) ||
             name.nameSv.toLowerCase().includes(query) ||
-            name.meaningAr.includes(query) ||
+            normalizeArabic(name.meaningAr).includes(query) ||
             name.meaningSv.toLowerCase().includes(query) ||
-            name.nr.toString() === query
+            name.nr.toString() === rawQuery
         );
     }
 
@@ -232,6 +241,7 @@ function init(): void {
     renderCards();
     updateStats();
     loadTheme();
+    loadLang();  // Load saved language preference
     updateFilterCounts();
     createGoldenParticles();
 }
@@ -271,12 +281,12 @@ function createCardHTML(name: AsmaName): string {
                 </div>
             </div>
             
-            <div class="asma-name-ar">${name.nameAr}</div>
-            <div class="asma-name-sv">${name.nameSv}</div>
+            <div class="asma-name-ar ${currentLang === 'ar' ? 'lang-primary' : 'lang-secondary'}">${name.nameAr}</div>
+            <div class="asma-name-sv ${currentLang === 'sv' ? 'lang-primary' : 'lang-secondary'}">${name.nameSv}</div>
             
             <div class="asma-meaning">
-                <div class="asma-meaning-ar">${name.meaningAr}</div>
-                <div class="asma-meaning-sv">${name.meaningSv}</div>
+                <div class="asma-meaning-ar ${currentLang === 'ar' ? 'lang-primary' : 'lang-secondary'}">${name.meaningAr}</div>
+                <div class="asma-meaning-sv ${currentLang === 'sv' ? 'lang-primary' : 'lang-secondary'}">${name.meaningSv}</div>
             </div>
             
             ${hasConjugation ? `
@@ -397,7 +407,7 @@ function setRepeatCount(count: number): void {
 }
 
 function updateRepeatButtons(): void {
-    document.querySelectorAll('.repeat-count-btn').forEach(btn => {
+    document.querySelectorAll('.repeat-count-btn, .repeat-pill').forEach(btn => {
         const btnCount = parseInt(btn.getAttribute('data-count') || '1');
         btn.classList.toggle('active', btnCount === repeatCount);
     });
@@ -483,6 +493,31 @@ function updateMobileButton(isMobile: boolean): void {
     const btn = document.getElementById('mobileToggle');
     if (btn) {
         btn.classList.toggle('mobile-active', isMobile);
+    }
+}
+
+// ========== LANGUAGE TOGGLE ==========
+
+function toggleLang(): void {
+    currentLang = currentLang === 'ar' ? 'sv' : 'ar';
+    localStorage.setItem('asma_lang', currentLang);
+    updateLangButton();
+    renderCards(); // Re-render to show the selected language prominently
+}
+
+function loadLang(): void {
+    currentLang = (localStorage.getItem('asma_lang') as 'ar' | 'sv') || 'ar';
+    updateLangButton();
+}
+
+function updateLangButton(): void {
+    const label = document.getElementById('langLabel');
+    const btn = document.getElementById('langToggle');
+    if (label) {
+        label.textContent = currentLang === 'ar' ? 'ع' : 'Sv';
+    }
+    if (btn) {
+        btn.title = currentLang === 'ar' ? 'اللغة: عربي' : 'Språk: Svenska';
     }
 }
 
@@ -972,3 +1007,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Social exports
 (window as any).shareStats = shareStats;
 (window as any).exportMemorizedList = exportMemorizedList;
+
+// Language exports
+(window as any).toggleLang = toggleLang;
