@@ -14,14 +14,14 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/details-BnQBdTfN.js"></script>
+  <script type="module" crossorigin src="/assets/details-Bu87ubn2.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/type-color-system-CoCY9ppV.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-CfsGp8IC.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BuOrQ7kI.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-CfZZetlp.js">
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-BL77K9JB.js">
   <link rel="modulepreload" crossorigin href="/assets/i18n-BpwFYk4h.js">
   <link rel="modulepreload" crossorigin href="/assets/ui-enhancements-BcplSgJk.js">
@@ -149,7 +149,95 @@
 
         <!-- Interaction Tab Content -->
         <div id="interactionTab" class="tab-content" data-tab="play">
-            <!-- Quiz Section (High Priority now) -->
+            <!-- Pronunciation Lab (Moved to TOP) -->
+            <div class="details-section pronunciation-lab-section premium-glow-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🎙️</span> <span class="sv-text">Uttalslabb</span><span
+                        class="ar-text">مختبر النطق</span>
+                </h3>
+
+                <div class="pronunciation-card premium-border-animated">
+                    <!-- Practice Levels -->
+                    <div id="practiceLevelsContainer"></div>
+                    <div id="modeInstruction" class="mode-instruction"></div>
+
+                    <!-- Visualizer -->
+                    <div id="audioVisualizerContainer" class="visualizer-container"></div>
+
+                    <!-- Word Display with Highlight -->
+                    <div id="karaokeDisplay" class="karaoke-display"></div>
+
+                    <!-- Syllables Breakdown -->
+                    <div id="syllableDisplay" class="syllable-display"></div>
+
+                    <!-- Speed Control -->
+                    <div class="speed-control-container">
+                        <label for="ttsSpeedSlider" class="speed-label">
+                            <span class="sv-text">Hastighet: <span id="speedValue">1.0x</span></span>
+                            <span class="ar-text">السرعة: <span id="speedValueAr">1.0x</span></span>
+                        </label>
+                        <input type="range" id="ttsSpeedSlider" class="speed-slider" min="0.5" max="1.5" step="0.1"
+                            value="1.0">
+                        <div class="speed-markers">
+                            <span>0.5x</span>
+                            <span>1.0x</span>
+                            <span>1.5x</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Actions - Premium Grid Layout -->
+                    <div class="pronunciation-actions-grid">
+                        <!-- Primary Action: Listen -->
+                        <button id="pronounceNormalBtn" class="action-card listen-card">
+                            <span class="action-icon">🔊</span>
+                            <span class="action-label">
+                                <span class="sv-text">Lyssna</span>
+                                <span class="ar-text">استمع</span>
+                            </span>
+                            <span class="action-hint sv-text">En gång</span>
+                            <span class="action-hint ar-text">مرة واحدة</span>
+                        </button>
+
+                        <!-- Repeat Action -->
+                        <div class="action-card repeat-card">
+                            <span class="action-icon">🔁</span>
+                            <div class="repeat-inner">
+                                <select id="repeatCount" class="repeat-select-modern">
+                                    <option value="2">2×</option>
+                                    <option value="3" selected>3×</option>
+                                    <option value="5">5×</option>
+                                    <option value="10">10×</option>
+                                    <option value="infinite">∞</option>
+                                </select>
+                                <button id="repeatBtn" class="repeat-go-btn">
+                                    <span class="sv-text">Upprepa</span>
+                                    <span class="ar-text">تكرار</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Slow Listen Action -->
+                        <button id="pronounceSlowBtn" class="action-card slow-card">
+                            <span class="action-icon">🐢</span>
+                            <span class="action-label">
+                                <span class="sv-text">Långsamt</span>
+                                <span class="ar-text">ببطء</span>
+                            </span>
+                        </button>
+
+                        <!-- Stop Action -->
+                        <button id="stopBtn" class="action-card stop-card">
+                            <span class="action-icon">⏹️</span>
+                            <span class="action-label">
+                                <span class="sv-text">Stopp</span>
+                                <span class="ar-text">إيقاف</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
             <div class="details-section quiz-section premium-glow-section">
                 <h3 class="section-title">
                     <span class="section-icon">⚡</span> <span class="sv-text">Snabbtest</span><span

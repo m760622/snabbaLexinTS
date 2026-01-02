@@ -129,6 +129,77 @@ export const TTSManager = {
         this.audioUnlocked = true;
     },
 
+    // Show iOS audio unlock prompt
+    _showIOSAudioPrompt(): Promise<void> {
+        return new Promise((resolve) => {
+            // Check if already shown
+            if (sessionStorage.getItem('iosAudioPromptShown')) {
+                resolve();
+                return;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.id = 'iosAudioPrompt';
+            overlay.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 99999;
+                    backdrop-filter: blur(5px);
+                ">
+                    <div style="
+                        background: var(--surface, #1e1e1e);
+                        padding: 2rem;
+                        border-radius: 1rem;
+                        text-align: center;
+                        max-width: 300px;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔊</div>
+                        <h3 style="color: var(--text-main, #fff); margin-bottom: 0.5rem;">تفعيل الصوت</h3>
+                        <p style="color: var(--text-secondary, #aaa); font-size: 0.9rem; margin-bottom: 1rem;">
+                            اضغط لتفعيل النطق على جهازك
+                        </p>
+                        <button id="iosAudioUnlockBtn" style="
+                            background: var(--primary, #3b82f6);
+                            color: white;
+                            border: none;
+                            padding: 0.75rem 2rem;
+                            border-radius: 0.5rem;
+                            font-size: 1rem;
+                            cursor: pointer;
+                        ">اضغط هنا ▶️</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const btn = document.getElementById('iosAudioUnlockBtn');
+            if (btn) {
+                btn.onclick = () => {
+                    this.unlockAudio();
+                    sessionStorage.setItem('iosAudioPromptShown', 'true');
+                    overlay.remove();
+                    resolve();
+                };
+            }
+
+            // Also allow tapping anywhere
+            overlay.onclick = (e) => {
+                if (e.target === overlay.firstElementChild) return;
+                this.unlockAudio();
+                sessionStorage.setItem('iosAudioPromptShown', 'true');
+                overlay.remove();
+                resolve();
+            };
+        });
+    },
+
     async speak(text: string, lang = 'sv', options: TTSOptions & { slow?: boolean } = {}) {
         if (!text || text.trim() === '') return;
 
@@ -148,6 +219,11 @@ export const TTSManager = {
 
         this.stop();
         this.isPlaying = true;
+
+        // iOS: Show audio unlock prompt on first attempt
+        if (this.isIOS && !this.audioUnlocked) {
+            await this._showIOSAudioPrompt();
+        }
 
         if (options.onStart) options.onStart();
 
@@ -174,11 +250,15 @@ export const TTSManager = {
     async _speakWithProviders(text: string, lang: string, options: TTSOptions) {
         const isOnline = navigator.onLine;
 
-        // Priority changes when slow mode is requested (Local TTS handle rate better)
-        const providers = (options as any).slow
+        // iOS: Prioritize Local TTS (Google TTS often blocked on Safari)
+        // Slow mode: Also prioritize Local TTS for better rate control
+        const useLocalFirst = this.isIOS || (options as any).slow;
+
+        const providers = useLocalFirst
             ? [
                 { name: 'Local TTS', fn: () => this._playLocalTTS(text, lang, options) },
-                { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true }
+                { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true },
+                { name: 'VoiceRSS', fn: () => this._playVoiceRSS(text, lang, options), requiresOnline: true }
             ]
             : [
                 { name: 'Google TTS', fn: () => this._playGoogleTTS(text, lang, options), requiresOnline: true },
@@ -418,22 +498,66 @@ export const TTSManager = {
 
     _findBestVoice(langCode: string): SpeechSynthesisVoice | null {
         if (langCode === 'sv' && this.cachedSwedishVoice) return this.cachedSwedishVoice;
+
         const voices = this.cachedVoices[langCode] || [];
         if (!voices.length) return null;
-        const premiumKeywords = ['Premium', 'Enhanced', 'Neural', 'Natural', 'Alva', 'Maja', 'Astrid', 'Samantha', 'Karen', 'Daniel', 'Maged', 'Majed', 'Tarik'];
-        const lowQualityKeywords = ['Compact', 'eSpeak', 'Android'];
+
+        // Tiered voice quality keywords (higher tier = better quality)
+        const tier1_Neural = ['Neural', 'Neural2', 'WaveNet', 'Premium', 'Enhanced'];
+        const tier2_HighQuality = ['Natural', 'Siri', 'Google', 'Microsoft'];
+        const tier3_GoodVoices = {
+            'sv': ['Alva', 'Klara', 'Maja', 'Oskar', 'Astrid', 'Sofie', 'Erik'],
+            'ar': ['Maged', 'Majed', 'Tarik', 'Laila', 'Mariam', 'Zeina', 'Hoda'],
+            'en': ['Samantha', 'Karen', 'Daniel', 'Alex', 'Moira', 'Tessa']
+        };
+        const lowQualityKeywords = ['Compact', 'eSpeak', 'Android', 'espeak', 'MBROLA'];
 
         const pref = localStorage.getItem('ttsVoicePreference') || 'natural';
 
-        for (const keyword of premiumKeywords) {
-            const match = voices.find(v => {
-                const nameMatch = v.name.includes(keyword);
-                const genderMatch = pref === 'male' ? (v.name.includes('Daniel') || v.name.includes('Maged')) : true;
-                return nameMatch && genderMatch && !lowQualityKeywords.some(lq => v.name.includes(lq));
-            });
-            if (match) return match;
+        // Score function for voices
+        const scoreVoice = (voice: SpeechSynthesisVoice): number => {
+            let score = 0;
+            const name = voice.name;
+
+            // Negative score for low quality
+            if (lowQualityKeywords.some(lq => name.toLowerCase().includes(lq.toLowerCase()))) {
+                return -100;
+            }
+
+            // Tier 1: Neural voices (highest quality)
+            if (tier1_Neural.some(kw => name.includes(kw))) score += 100;
+
+            // Tier 2: High quality platform voices
+            if (tier2_HighQuality.some(kw => name.includes(kw))) score += 50;
+
+            // Tier 3: Known good voices for language
+            const langVoices = tier3_GoodVoices[langCode as keyof typeof tier3_GoodVoices] || [];
+            if (langVoices.some(kw => name.includes(kw))) score += 30;
+
+            // Bonus for local voices (often higher quality)
+            if (voice.localService) score += 10;
+
+            // Gender preference
+            if (pref === 'male') {
+                if (['Daniel', 'Oskar', 'Erik', 'Maged', 'Alex'].some(m => name.includes(m))) score += 20;
+            } else if (pref === 'female') {
+                if (['Alva', 'Klara', 'Maja', 'Samantha', 'Laila'].some(f => name.includes(f))) score += 20;
+            }
+
+            return score;
+        };
+
+        // Sort by score and return best
+        const scored = voices.map(v => ({ voice: v, score: scoreVoice(v) }))
+            .filter(v => v.score > -100)
+            .sort((a, b) => b.score - a.score);
+
+        if (scored.length > 0) {
+            console.log(`🔊 Best voice for ${langCode}: ${scored[0].voice.name} (score: ${scored[0].score})`);
+            return scored[0].voice;
         }
-        return voices.find(v => !lowQualityKeywords.some(lq => v.name.includes(lq))) || voices[0];
+
+        return voices[0];
     },
 
     _normalizeLang(lang: string): string {
