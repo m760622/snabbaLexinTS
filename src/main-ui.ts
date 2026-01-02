@@ -3,12 +3,13 @@
  * Extracted from index.html
  */
 import { TextSizeManager } from './utils';
+import { initSettingsMenuLazy } from './settings-menu';
 
 export function initMainUI() {
     console.log("Initializing Main UI...");
 
     iniThemeSelection();
-    initSettingsMenu();
+    initSettingsMenuLazy(); // Use lazy-loaded settings menu
     initMobileView();
     initProgressBadge();
     initQuickActions();
@@ -25,25 +26,6 @@ function iniThemeSelection() {
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     } else {
         document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-}
-
-function initSettingsMenu() {
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsMenu = document.getElementById('settingsMenu');
-
-    if (settingsBtn && settingsMenu) {
-        settingsBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            settingsMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', (e) => {
-            const target = e.target as Node;
-            if (!settingsMenu.contains(target) && !settingsBtn.contains(target)) {
-                settingsMenu.classList.add('hidden');
-            }
-        });
     }
 }
 

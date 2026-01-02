@@ -1,6 +1,10 @@
 /* Noto Color Emoji for cross-platform emoji support */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 
+/* Consolidated CSS imports */
+@import url('points-style.css');
+@import url('themes.css');
+
 @view-transition {
   navigation: auto;
 }
