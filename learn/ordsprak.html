@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svenska Ordspråk | الأمثال السويدية - SnabbaLexin</title>
+    <meta name="description"
+        content="Lär dig svenska ordspråk med arabiska motsvarigheter. تعلم الأمثال السويدية مع ما يقابلها بالعربية.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/ordsprak.css">
+    <link rel="stylesheet" href="../assets/css/mobile-enhancements.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-top">
+            <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
+                title="Tillbaka / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+                title="Mobilvy / عرض الجوال">📱</button>
+            <h1><span class="sv-text">Ordspråk</span><span class="ar-text">الأمثال</span></h1>
+        </div>
+        <!-- Mode Tabs -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
+                    class="ar-text">تصفح</span></button>
+            <button class="mode-tab" onclick="switchMode('flashcard')">🂴 <span class="sv-text">Flashcards</span><span
+                    class="ar-text">بطاقات</span></button>
+            <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
+            <button class="mode-tab" onclick="switchMode('quiz')">📝 <span class="sv-text">Quiz</span><span
+                    class="ar-text">اختبار</span></button>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-chip">📜 <span id="totalProverbs">0</span> <span class="sv-text">ordspråk</span><span
+                class="ar-text">مثل</span></div>
+        <div class="stat-chip learned">✅ <span id="learnedCount">0</span> <span class="sv-text">lärt</span><span
+                class="ar-text">متعلم</span></div>
+        <div class="stat-chip streak">🔥 <span id="streakCount">0</span> <span class="sv-text">streak</span><span
+                class="ar-text">سلسلة</span></div>
+    </div>
+
+    <main>
+        <!-- Browse View -->
+        <div class="browse-view" id="browseView">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Sök ordspråk / ابحث عن مثل...">
+            </div>
+            <div id="content"></div>
+        </div>
+
+        <!-- Flashcard View -->
+        <div class="flashcard-container" id="flashcardView">
+            <div class="flashcard-progress">
+                <div class="progress-text"><span id="fcCurrent">0</span> / <span id="fcTotal">0</span></div>
+                <div class="progress-bar">
+                    <div class="fill" id="fcProgress"></div>
+                </div>
+            </div>
+
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="fcWord">Ordspråk</div>
+                        <div class="flashcard-hint"><span class="sv-text">Klicka för att vända</span><span
+                                class="ar-text">اضغط للقلب</span></div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-translation" id="fcTranslation">المثل العربي</div>
+                        <div class="flashcard-literal" id="fcLiteral">الترجمة الحرفية</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ <span class="sv-text">Inte
+                        än</span><span class="ar-text">ليس بعد</span></button>
+                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ <span class="sv-text">Kan
+                        det!</span><span class="ar-text">أعرفها!</span></button>
+            </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div class="quiz-view" id="quizView">
+            <div class="quiz-container" id="quizContent"></div>
+        </div>
+
+        <!-- Saved View -->
+        <div class="saved-view" id="savedView">
+            <div class="saved-header-inline">
+                <h2>⭐ <span class="sv-text">Sparade ordspråk</span><span class="ar-text">الأمثال المحفوظة</span></h2>
+            </div>
+            <div class="saved-list" id="savedList"></div>
+        </div>
+
+        <!-- Intro text -->
+        <div class="intro-text">
+            <p><span class="sv-text">Svenska ordspråk med arabiska motsvarigheter. Klicka för att lyssna!</span><span
+                    class="ar-text">أمثال سويدية مع ما يقابلها بالعربية. اضغط للاستماع!</span> 🔊</p>
+        </div>
+    </main>
+
+    <script type="module" src="../src/learn/ordsprak.ts"></script>
+    <script type="module" src="/src/pwa.ts"></script>
+</body>
+
+</html>

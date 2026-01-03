@@ -1,0 +1,758 @@
+/* Ordspråk - Swedish Proverbs Styles */
+
+/* ========== BASE LAYOUT ========== */
+body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    min-height: 100vh;
+}
+
+main {
+    padding: 1rem;
+    padding-top: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========== HEADER ========== */
+header {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+    padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.header-top h1 {
+    flex: 1;
+    font-size: 1.3rem;
+    color: #fbbf24;
+    margin: 0;
+    text-align: center;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.5rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+.mobile-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mobile-toggle-btn.mobile-active {
+    background: rgba(251, 191, 36, 0.3);
+    border-color: #fbbf24;
+}
+
+/* ========== MODE TABS ========== */
+.mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mode-tab {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mode-tab:hover {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+}
+
+.mode-tab.active {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+    border-color: rgba(251, 191, 36, 0.5);
+    color: #fbbf24;
+}
+
+/* ========== STATS BAR ========== */
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stat-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.stat-chip.learned {
+    color: #22c55e;
+}
+
+.stat-chip.streak {
+    color: #f97316;
+}
+
+/* ========== SEARCH ========== */
+.search-row {
+    margin-bottom: 1rem;
+}
+
+.search-row input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(251, 191, 36, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: #e2e8f0;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-row input:focus {
+    outline: none;
+    border-color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+}
+
+.search-row input::placeholder {
+    color: #64748b;
+}
+
+/* ========== PROVERB CARDS ========== */
+.proverb-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.proverb-card:hover {
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.1);
+}
+
+.proverb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.proverb-number {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e293b;
+    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.proverb-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.proverb-actions button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.proverb-actions button:hover {
+    background: rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.proverb-actions .save-btn.saved {
+    background: rgba(251, 191, 36, 0.3);
+    border-color: #fbbf24;
+}
+
+.proverb-actions .learn-btn.learned {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: #22c55e;
+}
+
+.proverb-swedish {
+    font-size: 1.2rem;
+    color: #fbbf24;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.proverb-literal {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+    direction: rtl;
+    text-align: right;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.proverb-arabic {
+    font-size: 1.1rem;
+    color: #22c55e;
+    margin-bottom: 1rem;
+    direction: rtl;
+    text-align: right;
+    font-family: 'Tajawal', sans-serif;
+    padding: 0.75rem;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 10px;
+    border-left: 3px solid #22c55e;
+}
+
+/* ========== VERB CONJUGATION ========== */
+.verb-conjugation {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem;
+}
+
+.verb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.verb-main {
+    font-size: 1rem;
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.verb-translation {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.verb-forms {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.verb-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.verb-form .label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.verb-form .value {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+/* ========== VIEWS ========== */
+.browse-view,
+.flashcard-container,
+.quiz-view,
+.saved-view {
+    display: none;
+}
+
+.browse-view.active,
+.flashcard-container.active,
+.quiz-view.active,
+.saved-view.active {
+    display: block;
+}
+
+/* Default active state */
+.browse-view {
+    display: block;
+}
+
+/* ========== FLASHCARD ========== */
+.flashcard-container {
+    padding: 1rem;
+}
+
+.flashcard-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.progress-text {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #22c55e);
+    transition: width 0.3s ease;
+}
+
+.flashcard {
+    perspective: 1000px;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    min-height: 250px;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    min-height: 250px;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+    border: 2px solid rgba(251, 191, 36, 0.3);
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    transform: rotateY(180deg);
+}
+
+.flashcard-word {
+    font-size: 1.3rem;
+    color: #fbbf24;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.flashcard-hint {
+    margin-top: 1rem;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.flashcard-translation {
+    font-size: 1.3rem;
+    color: #22c55e;
+    text-align: center;
+    direction: rtl;
+    font-family: 'Tajawal', sans-serif;
+    line-height: 1.6;
+}
+
+.flashcard-literal {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    text-align: center;
+    direction: rtl;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.flashcard-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.fc-btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 1rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.fc-btn.wrong {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.fc-btn.correct {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.fc-btn:hover {
+    transform: translateY(-2px);
+}
+
+.flashcard-complete {
+    text-align: center;
+    padding: 2rem;
+}
+
+.complete-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.flashcard-complete h2 {
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+}
+
+.flashcard-complete p {
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+}
+
+.restart-btn,
+.back-btn-inline {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0.5rem;
+    transition: all 0.3s;
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e293b;
+}
+
+.back-btn-inline {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ========== QUIZ ========== */
+.quiz-container {
+    padding: 1rem;
+}
+
+.quiz-progress {
+    margin-bottom: 1.5rem;
+}
+
+.quiz-progress-text {
+    text-align: center;
+    color: #fbbf24;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.quiz-progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #22c55e);
+    transition: width 0.3s ease;
+}
+
+.quiz-question {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.quiz-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.quiz-swedish {
+    font-size: 1.2rem;
+    color: #fbbf24;
+    line-height: 1.6;
+    padding: 1rem;
+    background: rgba(251, 191, 36, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quiz-option {
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: right;
+    direction: rtl;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.quiz-option:hover:not(:disabled) {
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.quiz-option.correct {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.quiz-option.wrong {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.quiz-option:disabled {
+    cursor: not-allowed;
+}
+
+.quiz-results {
+    text-align: center;
+    padding: 2rem;
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.result-message {
+    font-size: 1.5rem;
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+}
+
+.result-score {
+    font-size: 2rem;
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.result-percentage {
+    font-size: 1rem;
+    color: #22c55e;
+    margin-bottom: 1.5rem;
+}
+
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.result-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e293b;
+}
+
+.result-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ========== SAVED VIEW ========== */
+.saved-header-inline {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.saved-header-inline h2 {
+    color: #fbbf24;
+    font-size: 1.3rem;
+}
+
+.no-saved,
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+}
+
+/* ========== INTRO TEXT ========== */
+.intro-text {
+    text-align: center;
+    padding: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* ========== LAZY LOADING ========== */
+.load-more-sentinel {
+    text-align: center;
+    padding: 1rem;
+}
+
+.loading-text {
+    color: #fbbf24;
+    font-size: 0.9rem;
+}
+
+/* ========== MOBILE VIEW ========== */
+body.iphone-view {
+    max-width: 430px;
+    margin: 0 auto;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 600px) {
+    .mode-tabs {
+        gap: 0.3rem;
+    }
+
+    .mode-tab {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .proverb-swedish {
+        font-size: 1.1rem;
+    }
+
+    .verb-forms {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .flashcard-word,
+    .flashcard-translation {
+        font-size: 1.1rem;
+    }
+}
+
+/* ========== BILINGUAL TEXT ========== */
+.sv-text {
+    display: inline;
+}
+
+.ar-text {
+    display: none;
+    font-family: 'Tajawal', sans-serif;
+}
+
+[dir="rtl"] .sv-text {
+    display: none;
+}
+
+[dir="rtl"] .ar-text {
+    display: inline;
+}
+
+/* Show both for items that need it */
+.proverb-card .sv-text,
+.proverb-card .ar-text,
+.flashcard .sv-text,
+.flashcard .ar-text,
+.quiz-view .sv-text,
+.quiz-view .ar-text,
+.stats-bar .sv-text,
+.stats-bar .ar-text {
+    display: inline;
+}
+
+.stats-bar .ar-text {
+    margin-right: 0.25rem;
+}
