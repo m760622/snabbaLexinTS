@@ -443,11 +443,19 @@ function showFlashcard() {
 
     if (fcWord) {
         fcWord.textContent = card.swe;
-        // Removed TextSizeManager to let CSS control font size
+        const len = card.swe.length;
+        if (len > 20) fcWord.style.fontSize = '1rem';
+        else if (len > 15) fcWord.style.fontSize = '1.3rem';
+        else if (len > 10) fcWord.style.fontSize = '1.7rem';
+        else fcWord.style.fontSize = '2.5rem';
     }
     if (fcTranslation) {
         fcTranslation.textContent = card.arb;
-        // Removed TextSizeManager to let CSS control font size
+        const len = card.arb.length;
+        if (len > 20) fcTranslation.style.fontSize = '1rem';
+        else if (len > 15) fcTranslation.style.fontSize = '1.3rem';
+        else if (len > 10) fcTranslation.style.fontSize = '1.7rem';
+        else fcTranslation.style.fontSize = '2.2rem';
     }
     if (fcType) fcType.textContent = card.type || card.category;
     if (fcCurrent) fcCurrent.textContent = (fcIndex + 1).toString();
