@@ -77,6 +77,7 @@ export function init() {
     (window as any).checkWrittenAnswer = checkWrittenAnswer;
     (window as any).playTTS = playTTS;
     (window as any).toggleMobileView = toggleMobileView;
+    (window as any).toggleFilters = toggleFilters;
 }
 
 // ========== MOBILE VIEW ==========
@@ -84,6 +85,18 @@ function toggleMobileView(): void {
     const isMobile = document.body.classList.toggle('iphone-view');
     document.documentElement.classList.toggle('iphone-mode', isMobile);
     localStorage.setItem('mobileView', isMobile.toString());
+}
+
+// ========== FILTER TOGGLE ==========
+function toggleFilters(): void {
+    const filterChips = document.getElementById('filterChips');
+    const toggleBtn = document.getElementById('filterToggle');
+
+    if (filterChips && toggleBtn) {
+        const isCollapsed = filterChips.classList.toggle('collapsed');
+        toggleBtn.classList.toggle('active', !isCollapsed);
+        toggleBtn.textContent = isCollapsed ? '🔽' : '🔼';
+    }
 }
 
 // ========== MODE SWITCHING ==========
