@@ -1036,13 +1036,17 @@ main {
 
 /* iPhone mode specific quiz styles */
 body.iphone-view .quiz-modal {
-    border-radius: 10px;
+    border-radius: 38px;
     overflow: hidden;
-    /* Match the body constraints in iphone-view */
-    max-width: 393px;
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
+    /* Fill the entire iphone-view body */
+    position: fixed;
+    top: 1%;
+    left: 15%;
+    right: 15%;
+    bottom: 0;
+    width: 70%;
+    max-width: none;
+    transform: none;
 }
 
 body.iphone-view .quiz-modal .close-modal {
@@ -1052,6 +1056,7 @@ body.iphone-view .quiz-modal .close-modal {
 body.iphone-view .quiz-container {
     padding-top: 4rem;
     max-width: 100%;
+    width: 100%;
 }
 
 /* Safe area insets for modern iPhones */
