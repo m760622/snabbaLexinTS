@@ -44,6 +44,36 @@ const ITEMS_PER_BATCH = 15;
 let currentBatchIndex = 0;
 let filteredProverbs: Proverb[] = [];
 let loadMoreObserver: IntersectionObserver | null = null;
+let currentFilter: 'all' | 'saved' | 'learned' | 'notLearned' = 'all';
+let currentTopicFilter: string = 'all';
+let filtersVisible = false;
+
+// Topic detection keywords
+const TOPIC_KEYWORDS: Record<string, string[]> = {
+    patience: ['vänta', 'tålamod', 'tid', 'rom', 'sent', 'långsam', 'صبر', 'انتظ', 'تأخ'],
+    wisdom: ['visdom', 'tala', 'tiga', 'guld', 'silver', 'klok', 'حكم', 'ذهب', 'فضة', 'سكوت'],
+    consequences: ['bädda', 'ligga', 'bränt', 'skyr', 'dropp', 'bägar', 'جزاء', 'عاقب', 'قصم'],
+    family: ['barn', 'äpple', 'träd', 'fader', 'moder', 'أب', 'أم', 'ابن', 'شجرة'],
+    experience: ['fågel', 'hand', 'skogen', 'björn', 'skinn', 'تجرب', 'يد', 'عصفور'],
+    time: ['morgon', 'dag', 'tid', 'aldrig', 'läka', 'sår', 'وقت', 'زمن', 'يوم', 'صباح'],
+    speech: ['tala', 'höra', 'öron', 'säga', 'ropa', 'كلام', 'سمع', 'آذان', 'قول'],
+    nature: ['fågel', 'träd', 'sommar', 'vinter', 'gräs', 'vatten', 'طبيع', 'شجر', 'عشب', 'ماء'],
+    love: ['kärlek', 'hjärta', 'älska', 'حب', 'قلب', 'عشق']
+};
+
+// Detect topic of a proverb
+function detectTopic(proverb: Proverb): string {
+    const text = `${proverb.swedishProverb} ${proverb.literalMeaning} ${proverb.arabicEquivalent}`.toLowerCase();
+
+    for (const [topic, keywords] of Object.entries(TOPIC_KEYWORDS)) {
+        for (const keyword of keywords) {
+            if (text.includes(keyword.toLowerCase())) {
+                return topic;
+            }
+        }
+    }
+    return 'wisdom'; // Default topic
+}
 
 // ========== INIT ==========
 function init() {
@@ -54,6 +84,8 @@ function init() {
     renderContent();
     setupEventListeners();
     loadMobileView();
+    // Ensure browse view is active on init
+    document.getElementById('browseView')?.classList.add('active');
 }
 
 function setupEventListeners() {
@@ -151,14 +183,152 @@ function openSavedModal() {
     switchMode('saved');
 }
 
-// ========== SEARCH ==========
-function handleSearch(e: Event) {
-    const query = (e.target as HTMLInputElement).value.toLowerCase().trim();
+// ========== FILTER ==========
+function toggleFilters() {
+    filtersVisible = !filtersVisible;
+    const dropdown = document.getElementById('filtersDropdown');
+    const toggleBtn = document.getElementById('filterToggleBtn');
 
-    if (!query) {
-        filteredProverbs = [...PROVERBS];
-    } else {
-        filteredProverbs = PROVERBS.filter(p =>
+    if (dropdown) {
+        dropdown.classList.toggle('collapsed', !filtersVisible);
+    }
+    if (toggleBtn) {
+        toggleBtn.classList.toggle('active', filtersVisible);
+    }
+
+    // Update counters when filters are shown
+    if (filtersVisible) {
+        updateFilterCounters();
+    }
+}
+
+function setFilter(filter: typeof currentFilter) {
+    currentFilter = filter;
+
+    // Update chip states
+    document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+        chip.classList.toggle('active', chip.getAttribute('data-filter') === filter);
+    });
+
+    updateFilterBadge();
+    applyFilters();
+}
+
+function setTopicFilter(topic: string) {
+    currentTopicFilter = topic;
+
+    // Update topic chip states
+    document.querySelectorAll('.topic-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.getAttribute('data-topic') === topic);
+    });
+
+    updateFilterBadge();
+    applyFilters();
+}
+
+function updateFilterBadge() {
+    const badge = document.getElementById('filterBadge');
+    if (!badge) return;
+
+    let count = 0;
+    if (currentFilter !== 'all') count++;
+    if (currentTopicFilter !== 'all') count++;
+
+    badge.textContent = count.toString();
+    badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function updateFilterCounters() {
+    // Status filter counts
+    const allCount = PROVERBS.length;
+    const savedCount = savedProverbs.length;
+    const learnedCount = learnedProverbs.length;
+    const notLearnedCount = PROVERBS.filter(p => !learnedProverbs.includes(p.id)).length;
+
+    // Update status filter counters
+    updateChipCounter('all', allCount);
+    updateChipCounter('saved', savedCount);
+    updateChipCounter('learned', learnedCount);
+    updateChipCounter('notLearned', notLearnedCount);
+
+    // Topic filter counts
+    const topicCounts: Record<string, number> = {
+        all: PROVERBS.length,
+        patience: 0,
+        wisdom: 0,
+        consequences: 0,
+        family: 0,
+        experience: 0,
+        time: 0,
+        speech: 0,
+        nature: 0,
+        love: 0
+    };
+
+    // Count proverbs per topic
+    PROVERBS.forEach(p => {
+        const topic = detectTopic(p);
+        if (topicCounts[topic] !== undefined) {
+            topicCounts[topic]++;
+        }
+    });
+
+    // Update topic filter counters
+    Object.entries(topicCounts).forEach(([topic, count]) => {
+        updateTopicCounter(topic, count);
+    });
+}
+
+function updateChipCounter(filter: string, count: number) {
+    const chip = document.querySelector(`.filter-chip[data-filter="${filter}"]`);
+    if (!chip) return;
+
+    let counter = chip.querySelector('.filter-counter');
+    if (!counter) {
+        counter = document.createElement('span');
+        counter.className = 'filter-counter';
+        chip.appendChild(counter);
+    }
+    counter.textContent = count.toString();
+}
+
+function updateTopicCounter(topic: string, count: number) {
+    const chip = document.querySelector(`.topic-chip[data-topic="${topic}"]`);
+    if (!chip) return;
+
+    let counter = chip.querySelector('.filter-counter');
+    if (!counter) {
+        counter = document.createElement('span');
+        counter.className = 'filter-counter';
+        chip.appendChild(counter);
+    }
+    counter.textContent = count.toString();
+}
+
+function applyFilters() {
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const query = searchInput?.value.toLowerCase().trim() || '';
+
+    // Start with all or filtered by status
+    let result = [...PROVERBS];
+
+    // Apply status filter
+    if (currentFilter === 'saved') {
+        result = result.filter(p => savedProverbs.includes(p.id));
+    } else if (currentFilter === 'learned') {
+        result = result.filter(p => learnedProverbs.includes(p.id));
+    } else if (currentFilter === 'notLearned') {
+        result = result.filter(p => !learnedProverbs.includes(p.id));
+    }
+
+    // Apply topic filter
+    if (currentTopicFilter !== 'all') {
+        result = result.filter(p => detectTopic(p) === currentTopicFilter);
+    }
+
+    // Apply search filter
+    if (query) {
+        result = result.filter(p =>
             p.swedishProverb.toLowerCase().includes(query) ||
             p.arabicEquivalent.includes(query) ||
             p.literalMeaning.includes(query) ||
@@ -166,9 +336,16 @@ function handleSearch(e: Event) {
         );
     }
 
+    filteredProverbs = result;
     currentBatchIndex = 0;
     renderContent();
 }
+
+// ========== SEARCH ==========
+function handleSearch(e: Event) {
+    applyFilters();
+}
+
 
 // ========== BROWSE VIEW ==========
 function renderContent() {
@@ -520,6 +697,9 @@ function showQuizResults() {
 (window as any).initFlashcards = initFlashcards;
 (window as any).startQuiz = startQuiz;
 (window as any).checkQuizAnswer = checkQuizAnswer;
+(window as any).setFilter = setFilter;
+(window as any).toggleFilters = toggleFilters;
+(window as any).setTopicFilter = setTopicFilter;
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', init);
