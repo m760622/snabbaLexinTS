@@ -1,8 +1,27 @@
 // Asma ul Husna - Game Logic
-import { ASMA_UL_HUSNA, AsmaName } from '../data/asmaUlHusna';
+import asmaData from '../data/asmaUlHusna.json';
 import { TTSManager } from '../tts';
 
 console.log('[AsmaUlHusna] Module loaded');
+
+// Define interface locally since we're using JSON
+interface AsmaName {
+    nr: number;
+    nameAr: string;
+    nameSv: string;
+    meaningAr: string;
+    meaningSv: string;
+    pastAr: string;
+    pastSv: string;
+    presentAr: string;
+    presentSv: string;
+    masdarAr: string;
+    masdarSv: string;
+    verseAr: string;
+    verseSv: string;
+}
+
+const ASMA_UL_HUSNA: AsmaName[] = asmaData as AsmaName[];
 
 let allNames: AsmaName[] = [];
 let filteredNames: AsmaName[] = [];
@@ -351,17 +370,19 @@ function setupLazyLoading(container: HTMLElement): void {
     }
 }
 
-// Create single card HTML
+// Create single card HTML - full design with animations
 function createCardHTML(name: AsmaName): string {
     const hasConjugation = name.pastAr !== '-';
     const isFavorite = favorites.has(name.nr);
     const isMemorized = memorized.has(name.nr);
+    const category = getCategory(name.nr);
+    const categoryLabel = category === 'jalal' ? 'الجلال' : category === 'jamal' ? 'الجمال' : 'الكمال';
 
     return `
-        <div class="asma-card${isMemorized ? ' memorized' : ''}" data-nr="${name.nr}">
+        <div class="asma-card${isMemorized ? ' memorized' : ''}" data-nr="${name.nr}" style="animation: fadeInUp 0.4s ease-out forwards; animation-delay: ${name.nr * 0.02}s; opacity: 0;">
             ${isMemorized ? '<div class="memorized-badge">✓ محفوظ</div>' : ''}
             
-            <div class="category-badge ${getCategory(name.nr)}">${getCategory(name.nr) === 'jalal' ? 'الجلال' : getCategory(name.nr) === 'jamal' ? 'الجمال' : 'الكمال'}</div>
+            <div class="category-badge ${category}">${categoryLabel}</div>
 
             <div class="asma-card-header">
                 <div class="asma-number">${name.nr}</div>
@@ -407,12 +428,7 @@ function createCardHTML(name: AsmaName): string {
             ` : ''}
             
             <div class="asma-verse">
-                <div class="verse-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
-                </div>
+                <div class="verse-icon">📖</div>
                 <div class="verse-ar">${name.verseAr}</div>
                 <div class="verse-sv">${name.verseSv}</div>
             </div>
