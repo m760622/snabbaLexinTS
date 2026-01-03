@@ -1,3 +1,5 @@
+@import url('title-styles.css');
+
 :root {
     --primary: #dc2626;
     --primary-dark: #4f46e5;
@@ -845,6 +847,7 @@ body.boss-mode .missing-vowel {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }
+
 /* ========================================
    FOCUS MODE FOR VOWEL GAME
    Distraction-free learning
@@ -905,6 +908,7 @@ body.focus-mode .feedback-icon {
 
 /* Focus mode respects reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
     body .orb,
     body .particle {
         animation: none !important;
@@ -999,26 +1003,26 @@ body.focus-mode .feedback-icon {
         min-height: 70px !important;
         font-size: 2.5rem !important;
     }
-    
+
     .missing-vowel {
         width: 52px;
         height: 52px;
         line-height: 48px;
     }
-    
+
     .word-text {
         font-size: 1.6rem;
     }
-    
+
     .word-item {
         padding: 1rem 0.5rem;
     }
-    
+
     /* Start screen improvements */
     .start-title {
         font-size: 2rem;
     }
-    
+
     .vowel-demo {
         width: 48px;
         height: 48px;
@@ -1043,11 +1047,17 @@ body.focus-mode .feedback-icon {
 
 /* Better haptic feedback indicator */
 @keyframes haptic-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(0.95); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
 }
 
 .word-item.wrong {
     animation: haptic-pulse 0.3s ease-out;
 }
-
