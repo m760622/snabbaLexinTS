@@ -27,7 +27,8 @@
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
         </button>
-        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()" title="Mobilvy / عرض الجوال">📱</button>
+        <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+            title="Mobilvy / عرض الجوال">📱</button>
         <h1><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span></h1>
     </header>
 
@@ -60,11 +61,14 @@
 
         <!-- Browse View -->
         <div class="browse-view" id="browseView">
-            <div class="search-container">
+            <div class="search-row">
                 <input type="text" id="searchInput" placeholder="Sök ord / ابحث...">
+                <button class="filter-toggle-btn" id="filterToggle" onclick="toggleFilters()" title="Filtrera / تصفية">
+                    🔽
+                </button>
             </div>
 
-            <div class="filter-chips" id="filterChips"></div>
+            <div class="filter-chips collapsed" id="filterChips"></div>
             <div id="content"></div>
         </div>
 
