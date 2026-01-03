@@ -37,6 +37,12 @@ const categoryIcons: Record<string, string> = {
     'Teknik': '💻', 'Övrigt': '📌'
 };
 
+// Lazy Loading Configuration
+const ITEMS_PER_BATCH = 20;
+let allGroupedData: Record<string, CognateEntry[]> = {};
+let currentBatchIndex = 0;
+let loadMoreObserver: IntersectionObserver | null = null;
+
 // ========== INIT ==========
 export function init() {
     LanguageManager.init();
@@ -70,6 +76,14 @@ export function init() {
     (window as any).checkAnswer = checkAnswer;
     (window as any).checkWrittenAnswer = checkWrittenAnswer;
     (window as any).playTTS = playTTS;
+    (window as any).toggleMobileView = toggleMobileView;
+}
+
+// ========== MOBILE VIEW ==========
+function toggleMobileView(): void {
+    const isMobile = document.body.classList.toggle('iphone-view');
+    document.documentElement.classList.toggle('iphone-mode', isMobile);
+    localStorage.setItem('mobileView', isMobile.toString());
 }
 
 // ========== MODE SWITCHING ==========
@@ -150,51 +164,150 @@ function renderContent(data: CognateEntry[]) {
     const container = document.getElementById('content');
     if (!container) return;
 
+    // Reset lazy loading state
+    currentBatchIndex = 0;
+    container.innerHTML = '';
+
     if (data.length === 0) {
         container.innerHTML = '<div class="empty-state"><span class="sv-text">Inga ord hittades</span><span class="ar-text">لا توجد نتائج</span></div>';
         return;
     }
 
-    const grouped: Record<string, CognateEntry[]> = {};
+    // Group data once
+    allGroupedData = {};
     data.forEach(item => {
         const cat = item.category || 'Övrigt';
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(item);
+        if (!allGroupedData[cat]) allGroupedData[cat] = [];
+        allGroupedData[cat].push(item);
     });
 
+    // Render first batch immediately
+    renderNextBatch(container);
+
+    // Setup intersection observer for lazy loading
+    setupLazyLoading(container);
+}
+
+// Render next batch of items
+function renderNextBatch(container: HTMLElement): void {
+    const categories = Object.keys(allGroupedData);
+    const startIndex = currentBatchIndex * ITEMS_PER_BATCH;
+
+    let itemsRendered = 0;
     let html = '';
-    for (const [category, items] of Object.entries(grouped)) {
-        html += `
-            <div class="category-section">
+    let currentItemIndex = 0;
+
+    // Flatten items with category info for batch processing
+    const allItems: { item: CognateEntry; category: string }[] = [];
+    for (const cat of categories) {
+        for (const item of allGroupedData[cat]) {
+            allItems.push({ item, category: cat });
+        }
+    }
+
+    const endIndex = Math.min(startIndex + ITEMS_PER_BATCH, allItems.length);
+
+    if (startIndex >= allItems.length) return;
+
+    // Group items to render by category
+    const batchGrouped: Record<string, CognateEntry[]> = {};
+    for (let i = startIndex; i < endIndex; i++) {
+        const { item, category } = allItems[i];
+        if (!batchGrouped[category]) batchGrouped[category] = [];
+        batchGrouped[category].push(item);
+    }
+
+    // Remove old sentinel
+    const oldSentinel = container.querySelector('.load-more-sentinel');
+    if (oldSentinel) oldSentinel.remove();
+
+    // Render batch
+    for (const [category, items] of Object.entries(batchGrouped)) {
+        // Check if category section already exists
+        let categorySection = container.querySelector(`[data-category="${category}"]`) as HTMLElement;
+
+        if (!categorySection) {
+            categorySection = document.createElement('div');
+            categorySection.className = 'category-section';
+            categorySection.setAttribute('data-category', category);
+            categorySection.innerHTML = `
                 <div class="category-title">
                     <span>${categoryIcons[category] || '📌'}</span>
-                    <span>${category} (${items.length})</span>
+                    <span>${category} (${allGroupedData[category].length})</span>
                 </div>
-                <div class="cognates-grid">
-                    ${items.map(item => {
-            const isSaved = savedWords.includes(item.swe);
-            const isLearned = learnedWords.includes(item.swe);
-            const safeSwe = item.swe.replace(/'/g, "\\'");
-            return `
-                        <div class="cognate-card ${isLearned ? 'learned' : ''} ${isSaved ? 'saved' : ''}" onclick="playTTS('${safeSwe}')">
-                            <div>
-                                <span class="word-swe" data-auto-size>${item.swe}</span>
-                                <span class="speaker-icon">🔊</span>
-                                ${item.type ? `<span class="word-type">${item.type}</span>` : ''}
-                            </div>
-                            <div class="flex-center-gap">
-                                <span class="word-arb" data-auto-size>${item.arb}</span>
-                                <button class="mini-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${safeSwe}')">${isSaved ? '⭐' : '☆'}</button>
-                            </div>
-                        </div>`;
-        }).join('')}
-                </div>
-            </div>`;
-    }
-    container.innerHTML = html;
+                <div class="cognates-grid"></div>
+            `;
+            container.appendChild(categorySection);
+        }
 
-    // Apply dynamic sizing to rendered cards
+        const grid = categorySection.querySelector('.cognates-grid');
+        if (grid) {
+            items.forEach(item => {
+                const isSaved = savedWords.includes(item.swe);
+                const isLearned = learnedWords.includes(item.swe);
+                const safeSwe = item.swe.replace(/'/g, "\\'");
+                const cardHTML = `
+                    <div class="cognate-card ${isLearned ? 'learned' : ''} ${isSaved ? 'saved' : ''}" onclick="playTTS('${safeSwe}')">
+                        <div>
+                            <span class="word-swe" data-auto-size>${item.swe}</span>
+                            <span class="speaker-icon">🔊</span>
+                            ${item.type ? `<span class="word-type">${item.type}</span>` : ''}
+                        </div>
+                        <div class="flex-center-gap">
+                            <span class="word-arb" data-auto-size>${item.arb}</span>
+                            <button class="mini-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSave('${safeSwe}')">${isSaved ? '⭐' : '☆'}</button>
+                        </div>
+                    </div>`;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+    }
+
+    currentBatchIndex++;
+
+    // Add sentinel for next batch if more items exist
+    const totalItems = allItems.length;
+    const loadedItems = currentBatchIndex * ITEMS_PER_BATCH;
+
+    if (loadedItems < totalItems) {
+        const sentinel = document.createElement('div');
+        sentinel.className = 'load-more-sentinel';
+        sentinel.style.cssText = 'height: 50px; display: flex; align-items: center; justify-content: center; color: #60a5fa; opacity: 0.7;';
+        const remaining = totalItems - loadedItems;
+        sentinel.innerHTML = `<span>⏳ جاري تحميل ${Math.min(ITEMS_PER_BATCH, remaining)} كلمة أخرى...</span>`;
+        container.appendChild(sentinel);
+    } else {
+        const endMessage = document.createElement('div');
+        endMessage.className = 'end-of-list';
+        endMessage.style.cssText = 'text-align: center; padding: 1rem; color: #60a5fa; opacity: 0.6;';
+        endMessage.innerHTML = `✨ تم عرض ${totalItems} كلمة`;
+        container.appendChild(endMessage);
+    }
+
+    // Apply dynamic sizing
     TextSizeManager.autoApply();
+
+    // Re-observe new sentinel
+    const newSentinel = container.querySelector('.load-more-sentinel');
+    if (newSentinel && loadMoreObserver) {
+        loadMoreObserver.observe(newSentinel);
+    }
+}
+
+// Setup IntersectionObserver for lazy loading
+function setupLazyLoading(container: HTMLElement): void {
+    if (loadMoreObserver) loadMoreObserver.disconnect();
+
+    loadMoreObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                renderNextBatch(container);
+            }
+        });
+    }, { rootMargin: '100px' });
+
+    const sentinel = container.querySelector('.load-more-sentinel');
+    if (sentinel) loadMoreObserver.observe(sentinel);
 }
 
 function playTTS(text: string) {
