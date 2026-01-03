@@ -31,7 +31,7 @@ let favorites: Set<number> = new Set();
 let memorized: Set<number> = new Set();
 type FilterType = 'all' | 'favorites' | 'memorized' | 'jalal' | 'jamal' | 'kamal';
 let currentFilter: FilterType = 'all';
-let currentTheme: 'neon' | 'calm' | 'islamic-night' = 'neon';
+let currentTheme: 'neon' | 'calm' | 'islamic-night' = 'islamic-night';
 let currentLang: 'ar' | 'sv' = 'ar';  // Language to learn: Arabic or Swedish
 
 // Categories Mapping
@@ -560,7 +560,7 @@ function createGoldenParticles(): void {
 
 // Theme management with Islamic Night Theme
 function loadTheme(): void {
-    const savedTheme = localStorage.getItem('asmaTheme') || 'neon';
+    const savedTheme = localStorage.getItem('asmaTheme') || 'islamic-night';
     currentTheme = savedTheme as typeof currentTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeButton();
