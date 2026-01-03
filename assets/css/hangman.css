@@ -1,4 +1,6 @@
 /* Hangman Pro Styles */
+@import url('title-styles.css');
+
 :root {
     --primary: #38bdf8;
     --primary-dark: #0284c7;

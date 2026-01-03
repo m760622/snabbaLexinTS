@@ -1,4 +1,6 @@
 /* Neon Search - Svenska Styles */
+@import url('title-styles.css');
+
 :root {
     --bg-color: #0d0d12;
     --grid-bg: #1a1a24;

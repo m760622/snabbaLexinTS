@@ -1,6 +1,13 @@
 /* Games Page Styles */
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@300;500&display=swap');
 
+/* Consolidated CSS imports for games */
+@import url('flashcards_pro.css');
+@import url('premium-design.css');
+@import url('advanced-effects.css');
+@import url('games-compact.css');
+@import url('title-styles.css');
+
 :root {
     --bg-gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     --bg-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
