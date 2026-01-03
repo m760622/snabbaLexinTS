@@ -18,6 +18,10 @@
 </head>
 
 <body>
+    <!-- Animated Background -->
+    <div class="ordsprak-bg-layer"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+
     <header>
         <div class="header-top">
             <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
@@ -56,10 +60,83 @@
 
     <main>
         <!-- Browse View -->
-        <div class="browse-view" id="browseView">
-            <div class="search-row">
+        <div class="browse-view active" id="browseView">
+            <!-- Search Row with Filter Toggle -->
+            <div class="search-filter-row">
                 <input type="text" id="searchInput" placeholder="Sök ordspråk / ابحث عن مثل...">
+                <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilters()"
+                    title="Filtrera / تصفية">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span class="filter-badge" id="filterBadge">0</span>
+                </button>
             </div>
+
+            <!-- Collapsible Filters Section -->
+            <div class="filters-dropdown collapsed" id="filtersDropdown">
+                <!-- Status Filters -->
+                <div class="filter-group">
+                    <div class="filter-group-label"><span class="sv-text">Status</span><span
+                            class="ar-text">الحالة</span></div>
+                    <div class="filter-chips-row">
+                        <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">
+                            📋 <span class="sv-text">Alla</span><span class="ar-text">الكل</span>
+                        </button>
+                        <button class="filter-chip" data-filter="saved" onclick="setFilter('saved')">
+                            ⭐ <span class="sv-text">Sparade</span><span class="ar-text">المحفوظة</span>
+                        </button>
+                        <button class="filter-chip" data-filter="learned" onclick="setFilter('learned')">
+                            ✅ <span class="sv-text">Lärt</span><span class="ar-text">المتعلمة</span>
+                        </button>
+                        <button class="filter-chip" data-filter="notLearned" onclick="setFilter('notLearned')">
+                            📚 <span class="sv-text">Ej lärt</span><span class="ar-text">لم تتعلم</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Topic Filters -->
+                <div class="filter-group">
+                    <div class="filter-group-label"><span class="sv-text">Ämne</span><span
+                            class="ar-text">الموضوع</span></div>
+                    <div class="filter-chips-row topic-filters" id="topicFilters">
+                        <button class="filter-chip topic-chip active" data-topic="all" onclick="setTopicFilter('all')">
+                            🌐 <span class="sv-text">Alla</span><span class="ar-text">الكل</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="patience"
+                            onclick="setTopicFilter('patience')">
+                            ⏳ <span class="sv-text">Tålamod</span><span class="ar-text">الصبر</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="wisdom" onclick="setTopicFilter('wisdom')">
+                            🧠 <span class="sv-text">Visdom</span><span class="ar-text">الحكمة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="consequences"
+                            onclick="setTopicFilter('consequences')">
+                            ⚖️ <span class="sv-text">Konsekvenser</span><span class="ar-text">العواقب</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="family" onclick="setTopicFilter('family')">
+                            👨‍👩‍👧 <span class="sv-text">Familj</span><span class="ar-text">العائلة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="experience"
+                            onclick="setTopicFilter('experience')">
+                            📖 <span class="sv-text">Erfarenhet</span><span class="ar-text">التجربة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="time" onclick="setTopicFilter('time')">
+                            ⏰ <span class="sv-text">Tid</span><span class="ar-text">الوقت</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="speech" onclick="setTopicFilter('speech')">
+                            🗣️ <span class="sv-text">Tal</span><span class="ar-text">الكلام</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="nature" onclick="setTopicFilter('nature')">
+                            🌿 <span class="sv-text">Natur</span><span class="ar-text">الطبيعة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="love" onclick="setTopicFilter('love')">
+                            ❤️ <span class="sv-text">Kärlek</span><span class="ar-text">الحب</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div id="content"></div>
         </div>
 

@@ -1,8 +1,77 @@
 /* Ordspråk - Swedish Proverbs Styles */
 
+/* ========== ANIMATED BACKGROUND ========== */
+.ordsprak-bg-layer {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0a0e1a 0%, #12132a 25%, #1a1040 50%, #0a1a2a 75%, #0a0e1a 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    z-index: -3;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.particles-container {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.particles-container::before,
+.particles-container::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(251, 191, 36, 0.4), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(147, 51, 234, 0.3), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(59, 130, 246, 0.5), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(251, 191, 36, 0.3), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(16, 185, 129, 0.4), transparent);
+    background-repeat: repeat;
+    background-size: 200px 160px;
+    animation: particleFloat 20s linear infinite;
+}
+
+.particles-container::after {
+    animation-delay: -10s;
+    animation-direction: reverse;
+    opacity: 0.6;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-50px) translateX(25px) rotate(180deg);
+    }
+
+    100% {
+        transform: translateY(0) translateX(0) rotate(360deg);
+    }
+}
+
 /* ========== BASE LAYOUT ========== */
 body {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    background: transparent;
     min-height: 100vh;
 }
 
@@ -11,17 +80,19 @@ main {
     padding-top: 1rem;
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
 }
 
 /* ========== HEADER ========== */
 header {
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+    background: rgba(8, 12, 28, 0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.25);
     padding: 0.75rem 1rem;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .header-top {
@@ -37,12 +108,13 @@ header {
     color: #fbbf24;
     margin: 0;
     text-align: center;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
 }
 
 .back-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
     padding: 0.5rem;
     color: #e2e8f0;
     cursor: pointer;
@@ -52,12 +124,13 @@ header {
 .back-btn:hover {
     background: rgba(251, 191, 36, 0.2);
     border-color: rgba(251, 191, 36, 0.5);
+    transform: translateX(-2px);
 }
 
 .mobile-toggle-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
     padding: 0.5rem 0.75rem;
     font-size: 1.2rem;
     cursor: pointer;
@@ -67,6 +140,7 @@ header {
 .mobile-toggle-btn.mobile-active {
     background: rgba(251, 191, 36, 0.3);
     border-color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
 }
 
 /* ========== MODE TABS ========== */
@@ -95,9 +169,10 @@ header {
 }
 
 .mode-tab.active {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-    border-color: rgba(251, 191, 36, 0.5);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.15));
+    border-color: rgba(251, 191, 36, 0.6);
     color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
 }
 
 /* ========== STATS BAR ========== */
@@ -116,14 +191,259 @@ header {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
     color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .stat-chip.learned {
     color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.2);
 }
 
 .stat-chip.streak {
     color: #f97316;
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+/* ========== SEARCH & FILTER ROW ========== */
+.search-filter-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.search-filter-row input {
+    flex: 1;
+    padding: 0.85rem 1.2rem;
+    border-radius: 14px;
+    border: 2px solid rgba(251, 191, 36, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    color: #e2e8f0;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-filter-row input:focus {
+    outline: none;
+    border-color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.25);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.search-filter-row input::placeholder {
+    color: #64748b;
+}
+
+.filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(251, 191, 36, 0.2);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-toggle-btn:hover {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: #fbbf24;
+    transform: scale(1.05);
+}
+
+.filter-toggle-btn.active {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.15));
+    border-color: #fbbf24;
+    color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+.filter-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ========== FILTERS DROPDOWN ========== */
+.filters-dropdown {
+    background: rgba(8, 12, 28, 0.95);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    max-height: 500px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.filters-dropdown.collapsed {
+    max-height: 0;
+    padding: 0 1rem;
+    margin-bottom: 0;
+    border-color: transparent;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group-label {
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    padding-left: 0.25rem;
+}
+
+.filter-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* ========== FILTER CHIPS (Enhanced) ========== */
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.filter-chip:hover {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.15);
+}
+
+.filter-chip.active {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(245, 158, 11, 0.12));
+    border-color: rgba(251, 191, 36, 0.6);
+    color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+}
+
+/* Filter Counter Badge */
+.filter-counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.25rem;
+    transition: all 0.3s;
+}
+
+.filter-chip:hover .filter-counter {
+    background: rgba(251, 191, 36, 0.25);
+    color: #fbbf24;
+}
+
+.filter-chip.active .filter-counter {
+    background: rgba(251, 191, 36, 0.35);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+/* Topic chips with different colors */
+.topic-chip[data-topic="patience"] {
+    --topic-color: 217, 119, 6;
+}
+
+.topic-chip[data-topic="wisdom"] {
+    --topic-color: 147, 51, 234;
+}
+
+.topic-chip[data-topic="consequences"] {
+    --topic-color: 239, 68, 68;
+}
+
+.topic-chip[data-topic="family"] {
+    --topic-color: 16, 185, 129;
+}
+
+.topic-chip[data-topic="experience"] {
+    --topic-color: 59, 130, 246;
+}
+
+.topic-chip[data-topic="time"] {
+    --topic-color: 249, 115, 22;
+}
+
+.topic-chip[data-topic="speech"] {
+    --topic-color: 168, 85, 247;
+}
+
+.topic-chip[data-topic="nature"] {
+    --topic-color: 34, 197, 94;
+}
+
+.topic-chip[data-topic="love"] {
+    --topic-color: 236, 72, 153;
+}
+
+.topic-chip:hover {
+    border-color: rgba(var(--topic-color, 251, 191, 36), 0.5);
+    background: rgba(var(--topic-color, 251, 191, 36), 0.12);
+}
+
+.topic-chip.active {
+    border-color: rgba(var(--topic-color, 251, 191, 36), 0.7);
+    background: rgba(var(--topic-color, 251, 191, 36), 0.2);
+    box-shadow: 0 0 20px rgba(var(--topic-color, 251, 191, 36), 0.25);
 }
 
 /* ========== SEARCH ========== */
@@ -150,6 +470,15 @@ header {
 
 .search-row input::placeholder {
     color: #64748b;
+}
+
+/* ========== FILTER CHIPS (Legacy) ========== */
+.filter-chips {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 /* ========== PROVERB CARDS ========== */
@@ -316,19 +645,14 @@ header {
 .flashcard-container,
 .quiz-view,
 .saved-view {
-    display: none;
+    display: none !important;
 }
 
 .browse-view.active,
 .flashcard-container.active,
 .quiz-view.active,
 .saved-view.active {
-    display: block;
-}
-
-/* Default active state */
-.browse-view {
-    display: block;
+    display: block !important;
 }
 
 /* ========== FLASHCARD ========== */
