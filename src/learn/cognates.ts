@@ -458,7 +458,10 @@ function startQuiz() {
 
     const quizModal = document.getElementById('quizModal');
     if (quizModal) quizModal.classList.add('active');
-    renderQuizTypeSelector();
+
+    // Start directly with default quiz type
+    quizType = 'normal';
+    renderQuizQuestion();
 }
 
 function closeQuiz() {
@@ -467,32 +470,16 @@ function closeQuiz() {
     quizState = null;
 }
 
-function renderQuizTypeSelector() {
-    const quizContent = document.getElementById('quizContent');
-    if (!quizContent) return;
-
-    quizContent.innerHTML = `
-        <div class="quiz-header">
-            <h2><span class="sv-text">Välj Quiz-typ</span><span class="ar-text">اختر نوع الاختبار</span></h2>
-        </div>
-        <div class="quiz-type-selector quiz-type-selector-col">
-            <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('normal')">
-                🇸🇪→🇸🇦 <span class="sv-text">Svenska → Arabiska</span><span class="ar-text">سويدي → عربي</span>
-            </button>
-            <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('reverse')">
-                🇸🇦→🇸🇪 <span class="sv-text">Arabiska → Svenska</span><span class="ar-text">عربي → سويدي</span>
-            </button>
-            <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('audio')">
-                🔊 <span class="sv-text">Lyssna → Välj</span><span class="ar-text">استمع → اختر</span>
-            </button>
-            <button class="quiz-type-btn quiz-type-btn-large" onclick="setQuizType('write')">
-                ✍️ <span class="sv-text">Skriv svaret</span><span class="ar-text">اكتب الإجابة</span>
-            </button>
-        </div>`;
-}
-
 function setQuizType(type: QuizType) {
     quizType = type;
+    // Reset quiz to start with new type
+    if (quizState) {
+        quizState.index = 0;
+        quizState.score = 0;
+        // Reshuffle questions
+        const shuffled = [...quizState.pool].sort(() => 0.5 - Math.random());
+        quizState.questions = shuffled.slice(0, 10);
+    }
     renderQuizQuestion();
 }
 
@@ -504,7 +491,27 @@ function renderQuizQuestion() {
     const wrongPool = quizState.pool.filter(c => c.swe !== q.swe);
     const wrongOptions = wrongPool.sort(() => 0.5 - Math.random()).slice(0, 3);
 
+    // Type selector icons map
+    const typeIcons: Record<QuizType, string> = {
+        'normal': '🇸🇪→🇸🇦',
+        'reverse': '🇸🇦→🇸🇪',
+        'audio': '🔊',
+        'write': '✍️'
+    };
+
+    // Build compact type selector
+    const typeSelectorHtml = `
+        <div class="quiz-type-row">
+            ${(['normal', 'reverse', 'audio', 'write'] as QuizType[]).map(t => `
+                <button class="quiz-type-chip ${t === quizType ? 'active' : ''}" 
+                        onclick="setQuizType('${t}')" title="${t}">
+                    ${typeIcons[t]}
+                </button>
+            `).join('')}
+        </div>`;
+
     let html = `
+        ${typeSelectorHtml}
         <div class="quiz-header">
             <h2><span class="sv-text">Fråga</span><span class="ar-text">سؤال</span> ${quizState.index + 1} / ${total}</h2>
             <div class="progress-bar">
