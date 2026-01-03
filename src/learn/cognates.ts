@@ -67,7 +67,7 @@ export function init() {
     (window as any).filterByCategory = filterByCategory;
     (window as any).toggleSave = toggleSave;
     (window as any).openSavedModal = openSavedModal;
-    (window as any).closeSavedModal = closeSavedModal;
+
     (window as any).startQuiz = startQuiz;
     (window as any).closeQuiz = closeQuiz;
     (window as any).flipCard = flipCard;
@@ -376,7 +376,7 @@ function renderSavedWords() {
 
 // Removed closeSavedModal as it's handled by switchMode
 // Updated toggleSave to re-render if in saved mode
-function toggleSave(word: string, fromSavedView: boolean = false) {
+function toggleSave(word: string) {
     const index = savedWords.indexOf(word);
     if (index === -1) {
         savedWords.push(word);

@@ -159,9 +159,13 @@ function switchMode(mode: string) {
     document.getElementById('savedView')?.classList.remove('active');
 
     // Update tab states
-    document.querySelectorAll('.mode-tab').forEach((tab, i) => {
-        const modes = ['browse', 'flashcard', 'saved', 'quiz'];
-        tab.classList.toggle('active', modes[i] === mode);
+    document.querySelectorAll('.mode-tab').forEach((tab) => {
+        const onclick = tab.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${mode}'`)) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
     });
 
     // Show selected view
@@ -173,9 +177,12 @@ function switchMode(mode: string) {
     } else if (mode === 'saved') {
         document.getElementById('savedView')?.classList.add('active');
         renderSavedProverbs();
-    } else if (mode === 'quiz') {
+    } else if (mode === 'quiz-fill') {
         document.getElementById('quizView')?.classList.add('active');
-        startQuiz();
+        startFillBlankQuiz();
+    } else if (mode === 'quiz-match') {
+        document.getElementById('quizView')?.classList.add('active');
+        startMatchingQuiz();
     }
 }
 
@@ -342,7 +349,7 @@ function applyFilters() {
 }
 
 // ========== SEARCH ==========
-function handleSearch(e: Event) {
+function handleSearch() {
     applyFilters();
 }
 
@@ -584,22 +591,282 @@ function finishFlashcards() {
     }
 }
 
-// ========== QUIZ ==========
-function startQuiz() {
+// ========== FILL IN THE BLANK QUIZ ==========
+interface FillBlankQuestion {
+    proverb: Proverb;
+    blankWord: string;
+    blankIndex: number;
+    options: string[];
+}
+
+let fillBlankState: {
+    questions: FillBlankQuestion[];
+    index: number;
+    score: number;
+} = { questions: [], index: 0, score: 0 };
+
+function startFillBlankQuiz() {
+    // Select 10 random proverbs (non-repeating)
+    const shuffled = [...PROVERBS].sort(() => 0.5 - Math.random());
+    const selectedProverbs = shuffled.slice(0, 10);
+
+    // Create fill-in-the-blank questions
+    fillBlankState = {
+        questions: selectedProverbs.map(p => createFillBlankQuestion(p)),
+        index: 0,
+        score: 0
+    };
+
+    renderFillBlankQuestion();
+}
+
+function createFillBlankQuestion(proverb: Proverb): FillBlankQuestion {
+    // Split the proverb into words
+    const words = proverb.swedishProverb.split(/\s+/);
+
+    // Skip very short words and first/last words for better challenge
+    const validIndices = words
+        .map((w, i) => ({ word: w, index: i }))
+        .filter(item =>
+            item.word.length >= 3 &&
+            item.index > 0 &&
+            item.index < words.length - 1 &&
+            !/^[0-9]+$/.test(item.word) // Skip numbers
+        );
+
+    // If no valid indices, just pick a word from middle
+    let chosenItem;
+    if (validIndices.length > 0) {
+        chosenItem = validIndices[Math.floor(Math.random() * validIndices.length)];
+    } else {
+        const midIndex = Math.floor(words.length / 2);
+        chosenItem = { word: words[midIndex], index: midIndex };
+    }
+
+    const blankWord = chosenItem.word;
+    const blankIndex = chosenItem.index;
+
+    // Generate wrong options (3 similar words from other proverbs)
+    const wrongOptions: string[] = [];
+    const usedWords = new Set([blankWord.toLowerCase()]);
+
+    for (const p of PROVERBS) {
+        if (wrongOptions.length >= 3) break;
+
+        const otherWords = p.swedishProverb.split(/\s+/);
+        for (const w of otherWords) {
+            if (wrongOptions.length >= 3) break;
+            if (w.length >= 3 &&
+                !usedWords.has(w.toLowerCase()) &&
+                !/^[0-9]+$/.test(w)) {
+                wrongOptions.push(w);
+                usedWords.add(w.toLowerCase());
+            }
+        }
+    }
+
+    // Shuffle all options together
+    const allOptions = [blankWord, ...wrongOptions].sort(() => 0.5 - Math.random());
+
+    return {
+        proverb,
+        blankWord,
+        blankIndex,
+        options: allOptions
+    };
+}
+
+function renderFillBlankQuestion() {
+    const container = document.getElementById('quizContent');
+    if (!container) return;
+
+    if (fillBlankState.index >= fillBlankState.questions.length) {
+        showQuizResults();
+        return;
+    }
+
+    const q = fillBlankState.questions[fillBlankState.index];
+    const words = q.proverb.swedishProverb.split(/\s+/);
+
+    // Create the proverb with blank
+    const proverbWithBlank = words.map((word, i) => {
+        if (i === q.blankIndex) {
+            return `<span class="blank-word">______</span>`;
+        }
+        return word;
+    }).join(' ');
+
+    container.innerHTML = `
+        <div class="quiz-progress">
+            <div class="quiz-progress-text">${fillBlankState.index + 1} / ${fillBlankState.questions.length}</div>
+            <div class="quiz-progress-bar">
+                <div class="quiz-progress-fill" style="width: ${((fillBlankState.index + 1) / fillBlankState.questions.length) * 100}%"></div>
+            </div>
+        </div>
+        <div class="quiz-question">
+            <div class="quiz-label"><span class="sv-text">Välj rätt ord för att komplettera ordspråket:</span><span class="ar-text">اختر الكلمة الصحيحة لإكمال المثل:</span></div>
+            <div class="quiz-swedish fill-blank">${proverbWithBlank}</div>
+        </div>
+        <div class="quiz-options fill-blank-options">
+            ${q.options.map(opt => `
+                <button class="quiz-option fill-blank-option" onclick="checkFillBlankAnswer('${opt.replace(/'/g, "\\'")}', '${q.blankWord.replace(/'/g, "\\'")}', this)">
+                    ${opt}
+                </button>
+            `).join('')}
+        </div>
+        <div class="quiz-feedback" id="quizFeedback" style="display: none;"></div>
+    `;
+}
+
+function checkFillBlankAnswer(selected: string, correct: string, btn: HTMLElement) {
+    const buttons = document.querySelectorAll('.fill-blank-option');
+    buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
+
+    const q = fillBlankState.questions[fillBlankState.index];
+    const feedbackEl = document.getElementById('quizFeedback');
+    const isCorrect = selected.toLowerCase() === correct.toLowerCase();
+
+    if (isCorrect) {
+        btn.classList.add('correct');
+        fillBlankState.score++;
+    } else {
+        btn.classList.add('wrong');
+        // Highlight correct answer
+        buttons.forEach(b => {
+            if (b.textContent?.trim().toLowerCase() === correct.toLowerCase()) {
+                b.classList.add('correct');
+            }
+        });
+    }
+
+    // Show the complete proverb and Arabic translation
+    if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.innerHTML = `
+            <div class="feedback-content ${isCorrect ? 'correct' : 'wrong'}">
+                <div class="feedback-icon">${isCorrect ? '✅' : '❌'}</div>
+                <div class="feedback-message">
+                    <span class="sv-text">${isCorrect ? 'Rätt!' : 'Fel!'}</span>
+                    <span class="ar-text">${isCorrect ? 'صحيح!' : 'خطأ!'}</span>
+                </div>
+                <div class="complete-proverb">
+                    <div class="proverb-text-sv">"${q.proverb.swedishProverb}"</div>
+                </div>
+                <div class="arabic-translation">
+                    <div class="translation-label"><span class="sv-text">Arabiskt motsvarighet:</span><span class="ar-text">المثل العربي المقابل:</span></div>
+                    <div class="proverb-text-ar">"${q.proverb.arabicEquivalent}"</div>
+                </div>
+                <div class="literal-meaning">
+                    <div class="literal-label"><span class="sv-text">Ordagrann översättning:</span><span class="ar-text">الترجمة الحرفية:</span></div>
+                    <div class="literal-text">"${q.proverb.literalMeaning}"</div>
+                </div>
+            </div>
+        `;
+    }
+
+    setTimeout(() => {
+        fillBlankState.index++;
+        renderFillBlankQuestion();
+    }, 3500);
+}
+
+function showQuizResults() {
+    const container = document.getElementById('quizContent');
+    if (!container) return;
+
+    const percentage = Math.round((fillBlankState.score / fillBlankState.questions.length) * 100);
+    let message = '';
+    let messageAr = '';
+    let icon = '';
+
+    if (percentage === 100) {
+        message = 'Perfekt!';
+        messageAr = 'ممتاز!';
+        icon = '🏆';
+    } else if (percentage >= 80) {
+        message = 'Mycket bra!';
+        messageAr = 'رائع جداً!';
+        icon = '🌟';
+    } else if (percentage >= 50) {
+        message = 'Bra jobbat!';
+        messageAr = 'أحسنت!';
+        icon = '👍';
+    } else {
+        message = 'Fortsätt öva!';
+        messageAr = 'واصل التدريب!';
+        icon = '📚';
+    }
+
+    container.innerHTML = `
+        <div class="quiz-results">
+            <div class="result-icon">${icon}</div>
+            <div class="result-message"><span class="sv-text">${message}</span><span class="ar-text">${messageAr}</span></div>
+            <div class="result-score">${fillBlankState.score} / ${fillBlankState.questions.length}</div>
+            <div class="result-percentage">${percentage}%</div>
+            <div class="result-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">✅</span>
+                    <span class="stat-value">${fillBlankState.score}</span>
+                    <span class="stat-label"><span class="sv-text">Rätt</span><span class="ar-text">صحيح</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">❌</span>
+                    <span class="stat-value">${fillBlankState.questions.length - fillBlankState.score}</span>
+                    <span class="stat-label"><span class="sv-text">Fel</span><span class="ar-text">خطأ</span></span>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="result-btn" onclick="startFillBlankQuiz()"><span class="sv-text">Försök igen</span><span class="ar-text">حاول مرة أخرى</span></button>
+                <button class="result-btn secondary" onclick="switchMode('quiz-match')"><span class="sv-text">Byt till Matcha</span><span class="ar-text">انتقل للمطابقة</span></button>
+                <button class="result-btn secondary" onclick="switchMode('browse')"><span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span></button>
+            </div>
+        </div>
+    `;
+}
+
+// ========== QUIZ SELECTOR ==========
+function showQuizSelector() {
+    const container = document.getElementById('quizContent');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="quiz-selector">
+            <div class="quiz-selector-title">
+                <span class="sv-text">Välj quiztyp</span>
+                <span class="ar-text">اختر نوع الاختبار</span>
+            </div>
+            <div class="quiz-type-cards">
+                <button class="quiz-type-card" onclick="startFillBlankQuiz()">
+                    <div class="quiz-type-icon">✏️</div>
+                    <div class="quiz-type-name"><span class="sv-text">Fyll i luckan</span><span class="ar-text">أكمل الفراغ</span></div>
+                    <div class="quiz-type-desc"><span class="sv-text">Välj rätt ord för att komplettera ordspråket</span><span class="ar-text">اختر الكلمة الصحيحة لإكمال المثل</span></div>
+                </button>
+                <button class="quiz-type-card" onclick="startMatchingQuiz()">
+                    <div class="quiz-type-icon">🔗</div>
+                    <div class="quiz-type-name"><span class="sv-text">Matcha ordspråk</span><span class="ar-text">طابق الأمثال</span></div>
+                    <div class="quiz-type-desc"><span class="sv-text">Hitta rätt arabiskt ordspråk</span><span class="ar-text">اعثر على المثل العربي الصحيح</span></div>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// ========== MATCHING QUIZ (Original) ==========
+function startMatchingQuiz() {
     quizState = {
         questions: [...PROVERBS].sort(() => 0.5 - Math.random()).slice(0, 10),
         index: 0,
         score: 0
     };
-    renderQuizQuestion();
+    renderMatchingQuestion();
 }
 
-function renderQuizQuestion() {
+function renderMatchingQuestion() {
     const container = document.getElementById('quizContent');
     if (!container) return;
 
     if (quizState.index >= quizState.questions.length) {
-        showQuizResults();
+        showMatchingResults();
         return;
     }
 
@@ -626,9 +893,9 @@ function renderQuizQuestion() {
             <div class="quiz-label"><span class="sv-text">Vilket arabiskt ordspråk motsvarar detta?</span><span class="ar-text">ما المثل العربي المقابل؟</span></div>
             <div class="quiz-swedish">${question.swedishProverb}</div>
         </div>
-        <div class="quiz-options">
+        <div class="quiz-options matching-options">
             ${shuffled.map(opt => `
-                <button class="quiz-option" onclick="checkQuizAnswer(${opt.id}, ${question.id}, this)">
+                <button class="quiz-option" onclick="checkMatchingAnswer(${opt.id}, ${question.id}, this)">
                     ${opt.arabicEquivalent}
                 </button>
             `).join('')}
@@ -636,8 +903,8 @@ function renderQuizQuestion() {
     `;
 }
 
-function checkQuizAnswer(selectedId: number, correctId: number, btn: HTMLElement) {
-    const buttons = document.querySelectorAll('.quiz-option');
+function checkMatchingAnswer(selectedId: number, correctId: number, btn: HTMLElement) {
+    const buttons = document.querySelectorAll('.matching-options .quiz-option');
     buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
 
     if (selectedId === correctId) {
@@ -654,36 +921,52 @@ function checkQuizAnswer(selectedId: number, correctId: number, btn: HTMLElement
 
     setTimeout(() => {
         quizState.index++;
-        renderQuizQuestion();
+        renderMatchingQuestion();
     }, 1500);
 }
 
-function showQuizResults() {
+function showMatchingResults() {
     const container = document.getElementById('quizContent');
     if (!container) return;
 
     const percentage = Math.round((quizState.score / quizState.questions.length) * 100);
     let message = '';
+    let messageAr = '';
     let icon = '';
 
-    if (percentage === 100) { message = 'Perfekt! / ممتاز!'; icon = '🏆'; }
-    else if (percentage >= 80) { message = 'Mycket bra! / رائع جداً'; icon = '🌟'; }
-    else if (percentage >= 50) { message = 'Bra jobbat! / أحسنت!'; icon = '👍'; }
-    else { message = 'Fortsätt öva! / واصل التدريب!'; icon = '📚'; }
+    if (percentage === 100) {
+        message = 'Perfekt!';
+        messageAr = 'ممتاز!';
+        icon = '🏆';
+    } else if (percentage >= 80) {
+        message = 'Mycket bra!';
+        messageAr = 'رائع جداً!';
+        icon = '🌟';
+    } else if (percentage >= 50) {
+        message = 'Bra jobbat!';
+        messageAr = 'أحسنت!';
+        icon = '👍';
+    } else {
+        message = 'Fortsätt öva!';
+        messageAr = 'واصل التدريب!';
+        icon = '📚';
+    }
 
     container.innerHTML = `
         <div class="quiz-results">
             <div class="result-icon">${icon}</div>
-            <div class="result-message">${message}</div>
+            <div class="result-message"><span class="sv-text">${message}</span><span class="ar-text">${messageAr}</span></div>
             <div class="result-score">${quizState.score} / ${quizState.questions.length}</div>
             <div class="result-percentage">${percentage}%</div>
             <div class="result-actions">
-                <button class="result-btn" onclick="startQuiz()"><span class="sv-text">Försök igen</span><span class="ar-text">حاول مرة أخرى</span></button>
+                <button class="result-btn" onclick="startMatchingQuiz()"><span class="sv-text">Försök igen</span><span class="ar-text">حاول مرة أخرى</span></button>
+                <button class="result-btn secondary" onclick="switchMode('quiz-fill')"><span class="sv-text">Byt till Fyll i luckan</span><span class="ar-text">انتقل لأكمل الفراغ</span></button>
                 <button class="result-btn secondary" onclick="switchMode('browse')"><span class="sv-text">Tillbaka</span><span class="ar-text">رجوع</span></button>
             </div>
         </div>
     `;
 }
+
 
 // ========== GLOBAL EXPORTS ==========
 (window as any).switchMode = switchMode;
@@ -695,8 +978,11 @@ function showQuizResults() {
 (window as any).flipCard = flipCard;
 (window as any).flashcardAnswer = flashcardAnswer;
 (window as any).initFlashcards = initFlashcards;
-(window as any).startQuiz = startQuiz;
-(window as any).checkQuizAnswer = checkQuizAnswer;
+(window as any).startFillBlankQuiz = startFillBlankQuiz;
+(window as any).startMatchingQuiz = startMatchingQuiz;
+(window as any).checkFillBlankAnswer = checkFillBlankAnswer;
+(window as any).checkMatchingAnswer = checkMatchingAnswer;
+(window as any).showQuizSelector = showQuizSelector;
 (window as any).setFilter = setFilter;
 (window as any).toggleFilters = toggleFilters;
 (window as any).setTopicFilter = setTopicFilter;
