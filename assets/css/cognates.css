@@ -498,7 +498,8 @@ main {
 }
 
 .quiz-container {
-    max-width: 500px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
     padding: 1.5rem;
     text-align: center;
@@ -828,4 +829,295 @@ main {
 
 .arabic-font {
     font-family: 'Tajawal', sans-serif;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE STYLES - Quiz Modal
+   تحسينات الاستجابة للموبايل - شاشة الاختبار
+   ============================================================ */
+
+/* Mobile Toggle Button */
+.mobile-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-toggle-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+}
+
+/* Quiz Modal Mobile Styles */
+@media screen and (max-width: 480px) {
+
+    /* Quiz Modal - Full screen on mobile */
+    .quiz-modal {
+        padding-top: env(safe-area-inset-top, 0);
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .quiz-container {
+        max-width: 100%;
+        padding: 1rem;
+        padding-top: 3.5rem;
+    }
+
+    /* Close button positioning */
+    .quiz-modal .close-modal {
+        top: calc(0.75rem + env(safe-area-inset-top, 0));
+        left: 0.75rem;
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+
+    /* Quiz header */
+    .quiz-header h2 {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+
+    /* Quiz type selector - Vertical layout */
+    .quiz-type-selector {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0;
+    }
+
+    .quiz-type-selector-col {
+        gap: 0.75rem;
+    }
+
+    .quiz-type-btn,
+    .quiz-type-btn-large {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 12px;
+    }
+
+    /* Question card */
+    .question-card {
+        padding: 1.25rem 1rem;
+        border-radius: 14px;
+        margin-bottom: 0.75rem;
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+        margin-bottom: 0.4rem;
+        word-break: break-word;
+    }
+
+    .question-hint {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Options grid - Full width buttons */
+    .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .option-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 56px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .option-btn.arb {
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    /* Writing quiz */
+    .writing-input {
+        font-size: 1.1rem;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .submit-btn {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 56px;
+        border-radius: 12px;
+    }
+
+    /* Feedback */
+    .feedback {
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Results container */
+    .result-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .result-icon {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .result-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .result-score {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .result-btn {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 56px;
+        border-radius: 12px;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+    }
+}
+
+/* Smaller mobile phones */
+@media screen and (max-width: 360px) {
+    .quiz-container {
+        padding: 0.75rem;
+        padding-top: 3rem;
+    }
+
+    .quiz-type-btn,
+    .quiz-type-btn-large {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+        min-height: 52px;
+    }
+
+    .question-text {
+        font-size: 1.1rem;
+    }
+
+    .option-btn {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+        min-height: 52px;
+    }
+
+    .result-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* iPhone mode specific quiz styles */
+body.iphone-view .quiz-modal {
+    border-radius: 10px;
+    overflow: hidden;
+    /* Match the body constraints in iphone-view */
+    max-width: 393px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+}
+
+body.iphone-view .quiz-modal .close-modal {
+    top: 2.5rem;
+}
+
+body.iphone-view .quiz-container {
+    padding-top: 4rem;
+    max-width: 100%;
+}
+
+/* Safe area insets for modern iPhones */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .quiz-modal {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+
+    .quiz-container {
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+}
+
+/* Mobile header responsive */
+@media screen and (max-width: 480px) {
+    header h1 {
+        font-size: 0.95rem;
+    }
+
+    .back-btn {
+        padding: 0.5rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Mode tabs */
+    .mode-tabs {
+        gap: 0.35rem;
+        padding: 0.6rem 0.75rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mode-tab {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.75rem;
+        min-width: 0;
+        flex-shrink: 1;
+        white-space: nowrap;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+        gap: 0.35rem;
+        padding: 0.6rem 0.75rem;
+    }
+
+    .stat-chip {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .option-btn:active {
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+    }
+
+    .quiz-type-btn:active,
+    .result-btn:active,
+    .submit-btn:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+    }
 }
