@@ -40,13 +40,13 @@
         <div class="mode-tabs">
             <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
                     class="ar-text">تصفح</span></button>
-            <button class="mode-tab" onclick="switchMode('flashcard')">🂴 <span class="sv-text">Flashcards</span><span
+            <button class="mode-tab" onclick="startAllFlashcards()">🂴 <span class="sv-text">Flashcards</span><span
                     class="ar-text">بطاقات</span></button>
-            <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
             <button class="mode-tab" onclick="switchMode('quiz-fill')">✏️ <span class="sv-text">Fyll i
                     luckan</span><span class="ar-text">أكمل الفراغ</span></button>
             <button class="mode-tab" onclick="switchMode('quiz-match')">🔗 <span class="sv-text">Matcha</span><span
                     class="ar-text">طابق</span></button>
+            <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
         </div>
     </header>
 
@@ -182,6 +182,9 @@
         <div class="saved-view" id="savedView">
             <div class="saved-header-inline">
                 <h2>⭐ <span class="sv-text">Sparade ordspråk</span><span class="ar-text">الأمثال المحفوظة</span></h2>
+                <button class="action-btn-small" onclick="startSavedFlashcards()">
+                    <span class="sv-text">Öva dessa</span><span class="ar-text">ذاكر هذه القائمة</span> ▶️
+                </button>
             </div>
             <div class="saved-list" id="savedList"></div>
         </div>

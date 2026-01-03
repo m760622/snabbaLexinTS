@@ -9,9 +9,9 @@
    CSS VARIABLES - Muted Dark Mode Palette
    ============================================================ */
 :root {
-    --settings-primary: #5558b8;
-    --settings-primary-light: #6b6fc4;
-    --settings-secondary: #6b4fa0;
+    --settings-primary: #3b82f6;
+    --settings-primary-light: #60a5fa;
+    --settings-secondary: #2563eb;
     --settings-success: #2a8a52;
     --settings-warning: #c27f1a;
     --settings-danger: #c44040;
@@ -60,7 +60,7 @@
 .settings-orb-1 {
     width: 350px;
     height: 350px;
-    background: linear-gradient(135deg, #3b3d8c, #4a3d7a);
+    background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
     top: -100px;
     left: -100px;
     animation-delay: 0s;
@@ -69,7 +69,7 @@
 .settings-orb-2 {
     width: 280px;
     height: 280px;
-    background: linear-gradient(135deg, #6b3d5c, #5a3050);
+    background: linear-gradient(135deg, #2563eb, #1e40af);
     bottom: -50px;
     right: -50px;
     animation-delay: -8s;
@@ -78,7 +78,7 @@
 .settings-orb-3 {
     width: 220px;
     height: 220px;
-    background: linear-gradient(135deg, #2a5a4a, #1f4a3a);
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
