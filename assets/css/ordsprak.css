@@ -764,6 +764,8 @@ header {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    margin-top: 3rem;
+    /* Added margin to push buttons down */
 }
 
 .fc-btn {
@@ -833,6 +835,27 @@ header {
     background: rgba(255, 255, 255, 0.1);
     color: #e2e8f0;
     border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-btn-small {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    transition: all 0.2s;
+}
+
+.action-btn-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
 }
 
 /* ========== QUIZ ========== */
