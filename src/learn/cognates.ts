@@ -110,11 +110,17 @@ function switchMode(mode: string) {
 
     const browseView = document.getElementById('browseView');
     const flashcardView = document.getElementById('flashcardView');
+    const quizView = document.getElementById('quizView');
+    const savedView = document.getElementById('savedView');
 
     if (browseView) browseView.classList.toggle('hidden', mode !== 'browse');
     if (flashcardView) flashcardView.classList.toggle('active', mode === 'flashcard');
+    if (quizView) quizView.classList.toggle('active', mode === 'quiz');
+    if (savedView) savedView.classList.toggle('active', mode === 'saved');
 
     if (mode === 'flashcard') initFlashcards();
+    if (mode === 'quiz') startQuizInternal();
+    if (mode === 'saved') renderSavedWords();
 }
 
 // ========== STATS ==========
@@ -331,53 +337,88 @@ function playTTS(text: string) {
     }
 }
 
-function toggleSave(word: string) {
-    const idx = savedWords.indexOf(word);
-    if (idx > -1) {
-        savedWords.splice(idx, 1);
-    } else {
-        savedWords.push(word);
-    }
-    saveState();
-    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
-    handleSearch({ target: searchInput });
-}
+
 
 // ========== SAVED MODAL ==========
+// ========== SAVED WORDS ==========
 function openSavedModal() {
+    switchMode('saved');
+}
+
+function renderSavedWords() {
     const list = document.getElementById('savedList');
     if (!list) return;
 
     if (savedWords.length === 0) {
-        list.innerHTML = '<p class="empty-state saved-empty"><span class="sv-text">Inga sparade ord ännu</span><span class="ar-text">لا توجد كلمات محفوظة</span></p>';
+        list.innerHTML = `
+            <div class="empty-state-card">
+                <div class="empty-icon">⭐</div>
+                <p><span class="sv-text">Du har inga sparade ord ännu.</span><span class="ar-text">ليس لديك كلمات محفوظة حتى الآن.</span></p>
+                <p class="sub-text"><span class="sv-text">Klicka på stjärnan för att spara ord.</span><span class="ar-text">اضغط على النجمة لحفظ الكلمات.</span></p>
+            </div>`;
     } else {
         list.innerHTML = savedWords.map(word => {
             const item = cognatesData.find((c: CognateEntry) => c.swe === word);
             return `
-                <div class="saved-item">
-                    <div>
+                <div class="cognate-card saved-card">
+                    <div class="card-left">
                         <strong>${word}</strong>
-                        <span class="saved-arb">${item?.arb || ''}</span>
+                        <span class="card-type">${item?.type || ''}</span>
                     </div>
-                    <button class="mini-btn" onclick="toggleSave('${word.replace(/'/g, "\\'")}'); openSavedModal();">❌</button>
+                    <div class="card-right">
+                        <span class="word-arb">${item?.arb || ''}</span>
+                        <button class="mini-btn saved active" onclick="toggleSave('${word.replace(/'/g, "\\'")}', true); event.stopPropagation();">⭐</button>
+                    </div>
                 </div>`;
         }).join('');
     }
-    const savedModal = document.getElementById('savedModal');
-    if (savedModal) savedModal.classList.add('active');
 }
 
-function closeSavedModal(e?: MouseEvent) {
-    const savedModal = document.getElementById('savedModal');
-    if (!savedModal) return;
+// Removed closeSavedModal as it's handled by switchMode
+// Updated toggleSave to re-render if in saved mode
+function toggleSave(word: string, fromSavedView: boolean = false) {
+    const index = savedWords.indexOf(word);
+    if (index === -1) {
+        savedWords.push(word);
+    } else {
+        savedWords.splice(index, 1);
+    }
+    localStorage.setItem('snabbaLexin_cognates_saved', JSON.stringify(savedWords));
 
-    if (!e || e.target === savedModal) {
-        savedModal.classList.remove('active');
+    // Update UI
+    updateStats();
+
+    // Update buttons in browse view
+    const btn = document.querySelector(`.btn-star[onclick*="${word}"]`);
+    if (btn) btn.classList.toggle('active', index === -1);
+
+    // If we are in saved view, re-render the list immediately
+    if (document.getElementById('savedView')?.classList.contains('active')) {
+        renderSavedWords();
     }
 }
 
 // ========== FLASHCARDS ==========
+function renderFlashcardFilterChips() {
+    const container = document.getElementById('fcFilterChips');
+    if (!container) return;
+
+    const categories = ['all', ...new Set(cognatesData.map((c: CognateEntry) => c.category || 'Övrigt'))];
+    container.innerHTML = categories.map((cat: string) => `
+        <button class="fc-chip ${cat === currentFilter ? 'active' : ''}" onclick="filterFlashcards('${cat}')" title="${cat === 'all' ? 'Alla' : cat}">
+            ${cat === 'all' ? '🌐' : (categoryIcons[cat] || '📌')}
+        </button>
+    `).join('');
+}
+
+function filterFlashcards(cat: string) {
+    currentFilter = cat;
+    renderFlashcardFilterChips();
+    initFlashcards();
+}
+
 function initFlashcards() {
+    renderFlashcardFilterChips();
     let pool = currentFilter === 'all' ? cognatesData : cognatesData.filter((c: CognateEntry) => c.category === currentFilter);
     fcCards = [...pool].sort(() => 0.5 - Math.random());
     fcIndex = 0;
@@ -402,11 +443,11 @@ function showFlashcard() {
 
     if (fcWord) {
         fcWord.textContent = card.swe;
-        TextSizeManager.apply(fcWord as HTMLElement, card.swe);
+        // Removed TextSizeManager to let CSS control font size
     }
     if (fcTranslation) {
         fcTranslation.textContent = card.arb;
-        TextSizeManager.apply(fcTranslation as HTMLElement, card.arb);
+        // Removed TextSizeManager to let CSS control font size
     }
     if (fcType) fcType.textContent = card.type || card.category;
     if (fcCurrent) fcCurrent.textContent = (fcIndex + 1).toString();
@@ -456,9 +497,20 @@ function finishFlashcards() {
 
 // ========== QUIZ ==========
 function startQuiz() {
+    // Use switchMode to show quiz view inline
+    switchMode('quiz');
+}
+
+function startQuizInternal() {
     let pool = currentFilter === 'all' ? cognatesData : cognatesData.filter((c: CognateEntry) => c.category === currentFilter);
     if (pool.length < 4) {
-        alert('توجد كلمات غير كافية! / Inte tillräckligt med ord!');
+        const quizContent = document.getElementById('quizContent');
+        if (quizContent) {
+            quizContent.innerHTML = `
+                <div class="quiz-message">
+                    <p>⚠️ <span class="sv-text">Inte tillräckligt med ord!</span><span class="ar-text">توجد كلمات غير كافية!</span></p>
+                </div>`;
+        }
         return;
     }
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
@@ -469,17 +521,14 @@ function startQuiz() {
         pool: pool
     };
 
-    const quizModal = document.getElementById('quizModal');
-    if (quizModal) quizModal.classList.add('active');
-
     // Start directly with default quiz type
     quizType = 'normal';
     renderQuizQuestion();
 }
 
 function closeQuiz() {
-    const quizModal = document.getElementById('quizModal');
-    if (quizModal) quizModal.classList.remove('active');
+    // Switch back to browse mode
+    switchMode('browse');
     quizState = null;
 }
 
@@ -514,10 +563,10 @@ function renderQuizQuestion() {
 
     // Build compact type selector
     const typeSelectorHtml = `
-        <div class="quiz-type-row">
+        <div class="quiz-type-selector">
             ${(['normal', 'reverse', 'audio', 'write'] as QuizType[]).map(t => `
-                <button class="quiz-type-chip ${t === quizType ? 'active' : ''}" 
-                        onclick="setQuizType('${t}')" title="${t}">
+                <button class="type-chip ${t === quizType ? 'active' : ''}" 
+                        onclick="setQuizType('${t}')" title="${t === 'normal' ? 'Svenska → Arabiska' : t === 'reverse' ? 'Arabiska → Svenska' : t === 'audio' ? 'Lyssna' : 'Skriv'}">
                     ${typeIcons[t]}
                 </button>
             `).join('')}
@@ -526,18 +575,23 @@ function renderQuizQuestion() {
     let html = `
         ${typeSelectorHtml}
         <div class="quiz-header">
-            <h2><span class="sv-text">Fråga</span><span class="ar-text">سؤال</span> ${quizState.index + 1} / ${total}</h2>
-            <div class="progress-bar">
+            <div class="quiz-progress-text">
+                <span>Fråga ${quizState.index + 1} / ${total}</span>
+                <span>${Math.round((quizState.index / total) * 100)}%</span>
+            </div>
+            <div class="quiz-progress-bar">
                 <div class="fill" style="width: ${(quizState.index / total) * 100}%"></div>
             </div>
         </div>
-        <div class="question-card">`;
+        `;
 
     if (quizType === 'normal') {
         const options = [q.arb, ...wrongOptions.map(c => c.arb)].sort(() => 0.5 - Math.random());
         html += `
-            <div class="question-text">${q.swe}</div>
-            <div class="question-hint"><span class="sv-text">Välj rätt arabisk översättning</span><span class="ar-text">اختر الترجمة الصحيحة</span></div>
+            <div class="quiz-question">
+                <div class="question-word">${q.swe}</div>
+                <div class="question-hint"><span class="sv-text">Välj rätt arabisk översättning</span><span class="ar-text">اختر الترجمة الصحيحة</span></div>
+            </div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn arb" data-correct="${opt === q.arb}"
                     onclick="checkAnswer(this, ${opt === q.arb})">${opt}</button>`).join('')}
@@ -545,8 +599,10 @@ function renderQuizQuestion() {
     } else if (quizType === 'reverse') {
         const options = [q.swe, ...wrongOptions.map(c => c.swe)].sort(() => 0.5 - Math.random());
         html += `
-            <div class="question-text arabic-font">${q.arb}</div>
-            <div class="question-hint"><span class="sv-text">Välj rätt svenskt ord</span><span class="ar-text">اختر الكلمة السويدية</span></div>
+            <div class="quiz-question">
+                <div class="question-word arabic-font" style="font-family:'Tajawal'">${q.arb}</div>
+                <div class="question-hint"><span class="sv-text">Välj rätt svenskt ord</span><span class="ar-text">اختر الكلمة السويدية</span></div>
+            </div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn" data-correct="${opt === q.swe}"
                     onclick="checkAnswer(this, ${opt === q.swe})">${opt}</button>`).join('')}
@@ -554,8 +610,12 @@ function renderQuizQuestion() {
     } else if (quizType === 'audio') {
         const options = [q.arb, ...wrongOptions.map(c => c.arb)].sort(() => 0.5 - Math.random());
         html += `
-            <div class="question-text"><button class="action-btn" onclick="playTTS('${q.swe.replace(/'/g, "\\'")}')">🔊 <span class="sv-text">Lyssna</span><span class="ar-text">استمع</span></button></div>
-            <div class="question-hint"><span class="sv-text">Vad hörde du?</span><span class="ar-text">ماذا سمعت؟</span></div>
+            <div class="quiz-question">
+                <div class="question-word">
+                    <button class="action-btn" style="width:auto; height:80px; width:80px; border-radius:50%; font-size:2rem;" onclick="playTTS('${q.swe.replace(/'/g, "\\'")}')">🔊</button>
+                </div>
+                <div class="question-hint"><span class="sv-text">Vad hörde du?</span><span class="ar-text">ماذا سمعت؟</span></div>
+            </div>
             <div class="options-grid" id="optionsGrid">
                 ${options.map(opt => `<button class="option-btn arb" data-correct="${opt === q.arb}"
                     onclick="checkAnswer(this, ${opt === q.arb})">${opt}</button>`).join('')}
@@ -563,14 +623,15 @@ function renderQuizQuestion() {
         setTimeout(() => playTTS(q.swe), 500);
     } else if (quizType === 'write') {
         html += `
-            <div class="question-text">${q.swe}</div>
-            <div class="question-hint"><span class="sv-text">Skriv den arabiska översättningen</span><span class="ar-text">اكتب الترجمة العربية</span></div>
+            <div class="quiz-question">
+                <div class="question-word">${q.swe}</div>
+                <div class="question-hint"><span class="sv-text">Skriv den arabiska översättningen</span><span class="ar-text">اكتب الترجمة العربية</span></div>
+            </div>
             <input type="text" class="writing-input" id="writeAnswer" placeholder="اكتب هنا..." dir="rtl">
             <button class="submit-btn" onclick="checkWrittenAnswer('${q.arb.replace(/'/g, "\\'")}')"><span class="sv-text">Kontrollera</span><span class="ar-text">تحقق</span></button>`;
     }
 
-    html += `<div class="feedback" id="feedback"></div>
-        </div>`;
+    html += `<div class="feedback" id="feedback"></div>`;
 
     const quizContent = document.getElementById('quizContent');
     if (quizContent) {
@@ -654,5 +715,42 @@ function showQuizResults() {
     }
 }
 
-// Initial Call
-document.addEventListener('DOMContentLoaded', init);
+
+// Make functions available globally per old setup requirements
+(window as any).switchMode = switchMode;
+(window as any).toggleFilters = toggleFilters;
+(window as any).toggleMobileView = toggleMobileView;
+(window as any).playTTS = playTTS;
+(window as any).toggleSave = toggleSave;
+(window as any).startQuiz = startQuiz;
+(window as any).closeQuiz = closeQuiz;
+
+// Flashcard functions
+(window as any).flipCard = flipCard;
+(window as any).flashcardAnswer = flashcardAnswer;
+(window as any).filterFlashcards = filterFlashcards;
+
+// Quiz functions 
+(window as any).checkAnswer = checkAnswer;
+(window as any).setQuizType = setQuizType;
+(window as any).renderSavedWords = renderSavedWords;
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+
+    // Check URL params for mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+
+    // Defer initialization to ensure DOM is fully ready
+    setTimeout(() => {
+        if (mode === 'quiz') {
+            switchMode('quiz');
+        } else if (mode === 'flashcard') {
+            switchMode('flashcard');
+        } else if (mode === 'saved') {
+            switchMode('saved');
+        }
+    }, 100);
+});
