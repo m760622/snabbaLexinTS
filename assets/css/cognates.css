@@ -355,6 +355,14 @@ main {
 .word-arb {
     font-family: 'Tajawal', sans-serif;
     font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    direction: rtl;
+}
+
+/* Override global lang-sv rule that hides Arabic text */
+body.lang-sv .cognate-card .word-arb,
+body .cognate-card .word-arb {
+    display: inline-block !important;
 }
 
 .word-type {

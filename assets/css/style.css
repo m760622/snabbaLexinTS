@@ -12098,7 +12098,7 @@ body.lang-sv .arabic-text,
 body.lang-sv .text-ar,
 body.lang-sv [lang="ar"],
 body.lang-sv .bilingual-ar,
-body.lang-sv .word-arb:not(.card .word-arb):not(.details-page-container *),
+body.lang-sv .word-arb:not(.card .word-arb):not(.details-page-container *):not(.cognate-card *),
 body.lang-sv .subtitle-ar {
   display: none !important;
 }
@@ -12354,107 +12354,132 @@ body.lang-ar .sv-text {
 .ar-text {
   /* Optional: transitions or display properties */
 }
+
 /* ========================================
    SEARCH HISTORY
    ======================================== */
 .history-container {
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .history-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .clear-history-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
+
 .clear-history-btn:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 .history-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .history-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    background: var(--surface-secondary, rgba(255,255,255,0.05));
-    border: 1px solid var(--border, rgba(255,255,255,0.1));
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    color: var(--text-main);
-    cursor: pointer;
-    transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--surface-secondary, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+
 .history-chip:hover {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
+
 .history-icon {
-    font-size: 0.75rem;
-    opacity: 0.7;
+  font-size: 0.75rem;
+  opacity: 0.7;
 }
 
 
 /* ========================================
    UTILITY CLASSES (Extracted from inline styles)
    ======================================== */
-.ml-sm { margin-left: 0.5rem; }
-.flex-1 { flex: 1; }
-.w-44 { width: 44px; }
-.mb-lg { margin-bottom: 24px; }
-.flex-wrap { flex-wrap: wrap; }
-.section-title-padded { padding: 0 1rem; margin-top: 0.75rem; }
+.ml-sm {
+  margin-left: 0.5rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.w-44 {
+  width: 44px;
+}
+
+.mb-lg {
+  margin-bottom: 24px;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.section-title-padded {
+  padding: 0 1rem;
+  margin-top: 0.75rem;
+}
 
 /* Asma ul Husna Filter Button Variants */
 .filter-btn--jalal {
-    color: #fca5a5 !important;
-    border-color: rgba(220, 38, 38, 0.4) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
 }
+
 .filter-btn--jamal {
-    color: #d8b4fe !important;
-    border-color: rgba(147, 51, 234, 0.4) !important;
+  color: #d8b4fe !important;
+  border-color: rgba(147, 51, 234, 0.4) !important;
 }
+
 .filter-btn--kamal {
-    color: #93c5fd !important;
-    border-color: rgba(37, 99, 235, 0.4) !important;
+  color: #93c5fd !important;
+  border-color: rgba(37, 99, 235, 0.4) !important;
 }
 
 /* Stats actions layout */
 .stats-actions-layout {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 /* Compact button */
 .btn-compact {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
 }
 
 /* SVG stroke utilities */
-.stroke-red { stroke: #ef4444; }
-
+.stroke-red {
+  stroke: #ef4444;
+}
