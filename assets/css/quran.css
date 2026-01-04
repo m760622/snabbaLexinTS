@@ -35,16 +35,16 @@
     --bg-gradient: radial-gradient(circle at top right, #9a3412, #451a03, #000000);
 }
 
-/* Amethyst Theme */
+/* Electric Theme (formerly Amethyst) */
 [data-quran-theme="amethyst"] {
-    --quran-gold: #e879f9;
-    /* Light blue/Pink */
-    --quran-gold-glow: rgba(232, 121, 249, 0.4);
-    --quran-green: #581c87;
-    /* Deep blue */
-    --quran-green-light: #3b82f6;
-    /* blue */
-    --bg-gradient: radial-gradient(circle at top right, #6b21a8, #3b0764, #000000);
+    --quran-gold: #22d3ee;
+    /* Cyan */
+    --quran-gold-glow: rgba(34, 211, 238, 0.4);
+    --quran-green: #0e7490;
+    /* Cyan 700 */
+    --quran-green-light: #67e8f9;
+    /* Cyan 300 */
+    --bg-gradient: radial-gradient(circle at top right, #0891b2, #164e63, #000000);
 }
 
 /* Oasis Theme (Aurora Style) */
@@ -191,9 +191,9 @@
 }
 
 .settings-content[data-quran-theme="amethyst"] {
-    --quran-gold: #e879f9;
-    --quran-gold-glow: rgba(232, 121, 249, 0.4);
-    --quran-green: #581c87;
+    --quran-gold: #22d3ee;
+    --quran-gold-glow: rgba(34, 211, 238, 0.4);
+    --quran-green: #0e7490;
 }
 
 .settings-content[data-quran-theme="oasis"] {
@@ -1912,7 +1912,9 @@ transform: scale(0.95);
     line-height: 1;
     display: inline-block;
     filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.3));
-}/* Fill-in-Blank Quiz Styles */
+}
+
+/* Fill-in-Blank Quiz Styles */
 .quiz-fill-container {
     max-width: 600px;
     margin: 0 auto;

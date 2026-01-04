@@ -11,7 +11,7 @@
     --error: #ef4444;
     --fire: #f59e0b;
     --gold: #fbbf24;
-    --fever-glow: #d946ef;
+    --fever-glow: #0ea5e9;
     --boss-red: #dc2626;
 }
 
@@ -357,7 +357,7 @@ body.boss-mode .progress-bar {
 body.skin-neon .pair-card {
     border: 2px solid var(--fever-glow);
     background: rgba(30, 41, 59, 0.95);
-    box-shadow: 0 0 20px rgba(217, 70, 239, 0.2);
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
 }
 
 body.skin-gold .pair-card {

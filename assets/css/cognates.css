@@ -1075,7 +1075,7 @@ body .cognate-card .word-arb {
     left: 0;
     right: 0;
     height: 6px;
-    background: linear-gradient(90deg, var(--primary), #60a5fa, #a78bfa);
+    background: linear-gradient(90deg, var(--primary), #60a5fa, #22d3ee);
 }
 
 .result-icon {
