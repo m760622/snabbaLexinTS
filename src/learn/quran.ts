@@ -928,11 +928,178 @@ class QuranManager {
         if (streakEl) streakEl.textContent = this.quizStreak.toString();
     }
 
+    // Fill-in-Blank Quiz State
+    private fillQuizQuestions: any[] = [];
+    private fillCurrentIndex = 0;
+    private fillScore = 0;
+    private fillTotalQuestions = 10;
+    private fillAutoAdvanceTimer: any = null;
+
     private initFillQuiz() {
-        console.log("Fill quiz initialized");
+        this.fillQuizQuestions = this.generateFillQuestions(this.fillTotalQuestions);
+        this.fillCurrentIndex = 0;
+        this.fillScore = 0;
+
+        const results = document.getElementById('fillResults');
+        const questionCard = document.getElementById('fillQuestionCard');
+        const options = document.getElementById('fillOptions');
+        const feedback = document.getElementById('fillFeedback');
+
+        if (results) results.style.display = 'none';
+        if (questionCard) questionCard.style.display = 'block';
+        if (options) options.style.display = 'grid';
+        if (feedback) feedback.style.display = 'none';
+
+        const nextBtn = document.getElementById('fillNextBtn');
+        if (nextBtn) {
+            nextBtn.replaceWith(nextBtn.cloneNode(true));
+            const newNextBtn = document.getElementById('fillNextBtn');
+            newNextBtn?.addEventListener('click', () => this.nextFillQuestion());
+        }
+
+        this.showFillQuestion();
+    }
+
+    private generateFillQuestions(count: number) {
+        const shuffled = [...quranData].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, count).map(item => ({
+            word: item.word,
+            meaning: item.word_sv,
+            ayah: item.ayah_full,
+            translation: item.ayah_sv,
+            correctAnswer: item.word_sv
+        }));
+    }
+
+    private showFillQuestion() {
+        if (this.fillCurrentIndex >= this.fillQuizQuestions.length) {
+            this.showFillResults();
+            return;
+        }
+
+        const question = this.fillQuizQuestions[this.fillCurrentIndex];
+        const currentQ = document.getElementById('fillCurrentQ');
+        const totalQ = document.getElementById('fillTotalQ');
+        const scoreEl = document.getElementById('fillScore');
+
+        if (currentQ) currentQ.textContent = (this.fillCurrentIndex + 1).toString();
+        if (totalQ) totalQ.textContent = this.fillTotalQuestions.toString();
+        if (scoreEl) scoreEl.textContent = this.fillScore.toString();
+
+        const ayahArabic = document.getElementById('fillAyahArabic');
+        const ayahTranslation = document.getElementById('fillAyahTranslation');
+        const targetWord = document.getElementById('fillTargetWord');
+
+        if (ayahArabic) {
+            // Replace the target word with a placeholder or highlight it
+            // For "Fill in the Blank", usually we hide the word.
+            // But the previous logic was highlighting it: `<span class="highlight-word">${question.word}</span>`
+            // If the question is "What means the highlighted word?", then highlighting is correct.
+            // Based on previous UI text "Ma ma'na al-kalima al-muhaddada?" (What is the meaning of the specific word?), strict highlighting is correct.
+            const highlighted = question.ayah.replace(question.word, `<span class="highlight-word">${question.word}</span>`);
+            ayahArabic.innerHTML = highlighted;
+        }
+        if (ayahTranslation) ayahTranslation.textContent = question.translation;
+        if (targetWord) targetWord.textContent = question.word;
+
+        this.generateFillOptions(question);
+
+        const feedback = document.getElementById('fillFeedback');
+        if (feedback) feedback.style.display = 'none';
+    }
+
+    private generateFillOptions(question: any) {
+        const options = document.getElementById('fillOptions');
+        if (!options) return;
+
+        const wrongAnswers = quranData
+            .filter(item => item.word_sv !== question.correctAnswer)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3)
+            .map(item => item.word_sv);
+
+        const allOptions = [question.correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+
+        options.innerHTML = allOptions.map(option => `<button class="fill-option-btn" data-answer="${option}">${option}</button>`).join('');
+
+        options.querySelectorAll('.fill-option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const selected = (e.target as HTMLElement).getAttribute('data-answer');
+                this.checkFillAnswer(selected, question.correctAnswer);
+            });
+        });
+    }
+
+    private checkFillAnswer(selected: string | null, correct: string) {
+        const feedback = document.getElementById('fillFeedback');
+        const feedbackContent = feedback?.querySelector('.feedback-content');
+        const options = document.getElementById('fillOptions');
+
+        if (!feedback || !feedbackContent) return;
+
+        const isCorrect = selected === correct;
+
+        if (isCorrect) {
+            this.fillScore++;
+            feedbackContent.innerHTML = `<div class="feedback-icon">✅</div><div class="feedback-text"><span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span></div>`;
+            feedback.className = 'quiz-fill-feedback correct';
+        } else {
+            feedbackContent.innerHTML = `<div class="feedback-icon">❌</div><div class="feedback-text"><span class="sv-text">Fel! Rätt svar: ${correct}</span><span class="ar-text">خطأ! الإجابة الصحيحة: ${correct}</span></div>`;
+            feedback.className = 'quiz-fill-feedback wrong';
+        }
+
+        options?.querySelectorAll('.fill-option-btn').forEach(btn => {
+            (btn as HTMLButtonElement).disabled = true;
+            if (btn.getAttribute('data-answer') === correct) {
+                btn.classList.add('correct');
+            } else if (btn.getAttribute('data-answer') === selected) {
+                btn.classList.add('wrong');
+            }
+        });
+
+        feedback.style.display = 'block';
+        const scoreEl = document.getElementById('fillScore');
+        if (scoreEl) scoreEl.textContent = this.fillScore.toString();
+
+        // Auto-advance after 5 seconds
+        if (this.fillAutoAdvanceTimer) clearTimeout(this.fillAutoAdvanceTimer);
+        this.fillAutoAdvanceTimer = setTimeout(() => {
+            this.nextFillQuestion();
+        }, 5000);
+    }
+
+    private nextFillQuestion() {
+        if (this.fillAutoAdvanceTimer) {
+            clearTimeout(this.fillAutoAdvanceTimer);
+            this.fillAutoAdvanceTimer = null;
+        }
+        this.fillCurrentIndex++;
+        this.showFillQuestion();
+    }
+
+    private showFillResults() {
+        const questionCard = document.getElementById('fillQuestionCard');
+        const options = document.getElementById('fillOptions');
+        const feedback = document.getElementById('fillFeedback');
+        const results = document.getElementById('fillResults');
+
+        if (questionCard) questionCard.style.display = 'none';
+        if (options) options.style.display = 'none';
+        if (feedback) feedback.style.display = 'none';
+        if (results) results.style.display = 'block';
+
+        const finalScore = document.getElementById('fillFinalScore');
+        const finalTotal = document.getElementById('fillFinalTotal');
+        const percentage = document.getElementById('fillPercentage');
+
+        if (finalScore) finalScore.textContent = this.fillScore.toString();
+        if (finalTotal) finalTotal.textContent = this.fillTotalQuestions.toString();
+        if (percentage) {
+            const pct = Math.round((this.fillScore / this.fillTotalQuestions) * 100);
+            percentage.textContent = `${pct}%`;
+        }
     }
 }
-
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -941,4 +1108,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Fill-in-Blank Quiz State
+
