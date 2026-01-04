@@ -491,13 +491,13 @@
     animation: hero-entrance 0.6s ease-out, glow-pulse-blue 4s ease-in-out infinite;
 }
 
-/* Verbs - Purple #8B5CF6 - Faster wave (2.5s) */
+/* Verbs - blue #8B5CF6 - Faster wave (2.5s) */
 .details-hero.type-verb {
     box-shadow:
         0 8px 30px rgba(0, 0, 0, 0.3),
         0 0 0 0.5px rgba(30, 58, 138, 0.8),
         0 0 10px rgba(30, 58, 138, 0.4);
-    animation: hero-entrance 0.6s ease-out, glow-pulse-purple 2.5s ease-in-out infinite;
+    animation: hero-entrance 0.6s ease-out, glow-pulse-blue 2.5s ease-in-out infinite;
 }
 
 /* Adjectives - Amber #F59E0B - Gentle shimmer (5s) */
@@ -613,8 +613,8 @@
     }
 }
 
-/* Purple - Verbs: FAST ENERGETIC WAVE (2.5s) */
-@keyframes glow-pulse-purple {
+/* blue - Verbs: FAST ENERGETIC WAVE (2.5s) */
+@keyframes glow-pulse-blue {
 
     0%,
     100% {
@@ -1238,7 +1238,7 @@
     border-color: rgba(34, 197, 94, 0.4);
 }
 
-/* Ett-words (neutrum) - Purple theme */
+/* Ett-words (neutrum) - blue theme */
 .gender-badge.gender-ett {
     background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(147, 51, 234, 0.2) 100%);
     color: #f3e8ff;
@@ -5729,7 +5729,7 @@ button:active,
     border-color: rgba(168, 85, 247, 0.3);
 }
 
-/* Purple */
+/* blue */
 .flashcard-clean.glow-default {
     box-shadow: 0 4px 25px rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
@@ -6607,16 +6607,16 @@ button:active,
     border: 1px solid rgba(59, 130, 246, 0.5);
 }
 
-/* Adjective - Purple Glow with Gentle Shimmer */
+/* Adjective - blue Glow with Gentle Shimmer */
 .flashcard-pro.glow-adjective {
     box-shadow:
         0 0 30px rgba(168, 85, 247, 0.4),
         0 0 60px rgba(168, 85, 247, 0.2),
         0 8px 32px rgba(0, 0, 0, 0.3);
-    animation: fc-glow-pulse-purple 5s ease-in-out infinite;
+    animation: fc-glow-pulse-blue 5s ease-in-out infinite;
 }
 
-@keyframes fc-glow-pulse-purple {
+@keyframes fc-glow-pulse-blue {
 
     0%,
     100% {

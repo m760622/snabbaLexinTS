@@ -38,12 +38,12 @@
 /* Amethyst Theme */
 [data-quran-theme="amethyst"] {
     --quran-gold: #e879f9;
-    /* Light Purple/Pink */
+    /* Light blue/Pink */
     --quran-gold-glow: rgba(232, 121, 249, 0.4);
     --quran-green: #581c87;
-    /* Deep Purple */
+    /* Deep blue */
     --quran-green-light: #3b82f6;
-    /* Purple */
+    /* blue */
     --bg-gradient: radial-gradient(circle at top right, #6b21a8, #3b0764, #000000);
 }
 

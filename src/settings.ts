@@ -311,14 +311,15 @@ const UIController = {
         });
 
         // Language Selector
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+        const langCards = document.querySelectorAll('.lang-card-premium');
+        langCards.forEach(card => {
+            card.addEventListener('click', () => {
                 // Update UI
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                langCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
 
                 // Get selected language
-                const lang = btn.getAttribute('data-lang') as Language;
+                const lang = card.getAttribute('data-lang') as Language;
 
                 // Apply language change
                 LanguageManager.setLanguage(lang);
@@ -334,8 +335,12 @@ const UIController = {
 
         // Load saved language on init
         const savedLang = LanguageManager.getLanguage();
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.getAttribute('data-lang') === savedLang);
+        langCards.forEach(card => {
+            if (card.getAttribute('data-lang') === savedLang) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
         });
 
         // Sound Effects

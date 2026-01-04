@@ -294,8 +294,8 @@ textarea,
   --border: rgba(34, 197, 94, 0.2);
 }
 
-/* Purple Haze Theme */
-[data-color-theme="purple"] {
+/* blue Haze Theme */
+[data-color-theme="blue"] {
   --primary: #3b82f6;
   --primary-hover: #c084fc;
   --accent: #3b82f6;
@@ -4540,7 +4540,7 @@ h1 {
   /* Responsive font size */
   font-weight: 800;
   color: var(--primary);
-  /* Purple color */
+  /* blue color */
   margin-bottom: 1rem;
   /* Breathing room */
   letter-spacing: 0;
@@ -9289,7 +9289,7 @@ html:not([data-theme="dark"]) #nextQuestion:hover {
 }
 
 /* Icon color utilities */
-.icon-color-purple {
+.icon-color-blue {
   color: #1d4ed8;
 }
 
@@ -9305,7 +9305,7 @@ html:not([data-theme="dark"]) #nextQuestion:hover {
   color: #dc2626;
 }
 
-.icon-color-violet {
+.icon-color-blue {
   color: #1d4ed8;
 }
 
@@ -9329,7 +9329,7 @@ html:not([data-theme="dark"]) #nextQuestion:hover {
   color: #64748b;
 }
 
-.icon-color-purple-light {
+.icon-color-blue-light {
   color: #3b82f6;
 }
 

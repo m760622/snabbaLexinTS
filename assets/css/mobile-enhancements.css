@@ -188,7 +188,7 @@ body:not(.desktop-explicit) {
 
     /* Soothing accent colors */
     --accent-calm-blue: #4facfe;
-    --accent-calm-purple: #9f7aea;
+    --accent-calm-blue: #9f7aea;
     --accent-calm-teal: #38b2ac;
     --accent-success: #48bb78;
     --accent-warning: #f6ad55;
@@ -1053,7 +1053,7 @@ button {
 }
 
 .tour-next {
-    background: linear-gradient(135deg, var(--accent-calm-blue), var(--accent-calm-purple));
+    background: linear-gradient(135deg, var(--accent-calm-blue), var(--accent-calm-blue));
     border: none;
     color: white;
     padding: 0.6rem 1.25rem;

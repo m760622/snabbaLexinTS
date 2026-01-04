@@ -527,7 +527,7 @@
     font-size: 1.25rem;
 }
 
-.gradient-purple {
+.gradient-blue {
     background: linear-gradient(135deg, #4a4d9c, #5c4a8a);
 }
 
@@ -2265,4 +2265,135 @@ body:not(.dark-mode) .toast-notification {
 .voice-btn.active {
     background: var(--settings-primary);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}/* ============================================================
+   LANGUAGE SELECTOR (PREMIUM)
+   ============================================================ */
+.language-selection-container {
+    padding: 10px 0;
+}
+
+.settings-subtitle {
+    font-size: 0.9rem;
+    color: var(--settings-text-secondary);
+    margin: 0 0 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.language-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.lang-card-premium {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--settings-border);
+    border-radius: 16px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.lang-card-premium:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.lang-card-premium.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+    border-color: var(--settings-primary);
+    box-shadow: 0 0 0 1px var(--settings-primary), 0 10px 25px rgba(37, 99, 235, 0.25);
+}
+
+.lang-flag-large {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.lang-card-premium:hover .lang-flag-large {
+    transform: scale(1.1);
+}
+
+.lang-name-large {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--settings-text);
+}
+
+.lang-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background: var(--settings-primary);
+    border-radius: 50%;
+    color: white;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+}
+
+.lang-card-premium.active .lang-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Quick Menu Language Buttons */
+.menu-lang-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-lang-btn:hover {
+    transform: translateY(-2px);
+    background: var(--bg-hover);
+}
+
+.menu-lang-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+    .language-grid-premium {
+        gap: 10px;
+    }
+
+    .lang-card-premium {
+        padding: 15px 5px;
+    }
+
+    .lang-flag-large {
+        font-size: 2rem;
+    }
+
+    .lang-name-large {
+        font-size: 0.9rem;
+    }
 }

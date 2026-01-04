@@ -4,7 +4,7 @@
 :root {
     /* Premium Color Palette */
     --primary: #1d4ed8;
-    /* Violet-500 */
+    /* blue-500 */
     --primary-glow: rgba(30, 58, 138, 0.5);
     --secondary: #ec4899;
     /* Pink-500 */
@@ -1014,7 +1014,7 @@ header {
 /* --- Unified Header Buttons (Mobile & Restart) --- */
 .restart-btn {
     background: rgba(168, 85, 247, 0.15);
-    /* Purple Tint */
+    /* blue Tint */
     border: 1px solid rgba(168, 85, 247, 0.3);
     color: #d8b4fe;
     width: 42px;

@@ -32,7 +32,7 @@ class ConfettiManager {
         '#DDA0DD', // Plum
         '#98D8C8', // Seafoam
         '#F7DC6F', // Sunflower
-        '#BB8FCE', // Light Purple
+        '#BB8FCE', // Light blue
     ];
 
     init(): void {

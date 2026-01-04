@@ -895,7 +895,7 @@
 .word-type-badge.type-adj,
 .word-type-badge.grammar-adj {
     color: #3b82f6 !important;
-    /* Purple */
+    /* blue */
     border-color: #3b82f6 !important;
 }
 
@@ -951,7 +951,7 @@
 .word-type-badge.type-rel,
 .word-type-badge.grammar-rel {
     color: #7c3aed !important;
-    /* Violet */
+    /* blue */
     border-color: #7c3aed !important;
 }
 
@@ -1402,7 +1402,7 @@
     border-color: rgba(59, 130, 246, 0.4);
 }
 
-/* Ett-words (neutrum) - Purple theme */
+/* Ett-words (neutrum) - blue theme */
 .gender-badge.gender-ett {
     background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(30, 64, 175, 0.2) 100%);
     color: #f3e8ff;
@@ -4601,20 +4601,20 @@ body .quiz-options {
     width: 100% !important;
 }
 
-.mini-quiz-opt.icon-color-purple {
+.mini-quiz-opt.icon-color-blue {
     color: #1e3a8a !important;
     background: rgba(30, 58, 138, 0.1);
 }
 
-.text-purple-600 {
+.text-blue-600 {
     color: #1e3a8a !important;
 }
 
-.bg-purple-100 {
+.bg-blue-100 {
     background-color: #dbeafe !important;
 }
 
-.bg-purple-600 {
+.bg-blue-600 {
     background-color: #1e3a8a !important;
 }
 
@@ -5926,7 +5926,7 @@ body .quiz-options {
     border-color: rgba(13, 148, 136, 0.3);
 }
 
-/* Purple */
+/* blue */
 .flashcard-clean.glow-default {
     box-shadow: 0 4px 25px rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
@@ -6804,16 +6804,16 @@ body .quiz-options {
     border: 1px solid rgba(13, 148, 136, 0.5);
 }
 
-/* Adjective - Purple Glow with Gentle Shimmer */
+/* Adjective - blue Glow with Gentle Shimmer */
 .flashcard-pro.glow-adjective {
     box-shadow:
         0 0 30px rgba(13, 148, 136, 0.4),
         0 0 60px rgba(13, 148, 136, 0.2),
         0 8px 32px rgba(0, 0, 0, 0.3);
-    animation: fc-glow-pulse-purple 5s ease-in-out infinite;
+    animation: fc-glow-pulse-blue 5s ease-in-out infinite;
 }
 
-@keyframes fc-glow-pulse-purple {
+@keyframes fc-glow-pulse-blue {
 
     0%,
     100% {
@@ -8211,7 +8211,7 @@ body .quiz-options {
         radial-gradient(circle at bottom left, rgba(21, 128, 61, 0.1), transparent 70%);
 }
 
-/* Religion - Violet */
+/* Religion - blue */
 .glow-religion,
 .details-hero.type-religion {
     --glow-color: #7c3aed;

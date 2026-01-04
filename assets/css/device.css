@@ -9,7 +9,7 @@
     --warning: #f59e0b;
     --error: #ef4444;
     --cyan: #06b6d4;
-    --purple: #3b82f6;
+    --blue: #3b82f6;
     --pink: #ec4899;
 }
 
@@ -391,7 +391,7 @@ main {
 
 .storage-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--purple));
+    background: linear-gradient(90deg, var(--primary), var(--blue));
     border-radius: 4px;
     width: 0;
 }
@@ -532,7 +532,7 @@ body.iphone-view::before {
 
 /* Refresh Button */
 .refresh-btn {
-    background: linear-gradient(135deg, var(--primary), var(--purple));
+    background: linear-gradient(135deg, var(--primary), var(--blue));
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 12px;

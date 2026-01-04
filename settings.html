@@ -135,10 +135,49 @@
         <!-- Settings Sections -->
         <div class="settings-sections">
 
+            <!-- General Section (Language) -->
+            <section class="settings-section glass-card expanded" data-section="general">
+                <div class="section-header" onclick="toggleSection('general')">
+                    <div class="section-icon gradient-amber">🌍</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title"><span class="sv-text">Allmänt</span><span class="ar-text">عام</span>
+                        </h3>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="general-content">
+                    <!-- Language Selector (Premium Cards) -->
+                    <div class="language-selection-container">
+                        <h4 class="settings-subtitle"><span class="sv-text">Välj Språk</span><span class="ar-text">اختر
+                                اللغة</span></h4>
+                        <div class="language-grid-premium" id="languageSelector">
+                            <button class="lang-card-premium" data-lang="sv">
+                                <span class="lang-flag-large">🇸🇪</span>
+                                <span class="lang-name-large">Svenska</span>
+                                <span class="lang-check">✓</span>
+                            </button>
+                            <button class="lang-card-premium" data-lang="ar">
+                                <span class="lang-flag-large">🇸🇦</span>
+                                <span class="lang-name-large">العربية</span>
+                                <span class="lang-check">✓</span>
+                            </button>
+                            <button class="lang-card-premium" data-lang="both">
+                                <span class="lang-flag-large">🌍</span>
+                                <span class="lang-name-large"><span class="sv-text">Båda</span><span
+                                        class="ar-text">كلتا</span></span>
+                                <span class="lang-check">✓</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Appearance Section -->
             <section class="settings-section glass-card" data-section="appearance">
                 <div class="section-header" onclick="toggleSection('appearance')">
-                    <div class="section-icon gradient-purple">🎨</div>
+                    <div class="section-icon gradient-blue">🎨</div>
                     <div class="section-title-wrapper">
                         <h3 class="section-title"><span class="sv-text">Utseende</span><span
                                 class="ar-text">المظهر</span></h3>
@@ -232,31 +271,6 @@
                             <input type="checkbox" id="animationsToggle" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                    </div>
-
-                    <!-- Language Selector -->
-                    <div class="settings-item language-selector-item">
-                        <div class="item-left">
-                            <span class="item-icon">🌐</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Språk</span><span
-                                        class="ar-text">اللغة</span></span>
-                            </div>
-                        </div>
-                        <div class="language-selector" id="languageSelector">
-                            <button class="lang-btn" data-lang="sv" title="Svenska">
-                                <span class="lang-flag">🇸🇪</span>
-                                <span class="lang-name">SV</span>
-                            </button>
-                            <button class="lang-btn" data-lang="ar" title="العربية">
-                                <span class="lang-flag">🇸🇦</span>
-                                <span class="lang-name">AR</span>
-                            </button>
-                            <button class="lang-btn active" data-lang="both" title="Båda / كلتا">
-                                <span class="lang-flag">🌍</span>
-                                <span class="lang-name">🔀</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </section>

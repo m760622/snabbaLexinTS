@@ -45,6 +45,17 @@ export function generateSettingsMenuHTML(): string {
             <span>Min Profil / ملفي</span>
         </a>
 
+        <!-- Section: General (Language) -->
+        <div class="settings-section-header">🌍 <span class="sv-text">Språk</span><span class="ar-text">اللغة</span></div>
+
+        <div class="menu-item language-selector-menu">
+            <div class="voice-selector-inline">
+                <button class="menu-lang-btn" data-lang="sv" title="Svenska">🇸🇪</button>
+                <button class="menu-lang-btn" data-lang="ar" title="العربية">🇸🇦</button>
+                <button class="menu-lang-btn" data-lang="both" title="Båda / كلتا">🌍</button>
+            </div>
+        </div>
+
         <!-- Section: Appearance -->
         <div class="settings-section-header">🎨 <span class="sv-text">Utseende</span><span class="ar-text">المظهر</span></div>
 
@@ -263,6 +274,30 @@ function initSettingsMenuHandlers(): void {
             document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             localStorage.setItem('ttsVoice', (btn as HTMLElement).dataset.voice || 'natural');
+        });
+    });
+
+    // Language buttons (New)
+    document.querySelectorAll('.menu-lang-btn').forEach(btn => {
+        // Set active state
+        if (btn.getAttribute('data-lang') === (localStorage.getItem('appLanguage') || 'both')) {
+            btn.classList.add('active');
+        }
+
+        btn.addEventListener('click', () => {
+            const lang = btn.getAttribute('data-lang') || 'both';
+            document.querySelectorAll('.menu-lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Import LanguageManager dynamically if needed or assume it's available via window
+            // For now, we'll reload to apply changes simply, or try to use the global if available
+            localStorage.setItem('appLanguage', lang);
+
+            if ((window as any).LanguageManager) {
+                (window as any).LanguageManager.setLanguage(lang);
+            } else {
+                location.reload();
+            }
         });
     });
 }

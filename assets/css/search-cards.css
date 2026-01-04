@@ -155,7 +155,7 @@
 .type-adj,
 .type-adjective {
     color: #3b82f6 !important;
-    /* Purple */
+    /* blue */
     border-color: #3b82f6 !important;
 }
 
@@ -220,7 +220,7 @@
 .type-religion,
 .type-rel {
     color: #7c3aed !important;
-    /* Violet */
+    /* blue */
     border-color: #7c3aed !important;
 }
 
@@ -346,7 +346,7 @@
     --glow-color: #dc2626;
 }
 
-/* Adjectives - Purple */
+/* Adjectives - blue */
 .card.compact-card[data-type="adj"],
 .card.compact-card[data-type="adjective"] {
     --glow-color: #3b82f6;
@@ -391,7 +391,7 @@
     --glow-color: #15803d;
 }
 
-/* Religion - Violet */
+/* Religion - blue */
 .card.compact-card[data-type="religion"],
 .card.compact-card[data-type="rel"] {
     --glow-color: #7c3aed;

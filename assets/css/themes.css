@@ -3,7 +3,7 @@
  * Extracted from index.html inline styles
  */
 
-/* Dark Blue Theme (was Purple) */
+/* Dark Blue Theme (was blue) */
 [data-color-theme="darkblue"] {
     --primary: #1e3a8a;
     --primary-hover: #1e40af;
