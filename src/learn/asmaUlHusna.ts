@@ -775,12 +775,20 @@ function startFlashcards(): void {
     currentFlashcardIndex = 0;
     isFlashcardFlipped = false;
 
-    document.getElementById('flashcardModal')?.classList.add('active');
+    const modal = document.getElementById('flashcardModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+    }
     renderFlashcard();
 }
 
 function closeFlashcards(): void {
-    document.getElementById('flashcardModal')?.classList.remove('active');
+    const modal = document.getElementById('flashcardModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
 }
 
 function renderFlashcard(): void {
