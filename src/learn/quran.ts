@@ -155,6 +155,13 @@ class QuranManager {
                     this.nextQuizQuestion();
                     document.getElementById('filterBar')?.classList.add('hidden');
                 }
+            },
+            'quiz-fill': {
+                viewId: 'quizFillView',
+                onActivate: () => {
+                    this.initFillQuiz();
+                    document.getElementById('filterBar')?.classList.add('hidden');
+                }
             }
         });
     }
@@ -920,9 +927,18 @@ class QuranManager {
         if (scoreEl) scoreEl.textContent = this.quizScore.toString();
         if (streakEl) streakEl.textContent = this.quizStreak.toString();
     }
+
+    private initFillQuiz() {
+        console.log("Fill quiz initialized");
+    }
 }
+
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     new QuranManager();
 });
+
+
+
+// Fill-in-Blank Quiz State

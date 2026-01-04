@@ -13,7 +13,7 @@
     <link rel="manifest" href="/assets/manifest-mLlvNCWw.json">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#064e3b" media="(prefers-color-scheme: dark)">
-  <script type="module" crossorigin src="/assets/learn-quran-DejYOz-0.js"></script>
+  <script type="module" crossorigin src="/assets/learn-quran-ClPdkEh_.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-CfsGp8IC.js">
@@ -21,7 +21,7 @@
   <link rel="modulepreload" crossorigin href="/assets/quiz-stats-BL77K9JB.js">
   <link rel="modulepreload" crossorigin href="/assets/i18n-BpwFYk4h.js">
   <link rel="modulepreload" crossorigin href="/assets/LearnViewManager-RsT_Dh_9.js">
-  <link rel="stylesheet" crossorigin href="/assets/learn-quran-LgtFLHSQ.css">
+  <link rel="stylesheet" crossorigin href="/assets/learn-quran-CnWOvqyz.css">
   <link rel="stylesheet" crossorigin href="/assets/games-Du1lcSYY.css">
 </head>
 
@@ -53,6 +53,10 @@
             </button>
             <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard" title="Flashcards / بطاقات">
                 <span class="mode-icon">🗂️</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('quiz-fill')" id="btn-quiz-fill"
+                title="Fyll i luckan / أكمل الفراغ">
+                <span class="mode-icon">✏️</span>
             </button>
             <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz" title="Quiz / اختبار">
                 <span class="mode-icon">❓</span>
@@ -296,7 +300,70 @@
             </div>
         </div>
     </div>
+<!-- Fill-in-Blank Quiz View -->
+<div id="quizFillView" class="view-section hidden">
+    <div class="quiz-fill-container">
+        <div class="quiz-fill-header">
+            <div class="quiz-fill-progress">
+                <span class="sv-text">Fråga</span><span class="ar-text">سؤال</span>
+                <span id="fillCurrentQ">1</span> / <span id="fillTotalQ">10</span>
+            </div>
+            <div class="quiz-fill-score">
+                <span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span>
+                <span id="fillScore">0</span>
+            </div>
+        </div>
 
+        <div class="quiz-fill-question" id="fillQuestionCard">
+            <div class="fill-ayah-context" id="fillAyahContext">
+                <div class="fill-ayah-arabic" id="fillAyahArabic">...</div>
+                <div class="fill-ayah-translation" id="fillAyahTranslation">...</div>
+            </div>
+
+            <div class="fill-question-text">
+                <span class="sv-text">Vad betyder det markerade ordet?</span>
+                <span class="ar-text">ما معنى الكلمة المحددة؟</span>
+            </div>
+
+            <div class="fill-word-highlight" id="fillTargetWord">...</div>
+        </div>
+
+        <div class="quiz-fill-options" id="fillOptions">
+            <!-- Options will be generated dynamically -->
+        </div>
+
+        <div class="quiz-fill-feedback" id="fillFeedback" style="display: none;">
+            <div class="feedback-content"></div>
+            <button class="fill-next-btn" id="fillNextBtn">
+                <span class="sv-text">Nästa</span>
+                <span class="ar-text">التالي</span> →
+            </button>
+        </div>
+
+        <div class="quiz-fill-results" id="fillResults" style="display: none;">
+            <h2>
+                <span class="sv-text">Quiz Slutförd!</span>
+                <span class="ar-text">انتهى الاختبار!</span>
+            </h2>
+            <div class="results-score">
+                <div class="score-circle">
+                    <span id="fillFinalScore">0</span>/<span id="fillFinalTotal">10</span>
+                </div>
+                <div class="score-percentage" id="fillPercentage">0%</div>
+            </div>
+            <div class="results-actions">
+                <button class="result-btn primary" onclick="switchMode('quiz-fill')">
+                    <span class="sv-text">Försök igen</span>
+                    <span class="ar-text">حاول مرة أخرى</span>
+                </button>
+                <button class="result-btn secondary" onclick="switchMode('browse')">
+                    <span class="sv-text">Tillbaka</span>
+                    <span class="ar-text">رجوع</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal hidden">
         <div class="modal-content settings-content">
