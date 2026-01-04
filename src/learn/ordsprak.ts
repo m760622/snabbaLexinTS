@@ -1109,6 +1109,8 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ========== AUDIO PLAYER LOGIC ==========
 
+let repeatCount = 1; // Number of times to repeat each proverb
+
 function togglePlay() {
     if (isPlaying) {
         stopAudio();
@@ -1121,10 +1123,6 @@ function startAudio() {
     isPlaying = true;
 
     // Prepare queue (use current filtered list or all)
-    // For now, let's play ALL proverbs or Saved if in saved mode (though mode isn't strictly tracked globally same way as Asma).
-    // Let's use PROVERBS or savedProverbs based on a simple check or just PROVERBS for now.
-    // If flashcardMode is 'saved', use savedProverbs.
-
     audioQueue = flashcardMode === 'saved' ? savedProverbs.map(id => PROVERBS.find(p => p.id === id)!).filter(Boolean) : [...PROVERBS];
 
     // If queue empty, abort
@@ -1153,7 +1151,16 @@ function closeAudioPlayer() {
     document.getElementById('audioPlayer')?.classList.add('hidden');
 }
 
-function playNext() {
+function playCurrentAudio(repetitionIndex: number = 0) {
+    if (!isPlaying || audioQueue.length === 0) return;
+
+    const proverb = audioQueue[currentAudioIndex];
+    if (!proverb) return;
+
+    updatePlayerUI();
+
+    // Speak Swedish first
+    const uSv = new SpeechSynthesisUtterance(proverb.swedishProverb);
     uSv.lang = 'sv-SE';
     uSv.rate = playbackSpeed;
 
@@ -1188,7 +1195,63 @@ function playNext() {
     speechSynthesis.speak(uSv);
 }
 
-// ... (previous functions)
+function playNext() {
+    if (currentAudioIndex < audioQueue.length - 1) {
+        currentAudioIndex++;
+    } else {
+        currentAudioIndex = 0; // Loop back to start
+    }
+    updatePlayerUI();
+    playCurrentAudio();
+}
+
+function playPrev() {
+    if (currentAudioIndex > 0) {
+        currentAudioIndex--;
+    } else {
+        currentAudioIndex = audioQueue.length - 1; // Loop to end
+    }
+    updatePlayerUI();
+    playCurrentAudio();
+}
+
+function updatePlayerUI() {
+    const playBtn = document.getElementById('playPauseBtn');
+    const titleSv = document.getElementById('playerTitleSv');
+    const titleAr = document.getElementById('playerTitleAr');
+
+    if (playBtn) {
+        playBtn.textContent = isPlaying ? '❚❚' : '▶';
+    }
+
+    const proverb = audioQueue[currentAudioIndex];
+    if (proverb) {
+        if (titleSv) titleSv.textContent = proverb.swedishProverb;
+        if (titleAr) titleAr.textContent = proverb.arabicEquivalent;
+    }
+}
+
+function toggleSpeed() {
+    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5];
+    const currentIndex = speeds.indexOf(playbackSpeed);
+    playbackSpeed = speeds[(currentIndex + 1) % speeds.length];
+
+    const btn = document.getElementById('speedBtn');
+    if (btn) {
+        btn.textContent = `${playbackSpeed}x`;
+    }
+}
+
+function togglePlayerRepeat() {
+    const counts = [1, 2, 3];
+    const currentIndex = counts.indexOf(repeatCount);
+    repeatCount = counts[(currentIndex + 1) % counts.length];
+
+    const btn = document.getElementById('playerRepeatBtn');
+    if (btn) {
+        btn.textContent = `↻ ${repeatCount}x`;
+    }
+}
 
 function playProverb(id: number) {
     // Ensure player is visible and playing
@@ -1197,16 +1260,11 @@ function playProverb(id: number) {
     if (player) player.classList.remove('hidden');
 
     // Find and set index
-    // If audioQueue is empty or filtered mismatch, we might need to reset it or find from PROVERBS
-    // For now, assume audioQueue is active list.
     let idx = audioQueue.findIndex(p => p.id === id);
     if (idx === -1) {
-        // Fallback: search in PROVERBS and force queue reset?
-        // Or just don't play if not in current filter?
-        // Let's force play from all proverbs to be safe
         const p = PROVERBS.find(x => x.id === id);
         if (p) {
-            audioQueue = PROVERBS; // Reset to full if not found (e.g. mixed mode)
+            audioQueue = [...PROVERBS];
             currentAudioIndex = PROVERBS.findIndex(x => x.id === id);
         }
     } else {
@@ -1224,5 +1282,4 @@ window.playPrev = playPrev;
 window.closeAudioPlayer = closeAudioPlayer;
 window.toggleSpeed = toggleSpeed;
 window.togglePlayerRepeat = togglePlayerRepeat;
-(window as any).playProverb = playProverb; // Explicitly add this
-
+(window as any).playProverb = playProverb;
