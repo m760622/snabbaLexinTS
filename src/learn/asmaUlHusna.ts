@@ -941,7 +941,7 @@ function renderQuizQuestion(): void {
         </div>
         <div class="quiz-options">
             ${shuffledOptions.map(opt => `
-                <button class="quiz-option" onclick="checkAnswer(${opt.nr}, ${question.nr}, this)">
+                <button class="quiz-option" data-nr="${opt.nr}" onclick="checkAnswer(${opt.nr}, ${question.nr}, this)">
                     ${opt.meaningSv} (${opt.meaningAr})
                 </button>
             `).join('')}
@@ -963,10 +963,10 @@ function checkAnswer(selectedNr: number, correctNr: number, btn: HTMLElement): v
     } else {
         btn.classList.add('wrong');
         // Highlight correct answer
-        // Note: Logic to find the button with the correct answer needs to be robust
-        // Here we can't easily select by data attribute as we didn't add it to buttons, 
-        // relying on the click handler closure is simpler but visual feedback is key.
-        // Let's just proceed. 
+        const correctBtn = document.querySelector(`.quiz-option[data-nr="${correctNr}"]`);
+        if (correctBtn) {
+            correctBtn.classList.add('correct');
+        }
     }
 
     // Wait and go to next
