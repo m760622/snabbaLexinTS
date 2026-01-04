@@ -12483,3 +12483,197 @@ body.lang-ar .sv-text {
 .stroke-red {
   stroke: #ef4444;
 }
+
+/* =========================================
+   SHARED AUDIO PLAYER COMPONENT
+   ========================================= */
+.audio-player-bar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 50px;
+  padding: 0.8rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 90%;
+  max-width: 500px;
+}
+
+.audio-player-bar.hidden {
+  bottom: -150px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.audio-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.audio-name-ar {
+  color: #fbbf24;
+  font-family: 'Amiri', serif;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.audio-name-sv {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.audio-names-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audio-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #e2e8f0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+.audio-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  color: #fbbf24;
+}
+
+.audio-btn:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.audio-btn.play-pause {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+  width: 56px;
+  height: 56px;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.audio-btn.play-pause:hover {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 12px 25px rgba(251, 191, 36, 0.3);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.speed-btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: auto;
+  min-width: 44px;
+  border-radius: 16px;
+  padding: 0 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.player-close-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 25px;
+  height: 25px;
+  background: rgba(239, 68, 68, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 1002;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.player-close-btn:hover {
+  transform: scale(1.1);
+  background: #ef4444;
+}
+
+@media (max-width: 600px) {
+  .audio-player-bar {
+    width: 95%;
+    padding: 1rem 0.5rem;
+    gap: 0.8rem;
+    bottom: 5rem;
+    /* Raised to avoid bottom nav/border overlap */
+    flex-direction: column;
+    border-radius: 20px;
+    align-items: center;
+  }
+
+  .audio-info {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    order: -1;
+    /* Ensure text is above controls */
+  }
+
+  .audio-names-row {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .audio-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+    /* Wider gap for easier tapping */
+  }
+
+  .player-close-btn {
+    top: -12px;
+    right: -5px;
+    width: 30px;
+    /* Larger hit target */
+    height: 30px;
+    font-size: 1.2rem;
+  }
+}

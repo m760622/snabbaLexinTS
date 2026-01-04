@@ -1,8 +1,14 @@
 // Ordspråk - Swedish Proverbs Learning Module
 import ordsprakData from '../data/ordsprak.json';
 import { TTSManager } from '../tts';
+import LanguageManager from '../i18n';
 
 console.log('[Ordspråk] Module loaded');
+
+// Initialize Language Manager
+if (LanguageManager) {
+    LanguageManager.init();
+}
 
 // ========== TYPES ==========
 interface Proverb {
@@ -34,6 +40,14 @@ declare global {
         checkFillBlankAnswer: (selected: string, correct: string, btn: HTMLElement) => void;
         toggleMobileView: () => void;
         flipCard: () => void;
+        startAllFlashcards: () => void;
+        startSavedFlashcards: () => void;
+        togglePlay: () => void;
+        playNext: () => void;
+        playPrev: () => void;
+        closeAudioPlayer: () => void;
+        toggleSpeed: () => void;
+        togglePlayerRepeat: () => void;
     }
 }
 
@@ -55,6 +69,13 @@ let flashcardDeck: Proverb[] = [];
 let flashcardIndex = 0;
 let isFlashcardFlipped = false;
 let flashcardMode: 'all' | 'saved' = 'all';
+
+// Audio Player State
+let isPlaying = false;
+let currentAudioIndex = 0;
+let playbackSpeed = 1.0;
+let audioQueue: Proverb[] = []; // Queue to play
+let currentAudioTimeout: any = null;
 
 // ... (existing code) ...
 
@@ -1085,3 +1106,123 @@ function showMatchingResults() {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', init);
+
+// ========== AUDIO PLAYER LOGIC ==========
+
+function togglePlay() {
+    if (isPlaying) {
+        stopAudio();
+    } else {
+        startAudio();
+    }
+}
+
+function startAudio() {
+    isPlaying = true;
+
+    // Prepare queue (use current filtered list or all)
+    // For now, let's play ALL proverbs or Saved if in saved mode (though mode isn't strictly tracked globally same way as Asma).
+    // Let's use PROVERBS or savedProverbs based on a simple check or just PROVERBS for now.
+    // If flashcardMode is 'saved', use savedProverbs.
+
+    audioQueue = flashcardMode === 'saved' ? savedProverbs.map(id => PROVERBS.find(p => p.id === id)!).filter(Boolean) : [...PROVERBS];
+
+    // If queue empty, abort
+    if (audioQueue.length === 0) return;
+
+    // Show player
+    const player = document.getElementById('audioPlayer');
+    if (player) player.classList.remove('hidden');
+
+    updatePlayerUI();
+    playCurrentAudio();
+}
+
+function stopAudio() {
+    isPlaying = false;
+    if (currentAudioTimeout) {
+        clearTimeout(currentAudioTimeout);
+        currentAudioTimeout = null;
+    }
+    speechSynthesis.cancel();
+    updatePlayerUI();
+}
+
+function closeAudioPlayer() {
+    stopAudio();
+    document.getElementById('audioPlayer')?.classList.add('hidden');
+}
+
+function playNext() {
+    uSv.lang = 'sv-SE';
+    uSv.rate = playbackSpeed;
+
+    uSv.onend = () => {
+        if (!isPlaying) return;
+        // Delay then speak Arabic
+        currentAudioTimeout = setTimeout(() => {
+            const uAr = new SpeechSynthesisUtterance(proverb.arabicEquivalent);
+            uAr.lang = 'ar-SA';
+            uAr.rate = playbackSpeed;
+
+            uAr.onend = () => {
+                if (!isPlaying) return;
+
+                // Repetition Logic
+                if (repetitionIndex + 1 < repeatCount) {
+                    currentAudioTimeout = setTimeout(() => {
+                        playCurrentAudio(repetitionIndex + 1);
+                    }, 1000);
+                } else {
+                    // Delay then Next
+                    currentAudioTimeout = setTimeout(() => {
+                        playNext();
+                    }, 1500);
+                }
+            };
+
+            speechSynthesis.speak(uAr);
+        }, 500);
+    };
+
+    speechSynthesis.speak(uSv);
+}
+
+// ... (previous functions)
+
+function playProverb(id: number) {
+    // Ensure player is visible and playing
+    isPlaying = true;
+    const player = document.getElementById('audioPlayer');
+    if (player) player.classList.remove('hidden');
+
+    // Find and set index
+    // If audioQueue is empty or filtered mismatch, we might need to reset it or find from PROVERBS
+    // For now, assume audioQueue is active list.
+    let idx = audioQueue.findIndex(p => p.id === id);
+    if (idx === -1) {
+        // Fallback: search in PROVERBS and force queue reset?
+        // Or just don't play if not in current filter?
+        // Let's force play from all proverbs to be safe
+        const p = PROVERBS.find(x => x.id === id);
+        if (p) {
+            audioQueue = PROVERBS; // Reset to full if not found (e.g. mixed mode)
+            currentAudioIndex = PROVERBS.findIndex(x => x.id === id);
+        }
+    } else {
+        currentAudioIndex = idx;
+    }
+
+    playCurrentAudio();
+    updatePlayerUI();
+}
+
+// Assign to window
+window.togglePlay = togglePlay;
+window.playNext = playNext;
+window.playPrev = playPrev;
+window.closeAudioPlayer = closeAudioPlayer;
+window.toggleSpeed = toggleSpeed;
+window.togglePlayerRepeat = togglePlayerRepeat;
+(window as any).playProverb = playProverb; // Explicitly add this
+

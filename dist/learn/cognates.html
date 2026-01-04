@@ -12,28 +12,43 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@400;600;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/cognates-BwCqpXAW.js"></script>
+  <script type="module" crossorigin src="/assets/cognates-C2xaDAMD.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-CfZZetlp.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
   <link rel="modulepreload" crossorigin href="/assets/utils-CfsGp8IC.js">
   <link rel="modulepreload" crossorigin href="/assets/i18n-BpwFYk4h.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bn3RWWLO.js">
-  <link rel="stylesheet" crossorigin href="/assets/cognates-BIWq7703.css">
-  <link rel="stylesheet" crossorigin href="/assets/style-DkTqzrlV.css">
+  <link rel="stylesheet" crossorigin href="/assets/cognates-DkTDyMvp.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-B35Zjaxv.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-BPUAZqZA.css">
 </head>
 
 <body>
     <header>
-        <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
-            title="Tillbaka / رجوع">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-        </button>
-        <h1><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span></h1>
+        <div class="header-top">
+            <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
+                title="Tillbaka / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+                title="Mobilvy / عرض الجوال">📱</button>
+            <h1><span class="sv-text">Liknande Ord</span><span class="ar-text">المتشابهات</span></h1>
+        </div>
+        <!-- Mode Tabs moved here -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
+                    class="ar-text">تصفح</span></button>
+            <button class="mode-tab" onclick="switchMode('flashcard')">🂴 <span class="sv-text">Flashcards</span><span
+                    class="ar-text">بطاقات</span></button>
+            <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
+            <button class="mode-tab" onclick="switchMode('quiz')">📝 <span class="sv-text">Quiz</span><span
+                    class="ar-text">اختبار</span></button>
+        </div>
     </header>
 
     <!-- Stats Bar -->
@@ -46,35 +61,25 @@
                 class="ar-text">سلسلة</span></div>
     </div>
 
-    <!-- Mode Tabs -->
-    <div class="mode-tabs">
-        <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
-                class="ar-text">تصفح</span></button>
-        <button class="mode-tab" onclick="switchMode('flashcard')">🂴 <span class="sv-text">Flashcards</span><span
-                class="ar-text">بطاقات</span></button>
-        <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
-        <button class="mode-tab" onclick="startQuiz()">📝 <span class="sv-text">Quiz</span><span
-                class="ar-text">اختبار</span></button>
-    </div>
-
     <main>
-        <div class="intro-text">
-            <p><span class="sv-text">Ord som låter lika på svenska och arabiska. Klicka för att lyssna!</span><span
-                    class="ar-text">كلمات متشابهة بين السويدية والعربية. اضغط للاستماع!</span> 🔊</p>
-        </div>
-
         <!-- Browse View -->
         <div class="browse-view" id="browseView">
-            <div class="search-container">
+            <div class="search-row">
                 <input type="text" id="searchInput" placeholder="Sök ord / ابحث...">
+                <button class="filter-toggle-btn" id="filterToggle" onclick="toggleFilters()" title="Filtrera / تصفية">
+                    🔽
+                </button>
             </div>
 
-            <div class="filter-chips" id="filterChips"></div>
+            <div class="filter-chips collapsed" id="filterChips"></div>
             <div id="content"></div>
         </div>
 
         <!-- Flashcard View -->
         <div class="flashcard-container" id="flashcardView">
+            <!-- Filter chips for flashcards -->
+            <div class="fc-filter-chips" id="fcFilterChips"></div>
+
             <div class="flashcard-progress">
                 <div class="progress-text"><span id="fcCurrent">0</span> / <span id="fcTotal">0</span></div>
                 <div class="progress-bar">
@@ -103,25 +108,26 @@
                         det!</span><span class="ar-text">أعرفها!</span></button>
             </div>
         </div>
-    </main>
 
-    <!-- Quiz Modal -->
-    <div id="quizModal" class="quiz-modal">
-        <button class="close-modal" onclick="closeQuiz()">×</button>
-        <div class="quiz-container" id="quizContent"></div>
-    </div>
-
-    <!-- Saved Words Modal -->
-    <div id="savedModal" class="saved-modal" onclick="closeSavedModal(event)">
-        <div class="saved-content" onclick="event.stopPropagation()">
-            <div class="saved-header">
-                <h2>⭐ <span class="sv-text">Sparade ord</span><span class="ar-text">الكلمات المحفوظة</span></h2>
-                <button class="close-modal close-modal-static" onclick="closeSavedModal()">×</button>
-            </div>
-            <div class="saved-list" id="savedList">
-            </div>
+        <!-- Quiz View (inline like flashcards) -->
+        <div class="quiz-view" id="quizView">
+            <div class="quiz-container" id="quizContent"></div>
         </div>
-    </div>
+
+        <!-- Saved Words View (inline like flashcards) -->
+        <div class="saved-view" id="savedView">
+            <div class="saved-header-inline">
+                <h2>⭐ <span class="sv-text">Sparade ord</span><span class="ar-text">الكلمات المحفوظة</span></h2>
+            </div>
+            <div class="saved-list" id="savedList"></div>
+        </div>
+
+        <!-- Intro text moved to bottom -->
+        <div class="intro-text">
+            <p><span class="sv-text">Ord som låter lika på svenska och arabiska. Klicka för att lyssna!</span><span
+                    class="ar-text">كلمات متشابهة بين السويدية والعربية. اضغط للاستماع!</span> 🔊</p>
+        </div>
+    </main>
 
 </body>
 

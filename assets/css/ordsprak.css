@@ -148,7 +148,17 @@ header {
     display: flex;
     gap: 0.5rem;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -1rem;
+    padding: 0 1rem 0.5rem 1rem;
+}
+
+.mode-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .mode-tab {
@@ -160,6 +170,8 @@ header {
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.3s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .mode-tab:hover {
@@ -1269,6 +1281,14 @@ body.iphone-view {
     max-width: 430px;
     margin: 0 auto;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Keep audio player within mobile frame */
+body.iphone-view .audio-player-bar {
+    max-width: calc(430px - 2rem);
+    width: calc(100% - 2rem);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* ========== RESPONSIVE ========== */
