@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="sv" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svenska Ordspråk | الأمثال السويدية - SnabbaLexin</title>
+    <meta name="description"
+        content="Lär dig svenska ordspråk med arabiska motsvarigheter. تعلم الأمثال السويدية مع ما يقابلها بالعربية.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/assets/ordsprak-CcNKXGYN.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/tts-CfZZetlp.js">
+  <link rel="modulepreload" crossorigin href="/assets/i18n-BpwFYk4h.js">
+  <link rel="modulepreload" crossorigin href="/assets/pwa-Bn3RWWLO.js">
+  <link rel="stylesheet" crossorigin href="/assets/ordsprak-mU2dZY2a.css">
+  <link rel="stylesheet" crossorigin href="/assets/games-Du1lcSYY.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-BPUAZqZA.css">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="ordsprak-bg-layer"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <header>
+        <div class="header-top">
+            <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع"
+                title="Tillbaka / رجوع">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
+                title="Mobilvy / عرض الجوال">📱</button>
+            <h1><span class="sv-text">Ordspråk</span><span class="ar-text">الأمثال</span></h1>
+        </div>
+        <!-- Mode Tabs -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="switchMode('browse')" title="Bläddra / تصفح">📖</button>
+            <button class="mode-tab" onclick="startAllFlashcards()" title="Flashcards / بطاقات">🂴</button>
+            <button class="mode-tab" onclick="switchMode('quiz-fill')" title="Fyll i luckan / أكمل الفراغ">✏️</button>
+            <button class="mode-tab" onclick="switchMode('quiz-match')" title="Matcha / طابق">🔗</button>
+            <button class="mode-tab" onclick="togglePlay()" title="Spela upp / تشغيل">🔊</button>
+            <button class="mode-tab" onclick="openSavedModal()" title="Sparade / المحفوظات">⭐ <span
+                    id="savedCount">0</span></button>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-chip">📜 <span id="totalProverbs">0</span> <span class="sv-text">ordspråk</span><span
+                class="ar-text">مثل</span></div>
+        <div class="stat-chip learned">✅ <span id="learnedCount">0</span> <span class="sv-text">lärt</span><span
+                class="ar-text">متعلم</span></div>
+        <div class="stat-chip streak">🔥 <span id="streakCount">0</span> <span class="sv-text">streak</span><span
+                class="ar-text">سلسلة</span></div>
+    </div>
+
+    <main>
+        <!-- Browse View -->
+        <div class="browse-view active" id="browseView">
+            <!-- Search Row with Filter Toggle -->
+            <div class="search-filter-row">
+                <input type="text" id="searchInput" placeholder="Sök ordspråk / ابحث عن مثل...">
+                <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilters()"
+                    title="Filtrera / تصفية">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span class="filter-badge" id="filterBadge">0</span>
+                </button>
+            </div>
+
+            <!-- Collapsible Filters Section -->
+            <div class="filters-dropdown collapsed" id="filtersDropdown">
+                <!-- Status Filters -->
+                <div class="filter-group">
+                    <div class="filter-group-label"><span class="sv-text">Status</span><span
+                            class="ar-text">الحالة</span></div>
+                    <div class="filter-chips-row">
+                        <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">
+                            📋 <span class="sv-text">Alla</span><span class="ar-text">الكل</span>
+                        </button>
+                        <button class="filter-chip" data-filter="saved" onclick="setFilter('saved')">
+                            ⭐ <span class="sv-text">Sparade</span><span class="ar-text">المحفوظة</span>
+                        </button>
+                        <button class="filter-chip" data-filter="learned" onclick="setFilter('learned')">
+                            ✅ <span class="sv-text">Lärt</span><span class="ar-text">المتعلمة</span>
+                        </button>
+                        <button class="filter-chip" data-filter="notLearned" onclick="setFilter('notLearned')">
+                            📚 <span class="sv-text">Ej lärt</span><span class="ar-text">لم تتعلم</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Topic Filters -->
+                <div class="filter-group">
+                    <div class="filter-group-label"><span class="sv-text">Ämne</span><span
+                            class="ar-text">الموضوع</span></div>
+                    <div class="filter-chips-row topic-filters" id="topicFilters">
+                        <button class="filter-chip topic-chip active" data-topic="all" onclick="setTopicFilter('all')">
+                            🌐 <span class="sv-text">Alla</span><span class="ar-text">الكل</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="patience"
+                            onclick="setTopicFilter('patience')">
+                            ⏳ <span class="sv-text">Tålamod</span><span class="ar-text">الصبر</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="wisdom" onclick="setTopicFilter('wisdom')">
+                            🧠 <span class="sv-text">Visdom</span><span class="ar-text">الحكمة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="consequences"
+                            onclick="setTopicFilter('consequences')">
+                            ⚖️ <span class="sv-text">Konsekvenser</span><span class="ar-text">العواقب</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="family" onclick="setTopicFilter('family')">
+                            👨‍👩‍👧 <span class="sv-text">Familj</span><span class="ar-text">العائلة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="experience"
+                            onclick="setTopicFilter('experience')">
+                            📖 <span class="sv-text">Erfarenhet</span><span class="ar-text">التجربة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="time" onclick="setTopicFilter('time')">
+                            ⏰ <span class="sv-text">Tid</span><span class="ar-text">الوقت</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="speech" onclick="setTopicFilter('speech')">
+                            🗣️ <span class="sv-text">Tal</span><span class="ar-text">الكلام</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="nature" onclick="setTopicFilter('nature')">
+                            🌿 <span class="sv-text">Natur</span><span class="ar-text">الطبيعة</span>
+                        </button>
+                        <button class="filter-chip topic-chip" data-topic="love" onclick="setTopicFilter('love')">
+                            ❤️ <span class="sv-text">Kärlek</span><span class="ar-text">الحب</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content"></div>
+        </div>
+
+        <!-- Flashcard View -->
+        <div class="flashcard-container" id="flashcardView">
+            <div class="flashcard-progress">
+                <div class="progress-text"><span id="fcCurrent">0</span> / <span id="fcTotal">0</span></div>
+                <div class="progress-bar">
+                    <div class="fill" id="fcProgress"></div>
+                </div>
+            </div>
+
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="fcWord">Ordspråk</div>
+                        <div class="flashcard-hint"><span class="sv-text">Klicka för att vända</span><span
+                                class="ar-text">اضغط للقلب</span></div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-translation" id="fcTranslation">المثل العربي</div>
+                        <div class="flashcard-literal" id="fcLiteral">الترجمة الحرفية</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ <span class="sv-text">Inte
+                        än</span><span class="ar-text">ليس بعد</span></button>
+                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ <span class="sv-text">Kan
+                        det!</span><span class="ar-text">أعرفها!</span></button>
+            </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div class="quiz-view" id="quizView">
+            <div class="quiz-container" id="quizContent"></div>
+        </div>
+
+        <!-- Saved View -->
+        <div class="saved-view" id="savedView">
+            <div class="saved-header-inline">
+                <h2>⭐ <span class="sv-text">Sparade ordspråk</span><span class="ar-text">الأمثال المحفوظة</span></h2>
+                <button class="action-btn-small" onclick="startSavedFlashcards()">
+                    <span class="sv-text">Öva dessa</span><span class="ar-text">ذاكر هذه القائمة</span> ▶️
+                </button>
+            </div>
+            <div class="saved-list" id="savedList"></div>
+        </div>
+
+        <!-- Intro text -->
+        <div class="intro-text">
+            <p><span class="sv-text">Svenska ordspråk med arabiska motsvarigheter. Klicka för att lyssna!</span><span
+                    class="ar-text">أمثال سويدية مع ما يقابلها بالعربية. اضغط للاستماع!</span> 🔊</p>
+        </div>
+    </main>
+
+    <!-- Audio Player Bar -->
+    <div class="audio-player-bar hidden" id="audioPlayer">
+        <button class="player-close-btn" onclick="closeAudioPlayer()" title="Stäng / إغلاق">×</button>
+
+        <div class="audio-info">
+            <div class="audio-names-row">
+                <div class="audio-name-sv" id="playerTitleSv">Proverb SV</div>
+                <div class="audio-name-ar" id="playerTitleAr">مثل AR</div>
+            </div>
+        </div>
+
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="togglePlayerRepeat()" id="playerRepeatBtn" title="Upprepa / تكرار">🔁
+                1x</button>
+            <button class="audio-btn prev" onclick="playPrev()" title="Föregående / سابق">◀◀</button>
+            <button class="audio-btn play-pause" onclick="togglePlay()" id="playPauseBtn">▶</button>
+            <button class="audio-btn next" onclick="playNext()" title="Nästa / تالي">▶▶</button>
+            <div class="speed-control">
+                <button class="audio-btn speed-btn" onclick="toggleSpeed()" id="speedBtn"
+                    title="Hastighet / السرعة">1x</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
