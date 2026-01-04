@@ -1056,11 +1056,9 @@ class QuranManager {
 
         if (isCorrect) {
             this.fillScore++;
-            feedbackContent.innerHTML = `<div class="feedback-icon">✅</div><div class="feedback-text"><span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span></div>`;
-            feedback.className = 'quiz-fill-feedback correct';
+            // Feedback message removed
         } else {
-            feedbackContent.innerHTML = `<div class="feedback-icon">❌</div><div class="feedback-text"><span class="sv-text">Fel! Rätt svar: ${correct}</span><span class="ar-text">خطأ! الإجابة الصحيحة: ${correct}</span></div>`;
-            feedback.className = 'quiz-fill-feedback wrong';
+            // Feedback message removed
         }
 
         options?.querySelectorAll('.fill-option-btn').forEach(btn => {
@@ -1072,7 +1070,7 @@ class QuranManager {
             }
         });
 
-        feedback.style.display = 'block';
+        // feedback.style.display = 'block'; 
         const scoreEl = document.getElementById('fillScore');
         if (scoreEl) scoreEl.textContent = this.fillScore.toString();
 

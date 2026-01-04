@@ -210,15 +210,13 @@ function showFillQuestion() {
     const ayahTranslation = document.getElementById('fillAyahTranslation');
 
     if (ayahArabic) {
-        // Show Name
+        // Show Name Only Initially
         ayahArabic.innerHTML = `<span class="highlight-word">${question.nameAr}</span>`;
     }
     if (ayahTranslation) {
-        // Show instruction or verse fragment if relevant, but instruction is static HTML "What matches..."
-        // Or we can show the name in Swedish too?
-        // Let's keep it simple: Show Arabic Name, Ask for Swedish Meaning.
-        ayahTranslation.textContent = question.nameSv; // Show transliteration/name in SV as hint? Or leave empty? Instructions say "Meaning".
-        // Let's use nameSv as secondary hint
+        // Hide Meaning Initially
+        ayahTranslation.textContent = '';
+        ayahTranslation.style.visibility = 'hidden';
     }
 
     generateFillOptions(question);
@@ -244,15 +242,28 @@ function generateFillOptions(question: any) {
     options.querySelectorAll('.fill-option-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const selected = (e.target as HTMLElement).getAttribute('data-answer');
-            checkFillAnswer(selected, question.correctAnswer);
+            checkFillAnswer(selected, question.correctAnswer, question); // Pass full question object
         });
     });
 }
 
-function checkFillAnswer(selected: string | null, correct: string) {
+function checkFillAnswer(selected: string | null, correct: string, question: any) {
     const feedback = document.getElementById('fillFeedback');
     const feedbackContent = feedback?.querySelector('.feedback-content');
     const options = document.getElementById('fillOptions');
+    const ayahTranslation = document.getElementById('fillAyahTranslation');
+    const ayahArabic = document.getElementById('fillAyahArabic');
+
+    // Show Meaning After Answer
+    if (ayahTranslation) {
+        ayahTranslation.textContent = correct; // Or question.meaningSv (same as correct)
+        ayahTranslation.style.visibility = 'visible';
+    }
+
+    // Show Verse After Answer
+    if (ayahArabic && question.verseAr) {
+        ayahArabic.innerHTML = `<span class="highlight-word">${question.nameAr}</span><br><span class="verse-text" style="font-size: 0.6em; display: block; margin-top: 15px; color: #cbd5e1;">${question.verseAr}</span>`;
+    }
 
     if (!feedback || !feedbackContent) return;
 
@@ -260,11 +271,11 @@ function checkFillAnswer(selected: string | null, correct: string) {
 
     if (isCorrect) {
         fillScore++;
-        feedbackContent.innerHTML = `<div class="feedback-icon">✅</div><div class="feedback-text"><span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span></div>`;
-        feedback.className = 'quiz-fill-feedback correct';
+        // Feedback message removed as per request
+        // feedbackContent.innerHTML = ...
+        // feedback.className = ...
     } else {
-        feedbackContent.innerHTML = `<div class="feedback-icon">❌</div><div class="feedback-text"><span class="sv-text">Fel! Rätt svar: ${correct}</span><span class="ar-text">خطأ! الإجابة الصحيحة: ${correct}</span></div>`;
-        feedback.className = 'quiz-fill-feedback wrong';
+        // Feedback message removed as per request
     }
 
     options?.querySelectorAll('.fill-option-btn').forEach(btn => {
@@ -276,7 +287,7 @@ function checkFillAnswer(selected: string | null, correct: string) {
         }
     });
 
-    feedback.style.display = 'block';
+    // feedback.style.display = 'block'; // Hidden as per request
     const scoreEl = document.getElementById('fillScore');
     if (scoreEl) scoreEl.textContent = fillScore.toString();
 
