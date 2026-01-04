@@ -992,14 +992,22 @@ class QuranManager {
 
         if (ayahArabic) {
             // Replace the target word with a placeholder or highlight it
-            // For "Fill in the Blank", usually we hide the word.
-            // But the previous logic was highlighting it: `<span class="highlight-word">${question.word}</span>`
-            // If the question is "What means the highlighted word?", then highlighting is correct.
-            // Based on previous UI text "Ma ma'na al-kalima al-muhaddada?" (What is the meaning of the specific word?), strict highlighting is correct.
             const highlighted = question.ayah.replace(question.word, `<span class="highlight-word">${question.word}</span>`);
             ayahArabic.innerHTML = highlighted;
         }
-        if (ayahTranslation) ayahTranslation.textContent = question.translation;
+
+        // Hide translation initially
+        if (ayahTranslation) {
+            ayahTranslation.textContent = '...'; // Or keep it empty, user asked to "hide". Let's verify if "..." is okay or should be hidden. 
+            // Better to keep it empty or a question mark placeholder to indicate something will appear?
+            // "Hide Swedish text" implies visibility: hidden or empty content.
+            // Let's use a placeholder placeholder or empty string.
+            ayahTranslation.textContent = '';
+            ayahTranslation.style.visibility = 'hidden'; // Hide it visually but keep space? Or display none?
+            // Usually keeping space is better to avoid jumping.
+            ayahTranslation.style.visibility = 'hidden';
+        }
+
         if (targetWord) targetWord.textContent = question.word;
 
         this.generateFillOptions(question);
@@ -1025,15 +1033,22 @@ class QuranManager {
         options.querySelectorAll('.fill-option-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const selected = (e.target as HTMLElement).getAttribute('data-answer');
-                this.checkFillAnswer(selected, question.correctAnswer);
+                this.checkFillAnswer(selected, question.correctAnswer, question.translation); // Pass translation
             });
         });
     }
 
-    private checkFillAnswer(selected: string | null, correct: string) {
+    private checkFillAnswer(selected: string | null, correct: string, translation: string) {
         const feedback = document.getElementById('fillFeedback');
         const feedbackContent = feedback?.querySelector('.feedback-content');
         const options = document.getElementById('fillOptions');
+        const ayahTranslation = document.getElementById('fillAyahTranslation');
+
+        // Show translation after answer
+        if (ayahTranslation) {
+            ayahTranslation.textContent = translation;
+            ayahTranslation.style.visibility = 'visible';
+        }
 
         if (!feedback || !feedbackContent) return;
 
