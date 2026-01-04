@@ -272,8 +272,8 @@ body {
 }
 
 main {
-    padding-top: 130px;
-    /* Account for fixed header height (approx 120px + spacing) */
+    padding-top: 120px;
+    /* Account for fixed header height */
 }
 
 body.iphone-view {
