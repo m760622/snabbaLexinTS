@@ -38,15 +38,13 @@
         </div>
         <!-- Mode Tabs -->
         <div class="mode-tabs">
-            <button class="mode-tab active" onclick="switchMode('browse')">📖 <span class="sv-text">Bläddra</span><span
-                    class="ar-text">تصفح</span></button>
-            <button class="mode-tab" onclick="startAllFlashcards()">🂴 <span class="sv-text">Flashcards</span><span
-                    class="ar-text">بطاقات</span></button>
-            <button class="mode-tab" onclick="switchMode('quiz-fill')">✏️ <span class="sv-text">Fyll i
-                    luckan</span><span class="ar-text">أكمل الفراغ</span></button>
-            <button class="mode-tab" onclick="switchMode('quiz-match')">🔗 <span class="sv-text">Matcha</span><span
-                    class="ar-text">طابق</span></button>
-            <button class="mode-tab" onclick="openSavedModal()">⭐ <span id="savedCount">0</span></button>
+            <button class="mode-tab active" onclick="switchMode('browse')" title="Bläddra / تصفح">📖</button>
+            <button class="mode-tab" onclick="startAllFlashcards()" title="Flashcards / بطاقات">🂴</button>
+            <button class="mode-tab" onclick="switchMode('quiz-fill')" title="Fyll i luckan / أكمل الفراغ">✏️</button>
+            <button class="mode-tab" onclick="switchMode('quiz-match')" title="Matcha / طابق">🔗</button>
+            <button class="mode-tab" onclick="togglePlay()" title="Spela upp / تشغيل">🔊</button>
+            <button class="mode-tab" onclick="openSavedModal()" title="Sparade / المحفوظات">⭐ <span
+                    id="savedCount">0</span></button>
         </div>
     </header>
 
@@ -196,7 +194,32 @@
         </div>
     </main>
 
+    <!-- Audio Player Bar -->
+    <div class="audio-player-bar hidden" id="audioPlayer">
+        <button class="player-close-btn" onclick="closeAudioPlayer()" title="Stäng / إغلاق">×</button>
+
+        <div class="audio-info">
+            <div class="audio-names-row">
+                <div class="audio-name-sv" id="playerTitleSv">Proverb SV</div>
+                <div class="audio-name-ar" id="playerTitleAr">مثل AR</div>
+            </div>
+        </div>
+
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="togglePlayerRepeat()" id="playerRepeatBtn" title="Upprepa / تكرار">↻
+                1x</button>
+            <button class="audio-btn prev" onclick="playPrev()" title="Föregående / سابق">⏮️</button>
+            <button class="audio-btn play-pause" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+            <button class="audio-btn next" onclick="playNext()" title="Nästa / تالي">⏭️</button>
+            <div class="speed-control">
+                <button class="audio-btn speed-btn" onclick="toggleSpeed()" id="speedBtn"
+                    title="Hastighet / السرعة">1x</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="../src/learn/ordsprak.ts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <script type="module" src="/src/pwa.ts"></script>
 </body>
 
