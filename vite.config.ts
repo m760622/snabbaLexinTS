@@ -7,8 +7,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
+        welcome: './welcome.html',
         learn: './learn/learn.html',
         cognates: './learn/cognates.html',
+        'asma-ul-husna': './learn/asma_ul_husna.html',
+        ordsprak: './learn/ordsprak.html',
         details: './details.html',
         add: './add.html',
         changelog: './changelog.html',
