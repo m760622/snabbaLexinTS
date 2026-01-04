@@ -504,6 +504,12 @@
 
         /* ========== PHASE 1: VISUAL ENHANCEMENTS ========== */
 
+        /* Navy Blue Background for Asma Ul Husna */
+        body.memory-game-page {
+            background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0d1e36 100%);
+            min-height: 100vh;
+        }
+
         /* Islamic Geometric Background */
         body.memory-game-page::before {
             content: '';
