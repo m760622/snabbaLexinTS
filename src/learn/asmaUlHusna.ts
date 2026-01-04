@@ -1,6 +1,7 @@
 // Asma ul Husna - Game Logic
 import asmaData from '../data/asmaUlHusna.json';
 import { TTSManager } from '../tts';
+import { LearnViewManager, LearnView, createLearnViewManager } from './LearnViewManager';
 
 console.log('[AsmaUlHusna] Module loaded');
 
@@ -97,6 +98,57 @@ const BADGES: Badge[] = [
     { id: 'b_streak3', icon: '🔥', name: 'حماس', desc: 'استمرار 3 أيام', condition: () => streakDays >= 3 },
     { id: 'b_streak7', icon: '⚡', name: 'التزام', desc: 'استمرار 7 أيام', condition: () => streakDays >= 7 }
 ];
+
+// ========== VIEW MANAGER ==========
+const viewManager = createLearnViewManager();
+
+function initViewManager() {
+    viewManager.registerViews({
+        'browse': { viewId: 'browseView' },
+        'quiz': {
+            viewId: 'quizView',
+            onActivate: startQuiz
+        },
+        'flashcard': {
+            viewId: 'flashcardView',
+            onActivate: startFlashcards
+        }
+    });
+}
+
+function switchMode(mode: string) {
+    viewManager.switchTo(mode as LearnView);
+
+    // Update Mode Bar UI
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    let btnId = '';
+    if (mode === 'browse') btnId = 'btn-browse';
+    else if (mode.startsWith('quiz')) btnId = 'btn-quiz';
+    else if (mode === 'flashcard') btnId = 'btn-flashcard';
+
+    if (btnId) {
+        const activeBtn = document.getElementById(btnId);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        // Animate Sliding Indicator
+        updateModeIndicator(activeBtn);
+    }
+}
+
+function updateModeIndicator(activeBtn: HTMLElement | null) {
+    const indicator = document.getElementById('modeIndicator');
+    const bar = document.getElementById('modeSelectionBar');
+    if (!indicator || !bar || !activeBtn) return;
+
+    const barRect = bar.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+
+    // Calculate offset relative to the bar
+    const offsetLeft = btnRect.left - barRect.left;
+
+    indicator.style.width = `${btnRect.width}px`;
+    indicator.style.transform = `translateX(${offsetLeft - 6}px)`; // -6px for padding offset
+}
 
 // Load saved state from localStorage
 function loadSavedState(): void {
@@ -259,6 +311,7 @@ function updateFilterCounts(): void {
 // Initialize
 function init(): void {
     console.log('[AsmaUlHusna] Initializing...');
+    initViewManager();
     loadSavedState();
     allNames = ASMA_UL_HUSNA;
     filteredNames = [...allNames];
@@ -658,12 +711,12 @@ function startQuiz(): void {
     currentQuestionIndex = 0;
     quizScore = 0;
 
-    document.getElementById('quizModal')?.classList.add('active');
+    // View is already activated by manager
     renderQuizQuestion();
 }
 
 function closeQuiz(): void {
-    document.getElementById('quizModal')?.classList.remove('active');
+    switchMode('browse');
 }
 
 function renderQuizQuestion(): void {
@@ -775,20 +828,12 @@ function startFlashcards(): void {
     currentFlashcardIndex = 0;
     isFlashcardFlipped = false;
 
-    const modal = document.getElementById('flashcardModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        modal.classList.add('active');
-    }
+    // View is already activated by manager
     renderFlashcard();
 }
 
 function closeFlashcards(): void {
-    const modal = document.getElementById('flashcardModal');
-    if (modal) {
-        modal.classList.remove('active');
-        modal.style.display = 'none';
-    }
+    switchMode('browse');
 }
 
 function renderFlashcard(): void {
@@ -1204,3 +1249,29 @@ function toggleFilters(): void {
 (window as any).exportMemorizedList = exportMemorizedList;
 (window as any).toggleLang = toggleLang;
 (window as any).toggleFilters = toggleFilters;
+(window as any).filterNames = applyFilters; // Export filterNames
+(window as any).switchMode = switchMode;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Other init functions are called within their specific blocks or global scope?
+    // It seems previous code might have relied on inline script? 
+    // But since this is a module, we should init explicitly.
+    loadTheme();
+    loadLang();
+    loadSavedState();
+    loadMobileView();
+
+    // Data Loading
+    allNames = ASMA_UL_HUSNA;
+    filteredNames = [...allNames];
+
+    initViewManager();
+
+    // Initialize Mode UI (simulate click on Browse to set indicator)
+    switchMode('browse');
+
+    // Initial Render
+    renderCards();
+    updateFilterCounts();
+    createGoldenParticles();
+});

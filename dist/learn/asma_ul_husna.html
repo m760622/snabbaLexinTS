@@ -8,13 +8,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
-  <script type="module" crossorigin src="/assets/asma-ul-husna-CiMy0nMx.js"></script>
+  <script type="module" crossorigin src="/assets/asma-ul-husna-Ba3y_KJO.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/config-CfHoVMbv.js">
   <link rel="modulepreload" crossorigin href="/assets/db-bEbbjtoI.js">
   <link rel="modulepreload" crossorigin href="/assets/loader-CqI2jdYk.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-CfZZetlp.js">
-  <link rel="stylesheet" crossorigin href="/assets/asma-ul-husna-CM5R7IRQ.css">
+  <link rel="modulepreload" crossorigin href="/assets/LearnViewManager-RsT_Dh_9.js">
+  <link rel="stylesheet" crossorigin href="/assets/asma-ul-husna-vCjmQU1d.css">
   <link rel="stylesheet" crossorigin href="/assets/games-Du1lcSYY.css">
   <link rel="stylesheet" crossorigin href="/assets/games-D4bZSgpH.css">
   <link rel="stylesheet" crossorigin href="/assets/main-BPUAZqZA.css">
@@ -31,6 +32,7 @@
 
     <!-- Navigation Bar with Search -->
     <div class="asma-nav-bar">
+        <!-- Navigation Buttons (First Row) -->
         <!-- Navigation Buttons (First Row) -->
         <div class="nav-buttons-row">
             <!-- Back Button -->
@@ -51,6 +53,10 @@
                     <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
             </button>
+            <!-- Stats Button -->
+            <button class="asma-nav-btn" onclick="openStats()" aria-label="Stats" title="إحصائياتي">
+                <span style="font-size: 1.2rem;">📊</span>
+            </button>
             <!-- Language Toggle -->
             <button id="langToggle" class="asma-nav-btn" onclick="toggleLang()" aria-label="Language"
                 title="تبديل اللغة">
@@ -64,27 +70,7 @@
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </button>
-            <!-- Quiz Button -->
-            <button class="asma-nav-btn feature-btn" onclick="startQuiz()" aria-label="اختبار" title="بدء الاختبار">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-            </button>
-            <!-- Flashcards Button -->
-            <button class="asma-nav-btn feature-btn" onclick="startFlashcards()" aria-label="بطاقات"
-                title="البطاقات التعليمية">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <path d="M12 8v8"></path>
-                    <path d="M8 12h8"></path>
-                </svg>
-            </button>
-            <!-- Audio Player Button -->
-            <!-- Audio Player Button -->
+            <!-- Audio Player Button (Kept in Menu) -->
             <button class="asma-nav-btn feature-btn" id="audioBtn" onclick="togglePlay()" aria-label="تشغيل صوتي"
                 title="تشغيل / إيقاف">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -94,134 +80,151 @@
             </button>
         </div>
 
-        <!-- Search Input (Second Row) -->
-        <div class="nav-search-wrapper">
-            <input type="text" id="asmaModeSearch" class="nav-search-input" placeholder="🔍 ابحث..."
-                oninput="filterNames()">
-            <button class="asma-nav-btn" onclick="toggleFilters()" aria-label="Filters" title="تصفية الأسماء">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="4" y1="21" x2="4" y2="14"></line>
-                    <line x1="4" y1="10" x2="4" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12" y2="3"></line>
-                    <line x1="20" y1="21" x2="20" y2="16"></line>
-                    <line x1="20" y1="12" x2="20" y2="3"></line>
-                    <line x1="1" y1="14" x2="7" y2="14"></line>
-                    <line x1="9" y1="8" x2="15" y2="8"></line>
-                    <line x1="17" y1="16" x2="23" y2="16"></line>
-                </svg>
+        <!-- Mode Selection Bar (New) -->
+        <div class="mode-selection-bar" id="modeSelectionBar">
+            <span class="mode-indicator" id="modeIndicator"></span>
+            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse">
+                <span class="mode-icon">🔍</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz">
+                <span class="mode-icon">❓</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard">
+                <span class="mode-icon">🃏</span>
             </button>
         </div>
+
+
     </div>
 
 
     <!-- Main Container -->
     <div class="asma-container">
-        <!-- Header -->
-        <div class="asma-header">
-            <div class="asma-title-ar">أَسْمَاءُ اللَّهِ الْحُسْنَى</div>
-            <div class="asma-title-sv">Guds Vackraste Namn</div>
-        </div>
 
-        <!-- Filter Buttons -->
-        <div class="asma-filter-bar" id="filterBar">
-            <button class="asma-filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
-            <button class="asma-filter-btn" data-filter="favorites" onclick="setFilter('favorites')">❤️</button>
-            <button class="asma-filter-btn" data-filter="memorized" onclick="setFilter('memorized')">✓</button>
-            <button class="asma-filter-btn filter-btn--jalal" data-filter="jalal"
-                onclick="setFilter('jalal')">الجلال</button>
-            <button class="asma-filter-btn filter-btn--jamal" data-filter="jamal"
-                onclick="setFilter('jamal')">الجمال</button>
-            <button class="asma-filter-btn filter-btn--kamal" data-filter="kamal"
-                onclick="setFilter('kamal')">الكمال</button>
-        </div>
-
-
-
-        <!-- Stats -->
-        <div class="asma-stats" id="asmaStats">Visar 99 namn</div>
-
-        <!-- Cards Grid -->
-        <!-- Loading Indicator -->
-        <div class="loading-indicator" id="loadingIndicator">
-            <div class="loading-content">
-                <div class="loading-spinner">⏳</div>
-                <div class="loading-text">جاري تحميل الأسماء...</div>
-                <div class="loading-bar">
-                    <div class="loading-progress" id="loadingProgress"></div>
-                </div>
-                <div class="loading-percent" id="loadingPercent">0%</div>
+        <!-- ==================== BROWSE VIEW ==================== -->
+        <div id="browseView" class="view-section active">
+            <!-- Header -->
+            <div class="asma-header">
+                <div class="asma-title-ar">أَسْمَاءُ اللَّهِ الْحُسْنَى</div>
+                <div class="asma-title-sv">Guds Vackraste Namn</div>
             </div>
-        </div>
-        <div class="asma-cards-grid" id="asmaCardsGrid">
-            <!-- Cards will be generated by JavaScript -->
-        </div>
-    </div>
 
-    <!-- Quiz Modal -->
-    <div class="quiz-modal" id="quizModal">
-        <div class="quiz-container">
-            <button class="quiz-close-btn" onclick="closeQuiz()">×</button>
+            <!-- Search & Filters -->
+            <div class="nav-search-wrapper" style="margin: 20px auto; width: 90%; max-width: 600px;">
+                <input type="text" id="asmaModeSearch" class="nav-search-input" placeholder="🔍 ابحث..."
+                    oninput="filterNames()">
+                <button class="asma-nav-btn" onclick="toggleFilters()" aria-label="Filters" title="تصفية الأسماء">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                    </svg>
+                </button>
+            </div>
 
-            <div class="quiz-header">
-                <div class="quiz-progress">
-                    <div class="quiz-progress-bar">
-                        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 0%"></div>
+            <!-- Filter Buttons -->
+            <div class="asma-filter-bar" id="filterBar">
+                <button class="asma-filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
+                <button class="asma-filter-btn" data-filter="favorites" onclick="setFilter('favorites')">❤️</button>
+                <button class="asma-filter-btn" data-filter="memorized" onclick="setFilter('memorized')">✓</button>
+                <button class="asma-filter-btn filter-btn--jalal" data-filter="jalal"
+                    onclick="setFilter('jalal')">الجلال</button>
+                <button class="asma-filter-btn filter-btn--jamal" data-filter="jamal"
+                    onclick="setFilter('jamal')">الجمال</button>
+                <button class="asma-filter-btn filter-btn--kamal" data-filter="kamal"
+                    onclick="setFilter('kamal')">الكمال</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="asma-stats" id="asmaStats">Visar 99 namn</div>
+
+            <!-- Cards Grid -->
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator">
+                <div class="loading-content">
+                    <div class="loading-spinner">⏳</div>
+                    <div class="loading-text">جاري تحميل الأسماء...</div>
+                    <div class="loading-bar">
+                        <div class="loading-progress" id="loadingProgress"></div>
                     </div>
-                    <div class="quiz-score" id="quizScore">0/10</div>
+                    <div class="loading-percent" id="loadingPercent">0%</div>
                 </div>
             </div>
-
-            <div class="quiz-content" id="quizContent">
-                <!-- Quiz questions will be generated here -->
+            <div class="asma-cards-grid" id="asmaCardsGrid">
+                <!-- Cards will be generated by JavaScript -->
             </div>
         </div>
-    </div>
 
-    <!-- Flashcard Modal -->
-    <div class="flashcard-modal" id="flashcardModal">
-        <button class="flashcard-close" onclick="closeFlashcards()">×</button>
+        <!-- ==================== QUIZ VIEW ==================== -->
+        <div id="quizView" class="view-section hidden">
 
-        <div class="flashcard-container">
-            <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
-                <div class="flashcard-face flashcard-front">
-                    <div class="flashcard-number" id="flashcardNumber">1</div>
-                    <div class="flashcard-name" id="flashcardName">الرَّحْمَنُ</div>
-                    <div class="flashcard-hint">اضغط للكشف عن المعنى</div>
-                </div>
-                <div class="flashcard-face flashcard-back">
-                    <div class="flashcard-number" id="flashcardNumberBack">1</div>
-                    <div class="flashcard-meaning">
-                        <div class="flashcard-meaning-ar" id="flashcardMeaningAr">ذُو الرَّحْمَةِ الشَّامِلَةِ</div>
-                        <div class="flashcard-meaning-sv" id="flashcardMeaningSv">Den Nåderike</div>
+
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <div class="quiz-progress">
+                        <div class="quiz-progress-bar">
+                            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="quiz-score" id="quizScore">0/10</div>
                     </div>
                 </div>
+
+                <div class="quiz-content" id="quizContent">
+                    <!-- Quiz questions will be generated here -->
+                </div>
             </div>
         </div>
 
-        <div class="flashcard-controls">
-            <button class="flashcard-btn dont-know" onclick="flashcardDontKnow()">
-                <span>❌</span>
-                <span>لا أعرف</span>
-            </button>
-            <button class="flashcard-btn" onclick="speakCurrentFlashcard()">
-                <span>🔊</span>
-                <span>استمع</span>
-            </button>
-            <button class="flashcard-btn know" onclick="flashcardKnow()">
-                <span>✓</span>
-                <span>أعرفها</span>
-            </button>
-        </div>
+        <!-- ==================== FLASHCARD VIEW ==================== -->
+        <div id="flashcardView" class="view-section hidden">
 
-        <div class="flashcard-progress" id="flashcardProgress">1 / 99</div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+                    <div class="flashcard-face flashcard-front">
+                        <div class="flashcard-number" id="flashcardNumber">1</div>
+                        <div class="flashcard-name" id="flashcardName">الرَّحْمَنُ</div>
+                        <div class="flashcard-hint">اضغط للكشف عن المعنى</div>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div class="flashcard-number" id="flashcardNumberBack">1</div>
+                        <div class="flashcard-meaning">
+                            <div class="flashcard-meaning-ar" id="flashcardMeaningAr">ذُو الرَّحْمَةِ الشَّامِلَةِ</div>
+                            <div class="flashcard-meaning-sv" id="flashcardMeaningSv">Den Nåderike</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-controls">
+                <button class="flashcard-btn dont-know" onclick="flashcardDontKnow()">
+                    <span>❌</span>
+                    <span>لا أعرف</span>
+                </button>
+                <button class="flashcard-btn" onclick="speakCurrentFlashcard()">
+                    <span>🔊</span>
+                    <span>استمع</span>
+                </button>
+                <button class="flashcard-btn know" onclick="flashcardKnow()">
+                    <span>✓</span>
+                    <span>أعرفها</span>
+                </button>
+            </div>
+
+            <div class="flashcard-progress" id="flashcardProgress">1 / 99</div>
+        </div>
     </div>
+
 
     <!-- Dashboard Button -->
-    <button class="asma-dashboard-btn" onclick="openStats()" title="إحصائياتي">
-        📊
-    </button>
+
 
     <!-- Stats Modal -->
     <div class="stats-modal" id="statsModal" onclick="if(event.target === this) closeStats()">

@@ -58,13 +58,11 @@ export class LearnViewManager {
         console.log(`[LearnViewManager] Switching to: ${view}`);
 
         // Hide all registered views
-        this.views.forEach((config, v) => {
+        this.views.forEach((config, _v) => {
             const element = document.getElementById(config.viewId);
             if (element) {
                 element.classList.remove('active');
-                if (v === 'browse') {
-                    element.classList.add('hidden');
-                }
+                element.classList.add('hidden');
             }
         });
 

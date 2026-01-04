@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnabbaLexin - <span class="sv-text">Koraninlärning</span><span class="ar-text">تعلم القرآن</span></title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&family=Amiri:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/quran.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/icon.svg">
+    <link rel="apple-touch-icon" href="../assets/images/icon.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#064e3b" media="(prefers-color-scheme: dark)">
+</head>
+
+<body>
+    <!-- Persistent Header -->
+    <!-- Persistent Header with Mode Buttons -->
+    <header class="quran-header">
+        <div class="nav-buttons-row"
+            style="display: flex; gap: 0.5rem; width: 100%; justify-content: space-between; align-items: center;">
+            <button class="back-btn" onclick="window.location.href='../learn/learn.html'" aria-label="Tillbaka / رجوع">
+                <svg viewBox="0 0 24 24" fill="none" class="icon-md" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+
+            <button id="settingsBtn" class="settings-trigger" aria-label="Inställningar / الإعدادات"
+                onclick="openSettings()">
+                ⚙️
+            </button>
+        </div>
+
+        <div class="mode-selection-bar" id="modeSelectionBar">
+            <span class="mode-indicator" id="modeIndicator"></span>
+            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse">
+                <span class="mode-icon">📜</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard">
+                <span class="mode-icon">🗂️</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz">
+                <span class="mode-icon">❓</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Browse View -->
+        <div id="browseView" class="view-section active">
+            <!-- Screen Title (In-View) -->
+            <div class="quran-view-header" style="text-align: center; margin-bottom: 1.5rem; margin-top: 1rem;">
+                <h1
+                    style="font-family: 'Amiri', serif; font-size: 2.5rem; color: var(--quran-gold); margin: 0; text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);">
+                    كلمات القرآن
+                </h1>
+                <div style="font-size: 1.2rem; color: #cbd5e1; margin-top: 0.2rem;">Koranord</div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" class="glass-input" data-i18n-placeholder="quran.searchPlaceholder"
+                    placeholder="Sök ord, surah...">
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filterBar">
+                <select class="glass-select" id="surahFilter" data-i18n-title="quran.filterSurah">
+                    <option value="all" data-i18n="quran.allSurahs">Alla Suror</option>
+                    <option value="favorites">❤️ <span class="sv-text">Favoriter</span><span
+                            class="ar-text">المفضلة</span>
+                    </option>
+                    <!-- Populated via JS -->
+                </select>
+                <select class="glass-select" id="typeFilter" data-i18n-title="quran.filterType">
+                    <option value="all" data-i18n="quran.allTypes">Alla Typer</option>
+                    <option value="verb" data-i18n="quran.verb">Verb</option>
+                    <option value="noun" data-i18n="quran.noun">Substantiv</option>
+                    <option value="particle" data-i18n="quran.particle">Partikel</option>
+                    <option value="phrase" data-i18n="quran.phrase">Fras</option>
+                    <option value="word" data-i18n="quran.word">Ord</option>
+                </select>
+            </div>
+
+            <!-- Daily Goal Widget (Hidden in Quran screen) -->
+            <div class="daily-goal-widget hidden" id="dailyGoalWidget">
+                <span>📅 <span class="sv-text">Dagens Mål:</span><span class="ar-text">هدف اليوم:</span></span>
+                <div class="goal-track">
+                    <div class="goal-fill" id="dailyGoalFill"></div>
+                </div>
+                <span id="dailyGoalText">0/5</span>
+            </div>
+
+            <!-- List Mode -->
+            <div class="quran-list" id="quranList">
+                <!-- Cards will be injected here via JS -->
+            </div>
+        </div>
+
+        <!-- Flashcard View -->
+        <div id="flashcardView" class="view-section hidden">
+
+
+            <div class="fc-wrapper">
+                <!-- Flashcard Settings -->
+                <div class="quiz-settings">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="fcLangToggle" aria-label="Byt språk för flashcards">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="fcModeLabel">
+                        <span class="sv-text">🇸🇦 Arabiska (Framsida)</span>
+                        <span class="ar-text">🇸🇦 العربية (الأمام)</span>
+                    </span>
+                </div>
+
+                <!-- Flashcard Container -->
+                <div class="quran-flashcard" id="quranFlashcard">
+                    <div class="fc-inner">
+                        <div class="fc-front">
+                            <div class="fc-top-bar">
+                                <span class="badger surah-badge" id="fcSurah">Surah</span>
+                                <div class="action-group">
+                                    <button class="share-btn" id="fcShareBtn" title="Dela / مشاركة">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="18" cy="5" r="3"></circle>
+                                            <circle cx="6" cy="12" r="3"></circle>
+                                            <circle cx="18" cy="19" r="3"></circle>
+                                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                        </svg>
+                                    </button>
+                                    <button class="fav-btn" id="fcFavBtn" title="Spara / حفظ">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path
+                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="fc-word-large" id="fcWord">Word</div>
+                            <div class="fc-hint">
+                                <span class="sv-text">Klicka för att vända</span>
+                                <span class="ar-text">اضغط للقلب</span>
+                            </div>
+                        </div>
+                        <div class="fc-back">
+                            <div class="fc-top-bar">
+                                <span class="badger opacity-0">.</span> <!-- Spacer -->
+                                <div class="action-group">
+                                    <button class="share-btn" id="fcShareBtnBack" title="Dela / مشاركة">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="18" cy="5" r="3"></circle>
+                                            <circle cx="6" cy="12" r="3"></circle>
+                                            <circle cx="18" cy="19" r="3"></circle>
+                                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                        </svg>
+                                    </button>
+                                    <button class="fav-btn" id="fcFavBtnBack" title="Spara / حفظ">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path
+                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="fc-meaning" id="fcMeaning">Meaning</div>
+                            <div class="fc-ayah-context" id="fcAyah">Ayah Context</div>
+                            <div class="fc-ayah-trans" id="fcTrans">Translation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating Controls -->
+                <div class="fc-controls rating-controls" id="ratingControls">
+                    <button class="rate-btn wrong" data-rating="again">
+                        <span>❌</span>
+                        <small class="sv-text">Igen</small>
+                        <small class="ar-text">مرة أخرى</small>
+                    </button>
+                    <button class="rate-btn hard" data-rating="hard">
+                        <span>🤔</span>
+                        <small class="sv-text">Svår</small>
+                        <small class="ar-text">صعب</small>
+                    </button>
+                    <button class="rate-btn good" data-rating="good">
+                        <span>✅</span>
+                        <small class="sv-text">Bra</small>
+                        <small class="ar-text">جيد</small>
+                    </button>
+                    <button class="rate-btn easy" data-rating="easy">
+                        <span>🚀</span>
+                        <small class="sv-text">Lätt</small>
+                        <small class="ar-text">سهل</small>
+                    </button>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="fc-controls nav-only mt-10px opacity-70">
+                    <button class="control-btn" id="prevCardBtn">❮</button>
+                    <div class="fc-progress" id="fcProgress">1 / 100</div>
+                    <button class="control-btn" id="nextCardBtn">❯</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="quizView" class="view-section hidden">
+
+
+            <div class="quiz-wrapper">
+                <div class="quiz-stats">
+                    <span>
+                        <span class="sv-text">Poäng:</span><span class="ar-text">النقاط:</span> <span
+                            id="quizScore">0</span> |
+                        <span class="sv-text">Streak:</span><span class="ar-text">سلسلة:</span> <span
+                            id="quizStreak">0</span>🔥
+                    </span>
+                    <div class="xp-container">
+                        <div class="xp-donut" id="xpDonut">
+                            <div class="xp-donut-inner">
+                                <span id="userXP">0</span>
+                                <small>XP</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Settings -->
+                <div class="quiz-settings">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="quizLangToggle" checked aria-label="Byt språk för quiz">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="quizModeLabel">
+                        <span class="sv-text">🇸🇦 Arabiska ➔ 🇸🇪 Svenska</span>
+                        <span class="ar-text">🇸🇦 العربية ➔ 🇸🇪 السويدية</span>
+                    </span>
+                </div>
+
+                <div class="quiz-card">
+                    <div class="quiz-question-type">
+                        <span class="sv-text">Vad betyder detta ord?</span>
+                        <span class="ar-text">ماذا تعني هذه الكلمة؟</span>
+                    </div>
+                    <div class="quiz-target-word" id="quizWord">WORD</div>
+
+                    <div class="quiz-options" id="quizOptions">
+                        <!-- Options injected via JS -->
+                    </div>
+
+                    <div class="quiz-feedback hidden" id="quizFeedback"></div>
+                </div>
+
+                <button class="next-question-btn hidden" id="nextQuestionBtn">
+                    <span class="sv-text">Nästa Fråga</span>
+                    <span class="ar-text">السؤال التالي</span> ❯
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Generic Modal for Tafsir/Info -->
+    <div id="infoModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeInfoModal()">&times;</span>
+            <h2 id="modalTitle">
+                <span class="sv-text">Tafsir & Info</span>
+                <span class="ar-text">تفسير ومعلومات</span>
+            </h2>
+            <div id="modalBody">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content settings-content">
+            <div class="modal-header">
+                <h2>
+                    ⚙️ <span class="sv-text">Inställningar</span><span class="ar-text">الإعدادات</span>
+                </h2>
+                <span class="close-modal" id="closeSettingsBtn">&times;</span>
+            </div>
+
+            <div class="setting-item">
+                <label for="themeSelector">
+                    🎨 <span class="sv-text">Färgtema</span><span class="ar-text">لون الثيم</span>
+                </label>
+                <select id="themeSelector" class="glass-select full-width"
+                    data-i18n-title="settings.themeSelectorTitle">
+                    <option value="default">🟢 Emerald</option>
+                    <option value="sage">🌿 Sage</option>
+                    <option value="luxury">👑 Luxury</option>
+                    <option value="teal">💠 Teal</option>
+                    <option value="ruby">💎 Ruby</option>
+                    <option value="bronze">🏺 Bronze</option>
+                    <option value="midnight">🌙 Midnight</option>
+                    <option value="sunset">🌅 Sunset</option>
+                    <option value="amethyst">🟣 Amethyst</option>
+                    <option value="oasis">🌴 Oasis</option>
+                    <option value="sky">☁️ Sky</option>
+                    <option value="ocean">🌊 Ocean</option>
+                    <option value="navy">⚓ Navy</option>
+                    <option value="obsidian">⚫ Obsidian</option>
+                    <option value="slate">🗿 Slate</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <label for="mobileViewToggle">
+                    📱 <span class="sv-text">Mobilvy</span><span class="ar-text">عرض الجوال</span>
+                </label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="mobileViewToggle" aria-label="Aktivera Mobilvy">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <label for="globalFcLangToggle">
+                    🇸🇦 <span class="sv-text">Visa Arabiska i Flashcards</span><span class="ar-text">إظهار العربية
+                        في
+                        البطاقات</span>
+                </label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="globalFcLangToggle" checked aria-label="Visa Arabiska i Flashcards">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script type="module" src="../src/learn/quran.ts"></script>
+</body>
+
+</html>

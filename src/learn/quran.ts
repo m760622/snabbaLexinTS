@@ -10,6 +10,7 @@ import { TTSManager } from '../tts';
 import { FavoritesManager } from '../favorites';
 import { QuizStats } from '../quiz-stats';
 import { t, LanguageManager } from '../i18n';
+import { LearnViewManager, LearnView, createLearnViewManager } from './LearnViewManager';
 
 /**
  * Quran Learning Module logic
@@ -42,7 +43,9 @@ class QuranManager {
         theme: 'emerald'
     };
 
-    private currentMode: 'list' | 'flashcards' | 'quiz' = 'list';
+    private viewManager: LearnViewManager;
+    private currentMode: LearnView = 'browse';
+
     private fcIndex = 0;
     private fcFlipped = false;
     private fcDirection: 'ar-sv' | 'sv-ar' = 'sv-ar';
@@ -84,6 +87,7 @@ class QuranManager {
     };
 
     constructor() {
+        this.viewManager = createLearnViewManager();
         this.loadProgress();
         this.init();
     }
@@ -108,14 +112,16 @@ class QuranManager {
     private init() {
         this.setupDOM();
         this.initFilters();
-        this.initTabs();
+        this.initViewManager(); // New initViewManager
         this.initFlashcards();
         this.initQuiz();
         ThemeManager.setColorTheme(this.userData.theme, false);
         this.updateXPDisplay();
+        this.switchMode('browse');
         this.renderCards(quranData);
 
         // Expose functions to window for HTML handlers
+        (window as any).switchMode = this.switchMode.bind(this); // Expose switchMode public wrapper
         (window as any).openInfoModal = this.openInfoModal.bind(this);
         (window as any).closeInfoModal = this.closeInfoModal.bind(this);
         (window as any).toggleFavorite = this.toggleFavorite.bind(this);
@@ -125,6 +131,32 @@ class QuranManager {
         (window as any).stopRecording = this.stopRecording.bind(this);
         (window as any).showRelatedList = this.showRelatedList.bind(this);
         (window as any).renderCards = () => this.renderCards(quranData);
+    }
+
+    private initViewManager() {
+        this.viewManager.registerViews({
+            'browse': {
+                viewId: 'browseView',
+                onActivate: () => {
+                    this.renderCards(this.filteredData);
+                    document.getElementById('filterBar')?.classList.remove('hidden');
+                }
+            },
+            'flashcard': {
+                viewId: 'flashcardView',
+                onActivate: () => {
+                    this.loadFlashcard(this.fcIndex);
+                    document.getElementById('filterBar')?.classList.remove('hidden');
+                }
+            },
+            'quiz': {
+                viewId: 'quizView',
+                onActivate: () => {
+                    this.nextQuizQuestion();
+                    document.getElementById('filterBar')?.classList.add('hidden');
+                }
+            }
+        });
     }
 
     private setupDOM() {
@@ -249,40 +281,43 @@ class QuranManager {
             return matchesSearch && matchesSurah && matchesType;
         });
 
-        if (this.currentMode === 'list') this.renderCards(this.filteredData);
-        else if (this.currentMode === 'flashcards') {
+        if (this.currentMode === 'browse') this.renderCards(this.filteredData);
+        else if (this.currentMode === 'flashcard') {
             this.fcIndex = 0;
             this.loadFlashcard(this.fcIndex);
         }
     }
 
-    private initTabs() {
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.switchMode((btn as HTMLElement).dataset.mode as any);
-            });
-        });
+    private switchMode(mode: string) {
+        // Map legacy keys if they come from old event listeners
+        const map: Record<string, LearnView> = { 'list': 'browse', 'flashcards': 'flashcard' };
+        const view = map[mode] || mode as LearnView;
+
+        this.currentMode = view;
+        this.viewManager.switchTo(view);
+
+        // Update Tabs - Sliding Indicator Logic
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`btn-${view}`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            this.updateModeIndicator(activeBtn);
+        }
     }
 
-    private switchMode(mode: 'list' | 'flashcards' | 'quiz') {
-        this.currentMode = mode;
-        const modes = ['quranList', 'flashcardMode', 'quizMode'];
-        modes.forEach(m => document.getElementById(m)?.classList.add('hidden'));
+    private updateModeIndicator(activeBtn: HTMLElement) {
+        const indicator = document.getElementById('modeIndicator');
+        const bar = document.getElementById('modeSelectionBar');
+        if (!indicator || !bar) return; // Silent return if elements not present
 
-        const targetId = mode === 'list' ? 'quranList' : mode === 'flashcards' ? 'flashcardMode' : 'quizMode';
-        document.getElementById(targetId)?.classList.remove('hidden');
+        const barRect = bar.getBoundingClientRect();
+        const btnRect = activeBtn.getBoundingClientRect();
 
-        const filterBar = document.getElementById('filterBar');
-        if (mode === 'quiz') {
-            filterBar?.classList.add('hidden');
-            if (!this.currentQuizItem) this.nextQuizQuestion();
-        } else {
-            filterBar?.classList.remove('hidden');
-            if (mode === 'flashcards') this.loadFlashcard(this.fcIndex);
-        }
+        // Calculate offset
+        const offsetLeft = btnRect.left - barRect.left;
+
+        indicator.style.width = `${btnRect.width}px`;
+        indicator.style.transform = `translateX(${offsetLeft - 6}px)`; // Adjust for padding/gap
     }
 
     // Virtual Scrolling Configuration
@@ -394,6 +429,17 @@ class QuranManager {
         }
     }
 
+    // SVG Icons
+    private readonly icons = {
+        play: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
+        pause: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`,
+        mic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>`,
+        info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`,
+        volume: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+        share: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`,
+        heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`
+    };
+
     private createCardElement(item: QuranEntry): HTMLElement {
         const card = document.createElement('div');
         card.className = 'quran-card';
@@ -407,25 +453,25 @@ class QuranManager {
         const favClass = isFav ? 'fav-btn active' : 'fav-btn';
         const audioUrl = this.getAudioUrl(item.surah);
 
+        // Root logic (simple estimate based on 3 chars)
+        const root = item.word.replace(/[^\u0621-\u064A]/g, '').substring(0, 3);
+
         card.innerHTML = `
             <div class="card-header">
                 <div class="left-actions">
                     <span class="badger surah-badge">${item.surah}</span>
+                    <button class="badger root-badge" onclick="showRelatedList('${item.word}')">
+                        <span class="badger-icon">🌱</span>
+                        <span class="sv-text">Rot: ${root}</span>
+                        <span class="ar-text">جذر: ${root}</span>
+                    </button>
                 </div>
                 <div class="action-group">
                     <button class="share-btn" title="Dela" onclick='shareCard(${JSON.stringify(item).replace(/'/g, "&apos;")}, event)'>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="5" r="3"></circle>
-                            <circle cx="6" cy="12" r="3"></circle>
-                            <circle cx="18" cy="19" r="3"></circle>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                        </svg>
+                        ${this.icons.share}
                     </button>
                     <button class="${favClass}" onclick="toggleFavorite('${item.id}')" data-id="${item.id}" title="Spara till favoriter">
-                         <svg viewBox="0 0 24 24" fill="${isFav ? '#ef4444' : 'none'}" stroke="${isFav ? '#ef4444' : 'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
+                        ${this.icons.heart}
                     </button>
                 </div>
             </div>
@@ -433,19 +479,33 @@ class QuranManager {
             <div class="main-word-section">
                 <span class="target-word" data-auto-size>${item.word}</span>
                 <span class="meaning-ar" data-auto-size>${item.meaning_ar}</span>
-                <span class="word-sv" data-auto-size>${item.word_sv} 
-                    <button class="audio-btn" onclick="playTTS('${item.word_sv.replace(/'/g, "\\'")}', 'sv-SE', this, null, '${item.id}')">🔊</button> 
-                    <button class="audio-btn" onclick="openInfoModal('${item.id}')" title="Tafsir/Info">ℹ️</button>
-                </span>
+                <div class="word-sv-container">
+                    <span class="word-sv-accent" data-auto-size>${item.word_sv}</span>
+                    <div class="word-actions">
+                        <button class="icon-btn" onclick="playTTS('${item.word_sv.replace(/'/g, "\\'")}', 'sv-SE', this, null, '${item.id}')">🔊</button> 
+                        <button class="icon-btn" onclick="openInfoModal('${item.id}')" title="Tafsir/Info">ℹ️</button>
+                    </div>
+                </div>
              </div>
 
             <div class="ayah-section">
-                <div class="ayah-full" data-auto-size>${displayAyah} 
-                    <button class="audio-btn" onclick="playTTS('${item.ayah_full.replace(/'/g, "\\'")}', 'ar-SA', this, '${audioUrl}', '${item.id}')">🕌</button> 
-                    <button class="audio-btn mic-btn" onmousedown="startRecording(this)" onmouseup="stopRecording(this)" ontouchstart="startRecording(this)" ontouchend="stopRecording(this)" title="Håll in för att spela in">🎙️</button>
-                    <button class="audio-btn" onclick="showRelatedList('${item.word}')" title="Visa relaterade ord">🌱</button>
+                <div class="ayah-full" data-auto-size>${displayAyah}</div>
+                
+                <div class="media-bar">
+                    <button class="media-btn play-ayah-btn" onclick="playTTS('${item.ayah_full.replace(/'/g, "\\'")}', 'ar-SA', this, '${audioUrl}', '${item.id}')">
+                        <span class="icon-lg">🕌</span> <span class="btn-text">Tilaawah</span>
+                    </button>
+                    
+                    <div class="audio-visualizer hidden">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+
+                    <button class="media-btn mic-btn" onmousedown="startRecording(this)" onmouseup="stopRecording(this)" ontouchstart="startRecording(this)" ontouchend="stopRecording(this)">
+                        <span class="icon-lg">🎙️</span>
+                    </button>
                 </div>
-                <div class="ayah-sv" data-auto-size>${item.ayah_sv}</div>
+
+                <div class="ayah-sv text-muted" data-auto-size>${item.ayah_sv}</div>
             </div>
         `;
         return card;
@@ -494,6 +554,7 @@ class QuranManager {
     }
 
     private toggleFavorite(id: string) {
+        if (navigator.vibrate) navigator.vibrate(10);
         const isFav = FavoritesManager.toggle(id);
         const btns = document.querySelectorAll(`.fav-btn[data-id="${id}"]`);
         btns.forEach(btn => {
@@ -504,22 +565,31 @@ class QuranManager {
     }
 
     private playTTS(text: string, lang: string, btn: HTMLElement, audioUrl: string | null = null, id?: string) {
+        if (navigator.vibrate) navigator.vibrate(10);
         if (btn) btn.classList.add('playing');
+
+        // Visualizer Toggle
+        const card = btn.closest('.quran-card, .fc-inner');
+        const visualizer = card?.querySelector('.audio-visualizer');
+        if (visualizer) visualizer.classList.remove('hidden');
 
         if (lang === 'ar-SA' && audioUrl) {
             const audio = new Audio(audioUrl);
             audio.onended = () => {
                 btn.classList.remove('playing');
+                if (visualizer) visualizer.classList.add('hidden');
                 const card = btn.closest('.quran-card, .fc-inner');
                 card?.querySelector('.highlight-word')?.classList.remove('highlight-karaoke');
             };
             audio.onerror = () => {
                 TTSManager.speak(text, lang);
                 btn.classList.remove('playing');
+                if (visualizer) visualizer.classList.add('hidden');
             };
             audio.play().catch(() => {
                 TTSManager.speak(text, lang);
                 btn.classList.remove('playing');
+                if (visualizer) visualizer.classList.add('hidden');
             });
 
             // Karaoke effect
@@ -530,11 +600,15 @@ class QuranManager {
         }
 
         TTSManager.speak(text, lang);
-        setTimeout(() => btn.classList.remove('playing'), 2000);
+        setTimeout(() => {
+            btn.classList.remove('playing');
+            if (visualizer) visualizer.classList.add('hidden');
+        }, 2000);
         if (id) QuizStats.recordStudy(id);
     }
 
     private async shareCard(item: QuranEntry, e: MouseEvent) {
+        if (navigator.vibrate) navigator.vibrate(10);
         if (e) { e.preventDefault(); e.stopPropagation(); }
         const text = `🔹 ${item.word} (${item.surah})\n\nMeaning: ${item.meaning_ar}\n\n📖 ${item.ayah_full}\n\n🇸🇪 "${item.ayah_sv}"\n\n- Snabbalexin Quran`;
 
@@ -549,7 +623,14 @@ class QuranManager {
     }
 
     private async startRecording(btn: HTMLElement) {
+        if (navigator.vibrate) navigator.vibrate(20);
         btn.classList.add('recording');
+
+        // Visualizer Toggle
+        const card = btn.closest('.quran-card');
+        const visualizer = card?.querySelector('.audio-visualizer');
+        if (visualizer) visualizer.classList.remove('hidden');
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.mediaRecorder = new MediaRecorder(stream);
@@ -559,12 +640,20 @@ class QuranManager {
         } catch (err) {
             showToast('Mikrofon nekad / الميكروفون مرفوض 🎤❌');
             btn.classList.remove('recording');
+            if (visualizer) visualizer.classList.add('hidden');
         }
     }
 
     private stopRecording(btn: HTMLElement) {
+        if (navigator.vibrate) navigator.vibrate(10);
         if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') return;
         btn.classList.remove('recording');
+
+        // Visualizer Toggle
+        const card = btn.closest('.quran-card');
+        const visualizer = card?.querySelector('.audio-visualizer');
+        if (visualizer) visualizer.classList.add('hidden');
+
         this.mediaRecorder.stop();
         this.mediaRecorder.onstop = () => {
             const blob = new Blob(this.audioChunks, { type: 'audio/wav' });
@@ -574,7 +663,7 @@ class QuranManager {
     }
 
     private showRelatedList(sourceWord: string) {
-        this.switchMode('list');
+        this.switchMode('browse');
         const cleanWord = sourceWord.replace(/[^\u0621-\u064A]/g, '');
         if (cleanWord.length < 3) return;
         const rootProxy = cleanWord.substring(0, 3);

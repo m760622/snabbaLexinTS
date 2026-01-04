@@ -205,7 +205,7 @@ function init() {
     setupEventListeners();
     loadMobileView();
     // Ensure browse view is active on init
-    document.getElementById('browseView')?.classList.add('active');
+    switchMode('browse');
 }
 
 function setupEventListeners() {
@@ -291,6 +291,29 @@ function initViewManager() {
 
 function switchMode(mode: string) {
     viewManager.switchTo(mode as LearnView);
+
+    // Update Mode UI
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById(`btn-${mode}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        updateModeIndicator(activeBtn);
+    }
+}
+
+function updateModeIndicator(activeBtn: HTMLElement) {
+    const indicator = document.getElementById('modeIndicator');
+    const bar = document.getElementById('modeSelectionBar');
+    if (!indicator || !bar) return;
+
+    const barRect = bar.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+
+    // Calculate offset
+    const offsetLeft = btnRect.left - barRect.left;
+
+    indicator.style.width = `${btnRect.width}px`;
+    indicator.style.transform = `translateX(${offsetLeft - 6}px)`; // Adjust for padding/gap
 }
 
 function openSavedModal() {
