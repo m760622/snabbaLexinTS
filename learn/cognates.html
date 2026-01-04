@@ -23,7 +23,8 @@
             style="display: flex; gap: 0.5rem; width: 100%; justify-content: space-between; align-items: center;">
             <!-- Left Group: Back & Mobile -->
             <div style="display: flex; gap: 0.5rem;">
-                <button class="back-btn" onclick="window.location.href='learn.html'" aria-label="Tillbaka / رجوع">
+                <button class="back-btn" onclick="window.location.href='learn.html'" title="Tillbaka / رجوع"
+                    aria-label="Tillbaka / رجوع">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -40,37 +41,33 @@
                 </button>
             </div>
 
-            <!-- Right Group: Saved -->
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="asma-nav-btn" onclick="openSavedModal()" title="Sparade / المحفوظات">
-                    <span style="font-size: 1.1rem;">⭐</span>
-                </button>
+            <!-- Right Group: Stats -->
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <!-- Stats Badges -->
+                <div class="stats-badge" title="Totalt antal ord / إجمالي الكلمات">📚 <span id="totalWords">673</span>
+                </div>
+                <div class="stats-badge learned" title="Antal lärda / عدد المتعلمة">✅ <span id="learnedCount">0</span>
+                </div>
+                <div class="stats-badge streak" title="Streak / السلسلة">🔥 <span id="streakCount">0</span></div>
             </div>
         </div>
 
         <div class="mode-selection-bar" id="modeSelectionBar">
             <span class="mode-indicator" id="modeIndicator"></span>
-            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse">
+            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse" title="Bläddra / تصفح">
                 <span class="mode-icon">📖</span>
             </button>
-            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard">
+            <button class="mode-btn" onclick="openSavedModal()" id="btn-saved" title="Sparade / المحفوظات">
+                <span class="mode-icon">⭐</span>
+            </button>
+            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard" title="Flashcards / بطاقات">
                 <span class="mode-icon">🂴</span>
             </button>
-            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz">
+            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz" title="Quiz / اختبار">
                 <span class="mode-icon">📝</span>
             </button>
         </div>
     </header>
-
-    <!-- Stats Bar -->
-    <div class="stats-bar">
-        <div class="stat-chip">📚 <span id="totalWords">673</span> <span class="sv-text">ord</span><span
-                class="ar-text">كلمة</span></div>
-        <div class="stat-chip learned">✅ <span id="learnedCount">0</span> <span class="sv-text">lärt</span><span
-                class="ar-text">متعلم</span></div>
-        <div class="stat-chip streak">🔥 <span id="streakCount">0</span> <span class="sv-text">streak</span><span
-                class="ar-text">سلسلة</span></div>
-    </div>
 
     <main>
         <!-- Browse View -->
@@ -83,6 +80,7 @@
                     <span class="ar-text">المتشابهات</span>
                 </h1>
                 <div style="font-size: 1.2rem; color: #cbd5e1; margin-top: 0.2rem;">Liknande Ord</div>
+
             </div>
 
             <div class="search-row">

@@ -23,7 +23,8 @@
     <header class="quran-header">
         <div class="nav-buttons-row"
             style="display: flex; gap: 0.5rem; width: 100%; justify-content: space-between; align-items: center;">
-            <button class="back-btn" onclick="window.location.href='../learn/learn.html'" aria-label="Tillbaka / رجوع">
+            <button class="back-btn" onclick="window.location.href='../learn/learn.html'" title="Tillbaka / رجوع"
+                aria-label="Tillbaka / رجوع">
                 <svg viewBox="0 0 24 24" fill="none" class="icon-md" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -31,21 +32,21 @@
                 </svg>
             </button>
 
-            <button id="settingsBtn" class="settings-trigger" aria-label="Inställningar / الإعدادات"
-                onclick="openSettings()">
+            <button id="settingsBtn" class="settings-trigger" title="Inställningar / الإعدادات"
+                aria-label="Inställningar / الإعدادات" onclick="openSettings()">
                 ⚙️
             </button>
         </div>
 
         <div class="mode-selection-bar" id="modeSelectionBar">
             <span class="mode-indicator" id="modeIndicator"></span>
-            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse">
+            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse" title="Bläddra / تصفح">
                 <span class="mode-icon">📜</span>
             </button>
-            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard">
+            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard" title="Flashcards / بطاقات">
                 <span class="mode-icon">🗂️</span>
             </button>
-            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz">
+            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz" title="Quiz / اختبار">
                 <span class="mode-icon">❓</span>
             </button>
         </div>
