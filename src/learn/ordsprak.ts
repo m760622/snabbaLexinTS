@@ -2,6 +2,7 @@
 import ordsprakData from '../data/ordsprak.json';
 import { TTSManager } from '../tts';
 import LanguageManager from '../i18n';
+import { LearnViewManager, LearnView, createLearnViewManager } from './LearnViewManager';
 
 console.log('[Ordspråk] Module loaded');
 
@@ -196,6 +197,7 @@ function detectTopic(proverb: Proverb): string {
 // ========== INIT ==========
 function init() {
     console.log('[Ordspråk] Initializing...');
+    initViewManager();
     calculateStreak();
     filteredProverbs = [...PROVERBS];
     updateStats();
@@ -268,40 +270,27 @@ function loadMobileView() {
     if (btn) btn.classList.toggle('mobile-active', savedMobile);
 }
 
-// ========== MODE SWITCHING ==========
-function switchMode(mode: string) {
-    // Hide all views
-    document.getElementById('browseView')?.classList.remove('active');
-    document.getElementById('flashcardView')?.classList.remove('active');
-    document.getElementById('quizView')?.classList.remove('active');
-    document.getElementById('savedView')?.classList.remove('active');
+// ========== LEARN VIEW SWITCHING ==========
+// Note: This is different from Game Mode Switching in games/
+// Learn Views: browse, flashcard, quiz, saved (for learning content)
+// Game Modes: classic, timerush, flashlight, etc (for gameplay)
 
-    // Update tab states
-    document.querySelectorAll('.mode-tab').forEach((tab) => {
-        const onclick = tab.getAttribute('onclick');
-        if (onclick && onclick.includes(`'${mode}'`)) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
+const viewManager = createLearnViewManager();
+
+// Initialize view manager with view configurations
+function initViewManager() {
+    viewManager.registerViews({
+        'browse': { viewId: 'browseView' },
+        'flashcard': { viewId: 'flashcardView', onActivate: initFlashcards },
+        'saved': { viewId: 'savedView', onActivate: renderSavedProverbs },
+        'quiz': { viewId: 'quizView' },
+        'quiz-fill': { viewId: 'quizView', onActivate: startFillBlankQuiz },
+        'quiz-match': { viewId: 'quizView', onActivate: startMatchingQuiz }
     });
+}
 
-    // Show selected view
-    if (mode === 'browse') {
-        document.getElementById('browseView')?.classList.add('active');
-    } else if (mode === 'flashcard') {
-        document.getElementById('flashcardView')?.classList.add('active');
-        initFlashcards();
-    } else if (mode === 'saved') {
-        document.getElementById('savedView')?.classList.add('active');
-        renderSavedProverbs();
-    } else if (mode === 'quiz-fill') {
-        document.getElementById('quizView')?.classList.add('active');
-        startFillBlankQuiz();
-    } else if (mode === 'quiz-match') {
-        document.getElementById('quizView')?.classList.add('active');
-        startMatchingQuiz();
-    }
+function switchMode(mode: string) {
+    viewManager.switchTo(mode as LearnView);
 }
 
 function openSavedModal() {

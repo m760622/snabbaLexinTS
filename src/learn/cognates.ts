@@ -3,6 +3,7 @@ import { cognatesData } from '../data/cognatesData';
 import { TTSManager } from '../tts';
 import { TextSizeManager } from '../utils';
 import { LanguageManager } from '../i18n';
+import { LearnViewManager, LearnView, createLearnViewManager } from './LearnViewManager';
 
 // ========== TYPES ==========
 
@@ -54,6 +55,7 @@ export function init() {
     }
 
     updateStats();
+    initViewManager();
     renderFilterChips();
     renderContent(cognatesData);
 
@@ -99,28 +101,24 @@ function toggleFilters(): void {
     }
 }
 
-// ========== MODE SWITCHING ==========
+// ========== LEARN VIEW SWITCHING ==========
+// Note: This is different from Game Mode Switching in games/
+// Learn Views: browse, flashcard, quiz, saved (for learning content)
+
+const viewManager = createLearnViewManager();
+
+// Initialize view manager
+function initViewManager() {
+    viewManager.registerViews({
+        'browse': { viewId: 'browseView' },
+        'flashcard': { viewId: 'flashcardView', onActivate: initFlashcards },
+        'saved': { viewId: 'savedView', onActivate: renderSavedWords },
+        'quiz': { viewId: 'quizView', onActivate: startQuizInternal }
+    });
+}
+
 function switchMode(mode: string) {
-    // currentMode = mode; // Removed unused assignment
-    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-
-    // Use currentTarget if event exists, or find by mode
-    const target = (window.event?.target as HTMLElement) || document.querySelector(`.mode-tab[onclick*="${mode}"]`);
-    if (target) target.classList.add('active');
-
-    const browseView = document.getElementById('browseView');
-    const flashcardView = document.getElementById('flashcardView');
-    const quizView = document.getElementById('quizView');
-    const savedView = document.getElementById('savedView');
-
-    if (browseView) browseView.classList.toggle('hidden', mode !== 'browse');
-    if (flashcardView) flashcardView.classList.toggle('active', mode === 'flashcard');
-    if (quizView) quizView.classList.toggle('active', mode === 'quiz');
-    if (savedView) savedView.classList.toggle('active', mode === 'saved');
-
-    if (mode === 'flashcard') initFlashcards();
-    if (mode === 'quiz') startQuizInternal();
-    if (mode === 'saved') renderSavedWords();
+    viewManager.switchTo(mode as LearnView);
 }
 
 // ========== STATS ==========
