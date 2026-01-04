@@ -58,6 +58,13 @@ let quizQuestions: AsmaName[] = [];
 let currentQuestionIndex = 0;
 let quizScore = 0;
 
+// Fill-in-Blank Quiz State
+let fillQuizQuestions: any[] = [];
+let fillCurrentIndex = 0;
+let fillScore = 0;
+let fillTotalQuestions = 10;
+let fillAutoAdvanceTimer: any = null;
+
 // Flashcard State
 let flashcardQueue: AsmaName[] = [];
 let currentFlashcardIndex = 0;
@@ -104,14 +111,29 @@ const viewManager = createLearnViewManager();
 
 function initViewManager() {
     viewManager.registerViews({
-        'browse': { viewId: 'browseView' },
+        'browse': {
+            viewId: 'browseView',
+            onActivate: () => {
+                document.getElementById('modeSelectionBar')?.classList.remove('hidden');
+            }
+        },
         'quiz': {
             viewId: 'quizView',
-            onActivate: startQuiz
+            onActivate: () => {
+                startQuiz(); // Corrected from initQuiz
+            }
+        },
+        'quiz-fill': {
+            viewId: 'quizFillView',
+            onActivate: () => {
+                initFillQuiz();
+            }
         },
         'flashcard': {
             viewId: 'flashcardView',
-            onActivate: startFlashcards
+            onActivate: () => {
+                startFlashcards();
+            }
         }
     });
 }
@@ -123,7 +145,8 @@ function switchMode(mode: string) {
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
     let btnId = '';
     if (mode === 'browse') btnId = 'btn-browse';
-    else if (mode.startsWith('quiz')) btnId = 'btn-quiz';
+    else if (mode === 'quiz') btnId = 'btn-quiz'; // strict check to avoid overlap
+    else if (mode === 'quiz-fill') btnId = 'btn-quiz-fill';
     else if (mode === 'flashcard') btnId = 'btn-flashcard';
 
     if (btnId) {
@@ -132,6 +155,163 @@ function switchMode(mode: string) {
 
         // Animate Sliding Indicator
         updateModeIndicator(activeBtn);
+    }
+}
+
+// ----------------------------------------------------------------
+// Fill-in-Blank Quiz Logic
+// ----------------------------------------------------------------
+
+function initFillQuiz() {
+    fillQuizQuestions = generateFillQuestions(fillTotalQuestions);
+    fillCurrentIndex = 0;
+    fillScore = 0;
+
+    const results = document.getElementById('fillResults');
+    const questionCard = document.getElementById('fillQuestionCard');
+    const options = document.getElementById('fillOptions');
+    const feedback = document.getElementById('fillFeedback');
+
+    if (results) results.style.display = 'none';
+    if (questionCard) questionCard.style.display = 'block';
+    if (options) options.style.display = 'grid';
+    if (feedback) feedback.style.display = 'none';
+
+    showFillQuestion();
+}
+
+function generateFillQuestions(count: number) {
+    const shuffled = [...allNames].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count).map(item => ({
+        nameAr: item.nameAr,
+        nameSv: item.nameSv,
+        meaningSv: item.meaningSv,
+        verseAr: item.verseAr,
+        correctAnswer: item.meaningSv // Identify by meaning
+    }));
+}
+
+function showFillQuestion() {
+    if (fillCurrentIndex >= fillQuizQuestions.length) {
+        showFillResults();
+        return;
+    }
+
+    const question = fillQuizQuestions[fillCurrentIndex];
+    const currentQ = document.getElementById('fillCurrentQ');
+    const totalQ = document.getElementById('fillTotalQ');
+    const scoreEl = document.getElementById('fillScore');
+
+    if (currentQ) currentQ.textContent = (fillCurrentIndex + 1).toString();
+    if (totalQ) totalQ.textContent = fillTotalQuestions.toString();
+    if (scoreEl) scoreEl.textContent = fillScore.toString();
+
+    const ayahArabic = document.getElementById('fillAyahArabic');
+    const ayahTranslation = document.getElementById('fillAyahTranslation');
+
+    if (ayahArabic) {
+        // Show Name
+        ayahArabic.innerHTML = `<span class="highlight-word">${question.nameAr}</span>`;
+    }
+    if (ayahTranslation) {
+        // Show instruction or verse fragment if relevant, but instruction is static HTML "What matches..."
+        // Or we can show the name in Swedish too?
+        // Let's keep it simple: Show Arabic Name, Ask for Swedish Meaning.
+        ayahTranslation.textContent = question.nameSv; // Show transliteration/name in SV as hint? Or leave empty? Instructions say "Meaning".
+        // Let's use nameSv as secondary hint
+    }
+
+    generateFillOptions(question);
+
+    const feedback = document.getElementById('fillFeedback');
+    if (feedback) feedback.style.display = 'none';
+}
+
+function generateFillOptions(question: any) {
+    const options = document.getElementById('fillOptions');
+    if (!options) return;
+
+    const wrongAnswers = allNames
+        .filter(item => item.meaningSv !== question.correctAnswer)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(item => item.meaningSv);
+
+    const allOptions = [question.correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+
+    options.innerHTML = allOptions.map(option => `<button class="fill-option-btn" data-answer="${option}">${option}</button>`).join('');
+
+    options.querySelectorAll('.fill-option-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selected = (e.target as HTMLElement).getAttribute('data-answer');
+            checkFillAnswer(selected, question.correctAnswer);
+        });
+    });
+}
+
+function checkFillAnswer(selected: string | null, correct: string) {
+    const feedback = document.getElementById('fillFeedback');
+    const feedbackContent = feedback?.querySelector('.feedback-content');
+    const options = document.getElementById('fillOptions');
+
+    if (!feedback || !feedbackContent) return;
+
+    const isCorrect = selected === correct;
+
+    if (isCorrect) {
+        fillScore++;
+        feedbackContent.innerHTML = `<div class="feedback-icon">✅</div><div class="feedback-text"><span class="sv-text">Rätt!</span><span class="ar-text">صحيح!</span></div>`;
+        feedback.className = 'quiz-fill-feedback correct';
+    } else {
+        feedbackContent.innerHTML = `<div class="feedback-icon">❌</div><div class="feedback-text"><span class="sv-text">Fel! Rätt svar: ${correct}</span><span class="ar-text">خطأ! الإجابة الصحيحة: ${correct}</span></div>`;
+        feedback.className = 'quiz-fill-feedback wrong';
+    }
+
+    options?.querySelectorAll('.fill-option-btn').forEach(btn => {
+        (btn as HTMLButtonElement).disabled = true;
+        if (btn.getAttribute('data-answer') === correct) {
+            btn.classList.add('correct');
+        } else if (btn.getAttribute('data-answer') === selected) {
+            btn.classList.add('wrong');
+        }
+    });
+
+    feedback.style.display = 'block';
+    const scoreEl = document.getElementById('fillScore');
+    if (scoreEl) scoreEl.textContent = fillScore.toString();
+
+    // Auto-advance
+    if (fillAutoAdvanceTimer) clearTimeout(fillAutoAdvanceTimer);
+    fillAutoAdvanceTimer = setTimeout(() => {
+        nextFillQuestion();
+    }, 5000);
+}
+
+function nextFillQuestion() {
+    if (fillAutoAdvanceTimer) {
+        clearTimeout(fillAutoAdvanceTimer);
+        fillAutoAdvanceTimer = null;
+    }
+    fillCurrentIndex++;
+    showFillQuestion();
+}
+
+function showFillResults() {
+    const questionCard = document.getElementById('fillQuestionCard');
+    const results = document.getElementById('fillResults');
+
+    if (questionCard) questionCard.style.display = 'none';
+    if (results) results.style.display = 'block';
+
+    const finalScore = document.getElementById('fillFinalScore');
+    const finalTotal = document.getElementById('fillFinalTotal');
+    const percentage = document.getElementById('fillPercentage');
+
+    if (finalScore) finalScore.textContent = fillScore.toString();
+    if (finalTotal) finalTotal.textContent = fillTotalQuestions.toString();
+    if (percentage) {
+        const percent = Math.round((fillScore / fillTotalQuestions) * 100);
+        percentage.textContent = `${percent}%`;
     }
 }
 
@@ -1221,8 +1401,11 @@ function toggleFilters(): void {
 }
 
 // Quiz exports
+// Quiz exports
 (window as any).startQuiz = startQuiz;
 (window as any).closeQuiz = closeQuiz;
+(window as any).checkAnswer = checkAnswer;
+(window as any).retryFillQuiz = initFillQuiz;
 (window as any).checkAnswer = checkAnswer;
 
 // Flashcard exports
