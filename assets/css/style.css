@@ -3563,19 +3563,20 @@ header {
   overflow-y: auto;
   overflow-x: hidden;
 
-  /* Premium Glassmorphism */
-  background: rgba(255, 255, 255, 0.85);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  backdrop-filter: blur(25px) saturate(180%);
+  /* Premium Glassmorphism - Optimized */
+  background: rgba(255, 255, 255, 0.95);
+  /* More opaque, less blur work needed */
+  -webkit-backdrop-filter: blur(12px);
+  /* Reduced from 25px */
+  backdrop-filter: blur(12px);
 
   border-radius: 20px;
   padding: 0.75rem;
 
-  /* Deep layered shadows */
+  /* Simplified Shadow */
   box-shadow:
-    0 20px 40px -5px rgba(0, 0, 0, 0.1),
-    0 10px 15px -3px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 15px 35px -5px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 
   display: flex;
   flex-direction: column;
@@ -3587,6 +3588,10 @@ header {
 
   /* Transformation origin for animation */
   transform-origin: top left;
+
+  /* Performance Optimization */
+  will-change: transform, opacity;
+  contain: content;
 }
 
 /* Animation handling for display: block/none toggles */
@@ -3607,11 +3612,13 @@ header {
 }
 
 [data-theme="dark"] .settings-menu {
-  background: rgba(20, 20, 27, 0.85);
+  background: rgba(20, 20, 27, 0.95);
+  /* More solid */
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  /* Simplified */
 }
 
 /* Section Headers */
@@ -3911,7 +3918,8 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  z-index: 50;
+  z-index: 2000;
+  /* Ensure on top of everything including sticky headers */
   pointer-events: none;
   /* Let clicks pass through empty space */
   overflow: visible !important;
@@ -3926,19 +3934,17 @@ header {
   /* Re-enable clicks for buttons */
   z-index: 1001;
   /* Ensure above other nav elements */
-  overflow: visible !important;
   /* Fix for menu clipping */
-}
 
-flex-direction: column;
-/* Stack buttons vertically */
-gap: 0.5rem;
-pointer-events: auto;
-flex: 0 0 88px;
-/* Fixed width for perfect balance */
-justify-content: center;
-/* Center vertically within top-nav */
-margin-left: 0.5rem;
+  flex-direction: column;
+  /* Stack buttons vertically */
+  gap: 0.5rem;
+  pointer-events: auto;
+  flex: 0 0 88px;
+  /* Fixed width for perfect balance */
+  justify-content: center;
+  /* Center vertically within top-nav */
+  margin-left: 0.5rem;
 }
 
 .nav-center {
