@@ -99,6 +99,37 @@ export function generateSettingsMenuHTML(): string {
                 <input type="checkbox" id="soundEffectsToggle" checked title="Ljudeffekter / المؤثرات الصوتية">
                 <span class="toggle-slider"></span>
             </label>
+        <div class="menu-item font-size-control-menu">
+            <span class="icon-box">🔤</span>
+            <div class="font-size-wrapper">
+                <span><span class="sv-text">Textstorlek</span><span class="ar-text">حجم A</span></span>
+                <div class="font-btn-group">
+                    <button class="font-btn" data-size="small">S</button>
+                    <button class="font-btn active" data-size="medium">M</button>
+                    <button class="font-btn" data-size="large">L</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">✨</span>
+            <span><span class="sv-text">Animationer</span><span class="ar-text">الحركات</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="animationsToggle" checked title="Animationer / الحركات">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <!-- Section: Sound & Notifications -->
+        <div class="settings-section-header">🔔 <span class="sv-text">Ljud & Notiser</span><span class="ar-text">الصوت والإشعارات</span></div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">🔊</span>
+            <span><span class="sv-text">Ljudeffekter</span><span class="ar-text">المؤثرات الصوتية</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="soundEffectsToggle" checked title="Ljudeffekter / المؤثرات الصوتية">
+                <span class="toggle-slider"></span>
+            </label>
         </div>
 
         <div class="menu-item tts-speed-control">
@@ -109,7 +140,7 @@ export function generateSettingsMenuHTML(): string {
                     <span id="ttsSpeedValue" class="tts-speed-badge">85%</span>
                 </div>
                 <input type="range" id="ttsSpeedSlider" min="50" max="150" value="85" class="tts-slider" title="Uttalshastighet / سرعة النطق">
-                <button id="ttsTestBtn" class="tts-test-btn">🔊 <span class="sv-text">Testa</span><span class="ar-text">اختبر</span></button>
+                <button id="testTTSBtn" class="tts-test-btn">🔊 <span class="sv-text">Testa</span><span class="ar-text">اختبر</span></button>
             </div>
         </div>
 
@@ -134,13 +165,51 @@ export function generateSettingsMenuHTML(): string {
                 </div>
                 <div id="reminderTimeContainer" class="reminder-time-container hidden">
                     <input type="time" id="reminderTime" value="18:00" class="reminder-time-input" title="Påminnelsetid / وقت التذكير">
-                    <button id="testReminderBtn" class="tts-test-btn">🔔 <span class="sv-text">Testa</span><span class="ar-text">اختبر</span></button>
                 </div>
             </div>
         </div>
 
         <!-- Section: Learning Tools -->
         <div class="settings-section-header">📚 <span class="sv-text">Lärverktyg</span><span class="ar-text">أدوات التعلم</span></div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">🎯</span>
+            <div class="goal-wrapper-menu">
+                <span><span class="sv-text">Dagligt mål</span><span class="ar-text">الهدف اليومي</span></span>
+                <div class="goal-selector-inline">
+                    <button class="goal-btn" data-goal="5">5</button>
+                    <button class="goal-btn active" data-goal="10">10</button>
+                    <button class="goal-btn" data-goal="20">20</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">▶️</span>
+            <span><span class="sv-text">Auto-spela</span><span class="ar-text">تشغيل تلقائي</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="autoPlayToggle" title="Auto-spela / تشغيل تلقائي">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">💬</span>
+            <span><span class="sv-text">Visa exempel</span><span class="ar-text">عرض الأمثلة</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="showExamplesToggle" checked title="Visa exempel / عرض الأمثلة">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">👁️</span>
+            <span><span class="sv-text">Ögonvård</span><span class="ar-text">حماية العين</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="eyeCareToggle" title="Ögonvård / حماية العين">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
 
         <button id="showFavoritesBtn" class="menu-item" aria-label="Visa favoriter / عرض المفضلة">
             <span class="icon-box icon-color-star">${ICONS.star}</span>
@@ -252,6 +321,18 @@ export function initSettingsMenuLazy(): void {
     });
 }
 
+// Helper to update the main settings JSON blob
+function updateUserSettings(key: string, value: any): void {
+    try {
+        const saved = localStorage.getItem('userSettings');
+        const settings = saved ? JSON.parse(saved) : {};
+        settings[key] = value;
+        localStorage.setItem('userSettings', JSON.stringify(settings));
+    } catch (e) {
+        console.error('Failed to sync settings:', e);
+    }
+}
+
 function initSettingsMenuHandlers(): void {
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
@@ -261,20 +342,30 @@ function initSettingsMenuHandlers(): void {
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
+            // Sync with main settings
+            updateUserSettings('darkMode', next === 'dark');
         });
     }
 
     // Color theme select
     const colorSelect = document.getElementById('colorThemeSelect') as HTMLSelectElement;
     if (colorSelect) {
-        const saved = localStorage.getItem('colorTheme') || 'default';
-        colorSelect.value = saved;
+        const savedGlobal = localStorage.getItem('colorTheme') || 'default';
+        colorSelect.value = savedGlobal;
         colorSelect.addEventListener('change', () => {
+            // Remove old class approach
             document.body.className = document.body.className.replace(/theme-\w+/, '');
+
+            // Set attribute on documentElement (HTML tag) for global variables
             if (colorSelect.value !== 'default') {
-                document.body.classList.add(`theme-${colorSelect.value}`);
+                document.documentElement.setAttribute('data-color-theme', colorSelect.value);
+            } else {
+                document.documentElement.removeAttribute('data-color-theme');
             }
+
             localStorage.setItem('colorTheme', colorSelect.value);
+            // Sync with main settings
+            updateUserSettings('colorTheme', colorSelect.value);
         });
     }
 
@@ -282,12 +373,19 @@ function initSettingsMenuHandlers(): void {
     const ttsSlider = document.getElementById('ttsSpeedSlider') as HTMLInputElement;
     const ttsValue = document.getElementById('ttsSpeedValue');
     if (ttsSlider && ttsValue) {
-        const savedSpeed = localStorage.getItem('ttsSpeed') || '85';
-        ttsSlider.value = savedSpeed;
-        ttsValue.textContent = `${savedSpeed}%`;
+        // Try getting from JSON first for consistency
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            const speed = savedJSON.ttsSpeed || localStorage.getItem('ttsSpeed') || '85';
+            ttsSlider.value = String(speed);
+            ttsValue.textContent = `${speed}%`;
+        } catch (e) { /* fallback */ }
+
         ttsSlider.addEventListener('input', () => {
             ttsValue.textContent = `${ttsSlider.value}%`;
             localStorage.setItem('ttsSpeed', ttsSlider.value);
+            // Sync with main settings
+            updateUserSettings('ttsSpeed', parseInt(ttsSlider.value));
         });
     }
 
@@ -295,34 +393,54 @@ function initSettingsMenuHandlers(): void {
     const reminderToggle = document.getElementById('reminderToggle') as HTMLInputElement;
     const reminderTime = document.getElementById('reminderTimeContainer');
     if (reminderToggle && reminderTime) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            reminderToggle.checked = savedJSON.reminderEnabled === true || localStorage.getItem('reminderEnabled') === 'true';
+            reminderTime.classList.toggle('hidden', !reminderToggle.checked);
+        } catch (e) { /* fallback */ }
+
         reminderToggle.addEventListener('change', () => {
             reminderTime.classList.toggle('hidden', !reminderToggle.checked);
+            localStorage.setItem('reminderEnabled', String(reminderToggle.checked));
+            // Sync with main settings
+            updateUserSettings('reminderEnabled', reminderToggle.checked);
         });
     }
 
     // Voice buttons
-    document.querySelectorAll('.voice-btn').forEach(btn => {
+    const voiceBtns = document.querySelectorAll('.voice-btn');
+    if (voiceBtns.length > 0) {
+        // Initialize state
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            const voice = savedJSON.ttsVoicePreference || localStorage.getItem('ttsVoice') || 'natural';
+            voiceBtns.forEach(btn => {
+                if (btn.getAttribute('data-voice') === voice) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        } catch (e) { /* fallback */ }
+    }
+
+    voiceBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.voice-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            localStorage.setItem('ttsVoice', (btn as HTMLElement).dataset.voice || 'natural');
+            const voice = (btn as HTMLElement).dataset.voice || 'natural';
+            localStorage.setItem('ttsVoice', voice);
+            // Sync with main settings
+            updateUserSettings('ttsVoicePreference', voice);
         });
     });
 
-    // Language buttons (New)
+    // Language buttons
     document.querySelectorAll('.menu-lang-btn').forEach(btn => {
-        // Set active state
-        if (btn.getAttribute('data-lang') === (localStorage.getItem('appLanguage') || 'both')) {
-            btn.classList.add('active');
-        }
-
+        // Init active state logic...
+        // (Note: full language sync is complex, basic handling for now)
         btn.addEventListener('click', () => {
             const lang = btn.getAttribute('data-lang') || 'both';
             document.querySelectorAll('.menu-lang-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Import LanguageManager dynamically if needed or assume it's available via window
-            // For now, we'll reload to apply changes simply, or try to use the global if available
             localStorage.setItem('appLanguage', lang);
 
             if ((window as any).LanguageManager) {
@@ -336,39 +454,193 @@ function initSettingsMenuHandlers(): void {
     // Mobile View toggle
     const mobileViewToggle = document.getElementById('mobileViewToggle') as HTMLInputElement;
     if (mobileViewToggle) {
-        const savedMobileView = localStorage.getItem('mobileView') === 'true';
-        mobileViewToggle.checked = savedMobileView;
-        document.body.classList.toggle('mobile-view', savedMobileView);
+        try {
+            // Get from JSON source of truth if available
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            // Check if property exists in JSON first, if not fall back to old key or default
+            const isMobile = 'mobileView' in savedJSON ? savedJSON.mobileView : (localStorage.getItem('mobileView') === 'true');
+
+            mobileViewToggle.checked = isMobile;
+            document.body.classList.toggle('mobile-view', isMobile);
+        } catch (e) { /* fallback */ }
 
         mobileViewToggle.addEventListener('change', () => {
             const checked = mobileViewToggle.checked;
-            document.body.classList.toggle('mobile-view', checked);
+            // Use 'iphone-view' to match style.css rules
+            document.body.classList.toggle('iphone-view', checked);
             localStorage.setItem('mobileView', String(checked));
+            // Sync with main settings
+            updateUserSettings('mobileView', checked);
+
+            // Also notify MobileViewManager if available globally
+            if ((window as any).MobileViewManager) {
+                (window as any).MobileViewManager.apply(checked);
+            }
         });
     }
 
     // Sound Effects toggle
     const soundEffectsToggle = document.getElementById('soundEffectsToggle') as HTMLInputElement;
     if (soundEffectsToggle) {
-        const savedSoundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // default true
-        soundEffectsToggle.checked = savedSoundEnabled;
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            // Priority: JSON > Individual Key > Default True
+            let isEnabled = true;
+            if ('soundEffects' in savedJSON) isEnabled = savedJSON.soundEffects;
+            else if (localStorage.getItem('soundEnabled') !== null) isEnabled = localStorage.getItem('soundEnabled') !== 'false';
+
+            soundEffectsToggle.checked = isEnabled;
+        } catch (e) { /* fallback */ }
 
         soundEffectsToggle.addEventListener('change', () => {
-            localStorage.setItem('soundEnabled', String(soundEffectsToggle.checked));
+            const checked = soundEffectsToggle.checked;
+            localStorage.setItem('soundEnabled', String(checked));
+            // Sync with main settings
+            updateUserSettings('soundEffects', checked);
         });
     }
 
     // Focus Mode toggle
     const focusModeToggle = document.getElementById('focusModeToggle') as HTMLInputElement;
     if (focusModeToggle) {
-        const savedFocusMode = localStorage.getItem('focusMode') === 'true';
-        focusModeToggle.checked = savedFocusMode;
-        document.body.classList.toggle('focus-mode', savedFocusMode);
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            let isFocus = false;
+            if ('focusMode' in savedJSON) isFocus = savedJSON.focusMode;
+            else isFocus = localStorage.getItem('focusMode') === 'true';
+
+            focusModeToggle.checked = isFocus;
+            document.body.classList.toggle('focus-mode', isFocus);
+        } catch (e) { /* fallback */ }
 
         focusModeToggle.addEventListener('change', () => {
             const checked = focusModeToggle.checked;
             document.body.classList.toggle('focus-mode', checked);
             localStorage.setItem('focusMode', String(checked));
+            // Sync with main settings
+            updateUserSettings('focusMode', checked);
+        });
+    }
+
+    // ===================================
+    // NEW HANDLERS FOR FULL SYNC
+    // ===================================
+
+    // Font Size Handlers
+    const fontBtns = document.querySelectorAll('.font-btn');
+    if (fontBtns.length > 0) {
+        // Init State
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            const savedSize = savedJSON.fontSize || 'medium';
+            fontBtns.forEach(btn => {
+                if (btn.getAttribute('data-size') === savedSize) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            // Apply immediately if not applied by app.ts
+            const sizeMap: Record<string, string> = { 'small': '14px', 'medium': '16px', 'large': '18px' };
+            if (sizeMap[savedSize]) document.documentElement.style.fontSize = sizeMap[savedSize];
+        } catch (e) { }
+
+        fontBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const size = btn.getAttribute('data-size') || 'medium';
+                // UI Update
+                fontBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Functional Update
+                const sizeMap: Record<string, string> = { 'small': '14px', 'medium': '16px', 'large': '18px' };
+                document.documentElement.style.fontSize = sizeMap[size];
+
+                // Data Sync
+                updateUserSettings('fontSize', size);
+            });
+        });
+    }
+
+    // Animations Toggle
+    const animToggle = document.getElementById('animationsToggle') as HTMLInputElement;
+    if (animToggle) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            // Default true
+            const isAnim = savedJSON.animations !== false;
+            animToggle.checked = isAnim;
+            document.body.classList.toggle('reduce-motion', !isAnim);
+        } catch (e) { }
+
+        animToggle.addEventListener('change', () => {
+            const checked = animToggle.checked;
+            document.body.classList.toggle('reduce-motion', !checked);
+            updateUserSettings('animations', checked);
+        });
+    }
+
+    // Daily Goal
+    const goalBtns = document.querySelectorAll('.goal-btn');
+    if (goalBtns.length > 0) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            const savedGoal = String(savedJSON.dailyGoal || '10');
+            goalBtns.forEach(btn => {
+                if (btn.getAttribute('data-goal') === savedGoal) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        } catch (e) { }
+
+        goalBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                goalBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const goal = parseInt(btn.getAttribute('data-goal') || '10');
+                updateUserSettings('dailyGoal', goal);
+            });
+        });
+    }
+
+    // Auto Play
+    const autoPlayToggle = document.getElementById('autoPlayToggle') as HTMLInputElement;
+    if (autoPlayToggle) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            autoPlayToggle.checked = savedJSON.autoPlay === true;
+        } catch (e) { }
+
+        autoPlayToggle.addEventListener('change', () => {
+            updateUserSettings('autoPlay', autoPlayToggle.checked);
+        });
+    }
+
+    // Show Examples
+    const showExToggle = document.getElementById('showExamplesToggle') as HTMLInputElement;
+    if (showExToggle) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            // Default true
+            showExToggle.checked = savedJSON.showExamples !== false;
+        } catch (e) { }
+
+        showExToggle.addEventListener('change', () => {
+            updateUserSettings('showExamples', showExToggle.checked);
+        });
+    }
+
+    // Eye Care
+    const eyeCareToggle = document.getElementById('eyeCareToggle') as HTMLInputElement;
+    if (eyeCareToggle) {
+        try {
+            const savedJSON = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            const isEye = savedJSON.eyeCare === true;
+            eyeCareToggle.checked = isEye;
+            document.body.classList.toggle('eye-care-mode', isEye);
+        } catch (e) { }
+
+        eyeCareToggle.addEventListener('change', () => {
+            const checked = eyeCareToggle.checked;
+            document.body.classList.toggle('eye-care-mode', checked);
+            localStorage.setItem('eyeCareMode', String(checked));
+            updateUserSettings('eyeCare', checked);
         });
     }
 }
