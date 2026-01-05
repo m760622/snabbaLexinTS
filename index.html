@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="assets/css/style.css?v=99">
     <link rel="stylesheet" href="assets/css/mobile-enhancements.css?v=99">
     <link rel="stylesheet" href="assets/css/search-cards.css?v=99">
+    <link rel="stylesheet" href="assets/css/settings.css?v=99">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
@@ -36,7 +37,7 @@
             // We hardcode version check here to match config (e.g. '1.5.0') 
             // Better to just rely on flag, if flag is false -> go welcome
             if (!hasDataReady) {
-                window.location.replace('/welcome.html');
+                window.location.replace('welcome.html');
             }
         } catch (e) {
             console.error('Redirect check failed', e);
@@ -85,7 +86,7 @@
         <div class="nav-left">
 
             <div class="settings-dropdown settings-dropdown-layout">
-                <a href="settings.html" id="settingsBtn" class="theme-toggle" aria-label="Inställningar / الإعدادات">
+                <a href="#" id="settingsBtn" class="theme-toggle" aria-label="Inställningar / الإعدادات">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
