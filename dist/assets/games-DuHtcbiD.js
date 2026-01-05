@@ -84,7 +84,7 @@ import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              *//* empt
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
             border: none;
             cursor: pointer;
             display: flex;
@@ -121,7 +121,7 @@ import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              *//* empt
             <defs>
                 <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style="stop-color:#6366f1"/>
-                    <stop offset="50%" style="stop-color:#ec4899"/>
+                    <stop offset="50%" style="stop-color:#3b82f6"/>
                     <stop offset="100%" style="stop-color:#f59e0b"/>
                 </linearGradient>
             </defs>
@@ -244,7 +244,7 @@ import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              *//* empt
             </svg>`,label:"Fokusläge",labelAr:"وضع التركيز",color:"#22c55e",action:"toggleFocusMode"},{id:"eye-care",icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
-            </svg>`,label:"Ögonvård",labelAr:"حماية العين",color:"#fbbf24",action:"toggleEyeCare"},{id:"pomodoro",icon:"⏱️",label:"Pomodoro",labelAr:"مؤقت بومودورو",color:"#8b5cf6",action:"togglePomodoro"},{id:"sound",icon:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </svg>`,label:"Ögonvård",labelAr:"حماية العين",color:"#fbbf24",action:"toggleEyeCare"},{id:"pomodoro",icon:"⏱️",label:"Pomodoro",labelAr:"مؤقت بومودورو",color:"#3b82f6",action:"togglePomodoro"},{id:"sound",icon:`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -314,7 +314,7 @@ import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              *//* empt
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
     border: none;
     cursor: pointer;
     display: flex;
@@ -472,7 +472,7 @@ import"./modulepreload-polyfill-B5Qt9EMX.js";/* empty css              *//* empt
 
 .fab-menu-container.open .fab-main-btn {
     animation: none;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
 }
 
 /* Mobile optimizations */

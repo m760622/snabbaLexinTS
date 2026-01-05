@@ -7,8 +7,8 @@
     --text-color: #e0e0e0;
     --primary-neon: #00f3ff;
     /* Cyan */
-    --secondary-neon: #ff00ff;
-    /* Magenta */
+    --secondary-neon: #00e0ff;
+    /* Cyan */
     --accent-neon: #bc13fe;
     /* blue */
     --cell-size: 38px;
@@ -23,7 +23,7 @@
     --grid-bg: #16213e;
     --text-color: #e8e8e8;
     --primary-neon: #4a9eff;
-    --secondary-neon: #7b68ee;
+    --secondary-neon: #3b82f6;
     --accent-neon: #6c5ce7;
     --cell-size: 42px;
     --gap: 4px;

@@ -52,8 +52,8 @@ export const WC_THEMES: WCTheme[] = [
         id: 'education',
         name: 'Utbildning / التعليم',
         icon: '🎓',
-        background: 'linear-gradient(to top, #c471f5 0%, #fa71cd 100%)',
-        accent: '#7c3aed'
+        background: 'linear-gradient(to top, #3b82f6 0%, #60a5fa 100%)',
+        accent: '#2563eb'
     },
     {
         id: 'transport',

@@ -411,7 +411,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     /* Responsive font size */
     white-space: nowrap;
     /* Force single line */
-    background: linear-gradient(45deg, #dc2626, #22d3ee, #ec4899);
+    background: linear-gradient(45deg, #0ea5e9, #22d3ee, #0284c7);
     /* More vibrant gradient */
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -680,7 +680,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 }
 
 .game-card-item:nth-child(16) .game-icon-large {
-    color: #f472b6;
+    color: #22d3ee;
     /* Pink Light */
     filter: drop-shadow(0 4px 8px rgba(244, 114, 182, 0.4));
 }
@@ -1031,7 +1031,7 @@ html[data-theme="light"] body {
 }
 
 [data-theme="light"] .games-header h1 {
-    background: linear-gradient(45deg, #4f46e5, #7c3aed, #db2777);
+    background: linear-gradient(45deg, #3b82f6, #3b82f6, #0ea5e9);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -1117,7 +1117,7 @@ html[data-theme="light"] body {
 /* Check Button - Primary Action */
 .check-btn {
     padding: 0.8rem 1.5rem;
-    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     border: none;
     color: white;
     border-radius: 1rem;
@@ -1137,7 +1137,7 @@ html[data-theme="light"] body {
 .check-btn:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
-    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
 }
 
 .check-btn:active {
@@ -1312,7 +1312,7 @@ html[data-theme="light"] body {
     margin: 0;
     font-size: 1.5rem;
     white-space: nowrap;
-    background: linear-gradient(to right, #dc2626, #1d4ed8, #ec4899);
+    background: linear-gradient(to right, #3b82f6, #1e40af, #60a5fa);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -2453,7 +2453,7 @@ body.iphone-view.dark-mode .high-score {
     /* Increased */
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     color: white;
     border: none;
     font-size: 1.8rem;
@@ -2813,7 +2813,7 @@ body.iphone-view.dark-mode .high-score {
 #wheelShowAnswerBtn {
     padding: 0;
     /* Remove padding for circle */
-    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%) !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%) !important;
     border: 2px solid rgba(255, 255, 255, 0.3);
     /* Thicker border */
     color: white !important;
@@ -3023,7 +3023,7 @@ body.iphone-view.dark-mode .high-score {
     padding: 1rem;
     font-size: 1.1rem;
     font-weight: 600;
-    background: linear-gradient(135deg, #3b82f6, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     color: white;
     border: none;
     border-radius: 0.75rem;
@@ -3342,7 +3342,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -3568,7 +3568,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -3929,7 +3929,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.2rem;
     font-weight: 800;
     color: white;
-    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     border: none;
     border-radius: 2rem;
     cursor: pointer;
@@ -4247,7 +4247,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .score-badge {
-    background: linear-gradient(135deg, #dc2626 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     color: white;
     padding: 0.75rem 1.25rem;
     border-radius: 2rem;
@@ -4351,7 +4351,7 @@ body.iphone-view.dark-mode .high-score {
 }
 
 .word-wheel-controls .score-badge {
-    background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     box-shadow: 0 2px 5px rgba(14, 165, 233, 0.3);
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -4392,7 +4392,7 @@ body.iphone-view.dark-mode .high-score {
     font-size: 1.4rem;
     /* Smaller to fit on one line */
     white-space: nowrap;
-    background: linear-gradient(to right, #dc2626, #1d4ed8, #ec4899);
+    background: linear-gradient(to right, #3b82f6, #1e40af, #60a5fa);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -5947,7 +5947,7 @@ body.iphone-view.dark-mode .high-score {
 .wc-map-node.current {
     transform: scale(1.2);
     box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
-    background: linear-gradient(135deg, #3b82f6, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     /* Blue for current */
     border-color: #bfdbfe;
     color: white;
@@ -6007,7 +6007,7 @@ body.iphone-view.dark-mode .high-score {
 
 /* --- Map Icon Button in Header --- */
 .wc-map-icon-btn {
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -7873,7 +7873,7 @@ body.memory-game-page::before {
 }
 
 .wc-letters .letter-btn.selected {
-    background: linear-gradient(145deg, #4f46e5, #dc2626);
+    background: linear-gradient(145deg, #2563eb, #3b82f6);
     border-color: #818cf8;
     box-shadow: 0 0 25px rgba(37, 99, 235, 0.6);
     transform: scale(1.1);
@@ -8277,7 +8277,7 @@ body.memory-game-page::before {
 }
 
 .wc-btn-primary {
-    background: linear-gradient(145deg, #1d4ed8, #6d28d9);
+    background: linear-gradient(145deg, #1d4ed8, #1e40af);
     color: white;
     box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
 }
@@ -10326,7 +10326,7 @@ body.memory-game-page::before {
 }
 
 .wc-level-intermediate {
-    background: linear-gradient(135deg, #3b82f6, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
 }
 
 .wc-level-expert {
@@ -10334,7 +10334,7 @@ body.memory-game-page::before {
 }
 
 .wc-level-master {
-    background: linear-gradient(135deg, #22d3ee, #7c3aed);
+    background: linear-gradient(135deg, #22d3ee, #0ea5e9);
 }
 
 .wc-level-text {
@@ -10524,7 +10524,7 @@ body.memory-game-page::before {
 .wc-chapter-title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--wc-accent, #c084fc);
+    color: var(--wc-accent, #60a5fa);
     margin-bottom: 0.8rem;
     text-align: center;
     display: flex;
@@ -10583,7 +10583,7 @@ body.memory-game-page::before {
 
 .wc-stage-btn.current {
     background: linear-gradient(145deg, var(--wc-primary, #22d3ee), var(--wc-secondary, #0891b2));
-    border-color: var(--wc-accent, #c084fc);
+    border-color: var(--wc-accent, #60a5fa);
     color: white;
     box-shadow: 0 0 15px var(--wc-glow, rgba(34, 211, 238, 0.5));
 }

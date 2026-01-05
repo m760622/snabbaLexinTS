@@ -2,7 +2,7 @@
 
 /* Base Variables */
 :root {
-    --puzzle-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --puzzle-bg: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     --tile-bg: linear-gradient(145deg, #3b82f6, #1d4ed8);
     --tile-glow: rgba(59, 130, 246, 0.5);
     --tile-text: #fff;
@@ -13,7 +13,7 @@
 
 [data-theme="dark"] {
     --puzzle-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    --tile-bg: linear-gradient(145deg, #dc2626, #4f46e5);
+    --tile-bg: linear-gradient(145deg, #3b82f6, #2563eb);
     --tile-glow: rgba(37, 99, 235, 0.6);
     --header-bg: rgba(0, 0, 0, 0.3);
     --card-bg: rgba(0, 0, 0, 0.3);
@@ -290,7 +290,7 @@ header {
 }
 
 .go-content {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     padding: 2.5rem;
     border-radius: 24px;
     text-align: center;

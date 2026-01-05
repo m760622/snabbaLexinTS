@@ -260,7 +260,7 @@ body.focus-mode .focus-mode-toggle {
 
 .switch-neumorphic.active::before {
     left: calc(100% - 32px);
-    background: linear-gradient(145deg, #dc2626, #4f46e5);
+    background: linear-gradient(145deg, #3b82f6, #2563eb);
 }
 
 /* ============================================================
@@ -906,7 +906,7 @@ body.focus-mode .focus-mode-toggle {
 .mystery-box {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, #1d4ed8, #dc2626);
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -1096,7 +1096,7 @@ body.focus-mode .focus-mode-toggle {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     border: none;
     cursor: pointer;
     display: flex;
@@ -1218,7 +1218,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-btn-primary {
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     color: white;
 }
 
@@ -1257,7 +1257,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .pomodoro-session-dot.active {
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     animation: pulseDot 1s ease-in-out infinite;
 }
 
@@ -1562,7 +1562,7 @@ body.focus-mode .focus-mode-toggle {
 }
 
 .tour-next {
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     border: none;
     color: white;
     padding: 10px 24px;

@@ -12,7 +12,7 @@ const CONFIG = {
         bg: '#1a1a24',
         gridLine: '#2a2a35',
         block: '#00f3ff', // Default Cyan
-        palette: ['#00f3ff', '#bc13fe', '#ff0055', '#ffe600'], // Cyan, Purple, Pink, Yellow
+        palette: ['#00f3ff', '#3b82f6', '#ef4444', '#ffe600'], // Cyan, Blue, Red, Yellow
         bomb: '#ff0000',
         bombText: '#ffffff',
         ice: '#aaddff',

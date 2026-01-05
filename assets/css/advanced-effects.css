@@ -83,7 +83,7 @@
     top: 12px;
     left: 12px;
     padding: 4px 8px;
-    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
     color: white;
     border-radius: 8px;
     font-size: 0.65rem;
@@ -339,7 +339,7 @@
     border-radius: 50%;
     border: 2px solid var(--surface);
     margin-left: -8px;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -470,7 +470,7 @@
 .bar {
     width: 100%;
     max-width: 40px;
-    background: linear-gradient(180deg, #dc2626, #1d4ed8);
+    background: linear-gradient(180deg, #3b82f6, #1e40af);
     border-radius: 6px 6px 0 0;
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -549,7 +549,7 @@
 }
 
 .skill-bar-fill.grammar {
-    background: linear-gradient(90deg, #dc2626, #4f46e5);
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
 }
 
 .skill-bar-fill.listening {
@@ -708,7 +708,7 @@ body.eye-care-mode::after {
 }
 
 body.eye-care-mode .eye-care-toggle {
-    background: linear-gradient(135deg, #3b82f6, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
@@ -748,7 +748,7 @@ body.eye-care-mode .eye-care-toggle {
 }
 
 .theme-indigo {
-    background: linear-gradient(135deg, #dc2626, #4f46e5);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
 
 .theme-blue {
@@ -963,7 +963,7 @@ body.eye-care-mode .eye-care-toggle {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #dc2626, #1d4ed8);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     display: flex;
     align-items: center;
     justify-content: center;

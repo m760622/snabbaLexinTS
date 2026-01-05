@@ -10,7 +10,7 @@
     --error: #ef4444;
     --cyan: #06b6d4;
     --blue: #3b82f6;
-    --pink: #ec4899;
+    --pink: #3b82f6;
 }
 
 * {
@@ -106,7 +106,7 @@ header h1 {
     flex: 1;
     font-size: 1.2rem;
     text-align: center;
-    background: linear-gradient(135deg, #06b6d4, #dc2626, #3b82f6);
+    background: linear-gradient(135deg, #06b6d4, #0369a1, #3b82f6);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

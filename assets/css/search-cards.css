@@ -394,7 +394,7 @@
 /* Religion - blue */
 .card.compact-card[data-type="religion"],
 .card.compact-card[data-type="rel"] {
-    --glow-color: #7c3aed;
+    --glow-color: #3b82f6;
 }
 
 /* Politics - Red */
@@ -481,8 +481,8 @@
 .grammar-interj,
 .type-interjection,
 .type-interj {
-    color: #fdba74 !important;
-    border-color: #fdba74 !important;
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
 }
 
 .card.compact-card[data-type="interjection"],
@@ -544,7 +544,7 @@
 }
 
 .card.compact-card[data-type="religion"] {
-    --glow-color: #7c3aed;
+    --glow-color: #3b82f6;
 }
 
 .card.compact-card[data-type="politics"] {

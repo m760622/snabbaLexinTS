@@ -84,8 +84,8 @@
 }
 
 .game-icon--connect {
-    --icon-color: #8b5cf6;
-    --icon-color-dark: #7c3aed;
+    --icon-color: #3b82f6;
+    --icon-color-dark: #2563eb;
 }
 
 .game-icon--rain {
@@ -109,7 +109,7 @@
 }
 
 .game-icon--memory {
-    --icon-color: #f472b6;
+    --icon-color: #0ea5e9;
     --icon-color-dark: #db2777;
 }
 

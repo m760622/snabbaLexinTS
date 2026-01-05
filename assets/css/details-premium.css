@@ -950,9 +950,8 @@
 .word-type-badge.type-religion,
 .word-type-badge.type-rel,
 .word-type-badge.grammar-rel {
-    color: #7c3aed !important;
-    /* blue */
-    border-color: #7c3aed !important;
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
 }
 
 .word-type-badge.type-politics,
@@ -1766,7 +1765,7 @@
 
 .expand-btn {
     pointer-events: auto;
-    background: linear-gradient(135deg, #dc2626, #4f46e5);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     /* Fallback to explicit colors */
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -4528,7 +4527,7 @@ button:active,
 }
 
 .save-notes-btn {
-    background: linear-gradient(135deg, #dc2626, #4f46e5);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     border: none;
     padding: 0.5rem 1.25rem;
@@ -4732,7 +4731,7 @@ body .quiz-options {
 }
 
 .details-tab-btn.active {
-    background: linear-gradient(135deg, #dc2626, #4f46e5);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
 }
@@ -5119,7 +5118,7 @@ body .quiz-options {
 
 .mastery-progress {
     height: 100%;
-    background: linear-gradient(90deg, #dc2626, #1d4ed8, #3b82f6);
+    background: linear-gradient(90deg, #3b82f6, #1e40af, #3b82f6);
     border-radius: 5px;
     transition: width 0.5s ease;
 }
@@ -5229,7 +5228,7 @@ body .quiz-options {
 
 /* Front - Premium Gradient with Animated Border */
 .flashcard-front {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6b5ce7 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #60a5fa 100%);
     color: white;
     box-shadow:
         0 25px 50px -12px rgba(102, 126, 234, 0.4),
@@ -6840,7 +6839,7 @@ body .quiz-options {
 
 .flashcard-pro.glow-adjective .fc-type-badge-pro {
     background: rgba(13, 148, 136, 0.3);
-    color: #c084fc;
+    color: #60a5fa;
     border: 1px solid rgba(13, 148, 136, 0.5);
 }
 
@@ -6906,7 +6905,7 @@ body .quiz-options {
 
 .flashcard-pro.glow-preposition .fc-type-badge-pro {
     background: rgba(236, 72, 153, 0.3);
-    color: #f472b6;
+    color: #22d3ee;
     border: 1px solid rgba(236, 72, 153, 0.5);
 }
 
@@ -8214,7 +8213,7 @@ body .quiz-options {
 /* Religion - blue */
 .glow-religion,
 .details-hero.type-religion {
-    --glow-color: #7c3aed;
+    --glow-color: #2563eb;
     --hero-bg: radial-gradient(circle at top right, rgba(124, 58, 237, 0.15), transparent 70%),
         radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.1), transparent 70%);
 }

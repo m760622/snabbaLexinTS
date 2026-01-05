@@ -210,7 +210,7 @@ export function triggerConfetti(): void {
     }
 
     const particles: Particle[] = [];
-    const colors = ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#8B5CF6'];
+    const colors = ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#0EA5E9'];
 
     for (let i = 0; i < 100; i++) {
         particles.push({

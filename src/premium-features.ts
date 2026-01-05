@@ -565,7 +565,7 @@ export const PomodoroTimer = {
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
             border: none;
             cursor: pointer;
             display: flex;
@@ -853,7 +853,7 @@ export function createProgressRing(container: HTMLElement, progress: number, siz
             <defs>
                 <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style="stop-color:#6366f1"/>
-                    <stop offset="50%" style="stop-color:#ec4899"/>
+                    <stop offset="50%" style="stop-color:#3b82f6"/>
                     <stop offset="100%" style="stop-color:#f59e0b"/>
                 </linearGradient>
             </defs>

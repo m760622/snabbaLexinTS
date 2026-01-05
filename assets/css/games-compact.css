@@ -281,7 +281,7 @@
 }
 
 .category-chip.active {
-    background: linear-gradient(135deg, #3b82f6, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
     color: white;
     border-color: rgba(59, 130, 246, 0.5);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);

@@ -71,11 +71,38 @@ export function generateSettingsMenuHTML(): string {
             </select>
         </div>
 
+        <div class="menu-item toggle-item">
+            <span class="icon-box">📱</span>
+            <span><span class="sv-text">Mobilvy</span><span class="ar-text">عرض الجوال</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="mobileViewToggle" title="Mobilvy / عرض الجوال">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="menu-item toggle-item">
+            <span class="icon-box">🧘</span>
+            <span><span class="sv-text">Fokusläge</span><span class="ar-text">وضع التركيز</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="focusModeToggle" title="Fokusläge / وضع التركيز">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
         <!-- Section: Sound & Notifications -->
         <div class="settings-section-header">🔔 <span class="sv-text">Ljud & Notiser</span><span class="ar-text">الصوت والإشعارات</span></div>
 
+        <div class="menu-item toggle-item">
+            <span class="icon-box">🔊</span>
+            <span><span class="sv-text">Ljudeffekter</span><span class="ar-text">المؤثرات الصوتية</span></span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="soundEffectsToggle" checked title="Ljudeffekter / المؤثرات الصوتية">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
         <div class="menu-item tts-speed-control">
-            <span class="icon-box icon-color-indigo">${ICONS.volume}</span>
+            <span class="icon-box icon-color-blue">${ICONS.volume}</span>
             <div class="tts-speed-wrapper">
                 <div class="tts-speed-header">
                     <span><span class="sv-text">Uttalshastighet</span><span class="ar-text">سرعة النطق</span></span>
@@ -87,7 +114,7 @@ export function generateSettingsMenuHTML(): string {
         </div>
 
         <div class="menu-item tts-voice-selection">
-            <span class="icon-box icon-color-indigo">🎭</span>
+            <span class="icon-box icon-color-blue">🎭</span>
             <div class="voice-selector-inline">
                 <button class="voice-btn active" data-voice="natural" title="Naturlig / طبيعي">🌍</button>
                 <button class="voice-btn" data-voice="female" title="Kvinna / أنثى">👩</button>
@@ -121,7 +148,7 @@ export function generateSettingsMenuHTML(): string {
         </button>
 
         <button id="quizBtn" class="menu-item" aria-label="Snabbtest / تحدي السرعة">
-            <span class="icon-box icon-color-indigo">${ICONS.bolt}</span>
+            <span class="icon-box icon-color-blue">${ICONS.bolt}</span>
             <span>⚡ <span class="sv-text">Snabbtest</span><span class="ar-text">اختبار سريع</span></span>
         </button>
 
@@ -131,7 +158,7 @@ export function generateSettingsMenuHTML(): string {
         </button>
 
         <button id="flashcardsBtn" class="menu-item" aria-label="Flashcards / بطاقات">
-            <span class="icon-box icon-color-indigo">${ICONS.card}</span>
+            <span class="icon-box icon-color-blue">${ICONS.card}</span>
             <span>🃏 <span class="sv-text">Flashcards</span><span class="ar-text">بطاقات</span></span>
         </button>
 
@@ -169,13 +196,18 @@ export function generateSettingsMenuHTML(): string {
         <!-- Section: Info -->
         <div class="settings-section-header">ℹ️ <span class="sv-text">Info</span><span class="ar-text">المعلومات</span></div>
 
+        <a href="settings.html" class="menu-item" aria-label="Alla inställningar / جميع الإعدادات">
+            <span class="icon-box icon-color-blue">⚙️</span>
+            <span>⚙️ <span class="sv-text">Alla inställningar</span><span class="ar-text">جميع الإعدادات</span></span>
+        </a>
+
         <a href="device.html" class="menu-item" aria-label="Device Info / معلومات الجهاز">
             <span class="icon-box icon-color-slate">${ICONS.monitor}</span>
             <span>🖥️ Device Info</span>
         </a>
 
         <a href="changelog.html" class="menu-item" aria-label="Changelog / سجل التحديثات">
-            <span class="icon-box icon-color-indigo">${ICONS.list}</span>
+            <span class="icon-box icon-color-blue">${ICONS.list}</span>
             <span>📋 Changelog</span>
         </a>
 
@@ -300,4 +332,43 @@ function initSettingsMenuHandlers(): void {
             }
         });
     });
+
+    // Mobile View toggle
+    const mobileViewToggle = document.getElementById('mobileViewToggle') as HTMLInputElement;
+    if (mobileViewToggle) {
+        const savedMobileView = localStorage.getItem('mobileView') === 'true';
+        mobileViewToggle.checked = savedMobileView;
+        document.body.classList.toggle('mobile-view', savedMobileView);
+
+        mobileViewToggle.addEventListener('change', () => {
+            const checked = mobileViewToggle.checked;
+            document.body.classList.toggle('mobile-view', checked);
+            localStorage.setItem('mobileView', String(checked));
+        });
+    }
+
+    // Sound Effects toggle
+    const soundEffectsToggle = document.getElementById('soundEffectsToggle') as HTMLInputElement;
+    if (soundEffectsToggle) {
+        const savedSoundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // default true
+        soundEffectsToggle.checked = savedSoundEnabled;
+
+        soundEffectsToggle.addEventListener('change', () => {
+            localStorage.setItem('soundEnabled', String(soundEffectsToggle.checked));
+        });
+    }
+
+    // Focus Mode toggle
+    const focusModeToggle = document.getElementById('focusModeToggle') as HTMLInputElement;
+    if (focusModeToggle) {
+        const savedFocusMode = localStorage.getItem('focusMode') === 'true';
+        focusModeToggle.checked = savedFocusMode;
+        document.body.classList.toggle('focus-mode', savedFocusMode);
+
+        focusModeToggle.addEventListener('change', () => {
+            const checked = focusModeToggle.checked;
+            document.body.classList.toggle('focus-mode', checked);
+            localStorage.setItem('focusMode', String(checked));
+        });
+    }
 }

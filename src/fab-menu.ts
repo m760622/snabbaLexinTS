@@ -44,7 +44,7 @@ export const FABMenu = {
             icon: '⏱️',
             label: 'Pomodoro',
             labelAr: 'مؤقت بومودورو',
-            color: '#8b5cf6',
+            color: '#3b82f6',
             action: 'togglePomodoro'
         },
         {
@@ -355,7 +355,7 @@ const fabMenuStyles = `
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
     border: none;
     cursor: pointer;
     display: flex;
@@ -513,7 +513,7 @@ const fabMenuStyles = `
 
 .fab-menu-container.open .fab-main-btn {
     animation: none;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
 }
 
 /* Mobile optimizations */

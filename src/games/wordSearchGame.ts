@@ -923,7 +923,7 @@ class WordSearchGame {
 
     updateTimerDisplay() {
         this.timerEl.textContent = `${this.timer}s`;
-        this.timerEl.style.color = this.timer < 10 ? '#ff0055' : '#ff00ff';
+        this.timerEl.style.color = this.timer < 10 ? '#ef4444' : '#00e0ff';
     }
 
     gameOver() {

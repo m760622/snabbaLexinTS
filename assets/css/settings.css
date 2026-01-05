@@ -527,9 +527,7 @@
     font-size: 1.25rem;
 }
 
-.gradient-blue {
-    background: linear-gradient(135deg, #4a4d9c, #5c4a8a);
-}
+
 
 .gradient-blue {
     background: linear-gradient(135deg, #3570b8, #2a6a9a);
@@ -548,7 +546,7 @@
 }
 
 .gradient-rose {
-    background: linear-gradient(135deg, #9a4a6a, #8a3a5a);
+    background: linear-gradient(135deg, #1e3a8a, #172554);
 }
 
 .section-title-wrapper {
@@ -1542,7 +1540,7 @@ body.rtl .toast-progress {
     left: 0;
     height: 3px;
     width: 100%;
-    background: linear-gradient(90deg, var(--settings-primary, #5558b8), var(--settings-secondary, #6b4fa0));
+    background: linear-gradient(90deg, var(--settings-primary, #3b82f6), var(--settings-secondary, #1e40af));
     border-radius: 0 0 14px 14px;
     animation: toastProgress 4s linear forwards;
     transform-origin: left;
@@ -2265,7 +2263,9 @@ body:not(.dark-mode) .toast-notification {
 .voice-btn.active {
     background: var(--settings-primary);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}/* ============================================================
+}
+
+/* ============================================================
    LANGUAGE SELECTOR (PREMIUM)
    ============================================================ */
 .language-selection-container {

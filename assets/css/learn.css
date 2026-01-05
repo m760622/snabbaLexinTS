@@ -2283,7 +2283,7 @@
  }
 
  .level-badge {
-     background: linear-gradient(135deg, #6366f1, #8b5cf6);
+     background: linear-gradient(135deg, #3b82f6, #60a5fa);
      width: 50px;
      height: 50px;
      border-radius: 50%;
@@ -2327,7 +2327,7 @@
 
  .xp-fill {
      height: 100%;
-     background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7);
+     background: linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd);
      border-radius: 10px;
      transition: width 0.5s ease-out;
      position: relative;

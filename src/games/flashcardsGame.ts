@@ -130,7 +130,7 @@ function triggerConfetti(): void {
     const container = document.getElementById('flashcardsGame');
     if (!container) return;
 
-    const colors = ['#6366f1', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444'];
+    const colors = ['#3b82f6', '#0ea5e9', '#22c55e', '#f59e0b', '#ef4444'];
     const confettiCount = 50;
 
     for (let i = 0; i < confettiCount; i++) {
