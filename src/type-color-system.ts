@@ -416,11 +416,17 @@ export const TypeColorSystem = {
             // Actually, we can just return a temporary "noun" type and let the caller/color system handle it, 
             // or better yet, do the gender detection HERE.
 
-            // Try to find gender immediately to return valid result
+            // Priority: 1. Explicit gender parameter, 2. Type-based gender, 3. Forms-based detection
+            let genderFromType: 'en' | 'ett' | null = null;
+            if (genderLower === 'ett' || normalizedType === 'ett') {
+                genderFromType = 'ett';
+            } else if (genderLower === 'en' || normalizedType === 'en') {
+                genderFromType = 'en';
+            }
             const genderFromForms = this.detectNounGender(formsLower, wordLower);
-            const genderFromType = (genderLower === 'ett' || normalizedType === 'ett') ? 'ett' : 'en'; // Default to En if unsure
-
-            const finalGender = genderFromForms || genderFromType;
+            
+            // Explicit gender parameter should have highest priority
+            const finalGender = (genderLower as 'en' | 'ett') || genderFromType || genderFromForms || 'en';
             return { type: finalGender, color: TypeColors[finalGender], gender: finalGender, specializedLabel };
         }
 

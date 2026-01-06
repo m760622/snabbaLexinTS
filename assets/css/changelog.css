@@ -220,6 +220,18 @@ main {
     color: var(--warning);
 }
 
+.security {
+    color: var(--warning);
+}
+
+.performance {
+    color: #8b5cf6;
+}
+
+.test {
+    color: var(--info);
+}
+
 /* Mobile Toggle Button - 3D Keycap Style */
 .mobile-toggle-btn,
 #mobileToggle {

@@ -10,6 +10,7 @@ import { initMainUI } from './main-ui';
 import { LanguageManager, t } from './i18n';
 import './i18n-apply';
 import { TypeColorSystem } from './type-color-system';
+import { debounce, safeHTML, safeText, safeElement } from './security';
 
 /**
  * Main SnabbaLexin Application
@@ -405,7 +406,7 @@ export class App {
         }
     }
 
-    private handleSearch(e: Event) {
+    private handleSearch = debounce((e: Event) => {
         const input = e.target as HTMLInputElement;
         const query = input.value.trim();
 
@@ -418,7 +419,7 @@ export class App {
         sessionStorage.setItem('snabbaLexin_lastSearch', query);
 
         this.performSearch(input.value);
-    }
+    }, 300);
 
     public performSearch(query: string) {
         const normalizedQuery = query.toLowerCase().trim();
@@ -573,9 +574,16 @@ export class App {
         if (!searchResults) return;
 
         const nextBatch = this.currentResults.slice(this.renderedCount, this.renderedCount + this.BATCH_SIZE);
-        const html = nextBatch.map(row => this.createCard(row)).join('');
+        const fragment = document.createDocumentFragment();
+        nextBatch.forEach(row => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = this.createCard(row);
+            while (tempDiv.firstChild) {
+                fragment.appendChild(tempDiv.firstChild);
+            }
+        });
 
-        searchResults.insertAdjacentHTML('beforeend', html);
+        searchResults.appendChild(fragment);
         this.renderedCount += nextBatch.length;
 
         // Apply dynamic text sizing to newly rendered cards
@@ -804,12 +812,20 @@ export class App {
         }
 
         historyContainer.classList.remove('hidden');
-        historyList.innerHTML = history.map(q => `
-            <button class="history-chip" onclick="window.location.href='?s=${encodeURIComponent(q)}'">
-                <span class="history-icon">🕒</span>
-                <span class="history-text">${q}</span>
-            </button>
-        `).join('');
+        historyList.innerHTML = '';
+        history.forEach(q => {
+            const chip = safeElement('button', {
+                class: 'history-chip',
+                onclick: `window.location.href='?s=${encodeURIComponent(q)}'`
+            });
+            
+            const iconSpan = safeElement('span', { class: 'history-icon' }, '🕒');
+            const textSpan = safeElement('span', { class: 'history-text' }, q);
+            
+            chip.appendChild(iconSpan);
+            chip.appendChild(textSpan);
+            historyList.appendChild(chip);
+        });
 
         // Clear button
         if (clearBtn) {
