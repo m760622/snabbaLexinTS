@@ -31,6 +31,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="general-content">
+                    <div class="section-inner">
                     <div class="language-selection-container">
                         <h4 class="settings-subtitle"><span class="sv-text">Välj Språk</span><span class="ar-text">اختر اللغة</span></h4>
                         <div class="language-grid-premium" id="languageSelector">
@@ -51,6 +52,7 @@ export class SettingsUI {
                             </button>
                         </div>
                     </div>
+                    </div>
                 </div>
             </section>`;
     }
@@ -68,6 +70,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="appearance-content">
+                    <div class="section-inner">
                     <!-- Dark Mode Toggle -->
                     <div class="settings-item">
                         <div class="item-left">
@@ -159,6 +162,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="sound-content">
+                    <div class="section-inner">
                     <!-- Sound Effects -->
                     <div class="settings-item">
                         <div class="item-left">
@@ -251,6 +255,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="learning-content">
+                    <div class="section-inner">
                     <!-- Daily Goal -->
                     <div class="settings-item slider-item">
                         <div class="item-left">
@@ -340,6 +345,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="navigation-content">
+                    <div class="section-inner">
                     <div class="quick-links-grid">
                         <a href="games/games.html" class="quick-link-card">
                             <span class="quick-link-icon">🎮</span>
@@ -375,6 +381,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="data-content">
+                    <div class="section-inner">
                     <!-- Export Data -->
                     <div class="settings-item clickable" onclick="exportData()">
                         <div class="item-left">
@@ -455,6 +462,7 @@ export class SettingsUI {
                     </svg>
                 </div>
                 <div class="section-content" id="about-content">
+                    <div class="section-inner">
                     <!-- Version -->
                     <div class="settings-item">
                         <div class="item-left">

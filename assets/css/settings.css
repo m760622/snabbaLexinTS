@@ -1,12 +1,12 @@
 /**
  * ============================================================
  * PREMIUM SETTINGS PAGE STYLES
- * Version: 1.1 - Dark Mode Optimized
+ * Version: 2.0 - Modern Glassmorphism Design
  * ============================================================
  */
 
 /* ============================================================
-   CSS VARIABLES - Muted Dark Mode Palette
+   CSS VARIABLES - Enhanced Color Palette
    ============================================================ */
 :root {
     --settings-primary: #3b82f6;
@@ -19,9 +19,11 @@
     --settings-surface: rgba(22, 27, 34, 0.85);
     --settings-card: rgba(22, 27, 34, 0.7);
     --settings-border: rgba(255, 255, 255, 0.06);
-    --settings-text: #e6edf3;
-    --settings-text-secondary: #7d8590;
-    --settings-glass-blur: blur(16px);
+    --settings-text: #f5f5f5;
+    --settings-text-secondary: #d1d5db;
+    --settings-glass-blur: blur(15px);
+    --settings-glass-border: rgba(255, 255, 255, 0.1);
+    --settings-glass-bg: rgba(255, 255, 255, 0.05);
 }
 
 /* ============================================================
@@ -36,7 +38,7 @@
 }
 
 /* ============================================================
-   ANIMATED BACKGROUND - Subtle & Calming
+   ANIMATED BACKGROUND
    ============================================================ */
 .settings-bg {
     position: fixed;
@@ -86,27 +88,36 @@
 }
 
 @keyframes orbFloat {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    25% {
-        transform: translate(30px, -30px) scale(1.05);
-    }
-
-    50% {
-        transform: translate(-20px, 20px) scale(0.95);
-    }
-
-    75% {
-        transform: translate(-30px, -20px) scale(1.02);
-    }
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -30px) scale(1.05); }
+    50% { transform: translate(-20px, 20px) scale(0.95); }
+    75% { transform: translate(-30px, -20px) scale(1.02); }
 }
 
 /* ============================================================
-   CONTAINER
+   LINK STYLES - Force white color for readability
+   ============================================================ */
+.settings-page a,
+.settings-page a:link,
+.settings-page a:visited,
+.settings-page a:hover,
+.settings-page a:active,
+.settings-page a:focus {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.settings-page .settings-back-btn,
+.settings-page .settings-back-btn:link,
+.settings-page .settings-back-btn:visited,
+.settings-page .settings-back-btn:hover,
+.settings-page .settings-back-btn:active,
+.settings-page .settings-back-btn:focus {
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   CONTAINER & LAYOUT
    ============================================================ */
 .settings-container {
     position: relative;
@@ -130,7 +141,8 @@
     background: linear-gradient(to bottom, var(--settings-bg) 0%, transparent 100%);
 }
 
-.settings-back-btn {
+.settings-back-btn,
+.settings-reset-btn {
     width: 44px;
     height: 44px;
     border-radius: 14px;
@@ -143,12 +155,27 @@
     justify-content: center;
     color: var(--settings-text);
     text-decoration: none;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .settings-back-btn:hover {
     background: var(--settings-primary);
     transform: translateX(-4px);
+}
+
+.settings-reset-btn {
+    color: var(--settings-text-secondary);
+}
+
+.settings-reset-btn:hover {
+    color: var(--settings-warning);
+    border-color: var(--settings-warning);
+}
+
+.settings-reset-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .settings-header-title {
@@ -159,7 +186,7 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
-    background: linear-gradient(135deg, #fff, #94a3b8);
+    background: linear-gradient(135deg, #ffffff, #f5f5f5);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -176,46 +203,19 @@
     gap: 8px;
 }
 
-.settings-reset-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: var(--settings-surface);
-    backdrop-filter: var(--settings-glass-blur);
-    border: 1px solid var(--settings-border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--settings-text-secondary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.settings-reset-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-.settings-reset-btn:hover {
-    color: var(--settings-warning);
-    border-color: var(--settings-warning);
-}
-
 /* ============================================================
-   GLASS CARD
+   MODERN GLASSMORPHISM CARDS
    ============================================================ */
 .glass-card {
-    background: var(--settings-card);
+    background: var(--settings-glass-bg);
     backdrop-filter: var(--settings-glass-blur);
     -webkit-backdrop-filter: var(--settings-glass-blur);
-    border: 1px solid var(--settings-border);
-    border-radius: 20px;
+    border: 1px solid var(--settings-glass-border);
+    border-radius: 24px;
     overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* ============================================================
-   PROFILE CARD
-   ============================================================ */
 .settings-profile-card {
     padding: 24px;
     margin-bottom: 16px;
@@ -223,6 +223,9 @@
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 58, 138, 0.1));
 }
 
+/* ============================================================
+   PROFILE SECTION
+   ============================================================ */
 .profile-avatar-wrapper {
     position: relative;
     display: inline-block;
@@ -255,15 +258,8 @@
 }
 
 @keyframes avatarShine {
-
-    0%,
-    100% {
-        transform: translateX(-100%) rotate(45deg);
-    }
-
-    50% {
-        transform: translateX(100%) rotate(45deg);
-    }
+    0%, 100% { transform: translateX(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) rotate(45deg); }
 }
 
 .avatar-edit-btn {
@@ -375,7 +371,7 @@
 }
 
 /* ============================================================
-   COMPLETION INDICATOR
+   COMPLETION & RECOMMENDATIONS
    ============================================================ */
 .settings-completion {
     display: flex;
@@ -421,9 +417,6 @@
     transition: width 0.5s ease;
 }
 
-/* ============================================================
-   RECOMMENDATIONS
-   ============================================================ */
 .settings-recommendations {
     padding: 16px;
     margin-bottom: 16px;
@@ -492,25 +485,38 @@
 }
 
 /* ============================================================
-   SETTINGS SECTIONS
+   SETTINGS SECTIONS - MODERN DESIGN
    ============================================================ */
 .settings-sections {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 .settings-section {
     overflow: hidden;
+    border-radius: 24px;
+    background: var(--settings-glass-bg);
+    backdrop-filter: var(--settings-glass-blur);
+    -webkit-backdrop-filter: var(--settings-glass-blur);
+    border: 1px solid var(--settings-glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.settings-section:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
+    gap: 16px;
+    padding: 20px;
     cursor: pointer;
     transition: background 0.3s ease;
+    border-radius: 24px;
 }
 
 .section-header:hover {
@@ -518,36 +524,21 @@
 }
 
 .section-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-
-
-.gradient-blue {
-    background: linear-gradient(135deg, #3570b8, #2a6a9a);
-}
-
-.gradient-green {
-    background: linear-gradient(135deg, #2a7a52, #1f6a42);
-}
-
-.gradient-amber {
-    background: linear-gradient(135deg, #a87a2a, #8a6520);
-}
-
-.gradient-cyan {
-    background: linear-gradient(135deg, #2a8a9a, #1f7a8a);
-}
-
-.gradient-rose {
-    background: linear-gradient(135deg, #1e3a8a, #172554);
-}
+.gradient-blue { background: linear-gradient(135deg, #3570b8, #2a6a9a); }
+.gradient-green { background: linear-gradient(135deg, #2a7a52, #1f6a42); }
+.gradient-amber { background: linear-gradient(135deg, #a87a2a, #8a6520); }
+.gradient-cyan { background: linear-gradient(135deg, #2a8a9a, #1f7a8a); }
+.gradient-rose { background: linear-gradient(135deg, #1e3a8a, #172554); }
 
 .section-title-wrapper {
     flex: 1;
@@ -557,38 +548,7 @@
     font-size: 1rem;
     font-weight: 600;
     margin: 0;
-    /* Ensure text is always visible even when one language span is hidden */
     min-height: 1.2em;
-}
-
-/* Fix for section titles - ensure proper display in all language modes */
-.section-title .sv-text,
-.section-title .ar-text {
-    display: inline !important;
-}
-
-/* Override hide rules for section titles in Arabic mode - hide Swedish */
-body.lang-ar .section-title .sv-text {
-    display: none !important;
-}
-
-body.lang-ar .section-title .ar-text {
-    display: inline !important;
-}
-
-/* Override hide rules for section titles in Swedish mode - hide Arabic */
-body.lang-sv .section-title .ar-text {
-    display: none !important;
-}
-
-body.lang-sv .section-title .sv-text {
-    display: inline !important;
-}
-
-/* Both languages mode - show both */
-body.lang-both .section-title .sv-text,
-body.lang-both .section-title .ar-text {
-    display: inline !important;
 }
 
 .section-subtitle {
@@ -609,14 +569,18 @@ body.lang-both .section-title .ar-text {
 }
 
 .section-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, padding 0.3s ease;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s ease-out;
 }
 
 .settings-section.expanded .section-content {
-    max-height: 1000px;
-    padding: 0 16px 16px;
+    grid-template-rows: 1fr;
+}
+
+.section-inner {
+    overflow: hidden;
+    padding: 0 20px 32px;
 }
 
 /* ============================================================
@@ -626,8 +590,11 @@ body.lang-both .section-title .ar-text {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 0;
+    padding: 16px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+    border-radius: 12px;
+    margin: 2px 0;
 }
 
 .settings-item:last-child {
@@ -636,14 +603,15 @@ body.lang-both .section-title .ar-text {
 
 .settings-item.clickable {
     cursor: pointer;
-    margin: 0 -16px;
-    padding: 14px 16px;
+    margin: 0 -8px;
+    padding: 16px 8px;
     border-radius: 12px;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .settings-item.clickable:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(4px);
 }
 
 .settings-item.danger .item-label {
@@ -657,14 +625,16 @@ body.lang-both .section-title .ar-text {
 }
 
 .item-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--settings-primary-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .item-info {
@@ -674,12 +644,15 @@ body.lang-both .section-title .ar-text {
 
 .item-label {
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
 .item-sublabel {
     font-size: 0.75rem;
     color: var(--settings-text-secondary);
+    opacity: 0.8;
+    margin-top: 2px;
 }
 
 .item-arrow {
@@ -689,7 +662,7 @@ body.lang-both .section-title .ar-text {
 }
 
 /* ============================================================
-   TOGGLE SWITCH
+   CONTROLS - TOGGLE, BUTTONS, SLIDERS
    ============================================================ */
 .toggle-switch {
     position: relative;
@@ -728,17 +701,14 @@ body.lang-both .section-title .ar-text {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.toggle-switch input:checked+.toggle-slider {
+.toggle-switch input:checked + .toggle-slider {
     background: linear-gradient(135deg, var(--settings-primary), var(--settings-secondary));
 }
 
-.toggle-switch input:checked+.toggle-slider::before {
+.toggle-switch input:checked + .toggle-slider::before {
     transform: translateX(24px);
 }
 
-/* ============================================================
-   COLOR THEMES
-   ============================================================ */
 .color-themes {
     display: flex;
     gap: 8px;
@@ -762,9 +732,6 @@ body.lang-both .section-title .ar-text {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
-/* ============================================================
-   FONT SIZE CONTROL
-   ============================================================ */
 .font-size-control {
     display: flex;
     gap: 4px;
@@ -785,26 +752,15 @@ body.lang-both .section-title .ar-text {
     transition: all 0.3s ease;
 }
 
-.font-btn:first-child {
-    font-size: 0.75rem;
-}
-
-.font-btn:nth-child(2) {
-    font-size: 0.9rem;
-}
-
-.font-btn:last-child {
-    font-size: 1.1rem;
-}
+.font-btn:first-child { font-size: 0.75rem; }
+.font-btn:nth-child(2) { font-size: 0.9rem; }
+.font-btn:last-child { font-size: 1.1rem; }
 
 .font-btn.active {
     background: var(--settings-primary);
     color: white;
 }
 
-/* ============================================================
-   SLIDER CONTROL
-   ============================================================ */
 .slider-item {
     flex-direction: column;
     align-items: flex-start;
@@ -846,9 +802,6 @@ body.lang-both .section-title .ar-text {
     color: var(--settings-primary-light);
 }
 
-/* ============================================================
-   GOAL SELECTOR
-   ============================================================ */
 .goal-selector {
     display: flex;
     gap: 8px;
@@ -871,13 +824,6 @@ body.lang-both .section-title .ar-text {
     border-color: var(--settings-primary);
 }
 
-/* ============================================================
-   TEST BUTTON
-   ============================================================ */
-.center-item {
-    justify-content: center;
-}
-
 .test-btn {
     display: flex;
     align-items: center;
@@ -897,9 +843,6 @@ body.lang-both .section-title .ar-text {
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* ============================================================
-   TIME INPUT
-   ============================================================ */
 .time-input {
     padding: 8px 12px;
     border: 1px solid var(--settings-border);
@@ -910,12 +853,12 @@ body.lang-both .section-title .ar-text {
 }
 
 /* ============================================================
-   QUICK LINKS GRID
+   QUICK LINKS & STORAGE
    ============================================================ */
 .quick-links-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 16px;
 }
 
 .quick-link-card {
@@ -924,20 +867,25 @@ body.lang-both .section-title .ar-text {
     align-items: center;
     gap: 8px;
     padding: 20px 16px;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     text-decoration: none;
     color: var(--settings-text);
     transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .quick-link-card:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-4px);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .quick-link-icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .quick-link-label {
@@ -945,9 +893,6 @@ body.lang-both .section-title .ar-text {
     font-weight: 500;
 }
 
-/* ============================================================
-   STORAGE INFO
-   ============================================================ */
 .storage-info {
     margin-top: 16px;
     padding: 12px;
@@ -979,7 +924,7 @@ body.lang-both .section-title .ar-text {
 }
 
 /* ============================================================
-   VERSION & INFO BADGES
+   BADGES & FOOTER
    ============================================================ */
 .version-badge,
 .info-badge {
@@ -995,9 +940,6 @@ body.lang-both .section-title .ar-text {
     color: var(--settings-primary-light);
 }
 
-/* ============================================================
-   COPYRIGHT
-   ============================================================ */
 .copyright-info {
     text-align: center;
     padding: 20px 0 8px;
@@ -1009,9 +951,6 @@ body.lang-both .section-title .ar-text {
     margin: 4px 0;
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
 .settings-footer {
     margin-top: 24px;
 }
@@ -1090,7 +1029,6 @@ body.lang-both .section-title .ar-text {
         opacity: 0;
         transform: translateY(20px) scale(0.95);
     }
-
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1126,7 +1064,6 @@ body.lang-both .section-title .ar-text {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Avatar Grid */
 .avatar-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -1158,7 +1095,6 @@ body.lang-both .section-title .ar-text {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
-/* Confirm Modal */
 .confirm-modal {
     text-align: center;
     padding: 32px 24px;
@@ -1267,14 +1203,11 @@ body.lang-both .section-title .ar-text {
 /* ============================================================
    LANGUAGE-SPECIFIC DISPLAY RULES
    ============================================================ */
-
-/* Swedish Only Mode - Hide Arabic sublabels */
 body.lang-sv .item-sublabel:not(.language-selector *),
 body.lang-sv .section-subtitle {
     display: none !important;
 }
 
-/* Arabic Only Mode - Hide Swedish, show Arabic only */
 body.lang-ar .item-label:not(.language-selector *) {
     display: none !important;
 }
@@ -1297,7 +1230,6 @@ body.lang-ar .section-title-wrapper .section-subtitle {
     margin-top: 0;
 }
 
-/* Both Languages Mode - Show everything (default) */
 body.lang-both .item-label,
 body.lang-both .item-sublabel,
 body.lang-both .section-title,
@@ -1305,7 +1237,6 @@ body.lang-both .section-subtitle {
     display: block !important;
 }
 
-/* Language Selector - Always show all buttons */
 .language-selector,
 .language-selector .lang-btn,
 .language-selector .lang-flag,
@@ -1315,8 +1246,35 @@ body.lang-both .section-subtitle {
     opacity: 1 !important;
 }
 
+/* Section title language fixes */
+.section-title .sv-text,
+.section-title .ar-text {
+    display: inline !important;
+}
+
+body.lang-ar .section-title .sv-text {
+    display: none !important;
+}
+
+body.lang-ar .section-title .ar-text {
+    display: inline !important;
+}
+
+body.lang-sv .section-title .ar-text {
+    display: none !important;
+}
+
+body.lang-sv .section-title .sv-text {
+    display: inline !important;
+}
+
+body.lang-both .section-title .sv-text,
+body.lang-both .section-title .ar-text {
+    display: inline !important;
+}
+
 /* ============================================================
-   RTL SUPPORT - Arabic Language Mode
+   RTL SUPPORT
    ============================================================ */
 body.rtl,
 html[dir="rtl"] body {
@@ -1414,7 +1372,6 @@ body.rtl .motivation-card {
     text-align: center;
 }
 
-/* RTL for toast notifications */
 body.rtl .toast-container {
     direction: rtl;
 }
@@ -1433,22 +1390,9 @@ body.rtl .toast-progress {
     transform-origin: right;
 }
 
-/* RTL responsive adjustments */
-@media (max-width: 480px) {
-    body.rtl .toast-item {
-        padding: 12px 14px 12px 40px;
-    }
-
-    body.rtl .toast-close {
-        left: 8px;
-    }
-}
-
 /* ============================================================
-   TOAST NOTIFICATIONS - Premium Stacked Design
+   TOAST NOTIFICATIONS
    ============================================================ */
-
-/* Toast Container - holds all stacked toasts */
 .toast-container {
     position: fixed;
     bottom: 100px;
@@ -1463,7 +1407,6 @@ body.rtl .toast-progress {
     width: 380px;
 }
 
-/* Individual toast item */
 .toast-item {
     position: relative;
     padding: 14px 44px 14px 18px;
@@ -1472,13 +1415,10 @@ body.rtl .toast-progress {
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
-    color: #f8fafc;
+    color: #f5f5f5;
     font-size: 0.9rem;
     font-weight: 500;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     opacity: 0;
     transform: translateY(20px) scale(0.95);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1496,7 +1436,6 @@ body.rtl .toast-progress {
     transform: translateY(-20px) scale(0.9);
 }
 
-/* Toast content */
 .toast-content {
     display: flex;
     align-items: center;
@@ -1504,7 +1443,6 @@ body.rtl .toast-progress {
     line-height: 1.4;
 }
 
-/* Close button */
 .toast-close {
     position: absolute;
     top: 50%;
@@ -1533,7 +1471,6 @@ body.rtl .toast-progress {
     transform: translateY(-50%) scale(0.9);
 }
 
-/* Progress bar */
 .toast-progress {
     position: absolute;
     bottom: 0;
@@ -1547,16 +1484,10 @@ body.rtl .toast-progress {
 }
 
 @keyframes toastProgress {
-    from {
-        transform: scaleX(1);
-    }
-
-    to {
-        transform: scaleX(0);
-    }
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
 }
 
-/* Toast types */
 .toast-item.success {
     border-left: 3px solid #22c55e;
 }
@@ -1581,7 +1512,6 @@ body.rtl .toast-progress {
     background: linear-gradient(90deg, #dc2626, #818cf8);
 }
 
-/* Stacking effect - older toasts become smaller */
 .toast-container .toast-item:not(:last-child) {
     transform: scale(0.95);
     opacity: 0.9;
@@ -1590,45 +1520,6 @@ body.rtl .toast-progress {
 .toast-container .toast-item:not(:nth-last-child(-n+2)) {
     transform: scale(0.9);
     opacity: 0.8;
-}
-
-/* Light mode support for toasts */
-body:not(.dark-mode) .toast-item {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
-    color: #1e293b;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-body:not(.dark-mode) .toast-close {
-    background: rgba(0, 0, 0, 0.05);
-    color: rgba(0, 0, 0, 0.5);
-}
-
-body:not(.dark-mode) .toast-close:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: rgba(0, 0, 0, 0.8);
-}
-
-/* Mobile responsive toasts */
-@media (max-width: 480px) {
-    .toast-container {
-        bottom: 80px;
-        width: calc(100% - 24px);
-        left: 12px;
-        transform: none;
-    }
-
-    .toast-item {
-        padding: 12px 40px 12px 14px;
-        font-size: 0.85rem;
-    }
-
-    .toast-close {
-        width: 24px;
-        height: 24px;
-        right: 8px;
-    }
 }
 
 /* ============================================================
@@ -1640,8 +1531,8 @@ body:not(.dark-mode) .settings-page,
     --settings-surface: rgba(255, 255, 255, 0.9);
     --settings-card: rgba(255, 255, 255, 0.8);
     --settings-border: rgba(0, 0, 0, 0.08);
-    --settings-text: #1e293b;
-    --settings-text-secondary: #64748b;
+    --settings-text: #1f2937;
+    --settings-text-secondary: #6b7280;
 }
 
 body:not(.dark-mode) .settings-page {
@@ -1665,7 +1556,7 @@ body:not(.dark-mode) .settings-orb-3 {
 }
 
 body:not(.dark-mode) .settings-header-title h1 {
-    background: linear-gradient(135deg, #1e293b, #475569);
+    background: linear-gradient(135deg, #1f2937, #374151);
     -webkit-background-clip: text;
     background-clip: text;
 }
@@ -1694,380 +1585,116 @@ body:not(.dark-mode) .item-icon {
     background: rgba(0, 0, 0, 0.03);
 }
 
-body:not(.dark-mode) .toast-notification {
+body:not(.dark-mode) .toast-item {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
-    color: #1e293b;
+    color: #1f2937;
     border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+body:not(.dark-mode) .toast-close {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.5);
+}
+
+body:not(.dark-mode) .toast-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.8);
 }
 
 /* ============================================================
-   RESPONSIVE - MOBILE FIRST
+   RESPONSIVE DESIGN
    ============================================================ */
-
-/* Small Mobile (320px - 374px) */
 @media (max-width: 374px) {
-    .settings-container {
-        padding: 0 8px 100px;
-    }
-
-    .settings-header {
-        gap: 8px;
-        padding: 12px 0;
-    }
-
-    .settings-back-btn,
-    .settings-reset-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-    }
-
-    .settings-header-title h1 {
-        font-size: 1.2rem;
-    }
-
-    .settings-header-title p {
-        font-size: 0.75rem;
-    }
-
-    .settings-profile-card {
-        padding: 16px 12px;
-    }
-
-    .profile-avatar {
-        width: 60px;
-        height: 60px;
-        font-size: 1.8rem;
-    }
-
-    .avatar-edit-btn {
-        width: 24px;
-        height: 24px;
-    }
-
-    .avatar-edit-btn svg {
-        width: 12px;
-        height: 12px;
-    }
-
-    .profile-name {
-        font-size: 1rem;
-    }
-
-    .profile-level {
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .level-badge {
-        font-size: 0.7rem;
-        padding: 3px 10px;
-    }
-
-    .profile-stats {
-        padding: 12px 0;
-        gap: 4px;
-    }
-
-    .stat-value {
-        font-size: 1.2rem;
-    }
-
-    .stat-label {
-        font-size: 0.65rem;
-    }
-
-    .settings-completion {
-        flex-wrap: wrap;
-        padding: 12px;
-        gap: 8px;
-    }
-
-    .completion-info {
-        width: 100%;
-        order: 1;
-    }
-
-    .completion-bar-bg {
-        width: 100%;
-        order: 2;
-        flex: none;
-    }
-
-    .completion-icon {
-        font-size: 1.2rem;
-    }
-
-    .section-header {
-        padding: 12px;
-        gap: 10px;
-    }
-
-    .section-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-        border-radius: 10px;
-    }
-
-    .section-title {
-        font-size: 0.9rem;
-    }
-
-    .section-subtitle {
-        font-size: 0.7rem;
-    }
-
-    .settings-item {
-        padding: 10px 0;
-    }
-
-    .item-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
-
-    .item-label {
-        font-size: 0.85rem;
-    }
-
-    .item-sublabel {
-        font-size: 0.65rem;
-    }
-
-    .toggle-switch {
-        width: 44px;
-        height: 24px;
-    }
-
-    .toggle-slider::before {
-        height: 18px;
-        width: 18px;
-    }
-
-    .toggle-switch input:checked+.toggle-slider::before {
-        transform: translateX(20px);
-    }
-
-    .color-themes {
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .color-btn {
-        width: 26px;
-        height: 26px;
-    }
-
-    .font-size-control {
-        padding: 3px;
-    }
-
-    .font-btn {
-        width: 30px;
-        height: 28px;
-    }
-
-    .goal-selector {
-        gap: 4px;
-    }
-
-    .goal-btn {
-        width: 38px;
-        height: 32px;
-        font-size: 0.85rem;
-    }
-
-    .quick-links-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .quick-link-card {
-        padding: 14px 8px;
-    }
-
-    .quick-link-icon {
-        font-size: 1.3rem;
-    }
-
-    .quick-link-label {
-        font-size: 0.75rem;
-    }
-
-    .test-btn {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-    }
-
-    .motivation-card {
-        padding: 16px;
-    }
-
-    .motivation-icon {
-        font-size: 1.5rem;
-    }
-
-    .motivation-text {
-        font-size: 0.85rem;
-    }
-
-    .motivation-text-ar {
-        font-size: 0.75rem;
-    }
+    .settings-container { padding: 0 8px 100px; }
+    .settings-header { gap: 8px; padding: 12px 0; }
+    .settings-back-btn, .settings-reset-btn { width: 38px; height: 38px; border-radius: 10px; }
+    .settings-header-title h1 { font-size: 1.2rem; }
+    .settings-header-title p { font-size: 0.75rem; }
+    .settings-profile-card { padding: 16px 12px; }
+    .profile-avatar { width: 60px; height: 60px; font-size: 1.8rem; }
+    .avatar-edit-btn { width: 24px; height: 24px; }
+    .avatar-edit-btn svg { width: 12px; height: 12px; }
+    .profile-name { font-size: 1rem; }
+    .profile-level { flex-direction: column; gap: 6px; }
+    .level-badge { font-size: 0.7rem; padding: 3px 10px; }
+    .profile-stats { padding: 12px 0; gap: 4px; }
+    .stat-value { font-size: 1.2rem; }
+    .stat-label { font-size: 0.65rem; }
+    .settings-completion { flex-wrap: wrap; padding: 12px; gap: 8px; }
+    .completion-info { width: 100%; order: 1; }
+    .completion-bar-bg { width: 100%; order: 2; flex: none; }
+    .completion-icon { font-size: 1.2rem; }
+    .section-header { padding: 12px; gap: 10px; }
+    .section-icon { width: 36px; height: 36px; font-size: 1rem; border-radius: 10px; }
+    .section-title { font-size: 0.9rem; }
+    .section-subtitle { font-size: 0.7rem; }
+    .settings-item { padding: 10px 0; }
+    .item-icon { width: 32px; height: 32px; font-size: 0.9rem; }
+    .item-label { font-size: 0.85rem; }
+    .item-sublabel { font-size: 0.65rem; }
+    .toggle-switch { width: 44px; height: 24px; }
+    .toggle-slider::before { height: 18px; width: 18px; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+    .color-themes { flex-wrap: wrap; gap: 6px; }
+    .color-btn { width: 26px; height: 26px; }
+    .font-size-control { padding: 3px; }
+    .font-btn { width: 30px; height: 28px; }
+    .goal-selector { gap: 4px; }
+    .goal-btn { width: 38px; height: 32px; font-size: 0.85rem; }
+    .quick-links-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .quick-link-card { padding: 14px 8px; }
+    .quick-link-icon { font-size: 1.3rem; }
+    .quick-link-label { font-size: 0.75rem; }
+    .test-btn { padding: 10px 16px; font-size: 0.85rem; }
+    .motivation-card { padding: 16px; }
+    .motivation-icon { font-size: 1.5rem; }
+    .motivation-text { font-size: 0.85rem; }
+    .motivation-text-ar { font-size: 0.75rem; }
 }
 
-/* Standard Mobile (375px - 480px) */
 @media (max-width: 480px) {
-    .settings-container {
-        padding: 0 12px 100px;
-    }
-
-    .settings-header {
-        padding: 16px 0;
-    }
-
-    .settings-back-btn,
-    .settings-reset-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-    }
-
-    .settings-header-title h1 {
-        font-size: 1.3rem;
-    }
-
-    .settings-profile-card {
-        padding: 20px 16px;
-    }
-
-    .profile-avatar {
-        width: 70px;
-        height: 70px;
-        font-size: 2rem;
-    }
-
-    .profile-stats {
-        gap: 8px;
-    }
-
-    .stat-value {
-        font-size: 1.25rem;
-    }
-
-    .stat-label {
-        font-size: 0.7rem;
-    }
-
-    .section-header {
-        padding: 14px;
-    }
-
-    .section-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .settings-section.expanded .section-content {
-        padding: 0 14px 14px;
-    }
-
-    .settings-item {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .slider-item .item-left {
-        width: 100%;
-    }
-
-    .slider-control {
-        width: 100%;
-        padding-left: 0;
-    }
-
-    .color-btn {
-        width: 28px;
-        height: 28px;
-    }
-
-    .quick-links-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .quick-link-card {
-        padding: 16px 12px;
-    }
-
-    .quick-link-icon {
-        font-size: 1.5rem;
-    }
-
-    .quick-link-label {
-        font-size: 0.8rem;
-    }
-
-    /* Avatar Modal Mobile */
-    .avatar-modal {
-        max-width: 95vw;
-        max-height: 70vh;
-    }
-
-    .avatar-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
-        padding: 16px;
-    }
-
-    .avatar-option {
-        font-size: 1.5rem;
-    }
-
-    /* Confirm Modal Mobile */
-    .confirm-modal {
-        padding: 24px 16px;
-    }
-
-    .confirm-icon {
-        font-size: 2.5rem;
-    }
-
-    .confirm-modal h3 {
-        font-size: 1.1rem;
-    }
-
-    .confirm-actions {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .btn-secondary,
-    .btn-danger {
-        width: 100%;
-        padding: 14px;
-    }
+    .settings-container { padding: 0 12px 100px; }
+    .settings-header { padding: 16px 0; }
+    .settings-back-btn, .settings-reset-btn { width: 40px; height: 40px; border-radius: 12px; }
+    .settings-header-title h1 { font-size: 1.3rem; }
+    .settings-profile-card { padding: 20px 16px; }
+    .profile-avatar { width: 70px; height: 70px; font-size: 2rem; }
+    .profile-stats { gap: 8px; }
+    .stat-value { font-size: 1.25rem; }
+    .stat-label { font-size: 0.7rem; }
+    .section-header { padding: 14px; }
+    .section-icon { width: 40px; height: 40px; }
+    .settings-section.expanded .section-content { padding: 0 14px 14px; }
+    .settings-item { flex-wrap: wrap; gap: 8px; }
+    .slider-item .item-left { width: 100%; }
+    .slider-control { width: 100%; padding-left: 0; }
+    .color-btn { width: 28px; height: 28px; }
+    .quick-links-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .quick-link-card { padding: 16px 12px; }
+    .quick-link-icon { font-size: 1.5rem; }
+    .quick-link-label { font-size: 0.8rem; }
+    .avatar-modal { max-width: 95vw; max-height: 70vh; }
+    .avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 16px; }
+    .avatar-option { font-size: 1.5rem; }
+    .confirm-modal { padding: 24px 16px; }
+    .confirm-icon { font-size: 2.5rem; }
+    .confirm-modal h3 { font-size: 1.1rem; }
+    .confirm-actions { flex-direction: column; gap: 8px; }
+    .btn-secondary, .btn-danger { width: 100%; padding: 14px; }
+    .toast-container { bottom: 80px; width: calc(100% - 24px); left: 12px; transform: none; }
+    .toast-item { padding: 12px 40px 12px 14px; font-size: 0.85rem; }
+    .toast-close { width: 24px; height: 24px; right: 8px; }
+    body.rtl .toast-item { padding: 12px 14px 12px 40px; }
+    body.rtl .toast-close { left: 8px; }
 }
 
-/* Tablet (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-    .settings-container {
-        padding: 0 20px 60px;
-    }
-
-    .quick-links-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .avatar-grid {
-        grid-template-columns: repeat(6, 1fr);
-    }
+    .settings-container { padding: 0 20px 60px; }
+    .quick-links-grid { grid-template-columns: repeat(4, 1fr); }
+    .avatar-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
-/* Safe Area for notched phones (iPhone X+) */
 @supports (padding: max(0px)) {
     .settings-page {
         padding-top: env(safe-area-inset-top);
@@ -2075,70 +1702,24 @@ body:not(.dark-mode) .toast-notification {
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
     }
-
-    .settings-header {
-        padding-top: max(20px, env(safe-area-inset-top));
-    }
-
-    .settings-footer {
-        padding-bottom: max(24px, env(safe-area-inset-bottom));
-    }
+    .settings-header { padding-top: max(20px, env(safe-area-inset-top)); }
+    .settings-footer { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 }
 
-/* Touch improvements for mobile */
 @media (hover: none) and (pointer: coarse) {
-
-    .settings-back-btn,
-    .settings-reset-btn,
-    .color-btn,
-    .font-btn,
-    .goal-btn,
-    .test-btn,
-    .quick-link-card,
-    .settings-item.clickable,
-    .recommendation-item {
+    .settings-back-btn, .settings-reset-btn, .color-btn, .font-btn, .goal-btn, .test-btn, .quick-link-card, .settings-item.clickable, .recommendation-item {
         min-height: 44px;
         min-width: 44px;
     }
-
-    .toggle-switch {
-        min-width: 52px;
-        min-height: 32px;
-    }
-
-    .section-header {
-        min-height: 60px;
-    }
-
-    /* Disable hover effects on touch */
-    .settings-back-btn:hover,
-    .color-btn:hover,
-    .recommendation-item:hover {
-        transform: none;
-    }
-
-    /* Active states for touch */
-    .settings-back-btn:active,
-    .settings-reset-btn:active {
-        transform: scale(0.95);
-        background: var(--settings-primary);
-    }
-
-    .color-btn:active {
-        transform: scale(0.9);
-    }
-
-    .quick-link-card:active {
-        transform: scale(0.98);
-        background: rgba(255, 255, 255, 0.15);
-    }
-
-    .settings-item.clickable:active {
-        background: rgba(255, 255, 255, 0.1);
-    }
+    .toggle-switch { min-width: 52px; min-height: 32px; }
+    .section-header { min-height: 80px; padding: 20px 0; }
+    .settings-back-btn:hover, .color-btn:hover, .recommendation-item:hover { transform: none; }
+    .settings-back-btn:active, .settings-reset-btn:active { transform: scale(0.95); background: var(--settings-primary); }
+    .color-btn:active { transform: scale(0.9); }
+    .quick-link-card:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.15); }
+    .settings-item.clickable:active { background: rgba(255, 255, 255, 0.1); }
 }
 
-/* Landscape mobile */
 @media (max-height: 500px) and (orientation: landscape) {
     .settings-profile-card {
         display: flex;
@@ -2146,59 +1727,25 @@ body:not(.dark-mode) .toast-notification {
         text-align: left;
         gap: 20px;
     }
-
-    .profile-avatar-wrapper {
-        margin-bottom: 0;
-    }
-
-    .profile-info {
-        flex: 1;
-        margin-bottom: 0;
-    }
-
-    .profile-stats {
-        border: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .profile-progress {
-        display: none;
-    }
-
-    .settings-orb {
-        display: none;
-    }
+    .profile-avatar-wrapper { margin-bottom: 0; }
+    .profile-info { flex: 1; margin-bottom: 0; }
+    .profile-stats { border: none; padding: 0; margin: 0; }
+    .profile-progress { display: none; }
+    .settings-orb { display: none; }
 }
 
-/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
-    .settings-orb,
-    .profile-avatar::after {
-        animation: none;
-    }
-
-    .settings-section {
-        animation: none;
-    }
-
-    * {
-        transition-duration: 0.01ms !important;
-    }
+    .settings-orb, .profile-avatar::after { animation: none; }
+    .settings-section { animation: none; }
+    * { transition-duration: 0.01ms !important; }
 }
 
 /* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .settings-section {
@@ -2206,33 +1753,16 @@ body:not(.dark-mode) .toast-notification {
     animation-fill-mode: both;
 }
 
-.settings-section:nth-child(1) {
-    animation-delay: 0.1s;
-}
+.settings-section:nth-child(1) { animation-delay: 0.1s; }
+.settings-section:nth-child(2) { animation-delay: 0.15s; }
+.settings-section:nth-child(3) { animation-delay: 0.2s; }
+.settings-section:nth-child(4) { animation-delay: 0.25s; }
+.settings-section:nth-child(5) { animation-delay: 0.3s; }
+.settings-section:nth-child(6) { animation-delay: 0.35s; }
 
-.settings-section:nth-child(2) {
-    animation-delay: 0.15s;
-}
-
-.settings-section:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-.settings-section:nth-child(4) {
-    animation-delay: 0.25s;
-}
-
-.settings-section:nth-child(5) {
-    animation-delay: 0.3s;
-}
-
-.settings-section:nth-child(6) {
-    animation-delay: 0.35s;
-}
-
-/* ========================================
-   Voice Selector Styles
-   ======================================== */
+/* ============================================================
+   VOICE & LANGUAGE SELECTORS
+   ============================================================ */
 .voice-selector {
     display: flex;
     gap: 8px;
@@ -2265,9 +1795,6 @@ body:not(.dark-mode) .toast-notification {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-/* ============================================================
-   LANGUAGE SELECTOR (PREMIUM)
-   ============================================================ */
 .language-selection-container {
     padding: 10px 0;
 }
@@ -2353,7 +1880,6 @@ body:not(.dark-mode) .toast-notification {
     transform: scale(1);
 }
 
-/* Quick Menu Language Buttons */
 .menu-lang-btn {
     width: 44px;
     height: 44px;
@@ -2379,161 +1905,9 @@ body:not(.dark-mode) .toast-notification {
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Mobile Adjustments */
 @media (max-width: 480px) {
-    .language-grid-premium {
-        gap: 10px;
-    }
-
-    .lang-card-premium {
-        padding: 15px 5px;
-    }
-
-    .lang-flag-large {
-        font-size: 2rem;
-    }
-
-    .lang-name-large {
-        font-size: 0.9rem;
-    }
-}
-
-/* ============================================================
-   MODERN PREMIUM ENHANCEMENTS (v2.0)
-   ============================================================ */
-
-/* 1. Enhanced Settings Items */
-.settings-item {
-    padding: 16px 8px;
-    /* More breathing room */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    /* Softer divider */
-    transition: background 0.2s ease;
-    border-radius: 12px;
-    /* Rounded corners for hover state */
-    margin: 2px 0;
-}
-
-.settings-item:hover {
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.settings-item.clickable:hover {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateX(4px);
-    /* Subtle nudge */
-}
-
-/* 2. Premium Icons */
-.item-icon {
-    background: rgba(59, 130, 246, 0.15);
-    /* Primary tint */
-    color: var(--settings-primary-light);
-    width: 42px;
-    /* Slightly larger */
-    height: 42px;
-    border-radius: 12px;
-    /* Softer rounded rect */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    /* Subtle depth */
-    font-size: 1.2rem;
-}
-
-.section-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* 3. Modern Section Headers */
-.section-header {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.02), transparent);
-    border-radius: 16px;
-    margin: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.section-header:hover {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-    border-color: rgba(255, 255, 255, 0.05);
-}
-
-/* 4. Enhanced Quick Links Grid */
-.quick-links-grid {
-    gap: 16px;
-    /* Increased gap */
-}
-
-.quick-link-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.quick-link-card:hover {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.quick-link-icon {
-    font-size: 2.2rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-/* 5. Typography Refinements */
-.item-label {
-    font-weight: 600;
-    /* Bolder text */
-    letter-spacing: 0.01em;
-}
-
-.item-sublabel {
-    opacity: 0.8;
-    /* Slightly more visible */
-    margin-top: 2px;
-}
-
-/* 6. Mobile Optimization */
-@media (max-width: 480px) {
-    .settings-item {
-        padding: 14px 4px;
-    }
-
-    .item-icon {
-        width: 38px;
-        height: 38px;
-        font-size: 1.1rem;
-    }
-}
-
-/* 7. Enhanced Expanded Section (Refined) */
-.settings-section.expanded {
-    background: rgba(255, 255, 255, 0.03);
-    /* Extremely subtle tint */
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-    /* Softer shadow */
-}
-
-.settings-section.expanded .section-content {
-    background: transparent;
-    /* Fully transparent inner background */
-    margin: 0;
-    padding: 0 20px 20px;
-    /* Increased padding for breathability */
-    border-radius: 0;
-    border: none;
-}
-
-.settings-section.expanded .section-header {
-    background: transparent;
-    border-color: transparent;
-    margin-bottom: 8px;
-    /* Restored margin for separation */
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    /* Subtle divider */
+    .language-grid-premium { gap: 10px; }
+    .lang-card-premium { padding: 15px 5px; }
+    .lang-flag-large { font-size: 2rem; }
+    .lang-name-large { font-size: 0.9rem; }
 }

@@ -3564,7 +3564,7 @@ header {
   overflow-x: hidden;
 
   /* Premium Glassmorphism - Optimized */
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.2);
   /* More opaque, less blur work needed */
   -webkit-backdrop-filter: blur(12px);
   /* Reduced from 25px */
@@ -3612,7 +3612,7 @@ header {
 }
 
 [data-theme="dark"] .settings-menu {
-  background: rgba(20, 20, 27, 0.95);
+  background: rgba(20, 20, 27, 0.3);
   /* More solid */
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow:
