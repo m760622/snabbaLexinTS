@@ -14,6 +14,13 @@ export async function initSettingsMenuLazy(): Promise<void> {
 
     if (!settingsBtn || !settingsMenu) return;
 
+    const temp = 65;
+    let color = "#22c55e"; /* أخضر افتراضي */
+    if (temp > 75) color = "#ef4444"; /* أحمر للحرارة العالية */
+    else if (temp > 60) color = "#eab308"; /* أصفر للتحذير */
+    settingsMenu.style.border = `2px solid ${color}`;
+    settingsMenu.style.boxShadow = `0 0 15px ${color}44`;
+
     settingsBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
