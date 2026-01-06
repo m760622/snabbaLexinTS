@@ -16,7 +16,7 @@ export const AppConfig = {
 
     // Data paths
     DATA_PATH: {
-        root: '/data/data.json',
+        root: '/data/data.csv',
         games: '/data/data.json'
     },
 

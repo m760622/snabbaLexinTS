@@ -63,3 +63,10 @@ declare var webkitSpeechRecognition: {
 interface DeviceMotionEvent {
   requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
 }
+
+declare module '*?worker' {
+  const workerConstructor: {
+    new (): Worker;
+  };
+  export default workerConstructor;
+}

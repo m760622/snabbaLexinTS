@@ -1,10 +1,10 @@
-
 import { AppConfig } from './config';
 import { DictionaryDB } from './db';
+import DBWorker from './workers/init-db.worker?worker';
 
 /**
  * Welcome Screen Logic
- * Handles initial data fetching and caching
+ * Handles initial data fetching and caching using Web Worker
  */
 class WelcomeScreen {
     private tipInterval: any = null;
@@ -45,8 +45,8 @@ class WelcomeScreen {
                 }
             }
 
-            // Fetch Data
-            await this.fetchData();
+            // Fetch Data via Worker
+            await this.startWorker();
 
 
         } catch (e) {
@@ -97,58 +97,33 @@ class WelcomeScreen {
         if (statusText && status) statusText.textContent = status;
     }
 
-    private async fetchData(): Promise<void> {
+    private async startWorker(): Promise<void> {
         return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', AppConfig.DATA_PATH.root, true);
-
-            xhr.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    let percent = (event.loaded / event.total) * 100;
-                    // Clamp to 90% until processing is done
-                    percent = Math.min(90, percent);
-                    this.updateProgress(percent, 'Laddar data... / جاري التحميل...');
+            const worker = new DBWorker();
+            
+            worker.onmessage = (e) => {
+                const { type, value, status, error } = e.data;
+                
+                if (type === 'progress') {
+                    this.updateProgress(value, status);
+                } else if (type === 'complete') {
+                    // Success logic
+                    localStorage.setItem('snabbaLexin_dataReady', 'true');
+                    localStorage.setItem('snabbaLexin_version', AppConfig.DATA_VERSION);
+                    this.updateProgress(100, 'Klar! / تم!');
+                    setTimeout(() => this.redirectToApp(), 500);
+                    worker.terminate();
+                    resolve();
+                } else if (type === 'error') {
+                     console.error('[Welcome] Worker error:', error);
+                     this.updateProgress(100, 'Fel vid data / خطأ في البيانات');
+                     worker.terminate();
+                     reject(new Error(error));
                 }
             };
-
-            xhr.onload = async () => {
-                if (xhr.status === 200) {
-                    this.updateProgress(90, 'Bearbetar... / جاري المعالجة...');
-                    try {
-                        const data = JSON.parse(xhr.responseText);
-                        await this.processData(data);
-                        resolve();
-                    } catch (e) {
-                        console.error('[Welcome] JSON Parse error', e);
-                        this.updateProgress(100, 'Fel vid data / خطأ في البيانات');
-                        reject(e);
-                    }
-                } else {
-                    reject(new Error(`HTTP ${xhr.status}`));
-                }
-            };
-
-            xhr.onerror = () => reject(new Error('Network Error'));
-            xhr.send();
+            
+            worker.postMessage({ type: 'init', url: AppConfig.DATA_PATH.root });
         });
-    }
-
-    private async processData(data: any[]): Promise<void> {
-        try {
-            await DictionaryDB.saveWords(data, (p) => {
-                this.updateProgress(90 + (p * 0.1), 'Sparar data... / جاري الحفظ...');
-            });
-            await DictionaryDB.setDataVersion(AppConfig.DATA_VERSION);
-            localStorage.setItem('snabbaLexin_dataReady', 'true');
-            localStorage.setItem('snabbaLexin_version', AppConfig.DATA_VERSION);
-
-            this.updateProgress(100, 'Klar! / تم!');
-            setTimeout(() => this.redirectToApp(), 500);
-        } catch (error) {
-            console.error('[Welcome] Save failed:', error);
-            this.updateProgress(100, 'Kunde inte spara / تعذر الحفظ');
-            throw error;
-        }
     }
 }
 
