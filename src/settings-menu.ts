@@ -25,7 +25,8 @@ export async function initSettingsMenuLazy(): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
-        // Load content on first open
+        // Load content on first open - DISABLED FOR REACT MIGRATION
+        /*
         if (!isMenuLoaded) {
             // Use Shared UI Generator
             settingsMenu.innerHTML = SettingsUI.generateSections();
@@ -35,6 +36,7 @@ export async function initSettingsMenuLazy(): Promise<void> {
 
             isMenuLoaded = true;
         }
+        */
 
         const isHidden = settingsMenu.classList.contains('hidden');
         if (isHidden) {

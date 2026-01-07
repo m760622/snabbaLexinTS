@@ -24,8 +24,15 @@
   },
   "homepage": "https://github.com/m760622/snabbaLexin-web#readme",
   "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "typescript": "^5.9.3",
     "vite": "^5.4.11",
     "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   }
 }
