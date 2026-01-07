@@ -69,16 +69,12 @@ function useDebounce<T>(value: T, delay: number): T {
 const WordCard = ({ word, onClick }: { word: SearchResult; onClick: () => void }) => {
   const [isFav, setIsFav] = useState(false);
   
-  // Detect Type & Color using the centralized system
   const typeInfo = TypeColorSystem.detect(word.type, word.swedish, word.forms, word.gender, word.arabic);
   const primaryColor = typeInfo.color.primary;
-  // Use a softer background color for badges if needed, or just transparent
   const typeLabel = typeInfo.color.label.sv; 
 
   useEffect(() => {
     setIsFav(FavoritesManager.has(word.id.toString()));
-    
-    // Subscribe to favorites changes
     const unsub = FavoritesManager.onChange((id, status) => {
         if (id === word.id.toString()) setIsFav(status);
     });
@@ -99,59 +95,51 @@ const WordCard = ({ word, onClick }: { word: SearchResult; onClick: () => void }
   const handleFav = (e: React.MouseEvent) => {
     e.stopPropagation();
     FavoritesManager.toggle(word.id.toString());
-    // Visual state updates via the listener above
   };
 
   return (
     <div 
         style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} 
         onClick={onClick}
-        className="active-scale" // Presuming you have this CSS class for interaction or we add it
     >
       <div style={styles.cardContent}>
-        {/* Header: Word + Type + Actions */}
-        <div style={styles.cardHeader}>
-            <div style={styles.wordInfoCol}>
-                <div style={styles.wordTitleRow}>
-                    <span style={styles.swedish}>{word.swedish}</span>
-                    <span style={{
-                        ...styles.wordTypeBadge, 
-                        color: primaryColor, 
-                        borderColor: primaryColor,
-                        backgroundColor: `${primaryColor}15` // 15 = roughly 10% opacity hex
-                    }}>
-                        {typeLabel}
-                    </span>
-                </div>
-            </div>
-            
-            {/* Floating Action Buttons */}
+        {/* Top Row: Type (Left) --- Actions (Right) */}
+        <div style={styles.cardTopRow}>
+            <span style={{
+                ...styles.wordTypeBadge, 
+                color: primaryColor, 
+                borderColor: primaryColor
+            }}>
+                {typeLabel}
+            </span>
+
             <div style={styles.actionRow}>
                 <button style={styles.actionBtn} onClick={handleSpeak} aria-label="Lyssna">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                 </button>
                 <button style={styles.actionBtn} onClick={handleCopy} aria-label="Kopiera">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                 </button>
                 <button 
-                    style={{...styles.actionBtn, color: isFav ? '#ef4444' : '#8e8e93'}} 
+                    style={{...styles.actionBtn, color: isFav ? '#F59E0B' : 'currentColor'}} 
                     onClick={handleFav} 
                     aria-label="Spara"
                 >
                     {isFav ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     )}
                 </button>
             </div>
         </div>
 
-        {/* Forms (if any) */}
-        {word.forms && <div style={styles.forms}>{word.forms}</div>}
-
-        {/* Arabic Translation */}
-        <div style={styles.arabic}>{word.arabic}</div>
+        {/* Main Content Area: Word (Separate Line) + Forms + Arabic */}
+        <div style={styles.cardMainContent}>
+            <div style={styles.swedish}>{word.swedish}</div>
+            {word.forms && <div style={styles.forms}>{word.forms}</div>}
+            <div style={styles.arabic}>{word.arabic}</div>
+        </div>
       </div>
     </div>
   );
@@ -366,7 +354,7 @@ export const HomeView: React.FC = () => {
         {/* No Results */}
         {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (
              <div style={styles.emptyState}>
-                 <p>Inga resultat / لا توجد نتائج</p>
+                 <p>Ingا resultat / لا توجد نتائج</p>
              </div>
         )}
 
@@ -389,7 +377,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: '100vh',
     backgroundColor: '#121212',
     color: '#fff',
-    fontFamily: '-apple-system, sans-serif',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -559,78 +547,108 @@ const styles: { [key: string]: React.CSSProperties } = {
       cursor: 'pointer',
   },
 
-  // WordCard Styles
+  // --- WordCard Styles ---
   card: {
     position: 'relative',
+    height: '120px', 
+    minHeight: '120px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: '10px 14px',
     backgroundColor: '#1c1c1e',
+    border: '1px solid #333',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
     borderRadius: '12px',
     marginBottom: '12px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
     cursor: 'pointer',
-    overflow: 'hidden', // Ensure stripe follows radius
-    transition: 'transform 0.1s',
   },
   cardContent: {
-      padding: '16px',
-      paddingLeft: '20px', // Extra padding for stripe visual balance
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      width: '100%',
   },
-  cardHeader: {
+  cardTopRow: {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: '8px',
-  },
-  wordInfoCol: {
-      flex: 1,
-  },
-  wordTitleRow: {
-      display: 'flex',
       alignItems: 'center',
-      flexWrap: 'wrap',
-      gap: '8px',
+      width: '100%',
+      marginBottom: '0px',
+  },
+  cardMainContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '2px',
+      justifyContent: 'center',
+      paddingBottom: '2px',
   },
   swedish: {
-      fontSize: '19px',
+      fontSize: '1.1rem',
       fontWeight: '700',
       color: '#fff',
-      letterSpacing: '0.3px',
+      margin: 0,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      lineHeight: '1.4',
   },
   wordTypeBadge: {
-      fontSize: '11px',
+      fontSize: '0.7rem',
+      fontWeight: '700',
       padding: '2px 6px',
-      borderRadius: '4px',
-      border: '1px solid',
-      fontWeight: '500',
+      borderRadius: '5px',
+      letterSpacing: '0.02em',
       textTransform: 'uppercase',
+      background: 'transparent',
+      border: '1.2px solid',
   },
   actionRow: {
       display: 'flex',
-      gap: '4px',
+      gap: '8px',
+      flexShrink: 0,
+      alignItems: 'center',
   },
   actionBtn: {
+      padding: '0',
+      width: '30px',
+      height: '30px',
+      minWidth: '30px',
+      minHeight: '30px',
+      borderRadius: '8px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       background: 'transparent',
       border: 'none',
       color: '#8e8e93',
-      padding: '6px',
-      borderRadius: '50%',
       cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'background-color 0.2s',
   },
   forms: {
-      fontSize: '13px',
-      color: '#8e8e93',
-      marginBottom: '6px',
+      fontSize: '0.75rem',
+      color: '#94a3b8',
       fontStyle: 'italic',
+      opacity: 0.8,
+      marginTop: '-2px',
+      marginBottom: '2px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
   },
   arabic: {
-      fontSize: '18px',
-      color: '#34c759',
+      fontSize: '1rem',
+      color: '#8e8e93',
+      margin: 0,
+      lineHeight: '1.4',
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      whiteSpace: 'normal',
       textAlign: 'right',
-      direction: 'rtl',
-      fontWeight: '500',
-      marginTop: '4px',
   }
 };
