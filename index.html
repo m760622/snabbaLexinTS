@@ -136,7 +136,33 @@
     <!-- <h3>Snabba Lexin</h3> -->
     <!-- <p class="subtitle">Svensk-Arabiskt Lexikon / القاموس السويدي العربي</p> -->
 
-    <!-- Flashcard Inline Container (moved above search bar) -->
+    <div id="react-root"></div>
+
+    <!-- REACT REPLACEMENT: Commenting out legacy UI -->
+    <!--
+    <div class="quick-actions-bar">
+        <button class="quick-action-btn hidden" id="quickWodBtn" title="كلمة اليوم / Dagens Ord">
+            <span class="quick-icon">📅</span>
+            <span class="quick-label"><span class="sv-text">Ord</span><span class="ar-text">كلمة</span></span>
+        </button>
+        <a href="games/games.html" class="quick-action-btn" title="ألعاب / Spel">
+            <span class="quick-icon">🎮</span>
+            <span class="quick-label"><span class="sv-text">Spel</span><span class="ar-text">ألعاب</span></span>
+        </a>
+        <a href="learn/learn.html" class="quick-action-btn" title="تعلم / Lär">
+            <span class="quick-icon">📚</span>
+            <span class="quick-label"><span class="sv-text">Lär</span><span class="ar-text">تعلم</span></span>
+        </a>
+        <button class="quick-action-btn" id="quickFavBtn" title="مفضلة / Favoriter">
+            <span class="quick-icon">⭐</span>
+            <span class="quick-label"><span class="sv-text">Favoriter</span><span class="ar-text">مفضلة</span></span>
+        </button>
+        <button class="quick-action-btn premium-border-animated" id="quickQuizBtn" title="اختبار / Quiz">
+            <span class="quick-icon">⚡</span>
+            <span class="quick-label"><span class="sv-text">Quiz</span><span class="ar-text">اختبار</span></span>
+        </button>
+    </div>
+
     <div class="container container-flashcard-inline">
         <div id="flashcardInlineContainer" class="game-container flashcard-inline hidden">
             <div class="quiz-header-compact">
@@ -164,7 +190,6 @@
                             <button class="flashcard-speak-btn-inline" id="flashcardSpeakBtnInline">🔊</button>
                         </div>
                     </div>
-                    <!-- Favorite Button - Always Visible -->
                     <button class="flashcard-fav-btn" id="flashcardFavBtn"
                         title="Lägg till favorit / أضف للمفضلة">❤️</button>
                 </div>
@@ -211,7 +236,6 @@
                         </svg>
                     </button>
 
-                    <!-- New Result Count Badge -->
                     <span id="resultCount" class="search-result-badge">0</span>
 
                     <button id="voiceSearchBtn" class="voice-search-btn" aria-label="Röstinmatning / البحث الصوتي"
@@ -243,7 +267,6 @@
             </div>
 
             <div id="filterChipsContainer" class="filter-chips-container hidden">
-                <!-- Filter Mode Dropdown (Styled as Chip) -->
                 <div class="select-chip-wrapper">
                     <select id="filterModeSelect" class="chip-select" aria-label="Välj sökläge">
                         <option value="start">Börjar</option>
@@ -259,7 +282,6 @@
                     <span class="chip-arrow">▼</span>
                 </div>
 
-                <!-- Sort Dropdown (Styled as Chip) -->
                 <div class="select-chip-wrapper">
                     <span class="chip-label">Sortering:</span>
                     <select id="sortSelect" class="chip-select" aria-label="Sortera">
@@ -272,7 +294,6 @@
                     <span class="chip-arrow">▼</span>
                 </div>
 
-                <!-- Type Dropdown (Styled as Chip) -->
                 <div class="select-chip-wrapper">
                     <span class="chip-label">Typ:</span>
                     <select id="typeSelect" class="chip-select" aria-label="Filtrera typ">
@@ -301,7 +322,6 @@
                     <span class="chip-arrow">▼</span>
                 </div>
 
-                <!-- Topic Category Dropdown -->
                 <div class="select-chip-wrapper">
                     <span class="chip-label">🏷️</span>
                     <select id="categorySelect" class="chip-select" aria-label="Kategori">
@@ -322,8 +342,10 @@
     </div>
 
     </header>
+    -->
 
     <!-- شريط الاختصارات السريعة - يظهر دائماً -->
+    <!--
     <div class="quick-actions-bar">
         <button class="quick-action-btn hidden" id="quickWodBtn" title="كلمة اليوم / Dagens Ord">
             <span class="quick-icon">📅</span>
@@ -346,10 +368,11 @@
             <span class="quick-label"><span class="sv-text">Quiz</span><span class="ar-text">اختبار</span></span>
         </button>
     </div>
+    -->
 
     <!-- Landing Page Content - Everything that shows when NOT searching -->
+    <!--
     <div id="landingPageContent">
-        <!-- Recent Search History -->
         <div id="searchHistoryContainer" class="history-container hidden">
             <div class="history-header">
                 <span class="history-title">🕒 <span class="sv-text">Senaste</span><span
@@ -357,11 +380,9 @@
                 <button id="clearHistoryBtn" class="clear-history-btn" title="Rensa / مسح">🗑️</button>
             </div>
             <div id="searchHistoryList" class="history-list">
-                <!-- Items injected here -->
             </div>
         </div>
 
-        <!-- شريط التقدم اليومي -->
         <div class="daily-progress-bar" id="dailyProgressBar">
             <div class="progress-info">
                 <span class="progress-label">📖 <span class="sv-text">Dagens mål</span> / <span class="ar-text">هدف
@@ -373,7 +394,6 @@
             </div>
         </div>
 
-        <!-- بطاقة التحدي اليومي -->
         <div class="daily-challenge-card premium-border-animated" id="dailyChallengeCard">
             <div class="challenge-header">
                 <div class="challenge-left">
@@ -383,7 +403,6 @@
                     <span class="challenge-title"><span class="sv-text">Daglig Utmaning</span><span
                             class="ar-text">التحدي اليومي</span></span>
                 </div>
-                <!-- Points Badge next to flame area -->
                 <div class="challenge-points">
                     <span class="points-value">+50</span>
                     <span class="points-label">XP</span>
@@ -403,10 +422,8 @@
             </div>
         </div>
 
-        <!-- Quiz Container (Inline) - Enhanced Professional Version -->
         <div class="container container-quiz-inline">
             <div id="quizInlineContainer" class="game-container hidden">
-                <!-- Header with Mode, Score, Timer -->
                 <div class="quiz-header-compact">
                     <div class="quiz-header-left">
                         <h2><span class="sv-text">Snabbtest</span><span class="ar-text">اختبار سريع</span></h2>
@@ -437,12 +454,10 @@
                     </div>
                 </div>
 
-                <!-- Progress Bar -->
                 <div class="quiz-progress-bar">
                     <div id="quizProgress" class="quiz-progress-fill"></div>
                 </div>
 
-                <!-- Quiz Body -->
                 <div class="quiz-body">
                     <div class="question-card">
                         <h3 id="quizQuestion">...</h3>
@@ -455,7 +470,6 @@
                     <button id="nextQuestion" class="action-btn primary next-btn-styled"><span
                             class="sv-text">Nästa</span><span class="ar-text">التالي</span> ➡️</button>
 
-                    <!-- End Screen -->
                     <div id="quizEndScreen" class="quiz-end-screen hidden">
                         <div class="end-icon">🎉</div>
                         <h3 class="end-title"><span class="sv-text">Testet avslutat!</span><span class="ar-text">انتهى
@@ -475,7 +489,6 @@
         </div>
 
         <main id="resultsArea">
-            <!-- Word of the Day -->
             <div id="wordOfTheDay" class="word-of-day-card hidden">
                 <div class="wod-header">
                     <div class="wod-title-col">
@@ -521,7 +534,6 @@
                         <div class="wod-arb"></div>
                     </div>
 
-                    <!-- Forms Preview Section -->
                     <div class="wod-forms-preview hidden">
                         <div class="preview-label">
                             <span class="preview-icon">𔕤</span>
@@ -530,7 +542,6 @@
                         <div class="wod-forms-chips"></div>
                     </div>
 
-                    <!-- Definition Section - Bilingual -->
                     <div class="wod-definitions-preview">
                         <div class="wod-def-preview hidden">
                             <div class="preview-label">
@@ -548,7 +559,6 @@
                         </div>
                     </div>
 
-                    <!-- Example Section - Bilingual -->
                     <div class="wod-examples-preview">
                         <div class="wod-example-preview hidden">
                             <div class="preview-label">
@@ -566,7 +576,6 @@
                         </div>
                     </div>
 
-                    <!-- Idiom Section - Bilingual -->
                     <div class="wod-idioms-preview">
                         <div class="wod-idiom-preview hidden">
                             <div class="preview-label">
@@ -580,15 +589,16 @@
                 </div>
             </div>
 
-            <!-- Empty State / History -->
             <div id="emptyState" class="placeholder-message">
                 <span class="sv-text">Börja skriva för att söka</span><span class="ar-text">ابدأ الكتابة للبحث</span>
             </div>
         </main>
-    </div><!-- End of #landingPageContent -->
+    </div>
+    -->
 
     <!-- Search Results Container (Initially Hidden) - Outside landing content -->
-    <div id="searchResults" class="results-grid"></div>
+    <!-- <div id="searchResults" class="results-grid"></div> -->
+
 
 
     <!-- PWA Install Prompt -->
