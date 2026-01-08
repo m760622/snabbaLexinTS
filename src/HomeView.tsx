@@ -402,6 +402,42 @@ export const HomeView: React.FC = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [stats, setStats] = useState<SearchStats | null>(null);
   const [visibleLimit, setVisibleLimit] = useState(50); // Infinite scroll limit
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && results.length > visibleLimit) {
+          setVisibleLimit((prev) => prev + 50);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [results.length, visibleLimit]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
@@ -481,7 +517,40 @@ export const HomeView: React.FC = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [searchTerm, mode, type, sort, initialRestoreDone]);
 
-  // ... (Search Logic remains same)
+  // 3. Search Logic
+  useEffect(() => {
+    if (!isDataReady) return;
+    
+    const performSearch = () => {
+      setIsLoading(true);
+      try {
+        const data = (window as any).dictionaryData;
+        if (!data) return;
+
+        const options = {
+          query: debouncedSearchTerm,
+          mode,
+          type,
+          sort
+        };
+
+        const { results: searchResults, stats: searchStats } = SearchService.searchWithStats(data, options);
+        
+        setResults(searchResults);
+        setStats(searchStats);
+        setVisibleLimit(50); // Reset limit on new search
+
+        // Save stats to cache for faster initial load next time
+        localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(searchStats));
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    performSearch();
+  }, [debouncedSearchTerm, mode, type, sort, isDataReady]);
 
   const handleResultClick = useCallback((id: number) => {
     if (searchTerm.trim()) {
@@ -577,19 +646,9 @@ export const HomeView: React.FC = () => {
           </div>
       )}
 
-      <div style={styles.header}>
-        <div style={styles.topBar}>
-            <div style={styles.brandTitle}><span style={{color:'#3b82f6'}}>Snabba</span>Lexin</div>
-            <button 
-                style={styles.settingsBtn} 
-                onClick={() => setIsSettingsOpen(true)}
-                aria-label="Settings"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            </button>
-        </div>
+                        <div style={styles.header}>
 
-        <div style={styles.searchRow}>
+                          <div style={styles.searchRow}>
             <div style={styles.searchContainer}>
                 <span style={styles.searchIcon}>🔍</span>
                 <input 
@@ -671,10 +730,23 @@ export const HomeView: React.FC = () => {
         {results.slice(0, visibleLimit).map((word) => (
             <WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />
         ))}
+        
+        <div ref={observerTarget} style={{ height: '20px' }}></div>
+
         {results.length > visibleLimit && (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>Laddar fler...</div>
+            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>Laddar fler... / جاري تحميل المزيد...</div>
         )}
       </div>
+
+      {showScrollTop && (
+          <button 
+            onClick={scrollToTop} 
+            style={styles.scrollTopBtn}
+            aria-label="Till toppen"
+          >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+          </button>
+      )}
     </div>
   );
 };
@@ -719,6 +791,24 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionBtn: { padding: '0', width: '30px', height: '30px', minWidth: '30px', minHeight: '30px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer' },
   forms: { fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', opacity: 0.8, marginTop: '-2px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   arabic: { fontSize: '1rem', color: '#8e8e93', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'normal', textAlign: 'right' },
+  scrollTopBtn: { 
+    position: 'fixed', 
+    bottom: '80px', 
+    right: '20px', 
+    width: '44px', 
+    height: '44px', 
+    borderRadius: '22px', 
+    backgroundColor: '#0A84FF', 
+    color: '#fff', 
+    border: 'none', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    boxShadow: '0 4px 12px rgba(0,0,0,0.3)', 
+    cursor: 'pointer', 
+    zIndex: 1000,
+    animation: 'fadeIn 0.3s'
+  },
   cubeContainer: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', padding: '20px 0' },
   checkboxLabel: { display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '0.9rem', cursor: 'pointer', padding: '8px', background: '#2c2c2e', borderRadius: '8px' }
 };

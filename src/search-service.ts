@@ -74,21 +74,23 @@ export class SearchService {
 
             if (!matchesQuery) continue;
 
-            // 2. Type Stats
-            let typeKey = 'other';
-            if (rawType.includes('subst') || rawType === 'noun') typeKey = 'subst';
-            else if (rawType.includes('verb')) typeKey = 'verb';
-            else if (rawType.includes('adj')) typeKey = 'adj';
-            else if (rawType.includes('adv')) typeKey = 'adv';
-            else if (rawType.includes('prep')) typeKey = 'prep';
-            else if (rawType.includes('pron')) typeKey = 'pron';
-            else if (rawType.includes('konj')) typeKey = 'konj';
-            else if (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom')) typeKey = 'fras';
-            else if (rawType.includes('juridik')) typeKey = 'juridik';
-            else if (rawType.includes('medicin')) typeKey = 'medicin';
-            else if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data')) typeKey = 'it';
+            // 2. Type Stats (Multi-counting for filters)
+            stats.types['all'] = (stats.types['all'] || 0) + 1;
 
-            stats.types[typeKey] = (stats.types[typeKey] || 0) + 1;
+            if (rawType.includes('subst') || rawType === 'noun') stats.types['subst'] = (stats.types['subst'] || 0) + 1;
+            if (rawType.includes('verb')) stats.types['verb'] = (stats.types['verb'] || 0) + 1;
+            if (rawType.includes('adj')) stats.types['adj'] = (stats.types['adj'] || 0) + 1;
+            if (rawType.includes('adv')) stats.types['adv'] = (stats.types['adv'] || 0) + 1;
+            if (rawType.includes('prep')) stats.types['prep'] = (stats.types['prep'] || 0) + 1;
+            if (rawType.includes('pron')) stats.types['pron'] = (stats.types['pron'] || 0) + 1;
+            if (rawType.includes('konj')) stats.types['konj'] = (stats.types['konj'] || 0) + 1;
+            if (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom')) stats.types['fras'] = (stats.types['fras'] || 0) + 1;
+            
+            // Specialized
+            if (rawType.includes('juridik')) stats.types['juridik'] = (stats.types['juridik'] || 0) + 1;
+            if (rawType.includes('medicin')) stats.types['medicin'] = (stats.types['medicin'] || 0) + 1;
+            if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data') || rawType.includes('dator')) stats.types['it'] = (stats.types['it'] || 0) + 1;
+
 
             // 4. Filter Results
             if (!hasQuery && !isBrowsing) continue;
@@ -96,17 +98,23 @@ export class SearchService {
             let includeInResults = true;
             if (type !== 'all') {
                  let matchesType = false;
-                 if (type === 'subst' && typeKey === 'subst') matchesType = true;
-                 else if (type === 'verb' && typeKey === 'verb') matchesType = true;
-                 else if (type === 'adj' && typeKey === 'adj') matchesType = true;
-                 else if (type === 'adv' && typeKey === 'adv') matchesType = true;
-                 else if (type === 'prep' && typeKey === 'prep') matchesType = true;
-                 else if (type === 'pron' && typeKey === 'pron') matchesType = true;
-                 else if (type === 'konj' && typeKey === 'konj') matchesType = true;
-                 else if (type === 'fras' && typeKey === 'fras') matchesType = true;
-                 else if (type === 'juridik' && typeKey === 'juridik') matchesType = true;
-                 else if (type === 'medicin' && typeKey === 'medicin') matchesType = true;
-                 else if (type === 'it' && typeKey === 'it') matchesType = true;
+                 
+                 // Robust filtering based on stats logic above
+                 if (type === 'subst' && (rawType.includes('subst') || rawType === 'noun')) matchesType = true;
+                 else if (type === 'verb' && rawType.includes('verb')) matchesType = true;
+                 else if (type === 'adj' && rawType.includes('adj')) matchesType = true;
+                 else if (type === 'adv' && rawType.includes('adv')) matchesType = true;
+                 else if (type === 'prep' && rawType.includes('prep')) matchesType = true;
+                 else if (type === 'pron' && rawType.includes('pron')) matchesType = true;
+                 else if (type === 'konj' && rawType.includes('konj')) matchesType = true;
+                 else if (type === 'fras' && (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom'))) matchesType = true;
+                 
+                 // Specialized Filters (Inclusive)
+                 else if (type === 'juridik' && rawType.includes('juridik')) matchesType = true;
+                 else if (type === 'medicin' && rawType.includes('medicin')) matchesType = true;
+                 else if (type === 'it' && (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data') || rawType.includes('dator'))) matchesType = true;
+                 
+                 // Fallback for strict strict types not yet in stats (e.g. Politik/Religion if needed in future)
                  else if (type === 'politik' && (rawType.includes('politik') || rawType.includes('samhäll'))) matchesType = true;
                  else if (type === 'religion' && (rawType.includes('religion') || rawType.includes('islam'))) matchesType = true;
 
@@ -152,7 +160,7 @@ export class SearchService {
         });
 
         // Limit results
-        const MAX_RESULTS = 200;
+        const MAX_RESULTS = 1000;
         const slicedResults = allMatches.slice(0, MAX_RESULTS).map(row => ({
             id: row[0],
             type: row[1],

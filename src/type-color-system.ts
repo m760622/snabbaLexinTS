@@ -312,6 +312,8 @@ export interface WordTypeResult {
     specializedLabel?: string;
 }
 
+const detectionCache = new Map<string, WordTypeResult>();
+
 /**
  * TypeColorSystem - Main API for detecting word types and getting colors
  * 
@@ -333,6 +335,22 @@ export const TypeColorSystem = {
      * @returns WordTypeResult with detected type and color
      */
     detect(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): WordTypeResult {
+        const cacheKey = `${type}|${word}|${forms}|${gender}|${arabic}`;
+        if (detectionCache.has(cacheKey)) return detectionCache.get(cacheKey)!;
+
+        const result = this._detectRaw(type, word, forms, gender, arabic);
+        
+        // Simple cache size limit
+        if (detectionCache.size > 2000) {
+            const firstKey = detectionCache.keys().next().value;
+            if (firstKey) detectionCache.delete(firstKey);
+        }
+        
+        detectionCache.set(cacheKey, result);
+        return result;
+    },
+
+    _detectRaw(type: string, word: string = '', forms: string = '', gender: string = '', arabic: string = ''): WordTypeResult {
         const wordLower = (word || '').trim().toLowerCase();
         const formsLower = (forms || '').toLowerCase();
         const normalizedType = (type || '').toLowerCase().replace(/[.()]/g, '').trim();
