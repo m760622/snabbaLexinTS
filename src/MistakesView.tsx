@@ -28,10 +28,17 @@ export const MistakesView: React.FC = () => {
 
     if (mistakes.length === 0) {
         return (
-            <div style={styles.emptyContainer}>
-                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
-                <h2 style={{ color: '#fff' }}>Inga fel sparade!</h2>
-                <p style={{ color: '#888' }}>Bra jobbat, du har inga ord att repetera just nu.</p>
+            <div style={styles.container}>
+                <div style={styles.glassContainer}>
+                    <div style={{ fontSize: '5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.4))' }}>🏆</div>
+                    <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: '800', marginBottom: '10px', lineHeight: 1.2 }}>
+                        Great job! <br/>
+                        <span style={{ color: '#10b981' }}>You have cleared all your mistakes.</span>
+                    </h2>
+                    <p style={{ color: '#aaa', fontSize: '1.1rem', maxWidth: '300px', margin: '0 auto' }}>
+                        Keep playing to learn more words and expand your vocabulary.
+                    </p>
+                </div>
             </div>
         );
     }
@@ -39,10 +46,18 @@ export const MistakesView: React.FC = () => {
     return (
         <div style={styles.container}>
             <div style={styles.header}>
-                <h2 style={styles.title}>
-                    <span style={{ marginRight: '10px' }}>🎯</span>
-                    Mina Fel / مراجعة أخطائي
-                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <h2 style={styles.title}>
+                        <span style={{ marginRight: '10px' }}>🎯</span>
+                        Mina Fel / مراجعة أخطائي
+                    </h2>
+                    <button 
+                        style={styles.practiceBtn}
+                        onClick={() => window.location.href = '/games/flashcards.html?mode=review'}
+                    >
+                        Practice Mistakes 🎯 تمرن على أخطائك
+                    </button>
+                </div>
                 <div style={styles.badge}>{mistakes.length} ord</div>
             </div>
 
@@ -117,6 +132,19 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontSize: '0.9rem',
         fontWeight: 'bold'
     },
+    practiceBtn: {
+        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+        color: '#fff',
+        border: 'none',
+        padding: '8px 16px',
+        borderRadius: '12px',
+        fontSize: '0.9rem',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+        transition: 'transform 0.2s',
+        textAlign: 'center'
+    },
     grid: {
         display: 'grid',
         gap: '16px',
@@ -190,5 +218,17 @@ const styles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
         padding: '60px 20px',
         color: '#888'
+    },
+    glassContainer: {
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderRadius: '24px',
+        padding: '60px 30px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        textAlign: 'center',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        marginTop: '20px',
+        animation: 'fadeIn 0.6s ease-out'
     }
 };

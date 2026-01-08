@@ -12821,3 +12821,100 @@ body.lang-ar .sv-text {
     font-size: 1.2rem;
   }
 }
+/* ==========================================================================
+   DASHBOARD STYLES
+   ========================================================================== */
+.dashboard-container {
+    padding: 20px 16px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.dashboard-section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main, #fff);
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    transition: transform 0.2s, background 0.2s;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.card-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    margin-bottom: 12px;
+}
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.card-title-sv {
+    font-weight: 700;
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.card-title-ar {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Tajawal', sans-serif;
+}
+
+@media (max-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ==========================================================================
+   REACT ROOTS
+   ========================================================================== */
+#mistakes-react-root {
+    margin-top: 40px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}

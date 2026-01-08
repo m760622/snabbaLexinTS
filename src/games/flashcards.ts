@@ -86,6 +86,8 @@ let touchEndX = 0;
 let isAutoPlayEnabled = localStorage.getItem('fc_autoplay') !== 'false';
 
 export function initFlashcards(retryCount = 0) {
+    const params = new URLSearchParams(window.location.search);
+    const isReviewMode = params.get('mode') === 'review';
     const typeFilter = (document.getElementById('flashcardTypeFilter') as HTMLSelectElement)?.value || 'all';
     const dictionaryData = (window as any).dictionaryData;
 
@@ -101,28 +103,47 @@ export function initFlashcards(retryCount = 0) {
     try {
         let pool = [...dictionaryData];
 
-        if (typeFilter !== 'all') {
-            pool = pool.filter(entry => {
-                const type = (entry[FC_COL_TYPE] || '').toLowerCase();
-                return type.includes(typeFilter);
+        if (isReviewMode) {
+            const mistakes = mistakesManager.getMistakes();
+            if (mistakes.length > 0) {
+                const mistakeWords = new Set(mistakes.map(m => m.word));
+                flashcardCards = pool.filter(entry => entry && entry[FC_COL_SWE] && mistakeWords.has(entry[FC_COL_SWE]));
+                
+                const mistakeMap = new Map(mistakes.map(m => [m.word, m.attempts]));
+                flashcardCards.sort((a, b) => (mistakeMap.get(b[FC_COL_SWE]) || 0) - (mistakeMap.get(a[FC_COL_SWE]) || 0));
+                
+                if (flashcardCards.length === 0) {
+                    showToast("Kunde inte hitta dina fel i databasen.", { type: 'error' });
+                    return;
+                }
+            } else {
+                showToast("Inga fel att repetera! / لا توجد أخطاء للمراجعة!", { type: 'info' });
+                return;
+            }
+        } else {
+            if (typeFilter !== 'all') {
+                pool = pool.filter(entry => {
+                    const type = (entry[FC_COL_TYPE] || '').toLowerCase();
+                    return type.includes(typeFilter);
+                });
+            }
+
+            pool = pool.filter(entry => entry && entry[FC_COL_SWE] && entry[FC_COL_SWE].length > 0);
+
+            if (pool.length === 0) {
+                showToast("Inga ord hittades.", { type: 'error' });
+                return;
+            }
+
+            pool.sort((a, b) => {
+                const boxA = LeitnerSystem.getWordBox(String(a[FC_COL_ID]));
+                const boxB = LeitnerSystem.getWordBox(String(b[FC_COL_ID]));
+                return boxA - boxB;
             });
+
+            // Use Smart Selection to pick 50 words
+            flashcardCards = SmartWordSelector.select(pool, 50);
         }
-
-        pool = pool.filter(entry => entry && entry[FC_COL_SWE] && entry[FC_COL_SWE].length > 0);
-
-        if (pool.length === 0) {
-            showToast("Inga ord hittades.", { type: 'error' });
-            return;
-        }
-
-        pool.sort((a, b) => {
-            const boxA = LeitnerSystem.getWordBox(String(a[FC_COL_ID]));
-            const boxB = LeitnerSystem.getWordBox(String(b[FC_COL_ID]));
-            return boxA - boxB;
-        });
-
-        // Use Smart Selection to pick 50 words
-        flashcardCards = SmartWordSelector.select(pool, 50);
         
         // Mark all picked words as seen
         flashcardCards.forEach(card => {

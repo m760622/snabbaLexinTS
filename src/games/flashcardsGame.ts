@@ -29,6 +29,7 @@ interface LeitnerData {
 import { showToast, saveScore, showGameMenu } from './games-utils';
 import { TTSManager } from '../tts';
 import { TextSizeManager } from '../utils';
+import { mistakesManager } from '../mistakes-review';
 
 // Global declarations
 declare const dictionaryData: any[];
@@ -158,6 +159,8 @@ function triggerConfetti(): void {
 // Initialize Flashcards Game
 // ========================================
 export function initFlashcards(retryCount = 0): void {
+    const params = new URLSearchParams(window.location.search);
+    const isReviewMode = params.get('mode') === 'review';
     const typeFilterEl = document.getElementById('flashcardTypeFilter') as HTMLSelectElement | null;
     const typeFilter = typeFilterEl?.value || 'all';
 
@@ -182,29 +185,49 @@ export function initFlashcards(retryCount = 0): void {
     try {
         let pool = [...dictionaryData];
 
-        if (typeFilter !== 'all') {
-            pool = pool.filter(entry => {
-                if (!entry) return false;
-                const type = (entry[FC_COL_TYPE] || '').toLowerCase();
-                return type.includes(typeFilter);
+        if (isReviewMode) {
+            const mistakes = mistakesManager.getMistakes();
+            if (mistakes.length > 0) {
+                const mistakeWords = new Set(mistakes.map(m => m.word));
+                flashcardCards = pool.filter(entry => entry && entry[FC_COL_SWE] && mistakeWords.has(entry[FC_COL_SWE]));
+                
+                const mistakeMap = new Map(mistakes.map(m => [m.word, m.attempts]));
+                flashcardCards.sort((a, b) => (mistakeMap.get(b[FC_COL_SWE]) || 0) - (mistakeMap.get(a[FC_COL_SWE]) || 0));
+                
+                if (flashcardCards.length === 0) {
+                    if (typeof showToast === 'function') showToast("Kunde inte hitta dina fel i databasen.", 'error');
+                    return;
+                }
+            } else {
+                if (typeof showToast === 'function') showToast("Inga fel att repetera! / لا توجد أخطاء للمراجعة!", 'default');
+                return;
+            }
+        } else {
+            if (typeFilter !== 'all') {
+                pool = pool.filter(entry => {
+                    if (!entry) return false;
+                    const type = (entry[FC_COL_TYPE] || '').toLowerCase();
+                    return type.includes(typeFilter);
+                });
+            }
+
+            pool = pool.filter(entry => entry && entry[FC_COL_SWE] && entry[FC_COL_SWE].length > 0);
+
+            if (pool.length === 0) {
+                console.warn("No words found for filter:", typeFilter);
+                if (typeof showToast === 'function') showToast("Inga ord hittades för detta filter.", 'error');
+                return;
+            }
+
+            pool.sort((a, b) => {
+                const boxA = LeitnerSystem.getWordBox(String(a[FC_COL_ID]));
+                const boxB = LeitnerSystem.getWordBox(String(b[FC_COL_ID]));
+                return boxA - boxB;
             });
+
+            flashcardCards = pool.sort(() => 0.5 - Math.random()).slice(0, 50);
         }
 
-        pool = pool.filter(entry => entry && entry[FC_COL_SWE] && entry[FC_COL_SWE].length > 0);
-
-        if (pool.length === 0) {
-            console.warn("No words found for filter:", typeFilter);
-            if (typeof showToast === 'function') showToast("Inga ord hittades för detta filter.", 'error');
-            return;
-        }
-
-        pool.sort((a, b) => {
-            const boxA = LeitnerSystem.getWordBox(String(a[FC_COL_ID]));
-            const boxB = LeitnerSystem.getWordBox(String(b[FC_COL_ID]));
-            return boxA - boxB;
-        });
-
-        flashcardCards = pool.sort(() => 0.5 - Math.random()).slice(0, 50);
         flashcardIndex = 0;
         flashcardScore = 0;
         flashcardTotal = flashcardCards.length;
@@ -505,6 +528,7 @@ function handleFlashcardRatingInternal(rating: number): void {
 
     if (rating >= 3) {
         LeitnerSystem.promoteWord(wordId);
+        mistakesManager.markAsLearned(card[FC_COL_SWE]);
         flashcardScore++;
         sessionStats.correct++;
         if (typeof HapticManager !== 'undefined') HapticManager.trigger('success');
@@ -514,6 +538,11 @@ function handleFlashcardRatingInternal(rating: number): void {
         showNextReviewToast(newBox, true);
     } else {
         LeitnerSystem.demoteWord(wordId);
+        mistakesManager.addMistake({
+            word: card[FC_COL_SWE],
+            translation: card[FC_COL_ARB],
+            game: 'flashcards'
+        });
         sessionStats.wrong++;
         if (typeof HapticManager !== 'undefined') HapticManager.trigger('error');
         if (typeof SoundManager !== 'undefined') SoundManager.play('error');

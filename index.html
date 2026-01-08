@@ -136,8 +136,65 @@
     <!-- <h3>Snabba Lexin</h3> -->
     <!-- <p class="subtitle">Svensk-Arabiskt Lexikon / القاموس السويدي العربي</p> -->
 
+    <main id="app" class="dashboard-container">
+        <!-- Learn Section -->
+        <section class="dashboard-section">
+            <h3 class="section-title"><span class="sv-text">Lär känna</span><span class="ar-text">تعلم</span></h3>
+            <div class="dashboard-grid">
+                <a href="learn/learn.html" class="dashboard-card learn-card">
+                    <span class="card-icon">📚</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Studera</span>
+                        <span class="card-title-ar">دراسة</span>
+                    </div>
+                </a>
+                <a href="learn/ordsprak.html" class="dashboard-card learn-card">
+                    <span class="card-icon">💬</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Ordspråk</span>
+                        <span class="card-title-ar">أمثال</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Games Section -->
+        <section class="dashboard-section">
+            <h3 class="section-title"><span class="sv-text">Spel</span><span class="ar-text">ألعاب</span></h3>
+            <div class="dashboard-grid">
+                <a href="games/hangman.html" class="dashboard-card game-card">
+                    <span class="card-icon">😵</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Hangman</span>
+                        <span class="card-title-ar">الرجل المشنوق</span>
+                    </div>
+                </a>
+                <a href="games/flashcards.html" class="dashboard-card game-card">
+                    <span class="card-icon">🃏</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Flashcards</span>
+                        <span class="card-title-ar">بطاقات تعليمية</span>
+                    </div>
+                </a>
+                <a href="games/spelling.html" class="dashboard-card game-card">
+                    <span class="card-icon">✍️</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Spelling</span>
+                        <span class="card-title-ar">تهجئة</span>
+                    </div>
+                </a>
+                <a href="games/wordle.html" class="dashboard-card game-card">
+                    <span class="card-icon">🟩</span>
+                    <div class="card-info">
+                        <span class="card-title-sv">Wordle</span>
+                        <span class="card-title-ar">ووردل</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
     <div id="react-root"></div>
-    <div id="mistakes-react-root"></div>
 
     <!-- REACT REPLACEMENT: Commenting out legacy UI -->
     <!--
@@ -957,6 +1014,8 @@
         </div>
     </div>
 
+
+    <div id="mistakes-react-root"></div>
 
     <script type="module" src="/src/app.ts"></script>
     <script type="module" src="/src/pwa.ts"></script>
