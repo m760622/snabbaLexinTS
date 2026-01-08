@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { SearchService, SearchResult } from './search-service';
+import { SearchService, SearchResult, SearchStats } from './search-service';
 import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
-import { showToast } from './utils';
+import { showToast, TextSizeManager } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
 
 // --- Constants & Types ---
@@ -12,6 +12,7 @@ interface FilterOption {
   value: string;
   labelSv: string;
   labelAr: string;
+  countKey?: string;
 }
 
 const MODES: FilterOption[] = [
@@ -31,30 +32,30 @@ const SORTS: FilterOption[] = [
 ];
 
 const TYPES: FilterOption[] = [
-  { value: 'all', labelSv: 'Alla typer', labelAr: 'كل الأنواع' },
-  { value: 'subst', labelSv: 'Substantiv', labelAr: 'اسم' },
-  { value: 'verb', labelSv: 'Verb', labelAr: 'فعل' },
-  { value: 'adj', labelSv: 'Adjektiv', labelAr: 'صفة' },
-  { value: 'adv', labelSv: 'Adverb', labelAr: 'حال' },
-  { value: 'prep', labelSv: 'Preposition', labelAr: 'حرف جر' },
-  { value: 'pron', labelSv: 'Pronomen', labelAr: 'ضمير' },
-  { value: 'konj', labelSv: 'Konjunktion', labelAr: 'أداة عطف' },
-  { value: 'fras', labelSv: 'Fras/Uttryck', labelAr: 'عبارة' },
-  { value: 'juridik', labelSv: '⚖️ Juridik', labelAr: 'قانون' },
-  { value: 'medicin', labelSv: '🏥 Medicin', labelAr: 'طب' },
-  { value: 'it', labelSv: '💻 IT/Teknik', labelAr: 'تقنية' },
+  { value: 'all', labelSv: 'Alla typer', labelAr: 'كل الأنواع', countKey: 'all' },
+  { value: 'subst', labelSv: 'Substantiv', labelAr: 'اسم', countKey: 'subst' },
+  { value: 'verb', labelSv: 'Verb', labelAr: 'فعل', countKey: 'verb' },
+  { value: 'adj', labelSv: 'Adjektiv', labelAr: 'صفة', countKey: 'adj' },
+  { value: 'adv', labelSv: 'Adverb', labelAr: 'حال', countKey: 'adv' },
+  { value: 'prep', labelSv: 'Preposition', labelAr: 'حرف جر', countKey: 'prep' },
+  { value: 'pron', labelSv: 'Pronomen', labelAr: 'ضمير', countKey: 'pron' },
+  { value: 'konj', labelSv: 'Konjunktion', labelAr: 'أداة عطف', countKey: 'konj' },
+  { value: 'fras', labelSv: 'Fras/Uttryck', labelAr: 'عبارة', countKey: 'fras' },
+  { value: 'juridik', labelSv: '⚖️ Juridik', labelAr: 'قانون', countKey: 'juridik' },
+  { value: 'medicin', labelSv: '🏥 Medicin', labelAr: 'طب', countKey: 'medicin' },
+  { value: 'it', labelSv: '💻 IT/Teknik', labelAr: 'تقنية', countKey: 'it' },
 ];
 
 const CATEGORIES: FilterOption[] = [
-  { value: 'all', labelSv: 'Alla ämnen', labelAr: 'كل المواضيع' },
-  { value: 'food', labelSv: '🍽️ Mat', labelAr: 'طعام' },
-  { value: 'work', labelSv: '💼 Arbete', labelAr: 'عمل' },
-  { value: 'health', labelSv: '🏥 Hälsa', labelAr: 'صحة' },
-  { value: 'family', labelSv: '👨‍👩‍👧 Familj', labelAr: 'عائلة' },
-  { value: 'travel', labelSv: '✈️ Resa', labelAr: 'سفر' },
-  { value: 'school', labelSv: '📚 Skola', labelAr: 'مدرسة' },
-  { value: 'home', labelSv: '🏠 Hem', labelAr: 'منزل' },
-  { value: 'nature', labelSv: '🌳 Natur', labelAr: 'طبيعة' },
+  { value: 'all', labelSv: 'Alla ämnen', labelAr: 'كل المواضيع', countKey: 'all' },
+  { value: 'food', labelSv: '🍽️ Mat', labelAr: 'طعام', countKey: 'food' },
+  { value: 'work', labelSv: '💼 Arbete', labelAr: 'عمل', countKey: 'work' },
+  { value: 'health', labelSv: '🏥 Hälsa', labelAr: 'صحة', countKey: 'health' },
+  { value: 'family', labelSv: '👨‍👩‍👧 Familj', labelAr: 'عائلة', countKey: 'family' },
+  { value: 'travel', labelSv: '✈️ Resa', labelAr: 'سفر', countKey: 'travel' },
+  { value: 'school', labelSv: '📚 Skola', labelAr: 'مدرسة', countKey: 'school' },
+  { value: 'home', labelSv: '🏠 Hem', labelAr: 'منزل', countKey: 'home' },
+  { value: 'nature', labelSv: '🌳 Natur', labelAr: 'طبيعة', countKey: 'nature' },
 ];
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -126,16 +127,12 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const textToCopy = `${word.swedish} - ${word.arabic}`;
     try {
-        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(textToCopy); showToast('Kopierat / تم النسخ 📋'); } else throw new Error();
+        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(`${word.swedish} - ${word.arabic}`); showToast('Kopierat / تم النسخ 📋'); } else throw new Error();
     } catch { showToast('Kunde inte kopiera / تعذر النسخ ❌'); }
   };
 
-  const handleFav = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    FavoritesManager.toggle(word.id.toString());
-  };
+  const handleFav = (e: React.MouseEvent) => { e.stopPropagation(); FavoritesManager.toggle(word.id.toString()); };
 
   return (
     <div style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} onClick={onClick}>
@@ -159,7 +156,6 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
 });
 
 export const HomeView: React.FC = () => {
-  // State
   const [searchTerm, setSearchTerm] = useState('');
   const [mode, setMode] = useState('all');
   const [sort, setSort] = useState('relevance');
@@ -168,6 +164,7 @@ export const HomeView: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [stats, setStats] = useState<SearchStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
@@ -179,7 +176,9 @@ export const HomeView: React.FC = () => {
 
   // 1. Initialize
   useEffect(() => {
-    // Restore
+    const savedStats = localStorage.getItem('snabbaLexin_stats_cache');
+    if (savedStats) setStats(JSON.parse(savedStats));
+
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
         try {
@@ -190,15 +189,11 @@ export const HomeView: React.FC = () => {
             setCategory(parsed.category || 'all');
             setSort(parsed.sort || 'relevance');
             
-            // Filters were open?
             if (parsed.mode !== 'all' || parsed.type !== 'all' || parsed.category !== 'all') {
                 setIsFiltersOpen(true);
             }
 
-            // Restore scroll
-            if (parsed.scrollY) {
-                setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
-            }
+            if (parsed.scrollY) setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
         } catch {}
     }
     setInitialRestoreDone(true);
@@ -224,48 +219,34 @@ export const HomeView: React.FC = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [searchTerm, mode, type, category, sort, initialRestoreDone]);
 
-  // Save scroll periodically or on unload
-  useEffect(() => {
-      const handleScroll = () => {
-          if (!initialRestoreDone) return;
-          const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-      };
-      // Throttle? For simplicity, we rely on browser optimization or debounce if needed. 
-      // But adding debounce here is good practice.
-      const timer = setTimeout(handleScroll, 500); 
-      window.addEventListener('scroll', handleScroll); // Actually this event fires a lot. Better use handleResultClick.
-      // But let's stick to saving on change for now, and rely on result click for accurate scroll.
-      return () => {
-          clearTimeout(timer);
-          window.removeEventListener('scroll', handleScroll);
-      };
-  }, [searchTerm, mode, type, category, sort, initialRestoreDone]);
-
-
   // 3. Search Logic
   useEffect(() => {
     if (!isDataReady) return;
     
-    // If restoring, we might have a query immediately. 
-    // debouncedSearchTerm lags by 300ms. 
-    // We rely on debounced for search.
-    
     const isBrowsing = mode === 'favorites' || type !== 'all' || category !== 'all';
     const hasQuery = !!debouncedSearchTerm.trim();
     
+    const data = (window as any).dictionaryData;
+    
     if (!hasQuery && !isBrowsing) {
+        if (data && !stats) {
+            const { stats: globalStats } = SearchService.searchWithStats(data, {
+                query: '', mode: 'all', type: 'all', category: 'all', sort: 'relevance'
+            });
+            setStats(globalStats);
+            localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(globalStats));
+        }
         setResults([]);
         return;
     }
 
     setIsLoading(true);
     const timer = setTimeout(() => {
-        const data = (window as any).dictionaryData;
-        const newResults = SearchService.search(data, {
+        const { results: newResults, stats: newStats } = SearchService.searchWithStats(data, {
             query: debouncedSearchTerm, mode, type, category, sort
         });
         setResults(newResults);
+        setStats(newStats);
         setIsLoading(false);
     }, 10);
     return () => clearTimeout(timer);
@@ -277,10 +258,8 @@ export const HomeView: React.FC = () => {
       SearchHistoryManager.add(searchTerm.trim());
       setHistory(SearchHistoryManager.get());
     }
-    // Explicitly save scroll before navigation
     const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    
     window.location.href = `details.html?id=${id}`;
   }, [searchTerm, mode, type, category, sort]);
 
@@ -289,13 +268,21 @@ export const HomeView: React.FC = () => {
   };
   const hasActiveFilters = mode !== 'all' || type !== 'all' || category !== 'all' || sort !== 'relevance';
 
-  const FilterSelect = ({ label, value, options, onChange, icon }: any) => (
+  const FilterSelect = ({ label, value, options, onChange, icon, statsData }: any) => (
     <div style={styles.selectWrapper}>
       <div style={styles.selectLabel}>{icon} {label}</div>
       <select value={value} onChange={(e) => onChange(e.target.value)} style={{...styles.selectInput, ...(value !== 'all' && value !== 'relevance' ? styles.selectActive : {})}}>
-        {options.map((opt: any) => (
-            <option key={opt.value} value={opt.value}>{opt.labelSv}</option>
-        ))}
+        {options.map((opt: any) => {
+            let countLabel = '';
+            if (statsData && opt.countKey) {
+                if (opt.countKey === 'all' && statsData.total > 0) {} 
+                else if (statsData.categories[opt.countKey] || statsData.types[opt.countKey]) {
+                     const count = statsData.categories[opt.countKey] || statsData.types[opt.countKey];
+                     if (count > 0) countLabel = ` (${count.toLocaleString()})`;
+                }
+            }
+            return <option key={opt.value} value={opt.value}>{opt.labelSv}{countLabel}</option>
+        })}
       </select>
     </div>
   );
@@ -303,6 +290,24 @@ export const HomeView: React.FC = () => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
+        <div style={styles.topBar}>
+            <div style={styles.brandTitle}><span style={{color:'#3b82f6'}}>Snabba</span>Lexin</div>
+            <button 
+                style={styles.settingsBtn} 
+                onClick={() => {
+                    const settingsMenu = document.getElementById('settingsMenu');
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    if (settingsMenu && settingsBtn) {
+                        settingsMenu.classList.remove('hidden');
+                        settingsBtn.classList.add('active');
+                    }
+                }}
+                aria-label="Settings"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </div>
+
         <div style={styles.searchRow}>
             <div style={styles.searchContainer}>
                 <span style={styles.searchIcon}>🔍</span>
@@ -314,6 +319,13 @@ export const HomeView: React.FC = () => {
                     style={styles.input} 
                     disabled={!isDataReady} 
                 />
+                
+                {isDataReady && (
+                     <span style={styles.totalCountBadge}>
+                        {(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}
+                     </span>
+                )}
+
                 {isLoading && <div style={styles.spinner}></div>}
                 {searchTerm && !isLoading && (
                     <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
@@ -329,8 +341,8 @@ export const HomeView: React.FC = () => {
                 <div style={styles.filtersGrid}>
                     <FilterSelect label="Läge" icon="⚙️" value={mode} options={MODES} onChange={setMode} />
                     <FilterSelect label="Sortering" icon="🔃" value={sort} options={SORTS} onChange={setSort} />
-                    <FilterSelect label="Typ" icon="📝" value={type} options={TYPES} onChange={setType} />
-                    <FilterSelect label="Ämne" icon="🏷️" value={category} options={CATEGORIES} onChange={setCategory} />
+                    <FilterSelect label="Typ" icon="📝" value={type} options={TYPES} onChange={setType} statsData={stats} />
+                    <FilterSelect label="Ämne" icon="🏷️" value={category} options={CATEGORIES} onChange={setCategory} statsData={stats} />
                 </div>
                 {hasActiveFilters && <button onClick={clearFilters} style={styles.resetFiltersBtn}>Återställ filter / إعادة ضبط</button>}
             </div>
@@ -387,10 +399,14 @@ export const HomeView: React.FC = () => {
 const styles: { [key: string]: React.CSSProperties } = {
   container: { minHeight: '100vh', backgroundColor: '#121212', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', flexDirection: 'column' },
   header: { position: 'sticky', top: 0, backgroundColor: 'rgba(18, 18, 18, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #333', zIndex: 100, paddingBottom: '8px' },
-  searchRow: { display: 'flex', alignItems: 'center', padding: '12px 16px', gap: '10px' },
+  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px 4px 16px', marginBottom: '4px' },
+  brandTitle: { fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#fff' },
+  settingsBtn: { background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  searchRow: { display: 'flex', alignItems: 'center', padding: '4px 16px 12px 16px', gap: '10px' },
   searchContainer: { position: 'relative', flex: 1 },
   searchIcon: { position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8e8e93', pointerEvents: 'none' },
   input: { width: '100%', padding: '12px 90px 12px 40px', borderRadius: '12px', border: 'none', backgroundColor: '#2c2c2e', color: '#fff', fontSize: '16px', outline: 'none' },
+  totalCountBadge: { position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#636366', fontSize: '12px', fontWeight: '600', pointerEvents: 'none' },
   spinner: { position: 'absolute', right: '12px', top: '50%', marginTop: '-8px', width: '16px', height: '16px', border: '2px solid #8e8e93', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' },
   clearBtn: { position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#8e8e93', cursor: 'pointer', fontSize: '16px' },
   filterToggleBtn: { backgroundColor: '#2c2c2e', border: 'none', borderRadius: '12px', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8e8e93', cursor: 'pointer', transition: 'all 0.2s' },

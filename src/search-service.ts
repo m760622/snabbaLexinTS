@@ -33,7 +33,7 @@ export class SearchService {
     static init(data: any[][]) {}
 
     /**
-     * Optimized search with stats - uses strict tag checking for maximum performance.
+     * Search with lightweight stats calculation (Fast & Efficient)
      */
     static searchWithStats(data: any[][], options: SearchOptions): SearchResultWithStats {
         const { query, mode, type, category, sort } = options;
@@ -48,9 +48,6 @@ export class SearchService {
         const isBrowsing = mode === 'favorites' || type !== 'all' || category !== 'all';
         const hasQuery = !!normalizedQuery;
 
-        // If simple view (no query/filters), return empty or calculate global stats if needed
-        // For performance, caller can handle global stats logic
-        
         let allMatches: any[][] = [];
         let candidateData = data;
         
@@ -59,7 +56,7 @@ export class SearchService {
             candidateData = data.filter(row => favIds.has(row[0].toString()));
         }
 
-        // Single Pass Loop (O(N))
+        // Single Pass Loop O(N)
         for (const row of candidateData) {
             const rawType = (row[1] || '').toLowerCase();
             const tags = (row[11] || '').toLowerCase();
@@ -81,7 +78,7 @@ export class SearchService {
 
             if (!matchesQuery) continue;
 
-            // 2. Count Stats (Accumulate for ALL matching query)
+            // 2. Calculate Stats (Accumulate for ALL matches)
             // Type Stats
             let typeKey = 'other';
             if (rawType.includes('subst') || rawType === 'noun') typeKey = 'subst';
@@ -94,12 +91,11 @@ export class SearchService {
             else if (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom')) typeKey = 'fras';
             else if (rawType.includes('juridik')) typeKey = 'juridik';
             else if (rawType.includes('medicin')) typeKey = 'medicin';
-            else if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data')) typeKey = 'it';
+            else if (rawType.includes('it') || rawType.includes('teknik')) typeKey = 'it';
 
             stats.types[typeKey] = (stats.types[typeKey] || 0) + 1;
 
             // Category Stats (Fast Tag Check)
-            // We verify if the specific tag exists in the string
             if (tags.includes('mat')) stats.categories['food'] = (stats.categories['food'] || 0) + 1;
             if (tags.includes('arbete') || tags.includes('yrke')) stats.categories['work'] = (stats.categories['work'] || 0) + 1;
             if (tags.includes('kropp') || tags.includes('hälsa')) stats.categories['health'] = (stats.categories['health'] || 0) + 1;
@@ -110,8 +106,8 @@ export class SearchService {
             if (tags.includes('natur') || tags.includes('djur')) stats.categories['nature'] = (stats.categories['nature'] || 0) + 1;
             stats.categories['all'] = (stats.categories['all'] || 0) + 1;
 
-            // 3. Apply Filters for Result List
-            if (!hasQuery && !isBrowsing) continue; // Don't build list if just idle stats
+            // 3. Filter for Result List
+            if (!hasQuery && !isBrowsing) continue;
 
             let includeInResults = true;
             if (type !== 'all') {
@@ -132,7 +128,7 @@ export class SearchService {
             }
 
             if (includeInResults && category !== 'all') {
-                // Map category select value back to tag check
+                // Simple tag check for filtering
                 let matchesCat = false;
                 if (category === 'food' && tags.includes('mat')) matchesCat = true;
                 else if (category === 'work' && (tags.includes('arbete') || tags.includes('yrke'))) matchesCat = true;
@@ -184,7 +180,7 @@ export class SearchService {
              return aSwe.length - bSwe.length;
         });
 
-        // Limit results
+        // Limit results for UI performance (Infinite Scroll handles the rest)
         const MAX_RESULTS = 200;
         const slicedResults = allMatches.slice(0, MAX_RESULTS).map(row => ({
             id: row[0],
