@@ -150,27 +150,73 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto' }}>
                 {activeTab === 'info' ? (
                     <>
-                        {forms && <Card title={t('details.forms')} icon="🔗">{forms}</Card>}
-                        {(def || arbExt) && (
+                        {(def || arbExt || arb) && (
                             <Card title={t('details.meaning')} icon="📝">
-                                {def && <div style={{ fontSize: '1.1rem', lineHeight: 1.6, color: '#fff', marginBottom: arbExt ? '12px' : 0 }}>
-                                    <SmartLinkedText text={def} onLinkClick={handleSmartLink} />
-                                </div>}
-                                {arbExt && <div dir="rtl" style={{ fontSize: '1.1rem', color: '#bbb', borderTop: def ? '1px solid #333' : 'none', paddingTop: def ? '12px' : 0, fontFamily: '"Tajawal", sans-serif' }}>
-                                    {arbExt}
-                                </div>}
+                                <div style={{ marginBottom: '16px' }}>
+                                    <div dir="rtl" style={{ fontSize: '1.4rem', color: primaryColor, fontWeight: 'bold', fontFamily: '"Tajawal", sans-serif', marginBottom: '4px' }}>
+                                        {arb}
+                                    </div>
+                                    {arbExt && <div dir="rtl" style={{ fontSize: '1.1rem', color: '#fff', opacity: 0.9, fontFamily: '"Tajawal", sans-serif' }}>
+                                        {arbExt}
+                                    </div>}
+                                </div>
+                                
+                                {def && (
+                                    <div style={{ 
+                                        fontSize: '1.05rem', lineHeight: 1.6, color: '#ccc', 
+                                        padding: '12px', background: 'rgba(255,255,255,0.03)', 
+                                        borderRadius: '8px', borderLeft: `2px solid ${primaryColor}44` 
+                                    }}>
+                                        <SmartLinkedText text={def} onLinkClick={handleSmartLink} />
+                                    </div>
+                                )}
                             </Card>
                         )}
+
                         {(exSwe || exArb) && (
                             <Card title={t('learn.examples')} icon="💡">
-                                {exSwe && <div style={{ fontStyle: 'italic', marginBottom: '8px', color: '#eee' }}><SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} /></div>}
-                                {exArb && <div dir="rtl" style={{ color: '#aaa', fontFamily: '"Tajawal", sans-serif' }}>{exArb}</div>}
+                                {exSwe && <div style={{ fontStyle: 'italic', marginBottom: '8px', color: '#eee', fontSize: '1.1rem' }}>
+                                    <SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} />
+                                </div>}
+                                {exArb && <div dir="rtl" style={{ color: primaryColor, opacity: 0.9, fontFamily: '"Tajawal", sans-serif', fontSize: '1.1rem' }}>
+                                    {exArb}
+                                </div>}
                             </Card>
                         )}
+
                         {(idiomSwe || idiomArb) && (
                             <Card title={t('details.idiom')} icon="💬">
-                                {idiomSwe && <div style={{ marginBottom: '8px', color: '#fff' }}><SmartLinkedText text={idiomSwe} onLinkClick={handleSmartLink} /></div>}
-                                {idiomArb && <div dir="rtl" style={{ color: '#bbb', fontFamily: '"Tajawal", sans-serif' }}>{idiomArb}</div>}
+                                {idiomSwe && <div style={{ marginBottom: '10px', color: '#fff', fontSize: '1.1rem', fontWeight: '500' }}>
+                                    <SmartLinkedText text={idiomSwe} onLinkClick={handleSmartLink} />
+                                </div>}
+                                {idiomArb && <div dir="rtl" style={{ 
+                                    color: primaryColor, 
+                                    fontFamily: '"Tajawal", sans-serif', 
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold',
+                                    padding: '8px 12px',
+                                    background: `${primaryColor}11`,
+                                    borderRadius: '8px',
+                                    borderRight: `3px solid ${primaryColor}`
+                                }}>
+                                    {idiomArb}
+                                </div>}
+                            </Card>
+                        )}
+
+                        {forms && (
+                            <Card title={t('details.forms')} icon="🔗">
+                                <div style={{ 
+                                    color: '#aaa', 
+                                    fontSize: '0.95rem', 
+                                    lineHeight: 1.6,
+                                    fontFamily: 'monospace',
+                                    background: '#121212',
+                                    padding: '10px',
+                                    borderRadius: '6px'
+                                }}>
+                                    {forms}
+                                </div>
                             </Card>
                         )}
                     </>
@@ -183,11 +229,33 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                         <div style={{ height: '16px' }}></div>
                         
                         <Card title={t('details.related')} icon="✨">
-                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                            <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '10px', scrollbarWidth: 'none' }}>
                                 {relatedWords.map(rw => (
-                                    <div key={rw[0]} onClick={() => handleSmartLink(rw[2])} style={{ background: '#2c2c2e', padding: '10px', borderRadius: '8px', minWidth: '120px', cursor: 'pointer', border: '1px solid #333' }}>
-                                        <div style={{ fontWeight: 'bold', color: '#fff' }}>{rw[2]}</div>
-                                        <div dir="rtl" style={{ fontSize: '0.8rem', color: '#888', marginTop: '4px', fontFamily: '"Tajawal", sans-serif' }}>{rw[3]}</div>
+                                    <div 
+                                        key={rw[0]} 
+                                        onClick={() => handleSmartLink(rw[2])} 
+                                        style={{ 
+                                            background: '#2c2c2e', 
+                                            padding: '12px', 
+                                            borderRadius: '12px', 
+                                            minWidth: '140px', 
+                                            cursor: 'pointer', 
+                                            border: '1px solid #3d3d3d',
+                                            transition: 'transform 0.2s',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                                        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                    >
+                                        <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem', marginBottom: '4px' }}>{rw[2]}</div>
+                                        <div dir="rtl" style={{ 
+                                            fontSize: '0.9rem', 
+                                            color: primaryColor, 
+                                            fontFamily: '"Tajawal", sans-serif',
+                                            fontWeight: '600'
+                                        }}>{rw[3]}</div>
                                     </div>
                                 ))}
                             </div>
