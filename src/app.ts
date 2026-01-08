@@ -275,9 +275,7 @@ export class App {
                 counts['it'] = (counts['it'] || 0) + 1;
             }
             // Politik: Politik, Samhälle
-            if (typeLower.includes('politik') || typeLower.includes('samhäll')) {
-                counts['politik'] = (counts['politik'] || 0) + 1;
-            }
+            if (typeLower.includes('politik') || typeLower.includes('samhäll')) counts['politik'] = (counts['politik'] || 0) + 1; // Correct key
             // Religion: Religion, Islam, Kristendom, Bibel, Koran...
             if (typeLower.includes('religion') || typeLower.includes('islam') || typeLower.includes('krist') || typeLower.includes('bibel') || typeLower.includes('koran')) {
                 counts['religion'] = (counts['religion'] || 0) + 1;
@@ -478,6 +476,7 @@ export class App {
         // NEW: Update counts based on query matches (before type filtering)
         // This ensures the user sees how many Nouns/Verbs match the current search query
         this.updateTypeCounts(filtered);
+        this.updateCategoryCounts(filtered);
 
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
