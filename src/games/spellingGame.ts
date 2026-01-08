@@ -3,6 +3,8 @@ import { showToast, saveScore } from './games-utils';
 import { generateEducationalSentence, TextSizeManager } from '../utils';
 import { TTSManager } from '../tts';
 import { LanguageManager, t } from '../i18n';
+import { SmartWordSelector } from '../smart-selector';
+import { mistakesManager } from '../mistakes-review';
 
 // Global declarations
 declare const dictionaryData: any[];
@@ -91,17 +93,15 @@ export function loadSpellingQuestion(): void {
     if (hintBtn) hintBtn.classList.remove('hidden');
     optionsEl.innerHTML = `<div class="sp-loading"><div class="sp-loading-spinner"></div><span>${t('common.loading')}</span></div>`;
 
-    // Find a suitable word with translation
-    let candidate: any[] | null = null;
-    let attempts = 0;
+    // Find a suitable word with translation using Smart Selection
+    const pool = dictionaryData.filter(item => 
+        item && item[AppConfig.COLUMNS.SWEDISH] && 
+        item[AppConfig.COLUMNS.ARABIC] && 
+        item[AppConfig.COLUMNS.SWEDISH].length > 2 && 
+        item[AppConfig.COLUMNS.SWEDISH].length < 15
+    );
 
-    while (!candidate && attempts < 200) {
-        const item = dictionaryData[Math.floor(Math.random() * dictionaryData.length)];
-        if (item && item[AppConfig.COLUMNS.SWEDISH] && item[AppConfig.COLUMNS.ARABIC] && item[AppConfig.COLUMNS.SWEDISH].length > 2 && item[AppConfig.COLUMNS.SWEDISH].length < 15) {
-            candidate = item;
-        }
-        attempts++;
-    }
+    const candidate = SmartWordSelector.select(pool, 1)[0];
 
     if (!candidate) {
         hintEl.textContent = t('details.noWordFound');
@@ -113,6 +113,9 @@ export function loadSpellingQuestion(): void {
     spellingCurrentItem = candidate;
     const word = candidate[AppConfig.COLUMNS.SWEDISH] as string;
     const translation = candidate[AppConfig.COLUMNS.ARABIC] as string;
+
+    // Mark as seen for intelligence system
+    SmartWordSelector.markAsSeen(word);
 
     // Show Arabic translation as hint (hide example until after correct answer)
     hintEl.textContent = translation;
@@ -209,6 +212,9 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
         spellingStreak++;
         updateSpellingDisplay();
 
+        // Mark as learned to lower future weight
+        mistakesManager.markAsLearned(correct);
+
         // Haptic vibration
         try {
             if (typeof HapticManager !== 'undefined' && HapticManager) {
@@ -289,6 +295,13 @@ function checkSpellingAnswer(selected: string, correct: string, btnEl: HTMLButto
 
     } else {
         btnEl.classList.add('wrong');
+
+        // Add to mistakes
+        mistakesManager.addMistake({
+            word: correct,
+            translation: translation,
+            game: 'spelling'
+        });
 
         // Find and highlight correct button
         allBtns.forEach(btn => {

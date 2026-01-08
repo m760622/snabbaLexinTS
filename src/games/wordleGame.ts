@@ -30,6 +30,8 @@ function saveWordleStreak(): void {
 // Export for global access
 (window as any).wordleStreak = wordleStreak;
 
+import { SmartWordSelector } from '../smart-selector';
+
 /**
  * Start Wordle Game
  */
@@ -75,24 +77,18 @@ export function startWordleGame(retryCount = 0): void {
     if (grid) grid.innerHTML = '';
     if (keyboard) keyboard.innerHTML = '';
 
-    // Select Target Word based on difficulty
-    let candidate: any[] | null = null;
-    let attempts = 0;
+    // Select Target Word using Smart Selection
+    const pool = dictionaryData.filter(item => 
+        item && item[COL_SWE] && 
+        item[COL_SWE].length >= minLen && 
+        item[COL_SWE].length <= maxLen &&
+        !item[COL_SWE].includes(' ') && 
+        !item[COL_SWE].includes('-') && 
+        /^[a-zA-ZåäöÅÄÖ]+$/.test(item[COL_SWE]) &&
+        (typeFilter === 'all' || (item[COL_TYPE] && item[COL_TYPE].toLowerCase().includes(typeFilter)))
+    );
 
-    while (!candidate && attempts < 500) {
-        const item = dictionaryData[Math.floor(Math.random() * dictionaryData.length)];
-        if (item && item[COL_SWE] && item[COL_SWE].length >= minLen && item[COL_SWE].length <= maxLen &&
-            !item[COL_SWE].includes(' ') && !item[COL_SWE].includes('-') && /^[a-zA-ZåäöÅÄÖ]+$/.test(item[COL_SWE])) {
-            if (typeFilter !== 'all') {
-                if (item[COL_TYPE] && item[COL_TYPE].toLowerCase().includes(typeFilter)) {
-                    candidate = item;
-                }
-            } else {
-                candidate = item;
-            }
-        }
-        attempts++;
-    }
+    const candidate = SmartWordSelector.select(pool, 1)[0];
 
     if (!candidate) {
         if (messageEl) messageEl.textContent = "Kunde inte hitta ett ord. Försök igen.";
@@ -100,6 +96,7 @@ export function startWordleGame(retryCount = 0): void {
     }
 
     wordleTarget = (candidate[COL_SWE] as string).toUpperCase();
+    SmartWordSelector.markAsSeen(candidate[COL_SWE]);
     console.log("Wordle Target:", wordleTarget, "Difficulty:", difficulty);
 
     // Create Grid (6 rows, 5 cols)

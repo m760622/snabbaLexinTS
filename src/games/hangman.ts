@@ -1,6 +1,8 @@
 import { TTSManager } from '../tts';
 import { generateEducationalSentence, TextSizeManager } from '../utils';
 import { DictionaryDB } from '../db';
+import { SmartWordSelector } from '../smart-selector';
+import { mistakesManager } from '../mistakes-review';
 
 // ========== TYPES ==========
 
@@ -144,10 +146,13 @@ function getRandomWord(): WordData {
 
     if (pool.length === 0) return { word: 'TOMT', hint: 'No words found', type: 'Error', example: '', id: '0' };
 
-    const entry = pool[Math.floor(Math.random() * pool.length)];
+    const entry = SmartWordSelector.select(pool, 1)[0];
     currentEntry = entry;
+    const pickedWord = entry[COL_SWE];
+    SmartWordSelector.markAsSeen(pickedWord);
+
     return {
-        word: entry[COL_SWE].toUpperCase(),
+        word: pickedWord.toUpperCase(),
         hint: entry[COL_ARB],
         type: entry[COL_TYPE],
         example: entry[COL_SWE_EX] || '',
@@ -281,6 +286,11 @@ function handleWin() {
     stats.totalScore += totalScore;
     if (currentStreak > stats.bestStreak) stats.bestStreak = currentStreak;
 
+    // Word learned - remove from mistakes to lower weight
+    if (currentEntry) {
+        mistakesManager.markAsLearned(currentEntry[COL_SWE]);
+    }
+
     saveState();
     updateUI();
     createConfetti();
@@ -298,6 +308,16 @@ function handleWin() {
 function handleLose() {
     currentStreak = 0;
     stats.gamesPlayed++;
+
+    // Add to mistakes to increase weight/priority
+    if (currentEntry) {
+        mistakesManager.addMistake({
+            word: currentEntry[COL_SWE],
+            translation: currentEntry[COL_ARB],
+            game: 'hangman'
+        });
+    }
+
     saveState();
     updateUI();
     updateFace('sad');

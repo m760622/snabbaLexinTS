@@ -1,5 +1,7 @@
 
 import { showToast, TextSizeManager } from '../utils';
+import { SmartWordSelector } from '../smart-selector';
+import { mistakesManager } from '../mistakes-review';
 // Note: We'll assume these are available globally or imported if needed.
 // For now, casting (window as any) to access them.
 
@@ -119,7 +121,14 @@ export function initFlashcards(retryCount = 0) {
             return boxA - boxB;
         });
 
-        flashcardCards = pool.sort(() => 0.5 - Math.random()).slice(0, 50);
+        // Use Smart Selection to pick 50 words
+        flashcardCards = SmartWordSelector.select(pool, 50);
+        
+        // Mark all picked words as seen
+        flashcardCards.forEach(card => {
+            SmartWordSelector.markAsSeen(card[FC_COL_SWE]);
+        });
+
         flashcardIndex = 0;
         flashcardScore = 0;
         flashcardTotal = flashcardCards.length;
@@ -264,11 +273,17 @@ export function handleFlashcardRating(rating: number) {
 
     if (rating >= 3) {
         LeitnerSystem.promoteWord(wordId);
+        mistakesManager.markAsLearned(card[FC_COL_SWE]);
         flashcardScore++;
         sessionStats.correct++;
         updateSegmentedProgress(flashcardIndex, 'correct');
     } else {
         LeitnerSystem.demoteWord(wordId);
+        mistakesManager.addMistake({
+            word: card[FC_COL_SWE],
+            translation: card[FC_COL_ARB],
+            game: 'flashcards'
+        });
         sessionStats.wrong++;
         updateSegmentedProgress(flashcardIndex, 'wrong');
     }
