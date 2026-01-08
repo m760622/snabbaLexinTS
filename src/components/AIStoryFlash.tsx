@@ -100,9 +100,9 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
                     margin: '0 auto 20px', animation: 'ai-spin 0.8s linear infinite'
                 }}></div>
                 <div style={{ color: '#888', fontWeight: 'bold' }}>
-                    Generating Story... <br/> 
+                    Generating {type} Story... <br/> 
                     <span dir="rtl" style={{ fontFamily: '"Tajawal", sans-serif', color: '#a855f7', display: 'block', marginTop: '10px' }}>
-                        جاري تأليف القصة...
+                        جاري تأليف قصة ({type})...
                     </span>
                 </div>
                 <style>{`@keyframes ai-spin { to { transform: rotate(360deg); } }`}</style>
