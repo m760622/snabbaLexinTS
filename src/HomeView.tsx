@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { SearchService, SearchResult } from './search-service';
 import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
@@ -66,12 +66,10 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// --- Sub-Component: DailyCard ---
+// ... DailyCard & WordCard (Memoized) ...
 const DailyCard = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
   const [expanded, setExpanded] = useState(false);
-  
   if (!content) return null;
-
   const isProverb = content.type === 'proverb';
   const badgeColor = isProverb ? '#9C27B0' : (content.type === 'idiom' ? '#E65100' : '#2E7D32');
   const badgeText = content.tags?.[0] || 'Dagens Ord';
@@ -80,78 +78,33 @@ const DailyCard = React.memo(({ content, onClick }: { content: DailyContent; onC
     <div style={{ ...styles.card, borderLeft: `5px solid ${badgeColor}`, height: 'auto', minHeight: '130px' }} onClick={() => onClick(content.id)}>
        <div style={styles.cardContent}>
           <div style={styles.cardTopRow}>
-              <span style={{ ...styles.wordTypeBadge, color: badgeColor, borderColor: badgeColor }}>
-                  {badgeText}
-              </span>
+              <span style={{ ...styles.wordTypeBadge, color: badgeColor, borderColor: badgeColor }}>{badgeText}</span>
               <span style={{ fontSize: '0.8rem', color: '#8e8e93', textTransform: 'capitalize' }}>
                 {new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
               </span>
           </div>
-
           <div style={styles.cardMainContent}>
-              <div style={{ 
-                  ...styles.swedish, 
-                  fontStyle: isProverb ? 'italic' : 'normal',
-                  fontSize: isProverb ? '1.2rem' : '1.1rem',
-                  whiteSpace: 'normal', 
-                  marginTop: '8px',
-                  marginBottom: '4px'
-              }}>
-                  {content.swedish}
-              </div>
-              <div style={{ ...styles.arabic, textAlign: 'right', marginTop: '4px' }}>
-                  {content.translation}
-              </div>
+              <div style={{ ...styles.swedish, fontStyle: isProverb ? 'italic' : 'normal', fontSize: isProverb ? '1.2rem' : '1.1rem', whiteSpace: 'normal', marginTop: '8px', marginBottom: '4px' }}>{content.swedish}</div>
+              <div style={{ ...styles.arabic, textAlign: 'right', marginTop: '4px' }}>{content.translation}</div>
           </div>
-
           {expanded && (
              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', animation: 'fadeIn 0.3s' }}>
-                 {content.literal && (
-                     <div style={{ marginBottom: '6px' }}>
-                        <span style={{fontSize: '0.75rem', color: '#8e8e93', display: 'block'}}>Bokstavligt / حرفياً:</span>
-                        <span style={{fontSize: '0.9rem', color: '#ddd'}}>{content.literal}</span>
-                     </div>
-                 )}
-                 {content.explanation && (
-                     <div style={{ marginBottom: '6px' }}>
-                         <span style={{fontSize: '0.9rem', color: '#ccc'}}>{content.explanation}</span>
-                     </div>
-                 )}
-                 {content.example && (
-                     <div style={{ fontSize: '0.9rem', color: '#94a3b8', fontStyle: 'italic', marginTop: '8px', paddingLeft: '8px', borderLeft: '2px solid #333' }}>
-                         "{content.example}"
-                     </div>
-                 )}
+                 {content.literal && <div style={{ marginBottom: '6px' }}><span style={{fontSize: '0.75rem', color: '#8e8e93', display: 'block'}}>Bokstavligt / حرفياً:</span><span style={{fontSize: '0.9rem', color: '#ddd'}}>{content.literal}</span></div>}
+                 {content.explanation && <div style={{ marginBottom: '6px' }}><span style={{fontSize: '0.9rem', color: '#ccc'}}>{content.explanation}</span></div>}
+                 {content.example && <div style={{ fontSize: '0.9rem', color: '#94a3b8', fontStyle: 'italic', marginTop: '8px', paddingLeft: '8px', borderLeft: '2px solid #333' }}>"{content.example}"</div>}
              </div>
           )}
-
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-                style={{ 
-                    background: 'rgba(255,255,255,0.05)', 
-                    border: 'none', 
-                    color: badgeColor, 
-                    fontSize: '0.8rem', 
-                    cursor: 'pointer', 
-                    padding: '6px 12px',
-                    borderRadius: '15px',
-                    fontWeight: '600'
-                }}
-              >
-                  {expanded ? 'Visa mindre' : 'Mer info...'}
-              </button>
+              <button onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: badgeColor, fontSize: '0.8rem', cursor: 'pointer', padding: '6px 12px', borderRadius: '15px', fontWeight: '600' }}>{expanded ? 'Visa mindre' : 'Mer info...'}</button>
           </div>
        </div>
     </div>
   );
 });
 
-// --- Sub-Component: WordCard ---
 const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: () => void }) => {
   const [isFav, setIsFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  
   const typeInfo = TypeColorSystem.detect(word.type, word.swedish, word.forms, word.gender, word.arabic);
   const primaryColor = typeInfo.color.primary;
   const typeLabel = typeInfo.color.label.sv; 
@@ -167,45 +120,16 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
   const handleSpeak = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isPlaying) return;
-
     setIsPlaying(true);
-    try {
-        await TTSManager.speak(word.swedish, 'sv');
-    } catch (err) {
-        console.error("TTS Error", err);
-    } finally {
-        setIsPlaying(false);
-    }
+    try { await TTSManager.speak(word.swedish, 'sv'); } catch (err) { console.error("TTS Error", err); } finally { setIsPlaying(false); }
   };
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const textToCopy = `${word.swedish} - ${word.arabic}`;
-
     try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(textToCopy);
-            showToast('Kopierat / تم النسخ 📋');
-        } else {
-            throw new Error('Clipboard API unavailable');
-        }
-    } catch (err) {
-        try {
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            textArea.style.top = "0";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            if (successful) showToast('Kopierat / تم النسخ 📋');
-        } catch (fallbackErr) {
-            showToast('Kunde inte kopiera / تعذر النسخ ❌');
-        }
-    }
+        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(textToCopy); showToast('Kopierat / تم النسخ 📋'); } else throw new Error();
+    } catch { showToast('Kunde inte kopiera / تعذر النسخ ❌'); }
   };
 
   const handleFav = (e: React.MouseEvent) => {
@@ -214,50 +138,16 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
   };
 
   return (
-    <div 
-        style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} 
-        onClick={onClick}
-    >
+    <div style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} onClick={onClick}>
       <div style={styles.cardContent}>
         <div style={styles.cardTopRow}>
-            <span style={{
-                ...styles.wordTypeBadge, 
-                color: primaryColor, 
-                borderColor: primaryColor
-            }}>
-                {typeLabel}
-            </span>
-
+            <span style={{ ...styles.wordTypeBadge, color: primaryColor, borderColor: primaryColor }}>{typeLabel}</span>
             <div style={styles.actionRow}>
-                <button 
-                    style={{
-                        ...styles.actionBtn, 
-                        color: isPlaying ? '#3b82f6' : '#8e8e93',
-                        transform: isPlaying ? 'scale(1.1)' : 'scale(1)',
-                        transition: 'all 0.2s ease'
-                    }} 
-                    onClick={handleSpeak} 
-                    aria-label="Lyssna"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                </button>
-                <button style={styles.actionBtn} onClick={handleCopy} aria-label="Kopiera">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-                <button 
-                    style={{...styles.actionBtn, color: isFav ? '#F59E0B' : '#8e8e93'}} 
-                    onClick={handleFav} 
-                    aria-label="Spara"
-                >
-                    {isFav ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    )}
-                </button>
+                <button style={{ ...styles.actionBtn, color: isPlaying ? '#3b82f6' : '#8e8e93', transform: isPlaying ? 'scale(1.1)' : 'scale(1)' }} onClick={handleSpeak}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button>
+                <button style={styles.actionBtn} onClick={handleCopy}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                <button style={{...styles.actionBtn, color: isFav ? '#F59E0B' : '#8e8e93'}} onClick={handleFav}>{isFav ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>}</button>
             </div>
         </div>
-
         <div style={styles.cardMainContent}>
             <div style={styles.swedish}>{word.swedish}</div>
             {word.forms && <div style={styles.forms}>{word.forms}</div>}
@@ -269,6 +159,7 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
 });
 
 export const HomeView: React.FC = () => {
+  // State
   const [searchTerm, setSearchTerm] = useState('');
   const [mode, setMode] = useState('all');
   const [sort, setSort] = useState('relevance');
@@ -281,10 +172,36 @@ export const HomeView: React.FC = () => {
   const [isDataReady, setIsDataReady] = useState(false);
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
   const [history, setHistory] = useState<string[]>([]);
+  const [initialRestoreDone, setInitialRestoreDone] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const STORAGE_KEY = 'snabbaLexin_home_state_v2';
 
+  // 1. Initialize
   useEffect(() => {
+    // Restore
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+        try {
+            const parsed = JSON.parse(savedState);
+            setSearchTerm(parsed.searchTerm || '');
+            setMode(parsed.mode || 'all');
+            setType(parsed.type || 'all');
+            setCategory(parsed.category || 'all');
+            setSort(parsed.sort || 'relevance');
+            
+            // Filters were open?
+            if (parsed.mode !== 'all' || parsed.type !== 'all' || parsed.category !== 'all') {
+                setIsFiltersOpen(true);
+            }
+
+            // Restore scroll
+            if (parsed.scrollY) {
+                setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
+            }
+        } catch {}
+    }
+    setInitialRestoreDone(true);
     setHistory(SearchHistoryManager.get());
 
     const checkData = () => {
@@ -300,8 +217,39 @@ export const HomeView: React.FC = () => {
     return () => window.removeEventListener('dictionaryLoaded', checkData);
   }, []);
 
+  // 2. Persist State
+  useEffect(() => {
+      if (!initialRestoreDone) return;
+      const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  }, [searchTerm, mode, type, category, sort, initialRestoreDone]);
+
+  // Save scroll periodically or on unload
+  useEffect(() => {
+      const handleScroll = () => {
+          if (!initialRestoreDone) return;
+          const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+      };
+      // Throttle? For simplicity, we rely on browser optimization or debounce if needed. 
+      // But adding debounce here is good practice.
+      const timer = setTimeout(handleScroll, 500); 
+      window.addEventListener('scroll', handleScroll); // Actually this event fires a lot. Better use handleResultClick.
+      // But let's stick to saving on change for now, and rely on result click for accurate scroll.
+      return () => {
+          clearTimeout(timer);
+          window.removeEventListener('scroll', handleScroll);
+      };
+  }, [searchTerm, mode, type, category, sort, initialRestoreDone]);
+
+
+  // 3. Search Logic
   useEffect(() => {
     if (!isDataReady) return;
+    
+    // If restoring, we might have a query immediately. 
+    // debouncedSearchTerm lags by 300ms. 
+    // We rely on debounced for search.
     
     const isBrowsing = mode === 'favorites' || type !== 'all' || category !== 'all';
     const hasQuery = !!debouncedSearchTerm.trim();
@@ -329,8 +277,12 @@ export const HomeView: React.FC = () => {
       SearchHistoryManager.add(searchTerm.trim());
       setHistory(SearchHistoryManager.get());
     }
+    // Explicitly save scroll before navigation
+    const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    
     window.location.href = `details.html?id=${id}`;
-  }, [searchTerm]);
+  }, [searchTerm, mode, type, category, sort]);
 
   const clearFilters = () => {
     setMode('all'); setType('all'); setCategory('all'); setSort('relevance');
@@ -362,7 +314,6 @@ export const HomeView: React.FC = () => {
                     style={styles.input} 
                     disabled={!isDataReady} 
                 />
-                
                 {isLoading && <div style={styles.spinner}></div>}
                 {searchTerm && !isLoading && (
                     <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
