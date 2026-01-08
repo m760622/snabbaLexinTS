@@ -1,7 +1,11 @@
 import ordsprakData from './data/ordsprak.json';
+import { quranData } from './data/quranData';
+import { ASMA_UL_HUSNA } from './data/asmaUlHusna';
+import { cognatesData } from './data/cognatesData';
+import { JOKES, FACTS, GRAMMAR_TIPS, SLANG } from './data/extraDailyData';
 
 export interface DailyContent {
-    type: 'word' | 'proverb' | 'idiom';
+    type: 'word' | 'proverb' | 'idiom' | 'quran' | 'asma' | 'cognate' | 'joke' | 'fact' | 'grammar' | 'slang';
     id: number | string;
     swedish: string;
     translation: string; // Arabic
@@ -10,24 +14,158 @@ export interface DailyContent {
     example?: string;
     tags?: string[];
     rawType?: string;
+    // Quran specific
+    surah?: string;
+    ayah?: string;
+    root?: string;
+    // Asma specific
+    meaningSv?: string;
+    // Cognate specific
+    category?: string;
+}
+
+export interface DailyContentConfig {
+    words?: boolean;
+    proverbs?: boolean;
+    idioms?: boolean;
+    quran?: boolean;
+    asma?: boolean;
+    cognates?: boolean;
+    jokes?: boolean;
+    facts?: boolean;
+    grammar?: boolean;
+    slang?: boolean;
 }
 
 export class DailyContentService {
     private static STORAGE_KEY = 'snabbaLexin_daily_cache_v2';
 
-    static getDailyContent(dictionary: any[][]): DailyContent | null {
-        // Return a random content every time to satisfy "change automatically on every refresh"
-        return this.getRandomContent(dictionary);
+    static getDailyContent(dictionary: any[][], config?: DailyContentConfig): DailyContent | null {
+        return this.getRandomContent(dictionary, config);
     }
 
-    static getRandomContent(dictionary: any[][]): DailyContent | null {
+    static getRandomContent(dictionary: any[][], config: DailyContentConfig = { 
+        words: true, proverbs: true, idioms: true, quran: true, asma: true, cognates: true,
+        jokes: true, facts: true, grammar: true, slang: true
+    }): DailyContent | null {
         if (!dictionary || dictionary.length === 0) return null;
 
-        // Rotation: Randomly pick between Rich Word (0), Proverb (1), Idiom (2)
-        const mode = Math.floor(Math.random() * 3);
+        // Build pool of enabled sources
+        const sources: string[] = [];
+        if (config.words) sources.push('word');
+        if (config.proverbs) sources.push('proverb');
+        if (config.idioms) sources.push('idiom');
+        if (config.quran) sources.push('quran');
+        if (config.asma) sources.push('asma');
+        if (config.cognates) sources.push('cognate');
+        if (config.jokes) sources.push('joke');
+        if (config.facts) sources.push('fact');
+        if (config.grammar) sources.push('grammar');
+        if (config.slang) sources.push('slang');
 
-        if (mode === 1) {
-            // --- PROVERB ---
+        // Fallback if nothing enabled
+        if (sources.length === 0) sources.push('word');
+
+        // Pick a random source type
+        const type = sources[Math.floor(Math.random() * sources.length)];
+
+        if (type === 'joke') {
+            const item = JOKES[Math.floor(Math.random() * JOKES.length)];
+            return {
+                type: 'joke',
+                id: `joke_${item.id}`,
+                swedish: item.swedish,
+                translation: item.translation,
+                explanation: item.punchline, // Punchline as explanation
+                tags: ['Skämt', 'نكتة'],
+                rawType: 'Skämt'
+            };
+        }
+
+        if (type === 'fact') {
+            const item = FACTS[Math.floor(Math.random() * FACTS.length)];
+            return {
+                type: 'fact',
+                id: `fact_${item.id}`,
+                swedish: item.swedish,
+                translation: item.translation,
+                explanation: item.details,
+                tags: ['Fakta', 'هل تعلم'],
+                rawType: 'Fakta'
+            };
+        }
+
+        if (type === 'grammar') {
+            const item = GRAMMAR_TIPS[Math.floor(Math.random() * GRAMMAR_TIPS.length)];
+            return {
+                type: 'grammar',
+                id: `gram_${item.id}`,
+                swedish: item.title, // Title as "Word"
+                translation: item.rule, // Rule as "Translation"
+                explanation: item.example,
+                tags: ['Grammatik', 'قواعد'],
+                rawType: 'Tips'
+            };
+        }
+
+        if (type === 'slang') {
+            const item = SLANG[Math.floor(Math.random() * SLANG.length)];
+            return {
+                type: 'slang',
+                id: `slang_${item.id}`,
+                swedish: item.word,
+                translation: item.translation,
+                explanation: `${item.definition}. Ex: ${item.example}`,
+                tags: ['Slang', 'عامية'],
+                rawType: 'Slang'
+            };
+        }
+
+        if (type === 'quran') {
+            const item = quranData[Math.floor(Math.random() * quranData.length)];
+            return {
+                type: 'quran',
+                id: item.id,
+                swedish: item.word_sv,
+                translation: item.meaning_ar, // Meaning of the word
+                explanation: item.word, // The Arabic word itself
+                example: item.ayah_sv, // Swedish Ayah
+                tags: ['Koran', item.surah],
+                surah: item.surah,
+                ayah: item.ayah_full // Arabic Ayah
+            };
+        }
+
+        if (type === 'asma') {
+            const item = ASMA_UL_HUSNA[Math.floor(Math.random() * ASMA_UL_HUSNA.length)];
+            return {
+                type: 'asma',
+                id: `asma_${item.nr}`,
+                swedish: item.nameSv,
+                translation: item.nameAr,
+                explanation: item.meaningAr,
+                meaningSv: item.meaningSv,
+                example: item.verseSv,
+                tags: ['Guds Namn', 'أسماء الله'],
+                ayah: item.verseAr
+            };
+        }
+
+        if (type === 'cognate') {
+            const item = cognatesData[Math.floor(Math.random() * cognatesData.length)];
+            return {
+                type: 'cognate',
+                id: `cog_${Math.random()}`, // Cognates don't have stable IDs in current data
+                swedish: item.swe,
+                translation: item.arb,
+                explanation: 'Ord som låter likadant / كلمات متشابهة النطق',
+                tags: ['Kognat', item.category || 'Övrigt'],
+                category: item.category,
+                rawType: item.type
+            };
+        }
+
+        if (type === 'proverb') {
             const count = ordsprakData.length;
             if (count > 0) {
                 const index = Math.floor(Math.random() * count);
@@ -44,11 +182,10 @@ export class DailyContentService {
             }
         }
 
-        if (mode === 2) {
-            // --- IDIOM ---
+        if (type === 'idiom') {
             const idioms = dictionary.filter(row => {
-                const type = (row[1] || '').toLowerCase();
-                return type.includes('fras') || type.includes('idiom') || type.includes('uttryck');
+                const t = (row[1] || '').toLowerCase();
+                return t.includes('fras') || t.includes('idiom') || t.includes('uttryck');
             });
 
             if (idioms.length > 0) {
@@ -66,17 +203,12 @@ export class DailyContentService {
         }
 
         // --- RICH WORD (Default) ---
-        // Strict Filter: Must have a real example (col 5) with length > 10 chars
         const richWords = dictionary.filter(row => {
             const ex1 = (row[5] || '').trim();
-            // Ensure example exists and is meaningful
             return ex1.length > 10;
         });
 
-        // Fallback safety if no rich words found (unlikely)
         const targetList = richWords.length > 0 ? richWords : dictionary;
-        
-        // Pick random
         const index = Math.floor(Math.random() * targetList.length);
         const item = targetList[index];
 
@@ -88,31 +220,7 @@ export class DailyContentService {
             example: item[5],
             explanation: item[4],
             tags: ['Dagens Ord', 'كلمة اليوم'],
-            // Pass raw type for display
             rawType: item[1] 
         };
-    }
-
-    // Deprecated: Old method with caching if needed later
-    static getCachedDailyContent(dictionary: any[][]): DailyContent | null {
-        try {
-            const today = new Date().toISOString().slice(0, 10);
-            const cache = localStorage.getItem(this.STORAGE_KEY);
-            if (cache) {
-                const parsed = JSON.parse(cache);
-                if (parsed.date === today) return parsed.content;
-            }
-            const content = this.getRandomContent(dictionary);
-            if (content) {
-                localStorage.setItem(this.STORAGE_KEY, JSON.stringify({ date: today, content }));
-            }
-            return content;
-        } catch (e) {
-            return null;
-        }
-    }
-
-    private static generateContent(dictionary: any[][]): DailyContent | null {
-        return this.getRandomContent(dictionary);
     }
 }

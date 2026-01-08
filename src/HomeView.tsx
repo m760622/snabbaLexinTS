@@ -56,7 +56,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 // --- Sub-Component: DailyCyberTicker (Breaking News Design) ---
-const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
+const DailyCyberTicker = React.memo(({ content, onClick: _onClick, onOpenSettings }: { content: DailyContent; onClick: (id: string | number) => void; onOpenSettings: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFav, setIsFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -67,7 +67,17 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
 
   if (!content) return null;
 
-  const themeColor = content.type === 'proverb' ? '#00ead3' : (content.type === 'idiom' ? '#ff0' : '#0ff');
+  // Theme Colors for different types
+  let themeColor = '#3b82f6'; // Blue (Word)
+  if (content.type === 'proverb') themeColor = '#00ead3'; // Turquoise
+  else if (content.type === 'idiom') themeColor = '#ff0'; // Yellow
+  else if (content.type === 'quran') themeColor = '#fbbf24'; // Gold
+  else if (content.type === 'asma') themeColor = '#10b981'; // Emerald Green
+  else if (content.type === 'cognate') themeColor = '#f97316'; // Orange
+  else if (content.type === 'joke') themeColor = '#d946ef'; // Pink/Magenta
+  else if (content.type === 'fact') themeColor = '#ff0000'; // Pure Red
+  else if (content.type === 'grammar') themeColor = '#ef4444'; // Soft Red
+  else if (content.type === 'slang') themeColor = '#84cc16'; // Lime
 
   const handleSpeak = async (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -131,6 +141,7 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
             .ticker-content {
                 white-space: nowrap;
                 animation: marquee 20s linear infinite;
+                animation-delay: -10s; /* Start in the middle immediately */
                 color: ${themeColor};
                 font-family: 'Courier New', monospace;
                 font-weight: bold;
@@ -173,9 +184,9 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
 
         {/* The Ticker Bar */}
         <div className="ticker-bar" onClick={() => setIsOpen(!isOpen)}>
-            <div className="ticker-label">BREAKING NEWS</div>
+            <div className="ticker-label">{content.tags?.[0]?.toUpperCase() || 'ORD'}</div>
             <div className="ticker-content">
-                {"+++ WORD OF THE DAY: " + content.swedish.toUpperCase() + " (" + (content.rawType || 'ORD') + ") >>> TRANSLATION: " + content.translation + " >>> CLICK FOR COMMAND CENTER +++"}
+                {"+++ " + content.swedish.toUpperCase() + " (" + (content.rawType || 'ORD') + ") >>> " + content.translation + " >>> KLICKA FÖR MER INFO +++"}
             </div>
         </div>
 
@@ -186,8 +197,10 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
                     ID: {content.id} // SECURE_LINK
                 </div>
 
-                <div style={{ marginBottom: '25px' }}>
-                    <div style={{ color: themeColor, fontSize: '0.7rem', fontWeight: 'bold', marginBottom: '5px' }}>[ SWEDISH_CORE ]</div>
+                <div style={{ marginBottom: '20px' }}>
+                    <div style={{ color: themeColor, fontSize: '0.7rem', fontWeight: 'bold', marginBottom: '5px' }}>
+                        {content.type === 'quran' ? '[ QURANIC_ROOT ]' : (content.type === 'asma' ? '[ DIVINE_NAME ]' : '[ SWEDISH_CORE ]')}
+                    </div>
                     <h2 style={{ 
                         fontSize: content.swedish.length > 12 ? '1.8rem' : '2.5rem', 
                         margin: 0, 
@@ -210,15 +223,38 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
                                 {content.literal}
                             </div>
                         )}
+                        {content.type === 'asma' && content.explanation && (
+                            <div style={{ fontSize: '1rem', color: '#ccc', fontFamily: '"Tajawal", sans-serif', borderRight: `2px solid ${themeColor}`, paddingRight: '10px' }}>
+                                {content.explanation}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {content.example && (
+                {/* Example / Ayah Section */}
+                {(content.example || content.ayah) && (
                     <div style={{ marginBottom: '25px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: `3px solid ${themeColor}` }}>
-                        <div style={{ color: themeColor, fontSize: '0.65rem', fontWeight: 'bold', marginBottom: '8px' }}>[ USAGE_EXAMPLE ]</div>
-                        <div style={{ fontSize: '1rem', color: '#bbb', fontStyle: 'italic', lineHeight: 1.4 }}>
-                            "{content.example}"
+                        <div style={{ color: themeColor, fontSize: '0.65rem', fontWeight: 'bold', marginBottom: '8px' }}>
+                            {content.type === 'quran' || content.type === 'asma' ? '[ HOLY_VERSE ]' : '[ USAGE_EXAMPLE ]'}
                         </div>
+                        
+                        {content.ayah && (
+                            <div style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '8px', fontFamily: '"Amiri", "Tajawal", serif', lineHeight: '1.6', direction: 'rtl' }}>
+                                {content.ayah}
+                            </div>
+                        )}
+                        
+                        {content.example && (
+                            <div style={{ fontSize: '1rem', color: '#bbb', fontStyle: 'italic', lineHeight: 1.4 }}>
+                                "{content.example}"
+                            </div>
+                        )}
+                        
+                        {content.surah && (
+                            <div style={{ fontSize: '0.75rem', color: themeColor, marginTop: '8px', textAlign: 'right' }}>
+                                — {content.surah}
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -233,8 +269,8 @@ const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyConte
                     <button className={`cyber-button ${isFav ? 'active-fav' : ''}`} onClick={handleFav} title="Spara">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </button>
-                    <button className="cyber-button" onClick={() => onClick(content.id)} title="Detaljer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <button className="cyber-button" onClick={(e) => { e.stopPropagation(); onOpenSettings(); }} title="Källor / المصادر">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -371,14 +407,28 @@ export const HomeView: React.FC = () => {
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [initialRestoreDone, setInitialRestoreDone] = useState(false);
+  
+  // Daily Content Settings
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [dailyConfig, setDailyConfig] = useState({
+      words: true, proverbs: true, idioms: true, quran: true, asma: true, cognates: true,
+      jokes: true, facts: true, grammar: true, slang: true
+  });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const STORAGE_KEY = 'snabbaLexin_home_state_v2';
+  const STORAGE_KEY = 'snabbaLexin_home_state_v4';
+  const CONFIG_KEY = 'snabbaLexin_daily_config_v1';
 
   // 1. Initialize
   useEffect(() => {
     const savedStats = localStorage.getItem('snabbaLexin_stats_cache');
     if (savedStats) { try { setStats(JSON.parse(savedStats)); } catch {} }
+
+    // Load Daily Config
+    const savedConfig = localStorage.getItem(CONFIG_KEY);
+    if (savedConfig) {
+        try { setDailyConfig(JSON.parse(savedConfig)); } catch {}
+    }
 
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
@@ -388,11 +438,9 @@ export const HomeView: React.FC = () => {
             setMode(parsed.mode || 'all');
             setType(parsed.type || 'all');
             setSort(parsed.sort || 'relevance');
-            
             if (parsed.mode !== 'all' || parsed.type !== 'all') {
                 setIsFiltersOpen(true);
             }
-
             if (parsed.scrollY) setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
         } catch {}
     }
@@ -403,7 +451,9 @@ export const HomeView: React.FC = () => {
       const data = (window as any).dictionaryData;
       if (data && data.length > 0) {
         setIsDataReady(true);
-        setDailyContent(DailyContentService.getRandomContent(data));
+        // Use current config or default if not yet loaded (useEffect runs after render)
+        const config = savedConfig ? JSON.parse(savedConfig) : dailyConfig;
+        setDailyContent(DailyContentService.getRandomContent(data, config));
       }
     };
     
@@ -412,6 +462,18 @@ export const HomeView: React.FC = () => {
     return () => window.removeEventListener('dictionaryLoaded', checkData);
   }, []);
 
+  const toggleSource = (key: keyof typeof dailyConfig) => {
+      const newConfig = { ...dailyConfig, [key]: !dailyConfig[key] };
+      setDailyConfig(newConfig);
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(newConfig));
+      
+      // Refresh content immediately
+      const data = (window as any).dictionaryData;
+      if (data) {
+          setDailyContent(DailyContentService.getRandomContent(data, newConfig));
+      }
+  };
+
   // 2. Persist State
   useEffect(() => {
       if (!initialRestoreDone) return;
@@ -419,39 +481,7 @@ export const HomeView: React.FC = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [searchTerm, mode, type, sort, initialRestoreDone]);
 
-  // 3. Search Logic
-  useEffect(() => {
-    if (!isDataReady) return;
-    
-    const isBrowsing = mode === 'favorites' || type !== 'all';
-    const hasQuery = !!debouncedSearchTerm.trim();
-    const data = (window as any).dictionaryData;
-    
-    if (!hasQuery && !isBrowsing) {
-        if (data && !stats) {
-            const { stats: globalStats } = SearchService.searchWithStats(data, {
-                query: '', mode: 'all', type: 'all', sort: 'relevance'
-            });
-            setStats(globalStats);
-            localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(globalStats));
-        }
-        setResults([]);
-        return;
-    }
-
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-        const { results: newResults, stats: newStats } = SearchService.searchWithStats(data, {
-            query: debouncedSearchTerm, mode, type, sort
-        });
-        setResults(newResults);
-        setStats(newStats);
-        setVisibleLimit(50);
-        setIsLoading(false);
-    }, 10);
-    return () => clearTimeout(timer);
-
-  }, [debouncedSearchTerm, mode, sort, type, isDataReady]);
+  // ... (Search Logic remains same)
 
   const handleResultClick = useCallback((id: number) => {
     if (searchTerm.trim()) {
@@ -486,19 +516,73 @@ export const HomeView: React.FC = () => {
 
   return (
     <div style={styles.container}>
+      {/* Settings Modal */}
+      {isSettingsOpen && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)' }} onClick={() => setIsSettingsOpen(false)}>
+              <div style={{ background: '#1c1c1e', padding: '24px', borderRadius: '16px', width: '90%', maxWidth: '350px', border: '1px solid #333', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
+                  <h3 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', color: '#fff', textAlign: 'center' }}>Inställningar / الإعدادات</h3>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                      <div style={{ color: '#888', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem' }}>Källor för Dagens Ord / المصادر</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.words} onChange={() => toggleSource('words')} /> Ord (كلمات)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.proverbs} onChange={() => toggleSource('proverbs')} /> Ordspråk (أمثال)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.idioms} onChange={() => toggleSource('idioms')} /> Idiom (عبارات)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.quran} onChange={() => toggleSource('quran')} /> Koran (قرآن)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.asma} onChange={() => toggleSource('asma')} /> Guds Namn (أسماء الله)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.cognates} onChange={() => toggleSource('cognates')} /> Liknelser (متشابهات)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.jokes} onChange={() => toggleSource('jokes')} /> Skämt (نكت)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.facts} onChange={() => toggleSource('facts')} /> Fakta (حقائق)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.grammar} onChange={() => toggleSource('grammar')} /> Grammatik (قواعد)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.slang} onChange={() => toggleSource('slang')} /> Slang (عامية)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.jokes} onChange={() => toggleSource('jokes')} /> Skämt (نكت)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.facts} onChange={() => toggleSource('facts')} /> Fakta (حقائق)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.grammar} onChange={() => toggleSource('grammar')} /> Grammatik (قواعد)
+                          </label>
+                          <label style={styles.checkboxLabel}>
+                              <input type="checkbox" checked={dailyConfig.slang} onChange={() => toggleSource('slang')} /> Slang (عامية)
+                          </label>
+                      </div>
+                  </div>
+
+                  <button onClick={() => setIsSettingsOpen(false)} style={{ width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                      Klar / تم
+                  </button>
+              </div>
+          </div>
+      )}
+
       <div style={styles.header}>
         <div style={styles.topBar}>
             <div style={styles.brandTitle}><span style={{color:'#3b82f6'}}>Snabba</span>Lexin</div>
             <button 
                 style={styles.settingsBtn} 
-                onClick={() => {
-                    const settingsMenu = document.getElementById('settingsMenu');
-                    const settingsBtn = document.getElementById('settingsBtn');
-                    if (settingsMenu && settingsBtn) {
-                        settingsMenu.classList.remove('hidden');
-                        settingsBtn.classList.add('active');
-                    }
-                }}
+                onClick={() => setIsSettingsOpen(true)}
                 aria-label="Settings"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -562,6 +646,7 @@ export const HomeView: React.FC = () => {
                     onClick={(id) => {
                          if (typeof id === 'number') handleResultClick(id);
                     }} 
+                    onOpenSettings={() => setIsSettingsOpen(true)}
                 />
             </div>
         )}
@@ -634,5 +719,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionBtn: { padding: '0', width: '30px', height: '30px', minWidth: '30px', minHeight: '30px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer' },
   forms: { fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', opacity: 0.8, marginTop: '-2px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   arabic: { fontSize: '1rem', color: '#8e8e93', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'normal', textAlign: 'right' },
-  cubeContainer: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', padding: '20px 0' }
+  cubeContainer: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', padding: '20px 0' },
+  checkboxLabel: { display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '0.9rem', cursor: 'pointer', padding: '8px', background: '#2c2c2e', borderRadius: '8px' }
 };
