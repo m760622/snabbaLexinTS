@@ -4,7 +4,7 @@ import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
-import { showToast, TextSizeManager } from './utils';
+import { showToast } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
 
 // --- Constants & Types ---
@@ -44,18 +44,6 @@ const TYPES: FilterOption[] = [
   { value: 'juridik', labelSv: '⚖️ Juridik', labelAr: 'قانون', countKey: 'juridik' },
   { value: 'medicin', labelSv: '🏥 Medicin', labelAr: 'طب', countKey: 'medicin' },
   { value: 'it', labelSv: '💻 IT/Teknik', labelAr: 'تقنية', countKey: 'it' },
-];
-
-const CATEGORIES: FilterOption[] = [
-  { value: 'all', labelSv: 'Alla ämnen', labelAr: 'كل المواضيع', countKey: 'all' },
-  { value: 'food', labelSv: '🍽️ Mat', labelAr: 'طعام', countKey: 'food' },
-  { value: 'work', labelSv: '💼 Arbete', labelAr: 'عمل', countKey: 'work' },
-  { value: 'health', labelSv: '🏥 Hälsa', labelAr: 'صحة', countKey: 'health' },
-  { value: 'family', labelSv: '👨‍👩‍👧 Familj', labelAr: 'عائلة', countKey: 'family' },
-  { value: 'travel', labelSv: '✈️ Resa', labelAr: 'سفر', countKey: 'travel' },
-  { value: 'school', labelSv: '📚 Skola', labelAr: 'مدرسة', countKey: 'school' },
-  { value: 'home', labelSv: '🏠 Hem', labelAr: 'منزل', countKey: 'home' },
-  { value: 'nature', labelSv: '🌳 Natur', labelAr: 'طبيعة', countKey: 'nature' },
 ];
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -128,7 +116,7 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(`${word.swedish} - ${word.arabic}`); showToast('Kopierat / تم النسخ 📋'); } else throw new Error();
+        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(`${word.swedish} - ${word.arabic}`); showToast('Kopierات / تم النسخ 📋'); } else throw new Error();
     } catch { showToast('Kunde inte kopiera / تعذر النسخ ❌'); }
   };
 
@@ -160,7 +148,6 @@ export const HomeView: React.FC = () => {
   const [mode, setMode] = useState('all');
   const [sort, setSort] = useState('relevance');
   const [type, setType] = useState('all');
-  const [category, setCategory] = useState('all');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -172,12 +159,12 @@ export const HomeView: React.FC = () => {
   const [initialRestoreDone, setInitialRestoreDone] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const STORAGE_KEY = 'snabbaLexin_home_state_v2';
+  const STORAGE_KEY = 'snabbaLexin_home_state_v3';
 
   // 1. Initialize
   useEffect(() => {
     const savedStats = localStorage.getItem('snabbaLexin_stats_cache');
-    if (savedStats) setStats(JSON.parse(savedStats));
+    if (savedStats) { try { setStats(JSON.parse(savedStats)); } catch {} }
 
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
@@ -186,13 +173,8 @@ export const HomeView: React.FC = () => {
             setSearchTerm(parsed.searchTerm || '');
             setMode(parsed.mode || 'all');
             setType(parsed.type || 'all');
-            setCategory(parsed.category || 'all');
             setSort(parsed.sort || 'relevance');
-            
-            if (parsed.mode !== 'all' || parsed.type !== 'all' || parsed.category !== 'all') {
-                setIsFiltersOpen(true);
-            }
-
+            if (parsed.mode !== 'all' || parsed.type !== 'all') setIsFiltersOpen(true);
             if (parsed.scrollY) setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
         } catch {}
     }
@@ -215,23 +197,22 @@ export const HomeView: React.FC = () => {
   // 2. Persist State
   useEffect(() => {
       if (!initialRestoreDone) return;
-      const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
+      const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [searchTerm, mode, type, category, sort, initialRestoreDone]);
+  }, [searchTerm, mode, type, sort, initialRestoreDone]);
 
   // 3. Search Logic
   useEffect(() => {
     if (!isDataReady) return;
     
-    const isBrowsing = mode === 'favorites' || type !== 'all' || category !== 'all';
+    const isBrowsing = mode === 'favorites' || type !== 'all';
     const hasQuery = !!debouncedSearchTerm.trim();
-    
     const data = (window as any).dictionaryData;
     
     if (!hasQuery && !isBrowsing) {
         if (data && !stats) {
             const { stats: globalStats } = SearchService.searchWithStats(data, {
-                query: '', mode: 'all', type: 'all', category: 'all', sort: 'relevance'
+                query: '', mode: 'all', type: 'all', sort: 'relevance'
             });
             setStats(globalStats);
             localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(globalStats));
@@ -243,7 +224,7 @@ export const HomeView: React.FC = () => {
     setIsLoading(true);
     const timer = setTimeout(() => {
         const { results: newResults, stats: newStats } = SearchService.searchWithStats(data, {
-            query: debouncedSearchTerm, mode, type, category, sort
+            query: debouncedSearchTerm, mode, type, sort
         });
         setResults(newResults);
         setStats(newStats);
@@ -251,22 +232,17 @@ export const HomeView: React.FC = () => {
     }, 10);
     return () => clearTimeout(timer);
 
-  }, [debouncedSearchTerm, mode, sort, type, category, isDataReady]);
+  }, [debouncedSearchTerm, mode, sort, type, isDataReady]);
 
   const handleResultClick = useCallback((id: number) => {
-    if (searchTerm.trim()) {
-      SearchHistoryManager.add(searchTerm.trim());
-      setHistory(SearchHistoryManager.get());
-    }
-    const stateToSave = { searchTerm, mode, type, category, sort, scrollY: window.scrollY };
+    if (searchTerm.trim()) { SearchHistoryManager.add(searchTerm.trim()); setHistory(SearchHistoryManager.get()); }
+    const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     window.location.href = `details.html?id=${id}`;
-  }, [searchTerm, mode, type, category, sort]);
+  }, [searchTerm, mode, type, sort]);
 
-  const clearFilters = () => {
-    setMode('all'); setType('all'); setCategory('all'); setSort('relevance');
-  };
-  const hasActiveFilters = mode !== 'all' || type !== 'all' || category !== 'all' || sort !== 'relevance';
+  const clearFilters = () => { setMode('all'); setType('all'); setSort('relevance'); };
+  const hasActiveFilters = mode !== 'all' || type !== 'all' || sort !== 'relevance';
 
   const FilterSelect = ({ label, value, options, onChange, icon, statsData }: any) => (
     <div style={styles.selectWrapper}>
@@ -275,11 +251,8 @@ export const HomeView: React.FC = () => {
         {options.map((opt: any) => {
             let countLabel = '';
             if (statsData && opt.countKey) {
-                if (opt.countKey === 'all' && statsData.total > 0) {} 
-                else if (statsData.categories[opt.countKey] || statsData.types[opt.countKey]) {
-                     const count = statsData.categories[opt.countKey] || statsData.types[opt.countKey];
-                     if (count > 0) countLabel = ` (${count.toLocaleString()})`;
-                }
+                const count = statsData.types[opt.countKey];
+                if (count > 0) countLabel = ` (${count.toLocaleString()})`;
             }
             return <option key={opt.value} value={opt.value}>{opt.labelSv}{countLabel}</option>
         })}
@@ -292,44 +265,22 @@ export const HomeView: React.FC = () => {
       <div style={styles.header}>
         <div style={styles.topBar}>
             <div style={styles.brandTitle}><span style={{color:'#3b82f6'}}>Snabba</span>Lexin</div>
-            <button 
-                style={styles.settingsBtn} 
-                onClick={() => {
-                    const settingsMenu = document.getElementById('settingsMenu');
-                    const settingsBtn = document.getElementById('settingsBtn');
-                    if (settingsMenu && settingsBtn) {
-                        settingsMenu.classList.remove('hidden');
-                        settingsBtn.classList.add('active');
-                    }
-                }}
-                aria-label="Settings"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <button style={styles.settingsBtn} onClick={() => {
+                const menu = document.getElementById('settingsMenu');
+                const btn = document.getElementById('settingsBtn');
+                if (menu && btn) { menu.classList.remove('hidden'); btn.classList.add('active'); }
+            }} aria-label="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
         </div>
 
         <div style={styles.searchRow}>
             <div style={styles.searchContainer}>
                 <span style={styles.searchIcon}>🔍</span>
-                <input 
-                    type="text" 
-                    placeholder={isDataReady ? "Sök / بحث..." : "Laddar..."} 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                    style={styles.input} 
-                    disabled={!isDataReady} 
-                />
-                
-                {isDataReady && (
-                     <span style={styles.totalCountBadge}>
-                        {(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}
-                     </span>
-                )}
-
+                <input type="text" placeholder={isDataReady ? "Sök / بحث..." : "Laddar..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={styles.input} disabled={!isDataReady} />
+                {isDataReady && (<span style={styles.totalCountBadge}>{(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}</span>)}
                 {isLoading && <div style={styles.spinner}></div>}
-                {searchTerm && !isLoading && (
-                    <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
-                )}
+                {searchTerm && !isLoading && (<button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>)}
             </div>
             <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} style={{...styles.filterToggleBtn, ...(isFiltersOpen || hasActiveFilters ? styles.filterToggleActive : {})}}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
@@ -342,7 +293,6 @@ export const HomeView: React.FC = () => {
                     <FilterSelect label="Läge" icon="⚙️" value={mode} options={MODES} onChange={setMode} />
                     <FilterSelect label="Sortering" icon="🔃" value={sort} options={SORTS} onChange={setSort} />
                     <FilterSelect label="Typ" icon="📝" value={type} options={TYPES} onChange={setType} statsData={stats} />
-                    <FilterSelect label="Ämne" icon="🏷️" value={category} options={CATEGORIES} onChange={setCategory} statsData={stats} />
                 </div>
                 {hasActiveFilters && <button onClick={clearFilters} style={styles.resetFiltersBtn}>Återställ filter / إعادة ضبط</button>}
             </div>
@@ -352,50 +302,29 @@ export const HomeView: React.FC = () => {
              <div style={styles.activeFiltersRow}>
                  {mode !== 'all' && <span style={styles.activeChip}>Mode: {mode}</span>}
                  {type !== 'all' && <span style={styles.activeChip}>Typ: {type}</span>}
-                 {category !== 'all' && <span style={styles.activeChip}>Ämne: {category}</span>}
              </div>
         )}
       </div>
       
       <div style={styles.list}>
         {!isDataReady && <div style={styles.emptyState}><p>Laddar lexikon...</p></div>}
-        
         {isDataReady && !searchTerm && !hasActiveFilters && dailyContent && (
             <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
-                <DailyCard 
-                    content={dailyContent} 
-                    onClick={(id) => {
-                         if (typeof id === 'number') handleResultClick(id);
-                    }} 
-                />
+                <DailyCard content={dailyContent} onClick={(id) => { if (typeof id === 'number') handleResultClick(id); }} />
             </div>
         )}
-
         {isDataReady && results.length === 0 && !isLoading && !hasActiveFilters && !searchTerm && (
             <div style={styles.historySection}>
-                {history.length > 0 ? (
-                     <div style={styles.historyGrid}>
-                        {history.map((item, idx) => (
-                            <button key={idx} style={styles.historyChip} onClick={() => setSearchTerm(item)}>🕒 {item}</button>
-                        ))}
-                     </div>
-                ) : (<div style={styles.emptyState}><p style={{opacity: 0.6}}>Sök efter ord...</p></div>)}
+                {history.length > 0 ? (<div style={styles.historyGrid}>{history.map((item, idx) => (<button key={idx} style={styles.historyChip} onClick={() => setSearchTerm(item)}>🕒 {item}</button>))}</div>) : (<div style={styles.emptyState}><p style={{opacity: 0.6}}>Sök efter ord...</p></div>)}
             </div>
         )}
-
-        {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (
-             <div style={styles.emptyState}><p>Inga resultat / لا توجد نتائج</p></div>
-        )}
-
-        {results.map((word) => (
-            <WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />
-        ))}
+        {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (<div style={styles.emptyState}><p>Ingا نتائج / لا توجد نتائج</p></div>)}
+        {results.map((word) => (<WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />))}
       </div>
     </div>
   );
 };
 
-// Styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: { minHeight: '100vh', backgroundColor: '#121212', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', flexDirection: 'column' },
   header: { position: 'sticky', top: 0, backgroundColor: 'rgba(18, 18, 18, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #333', zIndex: 100, paddingBottom: '8px' },

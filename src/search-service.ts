@@ -25,27 +25,25 @@ export interface SearchOptions {
     query: string;
     mode: string;
     type: string;
-    category: string;
     sort: string;
 }
 
 export class SearchService {
+    // Legacy init method (No-op)
     static init(data: any[][]) {}
 
-    /**
-     * Search with lightweight stats calculation (Fast & Efficient)
-     */
     static searchWithStats(data: any[][], options: SearchOptions): SearchResultWithStats {
-        const { query, mode, type, category, sort } = options;
+        const { query, mode, type, sort } = options;
         const normalizedQuery = normalizeArabic(query.trim().toLowerCase());
         
+        // Stats containers
         const stats: SearchStats = {
             total: 0,
             types: {},
             categories: {}
         };
         
-        const isBrowsing = mode === 'favorites' || type !== 'all' || category !== 'all';
+        const isBrowsing = mode === 'favorites' || type !== 'all';
         const hasQuery = !!normalizedQuery;
 
         let allMatches: any[][] = [];
@@ -56,10 +54,8 @@ export class SearchService {
             candidateData = data.filter(row => favIds.has(row[0].toString()));
         }
 
-        // Single Pass Loop O(N)
         for (const row of candidateData) {
             const rawType = (row[1] || '').toLowerCase();
-            const tags = (row[11] || '').toLowerCase();
             
             // 1. Query Match
             let matchesQuery = false;
@@ -78,8 +74,7 @@ export class SearchService {
 
             if (!matchesQuery) continue;
 
-            // 2. Calculate Stats (Accumulate for ALL matches)
-            // Type Stats
+            // 2. Type Stats
             let typeKey = 'other';
             if (rawType.includes('subst') || rawType === 'noun') typeKey = 'subst';
             else if (rawType.includes('verb')) typeKey = 'verb';
@@ -91,22 +86,11 @@ export class SearchService {
             else if (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom')) typeKey = 'fras';
             else if (rawType.includes('juridik')) typeKey = 'juridik';
             else if (rawType.includes('medicin')) typeKey = 'medicin';
-            else if (rawType.includes('it') || rawType.includes('teknik')) typeKey = 'it';
+            else if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data')) typeKey = 'it';
 
             stats.types[typeKey] = (stats.types[typeKey] || 0) + 1;
 
-            // Category Stats (Fast Tag Check)
-            if (tags.includes('mat')) stats.categories['food'] = (stats.categories['food'] || 0) + 1;
-            if (tags.includes('arbete') || tags.includes('yrke')) stats.categories['work'] = (stats.categories['work'] || 0) + 1;
-            if (tags.includes('kropp') || tags.includes('hälsa')) stats.categories['health'] = (stats.categories['health'] || 0) + 1;
-            if (tags.includes('familj')) stats.categories['family'] = (stats.categories['family'] || 0) + 1;
-            if (tags.includes('resa')) stats.categories['travel'] = (stats.categories['travel'] || 0) + 1;
-            if (tags.includes('skola') || tags.includes('utbildning')) stats.categories['school'] = (stats.categories['school'] || 0) + 1;
-            if (tags.includes('hem') || tags.includes('bostad')) stats.categories['home'] = (stats.categories['home'] || 0) + 1;
-            if (tags.includes('natur') || tags.includes('djur')) stats.categories['nature'] = (stats.categories['nature'] || 0) + 1;
-            stats.categories['all'] = (stats.categories['all'] || 0) + 1;
-
-            // 3. Filter for Result List
+            // 4. Filter Results
             if (!hasQuery && !isBrowsing) continue;
 
             let includeInResults = true;
@@ -123,23 +107,10 @@ export class SearchService {
                  else if (type === 'juridik' && typeKey === 'juridik') matchesType = true;
                  else if (type === 'medicin' && typeKey === 'medicin') matchesType = true;
                  else if (type === 'it' && typeKey === 'it') matchesType = true;
-                 
-                 if (!matchesType) includeInResults = false;
-            }
+                 else if (type === 'politik' && (rawType.includes('politik') || rawType.includes('samhäll'))) matchesType = true;
+                 else if (type === 'religion' && (rawType.includes('religion') || rawType.includes('islam'))) matchesType = true;
 
-            if (includeInResults && category !== 'all') {
-                // Simple tag check for filtering
-                let matchesCat = false;
-                if (category === 'food' && tags.includes('mat')) matchesCat = true;
-                else if (category === 'work' && (tags.includes('arbete') || tags.includes('yrke'))) matchesCat = true;
-                else if (category === 'health' && (tags.includes('kropp') || tags.includes('hälsa'))) matchesCat = true;
-                else if (category === 'family' && tags.includes('familj')) matchesCat = true;
-                else if (category === 'travel' && tags.includes('resa')) matchesCat = true;
-                else if (category === 'school' && (tags.includes('skola') || tags.includes('utbildning'))) matchesCat = true;
-                else if (category === 'home' && (tags.includes('hem') || tags.includes('bostad'))) matchesCat = true;
-                else if (category === 'nature' && (tags.includes('natur') || tags.includes('djur'))) matchesCat = true;
-                
-                if (!matchesCat) includeInResults = false;
+                 if (!matchesType) includeInResults = false;
             }
 
             if (includeInResults) {
@@ -180,7 +151,7 @@ export class SearchService {
              return aSwe.length - bSwe.length;
         });
 
-        // Limit results for UI performance (Infinite Scroll handles the rest)
+        // Limit results
         const MAX_RESULTS = 200;
         const slicedResults = allMatches.slice(0, MAX_RESULTS).map(row => ({
             id: row[0],
