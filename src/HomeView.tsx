@@ -6,6 +6,7 @@ import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
 import { showToast, TextSizeManager } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
+import { DetailsView } from './DetailsView';
 
 // --- Constants & Types ---
 interface FilterOption {
@@ -385,7 +386,7 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
         <div style={styles.cardMainContent}>
             <div style={styles.swedish}>{word.swedish}</div>
             {word.forms && <div style={styles.forms}>{word.forms}</div>}
-            <div style={styles.arabic}>{word.arabic}</div>
+            <div dir="rtl" style={styles.arabic}>{word.arabic}</div>
         </div>
       </div>
     </div>
@@ -443,6 +444,7 @@ export const HomeView: React.FC = () => {
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [initialRestoreDone, setInitialRestoreDone] = useState(false);
+  const [selectedWordId, setSelectedWordId] = useState<number | null>(null);
   
   // Daily Content Settings
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -559,8 +561,26 @@ export const HomeView: React.FC = () => {
     }
     const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    window.location.href = `details.html?id=${id}`;
+    
+    // Switch to Details View
+    setSelectedWordId(id);
+    
+    // Add history entry for back button support
+    window.history.pushState({ view: 'details', id }, '', `?id=${id}`);
   }, [searchTerm, mode, type, sort]);
+
+  // Handle Back Button (PopState)
+  useEffect(() => {
+      const handlePopState = (e: PopStateEvent) => {
+          if (e.state && e.state.view === 'details') {
+              setSelectedWordId(e.state.id);
+          } else {
+              setSelectedWordId(null);
+          }
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const clearFilters = () => {
     setMode('all'); setType('all'); setSort('relevance');
@@ -585,6 +605,17 @@ export const HomeView: React.FC = () => {
 
   return (
     <div style={styles.container}>
+      {/* Show Details View if a word is selected */}
+      {selectedWordId ? (
+          <DetailsView 
+              wordId={selectedWordId} 
+              onBack={() => {
+                  setSelectedWordId(null);
+                  window.history.back(); // Or just reset state if pushState wasn't used for internal nav
+              }} 
+          />
+      ) : (
+      <>
       {/* Settings Modal */}
       {isSettingsOpen && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)' }} onClick={() => setIsSettingsOpen(false)}>
@@ -746,6 +777,8 @@ export const HomeView: React.FC = () => {
           >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
           </button>
+      )}
+      </>
       )}
     </div>
   );

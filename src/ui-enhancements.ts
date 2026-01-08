@@ -544,8 +544,14 @@ export class AudioVisualizer {
     private dataArray: Uint8Array | null = null;
     private phase = 0;
 
-    constructor(containerId: string, color = '#7dd3fc') {
-        const container = document.getElementById(containerId);
+    constructor(containerOrId: string | HTMLElement, color = '#7dd3fc') {
+        let container: HTMLElement | null;
+        if (typeof containerOrId === 'string') {
+            container = document.getElementById(containerOrId);
+        } else {
+            container = containerOrId;
+        }
+        
         if (!container) throw new Error('Visualizer container not found');
 
         this.canvas = document.createElement('canvas');
