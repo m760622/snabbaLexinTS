@@ -5,6 +5,7 @@
 export interface TTSOptions {
     volume?: number;
     speed?: number;
+    pitch?: number;
     onStart?: () => void;
     onEnd?: () => void;
     onError?: (error: Error) => void;
@@ -397,12 +398,16 @@ export const TTSManager = {
                 let speakText = this._prepareTextForSpeech(text, lang);
                 const utterance = new SpeechSynthesisUtterance(speakText);
                 utterance.lang = lang;
-                const speed = options.speed || this.getSpeed();
+                const defaultSpeed = this.getSpeed();
+                const speed = options.speed || defaultSpeed;
+                utterance.pitch = options.pitch || 1.0;
 
                 if (this.isIOS) {
-                    utterance.rate = Math.max(0.6, speed * 0.75);
+                    // Only apply calibration if using default speed
+                    utterance.rate = options.speed ? options.speed : Math.max(0.6, speed * 0.75);
                 } else {
-                    utterance.rate = speed * 0.9;
+                    // Only apply calibration if using default speed
+                    utterance.rate = options.speed ? options.speed : speed * 0.9;
                 }
 
                 const setVoiceAndSpeak = () => {

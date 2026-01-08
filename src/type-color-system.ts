@@ -143,7 +143,7 @@ export const TypeColors: Record<string, ColorDefinition> = {
     },
     religion: {
         primary: '#3b82f6',      // Blue
-        background: 'rgba(124, 58, 237, 0.15)',
+        background: 'rgba(59, 130, 246, 0.15)',
         classToken: 'religion',
         label: { sv: 'Religion', ar: 'دين', en: 'Religion' }
     },
