@@ -5,6 +5,7 @@ import { FavoritesManager } from './favorites';
 import { showToast, TextSizeManager } from './utils';
 import { PronunciationLab } from './components/PronunciationLab';
 import { MiniQuiz } from './components/MiniQuiz';
+import { AIStoryFlash } from './components/AIStoryFlash';
 import { t } from './i18n';
 
 interface DetailsViewProps {
@@ -111,7 +112,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     );
 
     return (
-        <div style={{ paddingBottom: '100px', minHeight: '100vh', background: '#121212' }}>
+        <div className="details-page-container" style={{ paddingBottom: '100px', minHeight: '100vh', background: '#121212' }}>
             {/* Nav Header */}
             <div style={{ 
                 display: 'flex', justifyContent: 'space-between', padding: '12px 16px', position: 'sticky', top: 0, 
@@ -135,6 +136,11 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                 <div style={{ marginTop: '15px' }}>
                     <span style={{ border: `1px solid ${primaryColor}`, color: primaryColor, padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>{type}</span>
                 </div>
+            </div>
+
+            {/* AI Story Flash - Creative Feature */}
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto' }}>
+                <AIStoryFlash swe={swe} arb={arb} type={type} />
             </div>
 
             {/* Tabs */}
