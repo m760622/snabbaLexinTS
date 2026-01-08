@@ -9,6 +9,7 @@ export interface DailyContent {
     literal?: string; // For proverbs
     example?: string;
     tags?: string[];
+    rawType?: string;
 }
 
 export class DailyContentService {
@@ -65,13 +66,17 @@ export class DailyContentService {
         }
 
         // --- RICH WORD (Default) ---
+        // Strict Filter: Must have a real example (col 5) with length > 10 chars
         const richWords = dictionary.filter(row => {
-            const ex1 = (row[5] || '');
-            const ex2 = (row[9] || '');
-            return (ex1.length + ex2.length) > 30;
+            const ex1 = (row[5] || '').trim();
+            // Ensure example exists and is meaningful
+            return ex1.length > 10;
         });
 
+        // Fallback safety if no rich words found (unlikely)
         const targetList = richWords.length > 0 ? richWords : dictionary;
+        
+        // Pick random
         const index = Math.floor(Math.random() * targetList.length);
         const item = targetList[index];
 
@@ -82,7 +87,9 @@ export class DailyContentService {
             translation: item[3],
             example: item[5],
             explanation: item[4],
-            tags: ['Dagens Ord', 'كلمة اليوم']
+            tags: ['Dagens Ord', 'كلمة اليوم'],
+            // Pass raw type for display
+            rawType: item[1] 
         };
     }
 

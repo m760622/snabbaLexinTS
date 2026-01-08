@@ -174,10 +174,10 @@ const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent;
             {`
             .cube-viewport { perspective: 1200px; width: 320px; height: 240px; margin: 0 auto 20px auto; position: relative; cursor: grab; }
             .cube-viewport:active { cursor: grabbing; }
-            .cube { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-            .cube-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); padding: 0; }
-            .cube-dot.active { background: ${themeColor}; transform: scale(1.3); box-shadow: 0 0 12px ${themeColor}; }
-            .cube-action-btn { 
+            .cube { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+            .cube-dot { width: 6px; height: 6px; border-radius: 50%; background: #444; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); padding: 0; }
+            .cube-dot.active { background: ${themeColor}; transform: scale(1.2); box-shadow: 0 0 8px ${themeColor}; }
+            .cube-action-btn; { 
                 background: rgba(255,255,255,0.12); 
                 border: 1px solid rgba(255,255,255,0.1);
                 color: #fff; 
@@ -208,14 +208,32 @@ const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent;
             <div className="cube" style={{ transform: `translateZ(-150px) rotateY(${rotation}deg)` }}>
                 {/* Front Face: Swedish + Actions */}
                 <Face style={{ transform: 'rotateY(0deg) translateZ(150px)' }}>
-                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
-                        {content.tags?.[0] || 'ORD'}
-                    </span>
+                    <div style={{ position: 'absolute', top: '15px', left: '15px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
+                            {content.tags?.[0] || 'ORD'}
+                        </span>
+                        {content.rawType && (
+                            <span style={{ fontSize: '0.65rem', color: '#888', textTransform: 'lowercase', letterSpacing: '0.5px' }}>
+                                {content.rawType.replace('.', '')}
+                            </span>
+                        )}
+                    </div>
                     
-                    <h2 style={{ fontSize: '2.2rem', margin: '10px 0 5px 0', color: '#fff', fontWeight: '800', lineHeight: 1.1 }}>{content.swedish}</h2>
+                    <h2 style={{ 
+                        fontSize: content.swedish.length > 12 ? '1.5rem' : (content.swedish.length > 8 ? '1.8rem' : '2.2rem'), 
+                        margin: '15px 0 5px 0', 
+                        color: '#fff', 
+                        fontWeight: '800', 
+                        lineHeight: 1.1,
+                        wordBreak: 'break-word',
+                        maxWidth: '100%'
+                    }}>
+                        {content.swedish}
+                    </h2>
                     <p style={{ fontSize: '1rem', color: '#ccc', margin: '0 0 15px 0', fontFamily: '"Tajawal", sans-serif' }}>{content.translation}</p>
                     
-                    <div style={{ display: 'flex', gap: '12px', marginTop: '5px', alignItems: 'center' }}>
+                    {/* ALL Actions on Front Face */}
+                    <div style={{ display: 'flex', gap: '15px', marginTop: '5px', alignItems: 'center', zIndex: 10 }}>
                         <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleSpeak} title="Lyssna">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         </button>
@@ -237,11 +255,17 @@ const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent;
 
                 {/* Right Face: Arabic (Big) */}
                 <Face style={{ transform: 'rotateY(90deg) translateZ(150px)' }}>
+                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
+                        ÖVERS
+                    </span>
                     <h2 style={{ fontSize: '2.4rem', margin: 0, color: themeColor, fontFamily: '"Tajawal", sans-serif', fontWeight: '700' }}>{content.translation}</h2>
                 </Face>
 
                 {/* Back Face: Example */}
                 <Face style={{ transform: 'rotateY(180deg) translateZ(150px)' }}>
+                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
+                        EXEMPEL
+                    </span>
                     <div style={{ fontStyle: 'italic', color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.5', padding: '0 10px' }}>
                         {content.example ? `"${content.example}"` : 'Inga exempel / لا يوجد مثال'}
                     </div>
@@ -250,10 +274,12 @@ const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent;
 
                 {/* Left Face: Info/Explanation */}
                 <Face style={{ transform: 'rotateY(-90deg) translateZ(150px)' }}>
+                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
+                        INFO
+                    </span>
                     <div style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.5' }}>
                         {content.explanation || content.literal || '...'}
                     </div>
-                    <span style={{ position: 'absolute', bottom: '20px', fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Info</span>
                 </Face>
             </div>
         </div>
