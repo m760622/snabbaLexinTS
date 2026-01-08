@@ -30,7 +30,7 @@ export interface SearchOptions {
 
 export class SearchService {
     // Legacy init method (No-op)
-    static init(data: any[][]) {}
+    static init(_data: any[][]) {}
 
     static searchWithStats(data: any[][], options: SearchOptions): SearchResultWithStats {
         const { query, mode, type, sort } = options;

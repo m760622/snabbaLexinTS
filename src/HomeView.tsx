@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { SearchService, SearchResult, SearchStats } from './search-service';
 import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
-import { showToast } from './utils';
+import { showToast, TextSizeManager } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
 
 // --- Constants & Types ---
@@ -55,42 +55,226 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// ... DailyCard & WordCard (Memoized) ...
-const DailyCard = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
-  const [expanded, setExpanded] = useState(false);
+// --- Sub-Component: DailyCubeCard (Interactive Swipe Cube) ---
+const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
+  const [faceIndex, setFaceIndex] = useState(0); 
+  const [isFav, setIsFav] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  // Drag State
+  const dragStartX = useRef<number | null>(null);
+  const isDragging = useRef(false);
+
+  useEffect(() => {
+      if (content) setIsFav(FavoritesManager.has(content.id.toString()));
+  }, [content]);
+
   if (!content) return null;
+
+  const rotateCube = (targetIndex: number) => {
+      const current = ((faceIndex % 4) + 4) % 4; 
+      const diff = targetIndex - current;
+      setFaceIndex(prev => prev + diff);
+  };
+
+  // --- Drag/Swipe Handlers ---
+  const handlePointerDown = (e: React.PointerEvent) => {
+      dragStartX.current = e.clientX;
+      isDragging.current = true;
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+      if (!isDragging.current || dragStartX.current === null) return;
+      
+      const diff = dragStartX.current - e.clientX;
+      const threshold = 50; 
+
+      if (Math.abs(diff) > threshold) {
+          if (diff > 0) setFaceIndex(prev => prev + 1);
+          else setFaceIndex(prev => prev - 1);
+      }
+      
+      isDragging.current = false;
+      dragStartX.current = null;
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  // --- Actions ---
+  const handleSpeak = async (e: React.PointerEvent) => {
+      e.stopPropagation();
+      if (isPlaying) return;
+      setIsPlaying(true);
+      try { await TTSManager.speak(content.swedish, 'sv'); } catch (err) { console.error(err); } finally { setIsPlaying(false); }
+  };
+
+  const handleCopy = async (e: React.PointerEvent) => {
+      e.stopPropagation();
+      try { 
+          await navigator.clipboard.writeText(`${content.swedish} - ${content.translation}`); 
+          showToast('Kopierat / تم النسخ 📋'); 
+      } catch { 
+          showToast('Fel / خطأ'); 
+      }
+  };
+
+  const handleFav = (e: React.PointerEvent) => {
+      e.stopPropagation();
+      const newStatus = FavoritesManager.toggle(content.id.toString());
+      setIsFav(newStatus);
+  };
+
+  const handleDetails = (e: React.PointerEvent) => {
+      e.stopPropagation();
+      onClick(content.id);
+  };
+
+  // Prevent drag when interacting with buttons
+  const stopEvent = (e: React.PointerEvent) => {
+      e.stopPropagation();
+  };
+
   const isProverb = content.type === 'proverb';
-  const badgeColor = isProverb ? '#9C27B0' : (content.type === 'idiom' ? '#E65100' : '#2E7D32');
-  const badgeText = content.tags?.[0] || 'Dagens Ord';
+  const themeColor = isProverb ? '#9C27B0' : (content.type === 'idiom' ? '#E65100' : '#2E7D32');
+  const rotation = faceIndex * -90;
+  const activeFace = ((faceIndex % 4) + 4) % 4;
+
+  const Face = ({ children, style = {} }: any) => (
+      <div style={{
+          position: 'absolute',
+          width: '300px',
+          height: '220px',
+          left: '10px',
+          top: '0',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
+          background: 'rgba(28, 28, 30, 0.95)',
+          backdropFilter: 'blur(25px)',
+          border: `1.5px solid ${themeColor}88`,
+          borderRadius: '28px',
+          backfaceVisibility: 'hidden',
+          boxSizing: 'border-box',
+          textAlign: 'center',
+          boxShadow: `0 12px 40px rgba(0,0,0,0.4)`,
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          touchAction: 'none',
+          ...style
+      }}>
+          {children}
+      </div>
+  );
 
   return (
-    <div style={{ ...styles.card, borderLeft: `5px solid ${badgeColor}`, height: 'auto', minHeight: '130px' }} onClick={() => onClick(content.id)}>
-       <div style={styles.cardContent}>
-          <div style={styles.cardTopRow}>
-              <span style={{ ...styles.wordTypeBadge, color: badgeColor, borderColor: badgeColor }}>{badgeText}</span>
-              <span style={{ fontSize: '0.8rem', color: '#8e8e93', textTransform: 'capitalize' }}>
-                {new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </span>
-          </div>
-          <div style={styles.cardMainContent}>
-              <div style={{ ...styles.swedish, fontStyle: isProverb ? 'italic' : 'normal', fontSize: isProverb ? '1.2rem' : '1.1rem', whiteSpace: 'normal', marginTop: '8px', marginBottom: '4px' }}>{content.swedish}</div>
-              <div style={{ ...styles.arabic, textAlign: 'right', marginTop: '4px' }}>{content.translation}</div>
-          </div>
-          {expanded && (
-             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', animation: 'fadeIn 0.3s' }}>
-                 {content.literal && <div style={{ marginBottom: '6px' }}><span style={{fontSize: '0.75rem', color: '#8e8e93', display: 'block'}}>Bokstavligt / حرفياً:</span><span style={{fontSize: '0.9rem', color: '#ddd'}}>{content.literal}</span></div>}
-                 {content.explanation && <div style={{ marginBottom: '6px' }}><span style={{fontSize: '0.9rem', color: '#ccc'}}>{content.explanation}</span></div>}
-                 {content.example && <div style={{ fontSize: '0.9rem', color: '#94a3b8', fontStyle: 'italic', marginTop: '8px', paddingLeft: '8px', borderLeft: '2px solid #333' }}>"{content.example}"</div>}
-             </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-              <button onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: badgeColor, fontSize: '0.8rem', cursor: 'pointer', padding: '6px 12px', borderRadius: '15px', fontWeight: '600' }}>{expanded ? 'Visa mindre' : 'Mer info...'}</button>
-          </div>
-       </div>
+    <div style={styles.cubeContainer}>
+        <style>
+            {`
+            .cube-viewport { perspective: 1200px; width: 320px; height: 240px; margin: 0 auto 20px auto; position: relative; cursor: grab; }
+            .cube-viewport:active { cursor: grabbing; }
+            .cube { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+            .cube-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); padding: 0; }
+            .cube-dot.active { background: ${themeColor}; transform: scale(1.3); box-shadow: 0 0 12px ${themeColor}; }
+            .cube-action-btn { 
+                background: rgba(255,255,255,0.12); 
+                border: 1px solid rgba(255,255,255,0.1);
+                color: #fff; 
+                width: 44px; 
+                height: 44px; 
+                border-radius: 50%; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                cursor: pointer; 
+                transition: all 0.2s; 
+                backdrop-filter: blur(5px);
+                pointer-events: auto;
+                padding: 0;
+            }
+            .cube-action-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+            .cube-action-btn:active { transform: scale(0.9); background: ${themeColor}44; }
+            .cube-action-btn.fav-active { color: #F59E0B; background: rgba(245, 158, 11, 0.2); border-color: #F59E0B44; }
+            `}
+        </style>
+
+        <div 
+            className="cube-viewport"
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+        >
+            <div className="cube" style={{ transform: `translateZ(-150px) rotateY(${rotation}deg)` }}>
+                {/* Front Face: Swedish + Actions */}
+                <Face style={{ transform: 'rotateY(0deg) translateZ(150px)' }}>
+                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
+                        {content.tags?.[0] || 'ORD'}
+                    </span>
+                    
+                    <h2 style={{ fontSize: '2.2rem', margin: '10px 0 5px 0', color: '#fff', fontWeight: '800', lineHeight: 1.1 }}>{content.swedish}</h2>
+                    <p style={{ fontSize: '1rem', color: '#ccc', margin: '0 0 15px 0', fontFamily: '"Tajawal", sans-serif' }}>{content.translation}</p>
+                    
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '5px', alignItems: 'center' }}>
+                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleSpeak} title="Lyssna">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        </button>
+                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleCopy} title="Kopiera">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button className={`cube-action-btn ${isFav ? 'fav-active' : ''}`} onPointerDown={stopEvent} onPointerUp={handleFav} title="Spara">
+                            {isFav ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            )}
+                        </button>
+                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleDetails} title="التفاصيل">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </button>
+                    </div>
+                </Face>
+
+                {/* Right Face: Arabic (Big) */}
+                <Face style={{ transform: 'rotateY(90deg) translateZ(150px)' }}>
+                    <h2 style={{ fontSize: '2.4rem', margin: 0, color: themeColor, fontFamily: '"Tajawal", sans-serif', fontWeight: '700' }}>{content.translation}</h2>
+                </Face>
+
+                {/* Back Face: Example */}
+                <Face style={{ transform: 'rotateY(180deg) translateZ(150px)' }}>
+                    <div style={{ fontStyle: 'italic', color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.5', padding: '0 10px' }}>
+                        {content.example ? `"${content.example}"` : 'Inga exempel / لا يوجد مثال'}
+                    </div>
+                    <div style={{ width: '40px', height: '4px', background: themeColor, borderRadius: '2px', marginTop: '15px' }}></div>
+                </Face>
+
+                {/* Left Face: Info/Explanation */}
+                <Face style={{ transform: 'rotateY(-90deg) translateZ(150px)' }}>
+                    <div style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.5' }}>
+                        {content.explanation || content.literal || '...'}
+                    </div>
+                    <span style={{ position: 'absolute', bottom: '20px', fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Info</span>
+                </Face>
+            </div>
+        </div>
+
+        {/* Navigation Dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '-10px', marginBottom: '25px' }}>
+            {[0, 1, 2, 3].map(i => (
+                <button 
+                    key={i} 
+                    className={`cube-dot ${activeFace === i ? 'active' : ''}`} 
+                    onPointerDown={stopEvent}
+                    onPointerUp={() => rotateCube(i)}
+                    aria-label={`Rotera till sida ${i + 1}`}
+                />
+            ))}
+        </div>
     </div>
   );
 });
 
+// --- WordCard (Memoized) ---
 const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: () => void }) => {
   const [isFav, setIsFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -115,24 +299,84 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    const textToCopy = `${word.swedish} - ${word.arabic}`;
+
     try {
-        if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(`${word.swedish} - ${word.arabic}`); showToast('Kopierات / تم النسخ 📋'); } else throw new Error();
-    } catch { showToast('Kunde inte kopiera / تعذر النسخ ❌'); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(textToCopy);
+            showToast('Kopierat / تم النسخ 📋');
+        } else {
+            throw new Error('Clipboard API unavailable');
+        }
+    } catch (err) {
+        try {
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (successful) showToast('Kopierat / تم النسخ 📋');
+        } catch (fallbackErr) {
+            showToast('Kunde inte kopiera / تعذر النسخ ❌');
+        }
+    }
   };
 
-  const handleFav = (e: React.MouseEvent) => { e.stopPropagation(); FavoritesManager.toggle(word.id.toString()); };
+  const handleFav = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    FavoritesManager.toggle(word.id.toString());
+  };
 
   return (
-    <div style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} onClick={onClick}>
+    <div 
+        style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} 
+        onClick={onClick}
+    >
       <div style={styles.cardContent}>
         <div style={styles.cardTopRow}>
-            <span style={{ ...styles.wordTypeBadge, color: primaryColor, borderColor: primaryColor }}>{typeLabel}</span>
+            <span style={{
+                ...styles.wordTypeBadge, 
+                color: primaryColor, 
+                borderColor: primaryColor
+            }}>
+                {typeLabel}
+            </span>
+
             <div style={styles.actionRow}>
-                <button style={{ ...styles.actionBtn, color: isPlaying ? '#3b82f6' : '#8e8e93', transform: isPlaying ? 'scale(1.1)' : 'scale(1)' }} onClick={handleSpeak}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button>
-                <button style={styles.actionBtn} onClick={handleCopy}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                <button style={{...styles.actionBtn, color: isFav ? '#F59E0B' : '#8e8e93'}} onClick={handleFav}>{isFav ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>}</button>
+                <button 
+                    style={{
+                        ...styles.actionBtn, 
+                        color: isPlaying ? '#3b82f6' : '#8e8e93',
+                        transform: isPlaying ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'all 0.2s ease'
+                    }} 
+                    onClick={handleSpeak} 
+                    aria-label="Lyssna"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </button>
+                <button style={styles.actionBtn} onClick={handleCopy} aria-label="Kopiera">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+                <button 
+                    style={{...styles.actionBtn, color: isFav ? '#F59E0B' : '#8e8e93'}} 
+                    onClick={handleFav} 
+                    aria-label="Spara"
+                >
+                    {isFav ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    )}
+                </button>
             </div>
         </div>
+
         <div style={styles.cardMainContent}>
             <div style={styles.swedish}>{word.swedish}</div>
             {word.forms && <div style={styles.forms}>{word.forms}</div>}
@@ -152,6 +396,7 @@ export const HomeView: React.FC = () => {
   
   const [results, setResults] = useState<SearchResult[]>([]);
   const [stats, setStats] = useState<SearchStats | null>(null);
+  const [visibleLimit, setVisibleLimit] = useState(50); // Infinite scroll limit
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
@@ -159,7 +404,7 @@ export const HomeView: React.FC = () => {
   const [initialRestoreDone, setInitialRestoreDone] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const STORAGE_KEY = 'snabbaLexin_home_state_v3';
+  const STORAGE_KEY = 'snabbaLexin_home_state_v2';
 
   // 1. Initialize
   useEffect(() => {
@@ -174,7 +419,11 @@ export const HomeView: React.FC = () => {
             setMode(parsed.mode || 'all');
             setType(parsed.type || 'all');
             setSort(parsed.sort || 'relevance');
-            if (parsed.mode !== 'all' || parsed.type !== 'all') setIsFiltersOpen(true);
+            
+            if (parsed.mode !== 'all' || parsed.type !== 'all') {
+                setIsFiltersOpen(true);
+            }
+
             if (parsed.scrollY) setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
         } catch {}
     }
@@ -228,6 +477,7 @@ export const HomeView: React.FC = () => {
         });
         setResults(newResults);
         setStats(newStats);
+        setVisibleLimit(50);
         setIsLoading(false);
     }, 10);
     return () => clearTimeout(timer);
@@ -235,13 +485,18 @@ export const HomeView: React.FC = () => {
   }, [debouncedSearchTerm, mode, sort, type, isDataReady]);
 
   const handleResultClick = useCallback((id: number) => {
-    if (searchTerm.trim()) { SearchHistoryManager.add(searchTerm.trim()); setHistory(SearchHistoryManager.get()); }
+    if (searchTerm.trim()) {
+      SearchHistoryManager.add(searchTerm.trim());
+      setHistory(SearchHistoryManager.get());
+    }
     const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     window.location.href = `details.html?id=${id}`;
   }, [searchTerm, mode, type, sort]);
 
-  const clearFilters = () => { setMode('all'); setType('all'); setSort('relevance'); };
+  const clearFilters = () => {
+    setMode('all'); setType('all'); setSort('relevance');
+  };
   const hasActiveFilters = mode !== 'all' || type !== 'all' || sort !== 'relevance';
 
   const FilterSelect = ({ label, value, options, onChange, icon, statsData }: any) => (
@@ -265,22 +520,44 @@ export const HomeView: React.FC = () => {
       <div style={styles.header}>
         <div style={styles.topBar}>
             <div style={styles.brandTitle}><span style={{color:'#3b82f6'}}>Snabba</span>Lexin</div>
-            <button style={styles.settingsBtn} onClick={() => {
-                const menu = document.getElementById('settingsMenu');
-                const btn = document.getElementById('settingsBtn');
-                if (menu && btn) { menu.classList.remove('hidden'); btn.classList.add('active'); }
-            }} aria-label="Settings">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <button 
+                style={styles.settingsBtn} 
+                onClick={() => {
+                    const settingsMenu = document.getElementById('settingsMenu');
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    if (settingsMenu && settingsBtn) {
+                        settingsMenu.classList.remove('hidden');
+                        settingsBtn.classList.add('active');
+                    }
+                }}
+                aria-label="Settings"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
         </div>
 
         <div style={styles.searchRow}>
             <div style={styles.searchContainer}>
                 <span style={styles.searchIcon}>🔍</span>
-                <input type="text" placeholder={isDataReady ? "Sök / بحث..." : "Laddar..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={styles.input} disabled={!isDataReady} />
-                {isDataReady && (<span style={styles.totalCountBadge}>{(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}</span>)}
+                <input 
+                    type="text" 
+                    placeholder={isDataReady ? "Sök / بحث..." : "Laddar..."} 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    style={styles.input} 
+                    disabled={!isDataReady} 
+                />
+                
+                {isDataReady && (
+                     <span style={styles.totalCountBadge}>
+                        {(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}
+                     </span>
+                )}
+
                 {isLoading && <div style={styles.spinner}></div>}
-                {searchTerm && !isLoading && (<button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>)}
+                {searchTerm && !isLoading && (
+                    <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
+                )}
             </div>
             <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} style={{...styles.filterToggleBtn, ...(isFiltersOpen || hasActiveFilters ? styles.filterToggleActive : {})}}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
@@ -294,7 +571,7 @@ export const HomeView: React.FC = () => {
                     <FilterSelect label="Sortering" icon="🔃" value={sort} options={SORTS} onChange={setSort} />
                     <FilterSelect label="Typ" icon="📝" value={type} options={TYPES} onChange={setType} statsData={stats} />
                 </div>
-                {hasActiveFilters && <button onClick={clearFilters} style={styles.resetFiltersBtn}>Återställ filter / إعادة ضبط</button>}
+                {hasActiveFilters && <button onClick={clearFilters} style={styles.resetFiltersBtn}>Åترستال فيلتر / إعادة ضبط</button>}
             </div>
         )}
         
@@ -307,24 +584,48 @@ export const HomeView: React.FC = () => {
       </div>
       
       <div style={styles.list}>
-        {!isDataReady && <div style={styles.emptyState}><p>Laddar lexikon...</p></div>}
+        {!isDataReady && <div style={styles.emptyState}><p>Laddار lexikon...</p></div>}
+        
         {isDataReady && !searchTerm && !hasActiveFilters && dailyContent && (
             <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
-                <DailyCard content={dailyContent} onClick={(id) => { if (typeof id === 'number') handleResultClick(id); }} />
+                <DailyCubeCard 
+                    content={dailyContent} 
+                    onClick={(id) => {
+                         if (typeof id === 'number') handleResultClick(id);
+                    }} 
+                />
             </div>
         )}
+
         {isDataReady && results.length === 0 && !isLoading && !hasActiveFilters && !searchTerm && (
             <div style={styles.historySection}>
-                {history.length > 0 ? (<div style={styles.historyGrid}>{history.map((item, idx) => (<button key={idx} style={styles.historyChip} onClick={() => setSearchTerm(item)}>🕒 {item}</button>))}</div>) : (<div style={styles.emptyState}><p style={{opacity: 0.6}}>Sök efter ord...</p></div>)}
+                {history.length > 0 ? (
+                     <div style={styles.historyGrid}>
+                        {history.map((item, idx) => (
+                            <button key={idx} style={styles.historyChip} onClick={() => setSearchTerm(item)}>🕒 {item}</button>
+                        ))}
+                     </div>
+                ) : (<div style={styles.emptyState}><p style={{opacity: 0.6}}>Sök efter ord...</p></div>)}
             </div>
         )}
-        {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (<div style={styles.emptyState}><p>Ingا نتائج / لا توجد نتائج</p></div>)}
-        {results.map((word) => (<WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />))}
+
+        {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (
+             <div style={styles.emptyState}><p>Ingا نتائج / لا توجد نتائج</p></div>
+        )}
+
+        {/* INFINITE SCROLL RENDER */}
+        {results.slice(0, visibleLimit).map((word) => (
+            <WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />
+        ))}
+        {results.length > visibleLimit && (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>Laddar fler...</div>
+        )}
       </div>
     </div>
   );
 };
 
+// Styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: { minHeight: '100vh', backgroundColor: '#121212', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', flexDirection: 'column' },
   header: { position: 'sticky', top: 0, backgroundColor: 'rgba(18, 18, 18, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #333', zIndex: 100, paddingBottom: '8px' },
@@ -363,5 +664,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow: { display: 'flex', gap: '8px', flexShrink: 0, alignItems: 'center' },
   actionBtn: { padding: '0', width: '30px', height: '30px', minWidth: '30px', minHeight: '30px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer' },
   forms: { fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', opacity: 0.8, marginTop: '-2px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  arabic: { fontSize: '1rem', color: '#8e8e93', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'normal', textAlign: 'right' }
+  arabic: { fontSize: '1rem', color: '#8e8e93', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'normal', textAlign: 'right' },
+  cubeContainer: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', padding: '20px 0' }
 };

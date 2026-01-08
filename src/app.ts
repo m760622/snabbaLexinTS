@@ -476,7 +476,6 @@ export class App {
         // NEW: Update counts based on query matches (before type filtering)
         // This ensures the user sees how many Nouns/Verbs match the current search query
         this.updateTypeCounts(filtered);
-        this.updateCategoryCounts(filtered);
 
         // 3. Type Filter
         if (this.activeTypeFilter !== 'all') {
