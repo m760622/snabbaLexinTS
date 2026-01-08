@@ -55,15 +55,11 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// --- Sub-Component: DailyCubeCard (Interactive Swipe Cube) ---
-const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
-  const [faceIndex, setFaceIndex] = useState(0); 
+// --- Sub-Component: DailyCyberTicker (Breaking News Design) ---
+const DailyCyberTicker = React.memo(({ content, onClick }: { content: DailyContent; onClick: (id: string | number) => void }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [isFav, setIsFav] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Drag State
-  const dragStartX = useRef<number | null>(null);
-  const isDragging = useRef(false);
 
   useEffect(() => {
       if (content) setIsFav(FavoritesManager.has(content.id.toString()));
@@ -71,231 +67,178 @@ const DailyCubeCard = React.memo(({ content, onClick }: { content: DailyContent;
 
   if (!content) return null;
 
-  const rotateCube = (targetIndex: number) => {
-      const current = ((faceIndex % 4) + 4) % 4; 
-      const diff = targetIndex - current;
-      setFaceIndex(prev => prev + diff);
-  };
+  const themeColor = content.type === 'proverb' ? '#00ead3' : (content.type === 'idiom' ? '#ff0' : '#0ff');
 
-  // --- Drag/Swipe Handlers ---
-  const handlePointerDown = (e: React.PointerEvent) => {
-      dragStartX.current = e.clientX;
-      isDragging.current = true;
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-      if (!isDragging.current || dragStartX.current === null) return;
-      
-      const diff = dragStartX.current - e.clientX;
-      const threshold = 50; 
-
-      if (Math.abs(diff) > threshold) {
-          if (diff > 0) setFaceIndex(prev => prev + 1);
-          else setFaceIndex(prev => prev - 1);
-      }
-      
-      isDragging.current = false;
-      dragStartX.current = null;
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-  };
-
-  // --- Actions ---
-  const handleSpeak = async (e: React.PointerEvent) => {
+  const handleSpeak = async (e: React.MouseEvent) => {
       e.stopPropagation();
       if (isPlaying) return;
       setIsPlaying(true);
       try { await TTSManager.speak(content.swedish, 'sv'); } catch (err) { console.error(err); } finally { setIsPlaying(false); }
   };
 
-  const handleCopy = async (e: React.PointerEvent) => {
+  const handleCopy = async (e: React.MouseEvent) => {
       e.stopPropagation();
       try { 
           await navigator.clipboard.writeText(`${content.swedish} - ${content.translation}`); 
           showToast('Kopierat / تم النسخ 📋'); 
-      } catch { 
-          showToast('Fel / خطأ'); 
-      }
+      } catch { showToast('Fel / خطأ'); }
   };
 
-  const handleFav = (e: React.PointerEvent) => {
+  const handleFav = (e: React.MouseEvent) => {
       e.stopPropagation();
       const newStatus = FavoritesManager.toggle(content.id.toString());
       setIsFav(newStatus);
   };
 
-  const handleDetails = (e: React.PointerEvent) => {
-      e.stopPropagation();
-      onClick(content.id);
-  };
-
-  // Prevent drag when interacting with buttons
-  const stopEvent = (e: React.PointerEvent) => {
-      e.stopPropagation();
-  };
-
-  const isProverb = content.type === 'proverb';
-  const themeColor = isProverb ? '#9C27B0' : (content.type === 'idiom' ? '#E65100' : '#2E7D32');
-  const rotation = faceIndex * -90;
-  const activeFace = ((faceIndex % 4) + 4) % 4;
-
-  const Face = ({ children, style = {} }: any) => (
-      <div style={{
-          position: 'absolute',
-          width: '300px',
-          height: '220px',
-          left: '10px',
-          top: '0',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px',
-          background: 'rgba(28, 28, 30, 0.95)',
-          backdropFilter: 'blur(25px)',
-          border: `1.5px solid ${themeColor}88`,
-          borderRadius: '28px',
-          backfaceVisibility: 'hidden',
-          boxSizing: 'border-box',
-          textAlign: 'center',
-          boxShadow: `0 12px 40px rgba(0,0,0,0.4)`,
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          touchAction: 'none',
-          ...style
-      }}>
-          {children}
-      </div>
-  );
-
   return (
-    <div style={styles.cubeContainer}>
+    <div style={styles.cyberContainer}>
         <style>
             {`
-            .cube-viewport { perspective: 1200px; width: 320px; height: 240px; margin: 0 auto 20px auto; position: relative; cursor: grab; }
-            .cube-viewport:active { cursor: grabbing; }
-            .cube { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-            .cube-dot { width: 6px; height: 6px; border-radius: 50%; background: #444; cursor: pointer; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); padding: 0; }
-            .cube-dot.active { background: ${themeColor}; transform: scale(1.2); box-shadow: 0 0 8px ${themeColor}; }
-            .cube-action-btn; { 
-                background: rgba(255,255,255,0.12); 
-                border: 1px solid rgba(255,255,255,0.1);
-                color: #fff; 
-                width: 44px; 
-                height: 44px; 
-                border-radius: 50%; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center; 
-                cursor: pointer; 
-                transition: all 0.2s; 
-                backdrop-filter: blur(5px);
-                pointer-events: auto;
-                padding: 0;
+            @keyframes marquee {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
             }
-            .cube-action-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
-            .cube-action-btn:active { transform: scale(0.9); background: ${themeColor}44; }
-            .cube-action-btn.fav-active { color: #F59E0B; background: rgba(245, 158, 11, 0.2); border-color: #F59E0B44; }
+            @keyframes pulse-neon {
+                0% { box-shadow: 0 0 5px ${themeColor}44; }
+                50% { box-shadow: 0 0 20px ${themeColor}88; }
+                100% { box-shadow: 0 0 5px ${themeColor}44; }
+            }
+            .ticker-bar {
+                background: #000;
+                border: 1px solid ${themeColor};
+                height: 40px;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+                position: relative;
+                cursor: pointer;
+                animation: pulse-neon 3s infinite;
+                border-radius: 4px;
+            }
+            .ticker-label {
+                background: ${themeColor};
+                color: #000;
+                padding: 0 12px;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                font-weight: 900;
+                font-size: 0.75rem;
+                z-index: 2;
+                white-space: nowrap;
+                letter-spacing: 1px;
+            }
+            .ticker-content {
+                white-space: nowrap;
+                animation: marquee 20s linear infinite;
+                color: ${themeColor};
+                font-family: 'Courier New', monospace;
+                font-weight: bold;
+                font-size: 0.95rem;
+                padding-left: 20px;
+            }
+            .cyber-panel {
+                background: rgba(10, 10, 10, 0.98);
+                border: 1px solid ${themeColor}66;
+                border-top: none;
+                padding: 20px;
+                animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+                position: relative;
+            }
+            .cyber-button {
+                background: rgba(255,255,255,0.05);
+                border: 1px solid ${themeColor}44;
+                color: #fff;
+                padding: 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                flex: 1;
+            }
+            .cyber-button:hover {
+                background: ${themeColor}22;
+                border-color: ${themeColor};
+                transform: translateY(-2px);
+            }
+            .cyber-button.active-fav {
+                color: #f59e0b;
+                border-color: #f59e0b;
+                background: rgba(245, 158, 11, 0.1);
+            }
             `}
         </style>
 
-        <div 
-            className="cube-viewport"
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-        >
-            <div className="cube" style={{ transform: `translateZ(-150px) rotateY(${rotation}deg)` }}>
-                {/* Front Face: Swedish + Actions */}
-                <Face style={{ transform: 'rotateY(0deg) translateZ(150px)' }}>
-                    <div style={{ position: 'absolute', top: '15px', left: '15px', display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
-                            {content.tags?.[0] || 'ORD'}
-                        </span>
-                        {content.rawType && (
-                            <span style={{ fontSize: '0.65rem', color: '#888', textTransform: 'lowercase', letterSpacing: '0.5px' }}>
-                                {content.rawType.replace('.', '')}
-                            </span>
-                        )}
-                    </div>
-                    
-                    <h2 style={{ 
-                        fontSize: content.swedish.length > 12 ? '1.5rem' : (content.swedish.length > 8 ? '1.8rem' : '2.2rem'), 
-                        margin: '15px 0 5px 0', 
-                        color: '#fff', 
-                        fontWeight: '800', 
-                        lineHeight: 1.1,
-                        wordBreak: 'break-word',
-                        maxWidth: '100%'
-                    }}>
-                        {content.swedish}
-                    </h2>
-                    <p style={{ fontSize: '1rem', color: '#ccc', margin: '0 0 15px 0', fontFamily: '"Tajawal", sans-serif' }}>{content.translation}</p>
-                    
-                    {/* ALL Actions on Front Face */}
-                    <div style={{ display: 'flex', gap: '15px', marginTop: '5px', alignItems: 'center', zIndex: 10 }}>
-                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleSpeak} title="Lyssna">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                        </button>
-                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleCopy} title="Kopiera">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                        <button className={`cube-action-btn ${isFav ? 'fav-active' : ''}`} onPointerDown={stopEvent} onPointerUp={handleFav} title="Spara">
-                            {isFav ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            )}
-                        </button>
-                        <button className="cube-action-btn" onPointerDown={stopEvent} onPointerUp={handleDetails} title="التفاصيل">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                        </button>
-                    </div>
-                </Face>
-
-                {/* Right Face: Arabic (Big) */}
-                <Face style={{ transform: 'rotateY(90deg) translateZ(150px)' }}>
-                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
-                        ÖVERS
-                    </span>
-                    <h2 style={{ fontSize: '2.4rem', margin: 0, color: themeColor, fontFamily: '"Tajawal", sans-serif', fontWeight: '700' }}>{content.translation}</h2>
-                </Face>
-
-                {/* Back Face: Example */}
-                <Face style={{ transform: 'rotateY(180deg) translateZ(150px)' }}>
-                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
-                        EXEMPEL
-                    </span>
-                    <div style={{ fontStyle: 'italic', color: '#e2e8f0', fontSize: '1.1rem', lineHeight: '1.5', padding: '0 10px' }}>
-                        {content.example ? `"${content.example}"` : 'Inga exempel / لا يوجد مثال'}
-                    </div>
-                    <div style={{ width: '40px', height: '4px', background: themeColor, borderRadius: '2px', marginTop: '15px' }}></div>
-                </Face>
-
-                {/* Left Face: Info/Explanation */}
-                <Face style={{ transform: 'rotateY(-90deg) translateZ(150px)' }}>
-                    <span style={{ position: 'absolute', top: '15px', left: '15px', fontSize: '0.7rem', color: themeColor, fontWeight: 'bold', border: `1px solid ${themeColor}`, padding: '2px 8px', borderRadius: '10px' }}>
-                        INFO
-                    </span>
-                    <div style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.5' }}>
-                        {content.explanation || content.literal || '...'}
-                    </div>
-                </Face>
+        {/* The Ticker Bar */}
+        <div className="ticker-bar" onClick={() => setIsOpen(!isOpen)}>
+            <div className="ticker-label">BREAKING NEWS</div>
+            <div className="ticker-content">
+                {"+++ WORD OF THE DAY: " + content.swedish.toUpperCase() + " (" + (content.rawType || 'ORD') + ") >>> TRANSLATION: " + content.translation + " >>> CLICK FOR COMMAND CENTER +++"}
             </div>
         </div>
 
-        {/* Navigation Dots */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '-10px', marginBottom: '25px' }}>
-            {[0, 1, 2, 3].map(i => (
-                <button 
-                    key={i} 
-                    className={`cube-dot ${activeFace === i ? 'active' : ''}`} 
-                    onPointerDown={stopEvent}
-                    onPointerUp={() => rotateCube(i)}
-                    aria-label={`Rotera till sida ${i + 1}`}
-                />
-            ))}
-        </div>
+        {/* Detailed Command Center */}
+        {isOpen && (
+            <div className="cyber-panel">
+                <div style={{ position: 'absolute', top: '10px', right: '15px', color: themeColor, fontSize: '0.6rem', opacity: 0.5, fontFamily: 'monospace' }}>
+                    ID: {content.id} // SECURE_LINK
+                </div>
+
+                <div style={{ marginBottom: '25px' }}>
+                    <div style={{ color: themeColor, fontSize: '0.7rem', fontWeight: 'bold', marginBottom: '5px' }}>[ SWEDISH_CORE ]</div>
+                    <h2 style={{ 
+                        fontSize: content.swedish.length > 12 ? '1.8rem' : '2.5rem', 
+                        margin: 0, 
+                        color: '#fff', 
+                        fontWeight: '900', 
+                        lineHeight: 1.1,
+                        textShadow: `0 0 15px ${themeColor}66`
+                    }}>
+                        {content.swedish}
+                    </h2>
+                    
+                    {/* Arabic Translations directly under Swedish */}
+                    <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ fontSize: '1.4rem', color: themeColor, fontFamily: '"Tajawal", sans-serif', fontWeight: '700' }}>
+                            {content.translation}
+                        </div>
+                        {content.type === 'proverb' && content.literal && (
+                            <div style={{ fontSize: '1rem', color: '#aaa', fontFamily: '"Tajawal", sans-serif', borderRight: `2px solid ${themeColor}`, paddingRight: '10px' }}>
+                                <span style={{ fontSize: '0.6rem', color: '#666', display: 'block' }}>BOKSTAVLIGT / حرفياً:</span>
+                                {content.literal}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {content.example && (
+                    <div style={{ marginBottom: '25px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', borderLeft: `3px solid ${themeColor}` }}>
+                        <div style={{ color: themeColor, fontSize: '0.65rem', fontWeight: 'bold', marginBottom: '8px' }}>[ USAGE_EXAMPLE ]</div>
+                        <div style={{ fontSize: '1rem', color: '#bbb', fontStyle: 'italic', lineHeight: 1.4 }}>
+                            "{content.example}"
+                        </div>
+                    </div>
+                )}
+
+                {/* All Buttons Row */}
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="cyber-button" onClick={handleSpeak} title="Lyssna">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    </button>
+                    <button className="cyber-button" onClick={handleCopy} title="Kopiera">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <button className={`cyber-button ${isFav ? 'active-fav' : ''}`} onClick={handleFav} title="Spara">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </button>
+                    <button className="cyber-button" onClick={() => onClick(content.id)} title="Detaljer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </button>
+                </div>
+            </div>
+        )}
     </div>
   );
 });
@@ -614,7 +557,7 @@ export const HomeView: React.FC = () => {
         
         {isDataReady && !searchTerm && !hasActiveFilters && dailyContent && (
             <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
-                <DailyCubeCard 
+                <DailyCyberTicker 
                     content={dailyContent} 
                     onClick={(id) => {
                          if (typeof id === 'number') handleResultClick(id);
