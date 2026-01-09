@@ -9,6 +9,7 @@ import { DailyContentService, DailyContent } from './daily-content';
 import { DetailsView } from './DetailsView';
 import { QuizComponent } from './components/QuizComponent';
 import { DailyCard } from './components/DailyCard';
+import { MistakesView } from './MistakesView';
 
 // --- Constants & Types ---
 interface FilterOption {
@@ -633,13 +634,18 @@ export const HomeView: React.FC = () => {
       <div style={styles.list} ref={listRef}>
         {!isDataReady && <div style={styles.emptyState}><p>Laddar lexikon...</p></div>}
         
-        {isDataReady && !searchTerm && !hasActiveFilters && dailyContent && (
-            <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
-                <DailyCard 
-                    content={dailyContent} 
-                    onOpenSettings={() => setIsSettingsOpen(true)}
-                />
-            </div>
+        {isDataReady && !searchTerm && !hasActiveFilters && (
+            <>
+                <MistakesView />
+                {dailyContent && (
+                    <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
+                        <DailyCard 
+                            content={dailyContent} 
+                            onOpenSettings={() => setIsSettingsOpen(true)}
+                        />
+                    </div>
+                )}
+            </>
         )}
 
         {isDataReady && results.length === 0 && !isLoading && !hasActiveFilters && !searchTerm && (

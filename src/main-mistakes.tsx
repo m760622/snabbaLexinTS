@@ -1,13 +1,3 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { MistakesView } from './MistakesView';
-
-const container = document.getElementById('mistakes-react-root');
-if (container) {
-    const root = createRoot(container);
-    root.render(
-        <StrictMode>
-            <MistakesView />
-        </StrictMode>
-    );
-}
+// This file is no longer used as MistakesView is integrated into HomeView
+// kept for reference or future standalone usage if needed
+export {};
