@@ -168,9 +168,9 @@ const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: (
         </div>
 
         <div style={styles.cardMainContent}>
-            <div style={styles.swedish}>{word.swedish}</div>
+            <div style={{...styles.swedish, viewTransitionName: `word-swe-${word.id}` as any}}>{word.swedish}</div>
             {word.forms && <div style={styles.forms}>{word.forms}</div>}
-            <div dir="rtl" style={styles.arabic}>{word.arabic}</div>
+            <div dir="rtl" style={{...styles.arabic, viewTransitionName: `word-arb-${word.id}` as any}}>{word.arabic}</div>
         </div>
       </div>
     </div>
@@ -420,20 +420,34 @@ export const HomeView: React.FC = () => {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     
-    // Switch to Details View
-    setSelectedWordId(id);
-    
-    // Add history entry for back button support
-    window.history.pushState({ view: 'details', id }, '', `?id=${id}`);
+    // Switch to Details View with View Transition if supported
+    const changeView = () => {
+        setSelectedWordId(id);
+        window.history.pushState({ view: 'details', id }, '', `?id=${id}`);
+    };
+
+    if ((document as any).startViewTransition) {
+        (document as any).startViewTransition(changeView);
+    } else {
+        changeView();
+    }
   }, [searchTerm, mode, type, sort]);
 
   // Handle Back Button (PopState)
   useEffect(() => {
       const handlePopState = (e: PopStateEvent) => {
-          if (e.state && e.state.view === 'details') {
-              setSelectedWordId(e.state.id);
+          const update = () => {
+              if (e.state && e.state.view === 'details') {
+                  setSelectedWordId(e.state.id);
+              } else {
+                  setSelectedWordId(null);
+              }
+          };
+
+          if ((document as any).startViewTransition) {
+              (document as any).startViewTransition(update);
           } else {
-              setSelectedWordId(null);
+              update();
           }
       };
       window.addEventListener('popstate', handlePopState);

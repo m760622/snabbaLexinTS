@@ -192,9 +192,9 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
 
             {/* Hero */}
             <div style={{ textAlign: 'center', padding: '40px 20px', background: `linear-gradient(180deg, ${primaryColor}11 0%, transparent 100%)` }}>
-                <h1 ref={heroSweRef} style={{ fontSize: '2.8rem', fontWeight: '900', margin: 0, color: '#fff' }}>{swe}</h1>
+                <h1 ref={heroSweRef} style={{ fontSize: '2.8rem', fontWeight: '900', margin: 0, color: '#fff', viewTransitionName: `word-swe-${wordId}` as any }}>{swe}</h1>
                 <div style={{ width: '40px', height: '4px', background: primaryColor, margin: '15px auto', borderRadius: '2px' }}></div>
-                <p ref={heroArbRef} dir="rtl" style={{ fontSize: '1.8rem', color: '#fff', marginTop: '10px', fontFamily: '"Tajawal", sans-serif', fontWeight: '700' }}>{arb}</p>
+                <p ref={heroArbRef} dir="rtl" style={{ fontSize: '1.8rem', color: '#fff', marginTop: '10px', fontFamily: '"Tajawal", sans-serif', fontWeight: '700', viewTransitionName: `word-arb-${wordId}` as any }}>{arb}</p>
                 {arbExt && <p dir="rtl" style={{ fontSize: '1.1rem', color: '#999', marginTop: '5px', fontFamily: '"Tajawal", sans-serif' }}>{arbExt}</p>}
                 <div style={{ marginTop: '15px' }}>
                     <span style={{ border: `1px solid ${primaryColor}`, color: primaryColor, padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>{type}</span>
