@@ -123,9 +123,24 @@ export function generateEducationalSentence(word: string, translation: string, e
 
 export function normalizeArabic(text: string): string {
     if (!text) return '';
-    // Remove Tashkeel (diacritics): Fatha, Damma, Kasra, Sukun, Shadda, Tanwin, etc.
-    // Range includes: 064B-065F (Tashkeel) and 0670 (Superscript Alef)
-    return text.replace(/[\u064B-\u065F\u0670]/g, '');
+    
+    // 1. Remove Tashkeel (diacritics)
+    let normalized = text.replace(/[\u064B-\u065F\u0670]/g, '');
+
+    // 2. Normalize Alef forms (أ, إ, آ -> ا)
+    normalized = normalized.replace(/[أإآ]/g, 'ا');
+
+    // 3. Normalize Taa Marbuta (ة -> ه) - Optional but helps in search
+    // normalized = normalized.replace(/ة/g, 'ه'); 
+    // keeping ة distinct from ه is often better for exactness, 
+    // but for "fuzzy" search often users type ه instead of ة.
+    // Let's normalize ة to ه for search purposes to be safe.
+    normalized = normalized.replace(/ة/g, 'ه');
+
+    // 4. Normalize Yaa (ى -> ي)
+    normalized = normalized.replace(/ى/g, 'ي');
+
+    return normalized;
 }
 
 // --- Toast System ---
@@ -242,6 +257,26 @@ if (typeof window !== 'undefined') {
         resizeTimer = setTimeout(() => TextSizeManager.autoApply(), 200);
     });
 }
+
+// --- Haptic Feedback Manager ---
+
+export const HapticManager = {
+    vibrate(pattern: number | number[] = 10) {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(pattern);
+            } catch (e) {
+                // Silently fail if not supported or blocked
+            }
+        }
+    },
+    
+    light() { this.vibrate(10); },
+    medium() { this.vibrate(20); },
+    heavy() { this.vibrate([10, 30, 10]); },
+    success() { this.vibrate([10, 50, 10]); },
+    error() { this.vibrate([50, 100, 50]); }
+};
 
 // --- Theme Manager ---
 

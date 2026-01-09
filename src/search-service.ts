@@ -8,6 +8,8 @@ export interface SearchResult {
     arabic: string;
     forms?: string;
     gender?: string;
+    definition?: string;
+    example?: string;
 }
 
 export interface SearchStats {

@@ -97,11 +97,11 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
     if (showEndScreen) {
         return (
-            <div style={quizStyles.overlay}>
+            <div style={quizStyles.inlineContainer}>
                 <div style={quizStyles.modal}>
-                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>🎉 Klart!</h2>
-                    <p style={{ fontSize: '1.2rem', marginBottom: '20px' }}>Ditt resultat: {score} / {questions.length}</p>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <h2 style={{ fontSize: '2rem', marginBottom: '10px', color: '#fff' }}>🎉 Klart!</h2>
+                    <p style={{ fontSize: '1.2rem', marginBottom: '20px', color: '#fff' }}>Ditt resultat: {score} / {questions.length}</p>
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                         <button onClick={startGame} style={quizStyles.primaryBtn}>Spela igen</button>
                         <button onClick={onClose} style={quizStyles.secondaryBtn}>Stäng</button>
                     </div>
@@ -114,7 +114,7 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
     if (!current) return null;
 
     return (
-        <div style={quizStyles.overlay}>
+        <div style={quizStyles.inlineContainer}>
             <div style={quizStyles.modal}>
                 <div style={quizStyles.header}>
                     <span>Fråga {currentIndex + 1} / {questions.length}</span>
@@ -164,14 +164,14 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 };
 
 const quizStyles: { [key: string]: React.CSSProperties } = {
-    overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
-    modal: { background: '#1c1c1e', width: '100%', maxWidth: '450px', borderRadius: '24px', padding: '24px', border: '1px solid #333', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', position: 'relative', textAlign: 'center' },
+    inlineContainer: { width: '100%', padding: '20px', display: 'flex', justifyContent: 'center' },
+    modal: { background: '#1c1c1e', width: '100%', maxWidth: '450px', borderRadius: '24px', padding: '24px', border: '1px solid #333', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', position: 'relative', textAlign: 'center' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', color: '#888', fontSize: '0.9rem' },
     closeBtn: { background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' },
     progressBar: { width: '100%', height: '6px', background: '#333', borderRadius: '3px', marginBottom: '25px', overflow: 'hidden' },
     progressFill: { height: '100%', background: '#3b82f6', transition: 'width 0.3s ease' },
     questionCard: { marginBottom: '30px' },
-    questionText: { fontSize: '2.2rem', fontWeight: '900', color: '#fff', margin: '0 0 10px 0' },
+    questionText: { fontSize: '2rem', fontWeight: '900', color: '#fff', margin: '0 0 10px 0' },
     speakBtn: { background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', color: '#fff', cursor: 'pointer', fontSize: '1.2rem' },
     optionsGrid: { display: 'grid', gridTemplateColumns: '1fr', gap: '12px', marginBottom: '20px' },
     optionBtn: { padding: '16px', borderRadius: '16px', border: '1px solid #444', background: '#2c2c2e', color: '#fff', fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' },

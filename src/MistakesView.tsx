@@ -1,6 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { mistakesManager, MistakeEntry } from './mistakes-review';
 import { TTSManager } from './tts';
+import { HapticManager } from './utils';
+
+const MistakeCard = ({ entry, onLearned, onSpeak }: { entry: MistakeEntry, onLearned: (w: string) => void, onSpeak: (w: string) => void }) => {
+    return (
+        <div className="card compact-card premium-card" style={{ 
+            marginBottom: '12px', 
+            borderLeft: '7px solid #ef4444',
+            background: 'rgba(28, 28, 30, 0.6)',
+            backdropFilter: 'blur(10px)',
+            padding: '12px 16px',
+            minHeight: 'auto',
+            height: 'auto'
+        }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span className="grammar-badge" style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.65rem' }}>
+                    MISSTAG ({entry.attempts}x)
+                </span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="action-button audio-btn" onClick={() => onSpeak(entry.word)} style={{ color: '#ef4444', width: '28px', height: '28px', minWidth: '28px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    </button>
+                    <button className="action-button learned-btn" onClick={() => onLearned(entry.word)} style={{ color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)', width: '28px', height: '28px', minWidth: '28px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div className="word-swe" style={{ fontSize: '1.1rem', color: '#fff' }}>{entry.word}</div>
+                <div className="word-arb" dir="rtl" style={{ fontSize: '1rem', color: '#fff', opacity: 0.9 }}>{entry.translation}</div>
+                <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>Från: {entry.game}</div>
+            </div>
+        </div>
+    );
+};
 
 export const MistakesView: React.FC = () => {
     const [mistakes, setMistakes] = useState<MistakeEntry[]>([]);
@@ -12,118 +46,95 @@ export const MistakesView: React.FC = () => {
 
     useEffect(() => {
         loadMistakes();
-        
-        // Listen for changes (mistakesManager might be updated from outside React)
-        const interval = setInterval(loadMistakes, 2000);
+        const interval = setInterval(loadMistakes, 5000);
         return () => clearInterval(interval);
     }, []);
 
     const handleMarkLearned = (word: string) => {
+        HapticManager.medium();
         mistakesManager.markAsLearned(word);
         loadMistakes();
     };
 
     const handleSpeak = (word: string) => {
+        HapticManager.light();
         TTSManager.speak(word, 'sv');
     };
 
-    if (mistakes.length === 0) {
-        return (
-            <div style={styles.container}>
-                <div style={styles.glassContainer}>
-                    <div style={{ fontSize: '5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.4))' }}>🏆</div>
-                    <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: '800', marginBottom: '10px', lineHeight: 1.2 }}>
-                        Great job! <br/>
-                        <span style={{ color: '#10b981' }}>You have cleared all your mistakes.</span>
-                    </h2>
-                    <p style={{ color: '#aaa', fontSize: '1.1rem', maxWidth: '300px', margin: '0 auto' }}>
-                        Keep playing to learn more words and expand your vocabulary.
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    if (mistakes.length === 0) return null;
 
     if (!isExpanded) {
         return (
-            <div style={styles.container}>
+            <div style={{ marginBottom: '20px' }}>
                 <button 
-                    style={styles.expandToggleBtn} 
-                    onClick={() => setIsExpanded(true)}
+                    onClick={() => { HapticManager.light(); setIsExpanded(true); }}
+                    style={{
+                        width: '100%',
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        borderRadius: '18px',
+                        padding: '14px 20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        backdropFilter: 'blur(10px)'
+                    }}
                 >
-                    <span style={{ fontSize: '1.5rem' }}>🎯</span>
+                    <span style={{ fontSize: '1.2rem' }}>🎯</span>
                     <div style={{ textAlign: 'left' }}>
-                        <div style={{ fontWeight: '800', fontSize: '1.1rem' }}>Mina Fel ({mistakes.length} ord)</div>
-                        <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Visa ord du missat / عرض الكلمات التي أخطأت بها</div>
+                        <div style={{ fontWeight: '800', fontSize: '1rem' }}>Mina Fel ({mistakes.length})</div>
+                        <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>Öva på ord du missat</div>
                     </div>
-                    <span style={{ marginLeft: 'auto', fontSize: '1.2rem' }}>▼</span>
+                    <span style={{ marginLeft: 'auto', color: '#ef4444' }}>Visa</span>
                 </button>
             </div>
         );
     }
 
     return (
-        <div style={{...styles.container, animation: 'fadeIn 0.3s ease-out'}}>
-            <div style={styles.header}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <h2 style={styles.title}>
-                            <span style={{ marginRight: '10px' }}>🎯</span>
-                            Mina Fel / مراجعة أخطائي
-                        </h2>
-                        <button 
-                            style={styles.collapseBtn}
-                            onClick={() => setIsExpanded(false)}
-                        >
-                            Dölj / إخفاء ▲
-                        </button>
-                    </div>
-                    <button 
-                        style={styles.practiceBtn}
-                        onClick={() => window.location.href = '/games/flashcards.html?mode=review'}
-                    >
-                        Practice Mistakes 🎯 تمرن على أخطائك
-                    </button>
+        <div style={{ marginBottom: '25px', animation: 'fadeIn 0.3s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Mina Fel</h3>
+                    <span style={{ background: '#ef4444', color: '#fff', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>{mistakes.length}</span>
                 </div>
-                <div style={styles.badge}>{mistakes.length} ord</div>
+                <button 
+                    onClick={() => { HapticManager.light(); setIsExpanded(false); }}
+                    style={{ background: 'transparent', border: 'none', color: '#666', fontSize: '0.8rem', cursor: 'pointer' }}
+                >
+                    Dölj
+                </button>
             </div>
 
-            <div style={styles.grid}>
-                {mistakes.map((m) => {
-                    const priorityScore = m.attempts * 20;
-                    return (
-                        <div key={m.word} style={styles.card}>
-                            <div style={styles.cardHeader}>
-                                <div style={styles.wordInfo}>
-                                    <div style={styles.swedish} onClick={() => handleSpeak(m.word)}>
-                                        {m.word} <span style={{ fontSize: '1rem', cursor: 'pointer' }}>🔊</span>
-                                    </div>
-                                    <div dir="rtl" style={styles.translation}>{m.translation}</div>
-                                </div>
-                                <div style={{
-                                    ...styles.priorityBadge,
-                                    backgroundColor: priorityScore > 50 ? '#ef4444' : '#f59e0b'
-                                }}>
-                                    {priorityScore} pts
-                                </div>
-                            </div>
+            <button 
+                onClick={() => { HapticManager.medium(); window.location.href = 'games/flashcards.html?mode=review'; }}
+                style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    fontWeight: 'bold',
+                    marginBottom: '15px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+                }}
+            >
+                Starta Snabb-Repetition 🎯
+            </button>
 
-                            <div style={styles.cardFooter}>
-                                <div style={styles.meta}>
-                                    <span>❌ {m.attempts} missar</span>
-                                    <span style={{ margin: '0 8px' }}>•</span>
-                                    <span>🎮 {m.game}</span>
-                                </div>
-                                <button 
-                                    style={styles.learnedBtn}
-                                    onClick={() => handleMarkLearned(m.word)}
-                                >
-                                    ✅ I know this
-                                </button>
-                            </div>
-                        </div>
-                    );
-                })}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {mistakes.slice(0, 5).map(m => (
+                    <MistakeCard key={m.word} entry={m} onLearned={handleMarkLearned} onSpeak={handleSpeak} />
+                ))}
+                {mistakes.length > 5 && (
+                    <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#666', marginTop: '5px' }}>
+                        + {mistakes.length - 5} fler misstag...
+                    </div>
+                )}
             </div>
         </div>
     );

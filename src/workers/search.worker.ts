@@ -1,13 +1,12 @@
 // src/workers/search.worker.ts
 
-import { normalizeArabic } from '../utils'; // Will need to ensure utils is pure or duplicate normalizeArabic here if utils has DOM deps.
-// To avoid importing utils which might have DOM deps, let's copy normalizeArabic or use a separate file.
-// For safety, I'll copy normalizeArabic here.
-
 function normalizeArabicWorker(text: string): string {
     if (!text) return '';
-    // Remove Tashkeel (diacritics)
-    return text.replace(/[\u064B-\u065F\u0670]/g, '');
+    let normalized = text.replace(/[\u064B-\u065F\u0670]/g, '');
+    normalized = normalized.replace(/[أإآ]/g, 'ا');
+    normalized = normalized.replace(/ة/g, 'ه');
+    normalized = normalized.replace(/ى/g, 'ي');
+    return normalized;
 }
 
 export interface SearchResult {
@@ -30,25 +29,41 @@ export interface SearchResultWithStats {
     stats: SearchStats;
 }
 
+// Optimization: Pre-calculated index
+let searchIndex: { swe: string, arb: string }[] = [];
+
 self.onmessage = (e: MessageEvent) => {
-    const { type, payload } = e.data;
+    try {
+        const { type, payload } = e.data;
 
-    if (type === 'INIT_DATA') {
-        // Store data globally in worker scope
-        (self as any).dictionaryData = payload;
-        self.postMessage({ type: 'DATA_LOADED' });
-    } else if (type === 'SEARCH') {
-        const { options, favIds } = payload;
-        const data = (self as any).dictionaryData || [];
-        
-        if (data.length === 0) {
-             // If no data yet, return empty
-             self.postMessage({ type: 'SEARCH_RESULT', payload: { results: [], stats: { total: 0, types: {}, categories: {} } } });
-             return;
+        if (type === 'INIT_DATA') {
+            const data = payload as any[][];
+            (self as any).dictionaryData = data;
+            
+            // Build Index
+            searchIndex = data.map(row => ({
+                swe: (row[2] || '').toLowerCase(),
+                arb: normalizeArabicWorker(row[3] || '').toLowerCase()
+            }));
+
+            self.postMessage({ type: 'DATA_LOADED' });
+        } else if (type === 'SEARCH') {
+            const { options, favIds } = payload;
+            const data = (self as any).dictionaryData || [];
+            
+            if (data.length === 0) {
+                 self.postMessage({ type: 'SEARCH_RESULT', payload: { results: [], stats: { total: 0, types: {}, categories: {} } } });
+                 return;
+            }
+
+            console.log(`Worker searching for: "${options.query}" in ${data.length} words...`);
+            const results = searchWithStats(data, options, favIds);
+            console.log(`Worker found ${results.results.length} matches.`);
+            self.postMessage({ type: 'SEARCH_RESULT', payload: results });
         }
-
-        const results = searchWithStats(data, options, favIds);
-        self.postMessage({ type: 'SEARCH_RESULT', payload: results });
+    } catch (error: any) {
+        console.error('Worker Search Error:', error);
+        self.postMessage({ type: 'ERROR', payload: error.message });
     }
 };
 
@@ -56,7 +71,6 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     const { query, mode, type, sort } = options;
     const normalizedQuery = normalizeArabicWorker(query.trim().toLowerCase());
     
-    // Stats containers
     const stats: SearchStats = {
         total: 0,
         types: {},
@@ -65,36 +79,38 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     
     const isBrowsing = mode === 'favorites' || type !== 'all';
     const hasQuery = !!normalizedQuery;
+    const favSet = mode === 'favorites' ? new Set(favIdsList) : null;
 
     let allMatches: any[][] = [];
-    let candidateData = data;
-    
-    if (mode === 'favorites') {
-        const favSet = new Set(favIdsList);
-        candidateData = data.filter(row => favSet.has(row[0].toString()));
-    }
 
-    for (const row of candidateData) {
-        const rawType = (row[1] || '').toLowerCase();
+    // Use loop with index access for performance
+    for (let i = 0; i < data.length; i++) {
+        const row = data[i];
         
-        // 1. Query Match
+        // 1. Favorites Filter (Fastest check)
+        if (favSet && !favSet.has(row[0].toString())) continue;
+
+        // 2. Query Match (Using Index)
         let matchesQuery = false;
         if (hasQuery) {
-            const swe = row[2].toLowerCase();
-            const arb = normalizeArabicWorker(row[3] || '').toLowerCase();
+            const idx = searchIndex[i];
+            if (!idx) continue; // Safety
+
             const q = normalizedQuery;
             
-            if (mode === 'start') matchesQuery = swe.startsWith(q) || arb.startsWith(q);
-            else if (mode === 'end') matchesQuery = swe.endsWith(q) || arb.endsWith(q);
-            else if (mode === 'exact') matchesQuery = swe === q || arb === q;
-            else matchesQuery = swe.includes(q) || arb.includes(q);
+            if (mode === 'start') matchesQuery = idx.swe.startsWith(q) || idx.arb.startsWith(q);
+            else if (mode === 'end') matchesQuery = idx.swe.endsWith(q) || idx.arb.endsWith(q);
+            else if (mode === 'exact') matchesQuery = idx.swe === q || idx.arb === q;
+            else matchesQuery = idx.swe.includes(q) || idx.arb.includes(q);
         } else {
             matchesQuery = true;
         }
 
         if (!matchesQuery) continue;
 
-        // 2. Type Stats
+        const rawType = (row[1] || '').toLowerCase();
+
+        // 3. Type Stats
         stats.types['all'] = (stats.types['all'] || 0) + 1;
 
         if (rawType.includes('subst') || rawType === 'noun') stats.types['subst'] = (stats.types['subst'] || 0) + 1;
@@ -110,13 +126,12 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
         if (rawType.includes('medicin')) stats.types['medicin'] = (stats.types['medicin'] || 0) + 1;
         if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data') || rawType.includes('dator')) stats.types['it'] = (stats.types['it'] || 0) + 1;
 
-        // 4. Filter Results
+        // 4. Type Filter
         if (!hasQuery && !isBrowsing) continue;
 
         let includeInResults = true;
         if (type !== 'all') {
              let matchesType = false;
-             
              if (type === 'subst' && (rawType.includes('subst') || rawType === 'noun')) matchesType = true;
              else if (type === 'verb' && rawType.includes('verb')) matchesType = true;
              else if (type === 'adj' && rawType.includes('adj')) matchesType = true;
@@ -125,7 +140,6 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
              else if (type === 'pron' && rawType.includes('pron')) matchesType = true;
              else if (type === 'konj' && rawType.includes('konj')) matchesType = true;
              else if (type === 'fras' && (rawType.includes('fras') || rawType.includes('uttin') || rawType.includes('idiom'))) matchesType = true;
-             
              else if (type === 'juridik' && rawType.includes('juridik')) matchesType = true;
              else if (type === 'medicin' && rawType.includes('medicin')) matchesType = true;
              else if (type === 'it' && (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data') || rawType.includes('dator'))) matchesType = true;
@@ -140,8 +154,15 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     
     stats.total = allMatches.length;
 
+    const MAX_RESULTS = 1000;
+
     // Sort
     allMatches.sort((a, b) => {
+         // Using the original data (a and b are rows)
+         // We can recreate the index access if we had indices, but here we have the rows.
+         // Optimization: We could store the normalized values in the row or use the index if we passed indices.
+         // For now, re-normalizing for sort is acceptable as result set is small (max 1000).
+         
          const aSwe = a[2].toLowerCase();
          const bSwe = b[2].toLowerCase();
          
@@ -171,13 +192,14 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
          return aSwe.length - bSwe.length;
     });
 
-    const MAX_RESULTS = 1000;
     const slicedResults = allMatches.slice(0, MAX_RESULTS).map(row => ({
         id: row[0],
         type: row[1],
         swedish: row[2],
         arabic: row[3],
         forms: row[6],
+        definition: row[5],
+        example: row[7],
         gender: row[13]
     }));
 

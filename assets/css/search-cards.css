@@ -11,9 +11,9 @@
     justify-content: space-between;
     padding: 10px 14px;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 7px solid #FF0000;
     /* Dynamic Left Border Override */
-    border-left: 5px solid var(--glow-color, #ccc) !important;
+    border-left: 7px solid var(--glow-color, #ccc) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;

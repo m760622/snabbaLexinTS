@@ -1,843 +1,439 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import * as ReactWindow from 'react-window';
-import { AutoSizer } from 'react-virtualized-auto-sizer';
-import { SearchService, SearchResult, SearchStats } from './search-service';
-
-const List = (ReactWindow as any).FixedSizeList;
-const AutoSizerComponent = AutoSizer as any;
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { SearchResult, SearchStats } from './search-service';
 import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
-import { showToast, TextSizeManager, VoiceSearchManager } from './utils';
+import { showToast, ThemeManager, HapticManager } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
 import { DetailsView } from './DetailsView';
 import { QuizComponent } from './components/QuizComponent';
 import { DailyCard } from './components/DailyCard';
 import { MistakesView } from './MistakesView';
+import { QuizStats } from './quiz-stats';
+import { Achievements } from './achievements';
+// @ts-ignore
+import FullSettings from './views/Settings/FullSettings';
 
-// --- Constants & Types ---
-interface FilterOption {
-  value: string;
-  labelSv: string;
-  labelAr: string;
-  countKey?: string;
+// --- Error Boundary ---
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: any) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: any, info: any) { console.error("HomeView Crash:", error, info); }
+  render() {
+    if (this.state.hasError) return (
+        <div style={{padding: 40, textAlign: 'center', backgroundColor: '#121212', height: '100vh', color: 'white'}}>
+            <h2 style={{color: '#ff4d4d'}}>Något gick fel</h2>
+            <button onClick={() => window.location.reload()} style={{padding: '10px 20px', background: '#3b82f6', border: 'none', borderRadius: '8px', color: 'white', marginTop: '20px'}}>Ladda om</button>
+        </div>
+    );
+    return this.props.children;
+  }
 }
 
-const MODES: FilterOption[] = [
-  { value: 'all', labelSv: 'Alla', labelAr: 'الكل' },
-  { value: 'start', labelSv: 'Börjar med', labelAr: 'يبدأ بـ' },
-  { value: 'end', labelSv: 'Slutar med', labelAr: 'ينتهي بـ' },
-  { value: 'exact', labelSv: 'Exakt', labelAr: 'مطابق' },
-  { value: 'favorites', labelSv: 'Favoriter', labelAr: 'المفضلة' },
-];
+// --- UI Components ---
 
-const SORTS: FilterOption[] = [
-  { value: 'relevance', labelSv: 'Relevans', labelAr: 'الأكثر صلة' },
-  { value: 'richness', labelSv: 'Mest info', labelAr: 'الأغنى محتوى' },
-  { value: 'alpha_asc', labelSv: 'A-Ö', labelAr: 'أ-ي' },
-  { value: 'alpha_desc', labelSv: 'Ö-A', labelAr: 'ي-أ' },
-  { value: 'last_char', labelSv: 'Sista bokstav', labelAr: 'الحرف الأخير' },
-];
+const PremiumBackground = () => (
+    <div className="premium-bg">
+        <div className="orb-container">
+            <div className="premium-orb orb-blue"></div>
+            <div className="premium-orb orb-purple"></div>
+            <div className="premium-orb orb-gold"></div>
+        </div>
+    </div>
+);
 
-const TYPES: FilterOption[] = [
-  { value: 'all', labelSv: 'Alla typer', labelAr: 'كل الأنواع', countKey: 'all' },
-  { value: 'subst', labelSv: 'Substantiv', labelAr: 'اسم', countKey: 'subst' },
-  { value: 'verb', labelSv: 'Verb', labelAr: 'فعل', countKey: 'verb' },
-  { value: 'adj', labelSv: 'Adjektiv', labelAr: 'صفة', countKey: 'adj' },
-  { value: 'adv', labelSv: 'Adverb', labelAr: 'حال', countKey: 'adv' },
-  { value: 'prep', labelSv: 'Preposition', labelAr: 'حرف جر', countKey: 'prep' },
-  { value: 'pron', labelSv: 'Pronomen', labelAr: 'ضمير', countKey: 'pron' },
-  { value: 'konj', labelSv: 'Konjunktion', labelAr: 'أداة عطف', countKey: 'konj' },
-  { value: 'fras', labelSv: 'Fras/Uttryck', labelAr: 'عبارة', countKey: 'fras' },
-  { value: 'juridik', labelSv: '⚖️ Juridik', labelAr: 'قانون', countKey: 'juridik' },
-  { value: 'medicin', labelSv: '🏥 Medicin', labelAr: 'طب', countKey: 'medicin' },
-  { value: 'it', labelSv: '💻 IT/Teknik', labelAr: 'تقنية', countKey: 'it' },
-];
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-}
-
-// --- WordCard (Memoized) ---
-const WordCard = React.memo(({ word, onClick }: { word: SearchResult; onClick: () => void }) => {
-  const [isFav, setIsFav] = useState(false);
+const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }: any) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  if (!word) return null;
+  
   const typeInfo = TypeColorSystem.detect(word.type, word.swedish, word.forms, word.gender, word.arabic);
-  const primaryColor = typeInfo.color.primary;
-  const typeLabel = typeInfo.color.label.sv; 
-
-  useEffect(() => {
-    setIsFav(FavoritesManager.has(word.id.toString()));
-    const unsub = FavoritesManager.onChange((id, status) => {
-        if (id === word.id.toString()) setIsFav(status);
-    });
-    return unsub;
-  }, [word.id]);
-
+  const dataType = TypeColorSystem.getDataType(word.type, word.swedish, word.forms, word.gender, word.arabic);
+  const primaryColor = typeInfo?.color?.primary || accentColor;
+  
   const handleSpeak = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isPlaying) return;
+    e.stopPropagation(); if (isPlaying) return;
+    HapticManager.light();
     setIsPlaying(true);
-    try { await TTSManager.speak(word.swedish, 'sv'); } catch (err) { console.error("TTS Error", err); } finally { setIsPlaying(false); }
-  };
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const textToCopy = `${word.swedish} - ${word.arabic}`;
-
-    try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(textToCopy);
-            showToast('Kopierat / تم النسخ 📋');
-        } else {
-            throw new Error('Clipboard API unavailable');
-        }
-    } catch (err) {
-        try {
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            textArea.style.top = "0";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            if (successful) showToast('Kopierat / تم النسخ 📋');
-        } catch (fallbackErr) {
-            showToast('Kunde inte kopiera / تعذر النسخ ❌');
-        }
-    }
+    try { await TTSManager.speak(word.swedish, 'sv'); } catch (err) {} 
+    finally { setTimeout(() => setIsPlaying(false), 1500); }
   };
 
   const handleFav = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    FavoritesManager.toggle(word.id.toString());
+      e.stopPropagation();
+      HapticManager.medium();
+      onToggleFav(word.id.toString());
   };
 
   return (
     <div 
-        style={{ ...styles.card, borderLeft: `5px solid ${primaryColor}` }} 
-        onClick={onClick}
+      className="card compact-card premium-card" 
+      onClick={onClick} 
+      data-type={dataType}
+      style={{ 
+        margin: '0 20px 15px 20px', 
+        borderColor: `${accentColor}11`,
+        background: 'rgba(28, 28, 30, 0.6)',
+        backdropFilter: 'blur(10px)'
+      }}
     >
-      <div style={styles.cardContent}>
-        <div style={styles.cardTopRow}>
-            <span style={{
-                ...styles.wordTypeBadge, 
-                color: primaryColor, 
-                borderColor: primaryColor
-            }}>
-                {typeLabel}
-            </span>
-
-            <div style={styles.actionRow}>
-                <button 
-                    style={{
-                        ...styles.actionBtn, 
-                        color: isPlaying ? '#3b82f6' : '#8e8e93',
-                        transform: isPlaying ? 'scale(1.1)' : 'scale(1)',
-                        transition: 'all 0.2s ease'
-                    }} 
-                    onClick={handleSpeak} 
-                    aria-label="Lyssna"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                </button>
-                <button style={styles.actionBtn} onClick={handleCopy} aria-label="Kopiera">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-                <button 
-                    style={{...styles.actionBtn, color: isFav ? '#F59E0B' : '#8e8e93'}} 
-                    onClick={handleFav} 
-                    aria-label="Spara"
-                >
-                    {isFav ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" strokeWidth="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    )}
-                </button>
-            </div>
-        </div>
-
-        <div style={styles.cardMainContent}>
-            <div style={{...styles.swedish, viewTransitionName: `word-swe-${word.id}` as any}}>{word.swedish}</div>
-            {word.forms && <div style={styles.forms}>{word.forms}</div>}
-            <div dir="rtl" style={{...styles.arabic, viewTransitionName: `word-arb-${word.id}` as any}}>{word.arabic}</div>
-        </div>
+      <div className="card-top-row">
+          <span className={`grammar-badge type-${dataType}`} style={{ color: primaryColor, borderColor: primaryColor }}>
+            {typeInfo?.color?.label?.sv || word.type}
+          </span>
+          <div className="card-actions">
+              {isPlaying && (
+                <div className="waveform wave-active" style={{marginRight: '8px'}}>
+                  <div className="wave-bar" style={{backgroundColor: accentColor}}></div>
+                  <div className="wave-bar" style={{backgroundColor: accentColor}}></div>
+                  <div className="wave-bar" style={{backgroundColor: accentColor}}></div>
+                </div>
+              )}
+              <button className="action-button audio-btn" onClick={handleSpeak} style={{ color: primaryColor }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              </button>
+              <button className="action-button fav-btn" onClick={handleFav} style={{ color: isFav ? '#F59E0B' : '#8e8e93' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+          </div>
+      </div>
+      
+      <div className="card-main-content">
+          <div className="word-swe" style={{ fontSize: 'calc(1.2rem * var(--app-font-scale, 1))' }}>{word.swedish}</div>
+          {word.forms && <div className="ghost-forms">{word.forms}</div>}
+          <div className="word-arb" dir="rtl" style={{ fontSize: 'calc(1.1rem * var(--app-font-scale, 1))', color: '#fff', opacity: 0.9 }}>{word.arabic}</div>
+          
+          {(word.definition || word.example) && (
+              <div style={{marginTop: '4px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.8rem', color: '#888', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+                  {word.definition ? (
+                    <><span style={{marginRight: '4px'}}>📝</span>{word.definition}</>
+                  ) : (
+                    <><span style={{marginRight: '4px'}}>💡</span>{word.example}</>
+                  )}
+              </div>
+          )}
       </div>
     </div>
   );
-});
+}, (p, n) => p.word.id === n.word.id && p.isFav === n.isFav && p.accentColor === n.accentColor);
 
-export const HomeView: React.FC = () => {
+// --- Sub Views ---
+
+const GamesView = () => {
+    const games = [
+        { id: 'flashcards', name: 'Minneskort', ar: 'بطاقات الذاكرة', icon: '🃏', path: 'games/flashcards.html' },
+        { id: 'hangman', name: 'Hangman', icon: '👤', path: 'games/hangman.html' },
+        { id: 'word_search', name: 'Sökord', icon: '🔍', path: 'games/word_search.html' },
+        { id: 'memory', name: 'Memory', icon: '🧩', path: 'games/memory.html' },
+    ];
+    return (
+        <div style={{padding: '20px'}} className="tab-content-active">
+            <h2 style={{fontSize: '1.5rem', marginBottom: '20px', textAlign: 'center'}}>Spelzon</h2>
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px'}}>
+                {games.map(game => (
+                    <div key={game.id} style={styles.menuCard} onClick={() => { HapticManager.light(); window.location.href = game.path; }} className="premium-card">
+                        <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>{game.icon}</div>
+                        <div style={{fontWeight: 'bold', color: '#fff'}}>{game.name}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const LearnView = () => {
+    const modules = [
+        { id: 'quran', name: 'Koranord', icon: '📖', path: 'learn/quran.html' },
+        { id: 'asma', name: '99 Namn', icon: '📿', path: 'learn/asma_ul_husna.html' },
+    ];
+    return (
+        <div style={{padding: '20px'}} className="tab-content-active">
+            <h2 style={{fontSize: '1.5rem', marginBottom: '20px', textAlign: 'center'}}>Lär dig</h2>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                {modules.map(mod => (
+                    <div key={mod.id} style={{...styles.menuCard, flexDirection: 'row', gap: '20px'}} onClick={() => { HapticManager.light(); window.location.href = mod.path; }} className="premium-card">
+                        <div style={{fontSize: '2.2rem'}}>{mod.icon}</div>
+                        <div style={{fontWeight: 'bold', color: '#fff'}}>{mod.name}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+// --- Main Container ---
+
+const HomeViewInner: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [mode, setMode] = useState('all');
-  const [sort, setSort] = useState('relevance');
-  const [type, setType] = useState('all');
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isVoiceActive, setIsVoiceActive] = useState(false);
-  
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDataReady, setIsDataReady] = useState(false);
-
+  const [activeTab, setActiveTab] = useState('search'); 
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [stats, setStats] = useState<SearchStats | null>(null);
-  const [visibleLimit, setVisibleLimit] = useState(50); // Infinite scroll limit
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const observerTarget = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const [history, setHistory] = useState<string[]>([]);
+  const [isDataReady, setIsDataReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [favoritesSet, setFavoritesSet] = useState<Set<string>>(new Set());
+  const [selectedWordId, setSelectedWordId] = useState<number | null>(null);
+  const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [accentColor, setAccentColor] = useState('#3b82f6');
+  const [stats, setStats] = useState({ streak: 0, unlocked: 0, total: 0 });
+  
   const searchWorkerRef = useRef<Worker | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize Search Worker
-    searchWorkerRef.current = new Worker(new URL('./workers/search.worker.ts', import.meta.url), { type: 'module' });
-    
-    searchWorkerRef.current.onmessage = (e) => {
-        const { type, payload } = e.data;
-        if (type === 'SEARCH_RESULT') {
-            setResults(payload.results);
-            setStats(payload.stats);
-            setVisibleLimit(50); // Actually with virtual list this isn't strictly needed for limits but maybe for other logic
-            setIsLoading(false);
-            
-            // Cache stats
-            localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(payload.stats));
-        }
-    };
+      setFavoritesSet(new Set(FavoritesManager.getAll()));
+      setHistory(SearchHistoryManager.get());
+      const savedColor = localStorage.getItem('snabba_accent_color');
+      if (savedColor) setAccentColor(savedColor);
+      
+      const updateStats = () => {
+          const s = QuizStats.getStats();
+          const p = Achievements.getProgress();
+          setStats({ streak: s.currentStreak || 0, unlocked: p.unlocked, total: p.total });
+      };
+      updateStats();
 
-    return () => {
-        if (searchWorkerRef.current) {
-            searchWorkerRef.current.terminate();
-        }
-    };
+      const savedFontScale = localStorage.getItem('fontSizePercent');
+      if (savedFontScale) {
+          const scale = parseInt(savedFontScale) / 100;
+          document.documentElement.style.setProperty('--app-font-scale', String(scale));
+          document.documentElement.style.fontSize = `${16 * scale}px`;
+      }
+
+      return FavoritesManager.onChange((id, isFav) => {
+          setFavoritesSet(prev => { const next = new Set(prev); if (isFav) next.add(id); else next.delete(id); return next; });
+      });
   }, []);
 
   useEffect(() => {
-    const listEl = listRef.current;
-    if (!listEl) return;
-
-    const handleScroll = () => {
-      setShowScrollTop(listEl.scrollTop > 400);
-    };
-    listEl.addEventListener('scroll', handleScroll);
-    return () => listEl.removeEventListener('scroll', handleScroll);
-  }, [isDataReady]); // Re-bind when data is ready and listRef is attached
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && results.length > visibleLimit) {
-          setVisibleLimit((prev) => prev + 50);
+    const worker = new Worker(new URL('./workers/search.worker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = (e) => {
+        const { type, payload } = e.data;
+        if (type === 'SEARCH_RESULT') { 
+            setTimeout(() => { 
+              setResults(payload.results); 
+              setVisibleCount(20); // Reset count on new results
+              setIsLoading(false); 
+            }, 300);
         }
-      },
-      { 
-        threshold: 1.0,
-        root: listRef.current // Important for local scroll
-      }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
     };
-  }, [results.length, visibleLimit]);
+    searchWorkerRef.current = worker;
+    return () => worker.terminate();
+  }, []);
 
-  const scrollToTop = () => {
-    if (listRef.current) {
-        listRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-  
-  const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
-  const [history, setHistory] = useState<string[]>([]);
-  const [initialRestoreDone, setInitialRestoreDone] = useState(false);
-  const [selectedWordId, setSelectedWordId] = useState<number | null>(null);
-  
-  // Daily Content Settings
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [dailyConfig, setDailyConfig] = useState({
-      words: true, proverbs: true, idioms: true, quran: true, asma: true, cognates: true,
-      jokes: true, facts: true, grammar: true, slang: true
-  });
-
-  const [showQuiz, setShowQuiz] = useState(false);
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const STORAGE_KEY = 'snabbaLexin_home_state_v4';
-  const CONFIG_KEY = 'snabbaLexin_daily_config_v1';
-
-  // 1. Initialize
   useEffect(() => {
-    const savedStats = localStorage.getItem('snabbaLexin_stats_cache');
-    if (savedStats) { try { setStats(JSON.parse(savedStats)); } catch {} }
-
-    // Load Daily Config
-    const savedConfig = localStorage.getItem(CONFIG_KEY);
-    if (savedConfig) {
-        try { setDailyConfig(JSON.parse(savedConfig)); } catch {}
-    }
-
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-        try {
-            const parsed = JSON.parse(savedState);
-            setSearchTerm(parsed.searchTerm || '');
-            setMode(parsed.mode || 'all');
-            setType(parsed.type || 'all');
-            setSort(parsed.sort || 'relevance');
-            if (parsed.mode !== 'all' || parsed.type !== 'all') {
-                setIsFiltersOpen(true);
-            }
-            if (parsed.scrollY && listRef.current) {
-                setTimeout(() => {
-                    if (listRef.current) listRef.current.scrollTop = parsed.scrollY;
-                }, 150);
-            }
-        } catch {}
-    }
-    setInitialRestoreDone(true);
-    setHistory(SearchHistoryManager.get());
-
-    const checkData = () => {
+    const initData = () => {
       const data = (window as any).dictionaryData;
       if (data && data.length > 0) {
         setIsDataReady(true);
-        // Send data to worker once
-        if (searchWorkerRef.current) {
-            searchWorkerRef.current.postMessage({ type: 'INIT_DATA', payload: data });
-        }
-
-        // Use current config or default if not yet loaded (useEffect runs after render)
-        const config = savedConfig ? JSON.parse(savedConfig) : dailyConfig;
-        setDailyContent(DailyContentService.getRandomContent(data, config));
-      }
-    };
-    
-    checkData();
-    window.addEventListener('dictionaryLoaded', checkData);
-
-    const handleOpenQuiz = () => setShowQuiz(true);
-    window.addEventListener('openQuiz', handleOpenQuiz);
-
-    // Initialize Voice Search
-    if (VoiceSearchManager.isSupported()) {
-        VoiceSearchManager.init((transcript, isFinal) => {
-            if (transcript) {
-                setSearchTerm(transcript);
-                if (isFinal) {
-                    setIsVoiceActive(false);
-                    VoiceSearchManager.stop();
-                } else {
-                    setIsVoiceActive(true);
-                }
-            }
-        });
-    }
-
-    return () => {
-        window.removeEventListener('dictionaryLoaded', checkData);
-        window.removeEventListener('openQuiz', handleOpenQuiz);
-    };
-  }, []);
-
-  const toggleSource = (key: keyof typeof dailyConfig) => {
-      const newConfig = { ...dailyConfig, [key]: !dailyConfig[key] };
-      setDailyConfig(newConfig);
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(newConfig));
-      
-      // Refresh content immediately
-      const data = (window as any).dictionaryData;
-      if (data) {
-          setDailyContent(DailyContentService.getRandomContent(data, newConfig));
-      }
-  };
-
-  // 2. Persist State
-  useEffect(() => {
-      if (!initialRestoreDone) return;
-      const stateToSave = { 
-          searchTerm, 
-          mode, 
-          type, 
-          sort, 
-          scrollY: listRef.current ? listRef.current.scrollTop : 0 
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [searchTerm, mode, type, sort, initialRestoreDone]);
-
-  // 3. Search Logic
-  useEffect(() => {
-    if (!isDataReady) return;
-    
-    const performSearch = () => {
-      setIsLoading(true);
-      if (searchWorkerRef.current) {
-          const options = {
-            query: debouncedSearchTerm,
-            mode,
-            type,
-            sort
-          };
-          // Pass only necessary data
-          searchWorkerRef.current.postMessage({ 
-              type: 'SEARCH', 
-              payload: { 
-                  options, 
-                  favIds: FavoritesManager.getAll() 
-              } 
-          });
+        searchWorkerRef.current?.postMessage({ type: 'INIT_DATA', payload: data });
+        setDailyContent(DailyContentService.getRandomContent(data, { words: true, proverbs: true, idioms: true, quran: true }));
       }
     };
 
-    performSearch();
-  }, [debouncedSearchTerm, mode, type, sort, isDataReady]);
-
-  const handleResultClick = useCallback((id: number) => {
-    if (searchTerm.trim()) {
-      SearchHistoryManager.add(searchTerm.trim());
-      setHistory(SearchHistoryManager.get());
-    }
-    const stateToSave = { 
-        searchTerm, 
-        mode, 
-        type, 
-        sort, 
-        scrollY: listRef.current ? listRef.current.scrollTop : 0 
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    
-    // Switch to Details View with View Transition if supported
-    const changeView = () => {
-        setSelectedWordId(id);
-        window.history.pushState({ view: 'details', id }, '', `?id=${id}`);
-    };
-
-    if ((document as any).startViewTransition) {
-        (document as any).startViewTransition(changeView);
+    if ((window as any).dictionaryData) {
+      initData();
     } else {
-        changeView();
+      window.addEventListener('dictionaryLoaded', initData);
     }
-  }, [searchTerm, mode, type, sort]);
-
-  // Handle Back Button (PopState)
-  useEffect(() => {
-      const handlePopState = (e: PopStateEvent) => {
-          const update = () => {
-              if (e.state && e.state.view === 'details') {
-                  setSelectedWordId(e.state.id);
-              } else {
-                  setSelectedWordId(null);
-              }
-          };
-
-          if ((document as any).startViewTransition) {
-              (document as any).startViewTransition(update);
-          } else {
-              update();
-          }
-      };
-      window.addEventListener('popstate', handlePopState);
-      return () => window.removeEventListener('popstate', handlePopState);
+    
+    const h = () => setSelectedWordId(window.history.state?.id || null);
+    window.addEventListener('popstate', h);
+    return () => {
+      window.removeEventListener('dictionaryLoaded', initData);
+      window.removeEventListener('popstate', h);
+    };
   }, []);
 
-  const clearFilters = () => {
-    setMode('all'); setType('all'); setSort('relevance');
+  useEffect(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!isDataReady) return;
+    const mode = activeTab === 'favorites' ? 'favorites' : 'all';
+    if (!term && mode !== 'favorites') { setResults([]); return; }
+    setIsLoading(true);
+    searchWorkerRef.current?.postMessage({ 
+        type: 'SEARCH', 
+        payload: { options: { query: term, mode: mode, type: 'all', sort: 'relevance' }, favIds: Array.from(favoritesSet) } 
+    });
+  }, [searchTerm, activeTab, isDataReady, favoritesSet]);
+
+  const handleTabChange = (tab: string) => { 
+      HapticManager.light();
+      
+      const update = () => {
+          setActiveTab(tab); 
+          setSearchTerm(''); 
+          setVisibleCount(20);
+          window.scrollTo({ top: 0, behavior: 'smooth' }); 
+      };
+
+      if ((document as any).startViewTransition) {
+          (document as any).startViewTransition(update);
+      } else {
+          update();
+      }
   };
-  const hasActiveFilters = mode !== 'all' || type !== 'all' || sort !== 'relevance';
 
-  const FilterSelect = ({ label, value, options, onChange, icon, statsData }: any) => (
-    <div style={styles.selectWrapper}>
-      <div style={styles.selectLabel}>{icon} {label}</div>
-      <select value={value} onChange={(e) => onChange(e.target.value)} style={{...styles.selectInput, ...(value !== 'all' && value !== 'relevance' ? styles.selectActive : {})}}>
-        {options.map((opt: any) => {
-            let countLabel = '';
-            if (statsData && opt.countKey) {
-                const count = statsData.types[opt.countKey];
-                if (count > 0) countLabel = ` (${count.toLocaleString()})`;
-            }
-            return <option key={opt.value} value={opt.value}>{opt.labelSv}{countLabel}</option>
-        })}
-      </select>
-    </div>
-  );
-
-  const handleVoiceToggle = () => {
-    if (!VoiceSearchManager.isSupported()) {
-        showToast('Röstsökning stöds inte / البحث الصوتي غير مدعوم ❌');
-        return;
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    if (scrollTop + clientHeight >= scrollHeight - 300) {
+      if (visibleCount < results.length) {
+        setVisibleCount(prev => prev + 20);
+      }
     }
-    VoiceSearchManager.toggle();
-    setIsVoiceActive(!isVoiceActive);
-  };
+  }, [visibleCount, results.length]);
+
+  const handleWordClick = useCallback((id: number, word?: string) => {
+      HapticManager.light();
+      if (word) {
+          SearchHistoryManager.add(word);
+          setHistory(SearchHistoryManager.get());
+      }
+      const change = () => {
+          setSelectedWordId(id); 
+          window.history.pushState({view:'details',id},'',`?id=${id}`);
+      };
+      if ((document as any).startViewTransition) {
+          (document as any).startViewTransition(change);
+      } else {
+          change();
+      }
+  }, []);
+
+  if (activeTab === 'quiz') return <QuizComponent onClose={() => handleTabChange('search')} />;
+  if (selectedWordId) { return <ErrorBoundary><DetailsView wordId={selectedWordId} onBack={() => { setSelectedWordId(null); window.history.back(); }} /></ErrorBoundary>; }
 
   return (
     <div style={styles.container}>
-      {/* Backdrop for Focus Mode */}
-      {isSearchFocused && (
-          <div 
-            style={{
-                position: 'fixed',
-                inset: 0,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                backdropFilter: 'blur(3px)',
-                zIndex: 45, // Below header (50), above list
-                animation: 'fadeIn 0.2s'
-            }}
-            onClick={() => setIsSearchFocused(false)}
-          />
-      )}
-
-      {showQuiz && <QuizComponent onClose={() => setShowQuiz(false)} />}
-      
-      {/* Show Details View if a word is selected */}
-      {selectedWordId ? (
-          <DetailsView 
-              wordId={selectedWordId} 
-              onBack={() => {
-                  setSelectedWordId(null);
-                  window.history.back(); // Or just reset state if pushState wasn't used for internal nav
-              }} 
-          />
-      ) : (
-      <>
-      {/* Settings Modal */}
-      {isSettingsOpen && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)' }} onClick={() => setIsSettingsOpen(false)}>
-              <div style={{ background: '#1c1c1e', padding: '24px', borderRadius: '16px', width: '90%', maxWidth: '350px', border: '1px solid #333', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }} onClick={e => e.stopPropagation()}>
-                  <h3 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', color: '#fff', textAlign: 'center' }}>Inställningar / الإعدادات</h3>
-                  
-                  <div style={{ marginBottom: '20px' }}>
-                      <div style={{ color: '#888', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem' }}>Källor för Dagens Ord / المصادر</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.words} onChange={() => toggleSource('words')} /> Ord (كلمات)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.proverbs} onChange={() => toggleSource('proverbs')} /> Ordspråk (أمثال)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.idioms} onChange={() => toggleSource('idioms')} /> Idiom (عبارات)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.quran} onChange={() => toggleSource('quran')} /> Koran (قرآن)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.asma} onChange={() => toggleSource('asma')} /> Guds Namn (أسماء الله)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.cognates} onChange={() => toggleSource('cognates')} /> Liknelser (متشابهات)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.jokes} onChange={() => toggleSource('jokes')} /> Skämt (نكت)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.facts} onChange={() => toggleSource('facts')} /> Fakta (حقائق)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.grammar} onChange={() => toggleSource('grammar')} /> Grammatik (قواعد)
-                          </label>
-                          <label style={styles.checkboxLabel}>
-                              <input type="checkbox" checked={dailyConfig.slang} onChange={() => toggleSource('slang')} /> Slang (عامية)
-                          </label>
-                      </div>
-                  </div>
-
-                  <button onClick={() => setIsSettingsOpen(false)} style={{ width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
-                      Klar / تم
-                  </button>
-              </div>
-          </div>
-      )}
-
-      <div style={{...styles.header, transition: 'all 0.3s ease', paddingBottom: isSearchFocused ? '16px' : '8px' }}>
-        <div style={styles.searchRow}>
-            <div style={{...styles.searchContainer, transform: isSearchFocused ? 'scale(1.02)' : 'scale(1)', transition: 'transform 0.2s'}}>
-                <span style={{...styles.searchIcon, color: isSearchFocused ? '#0A84FF' : '#8e8e93'}}>🔍</span>
-                <input 
-                    type="text" 
-                    placeholder={isVoiceActive ? "Lyssnar... / أستمع..." : (isDataReady ? "Sök / بحث..." : "Laddar...")} 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                    onFocus={() => setIsSearchFocused(true)}
-                    // Delay blur to allow clicking history items
-                    onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                    style={{...styles.input, borderColor: isSearchFocused ? '#0A84FF' : 'transparent', borderWidth: '1px', borderStyle: 'solid'}} 
-                    disabled={!isDataReady} 
-                />
-                
-                {isDataReady && !isVoiceActive && !searchTerm && (
-                     <button 
-                        onClick={handleVoiceToggle} 
-                        style={{
-                            position: 'absolute', 
-                            right: '12px', 
-                            top: '50%', 
-                            transform: 'translateY(-50%)', 
-                            background: 'none', 
-                            border: 'none', 
-                            cursor: 'pointer',
-                            fontSize: '18px'
-                        }}
-                        aria-label="Röstsökning"
-                     >
-                        🎤
-                     </button>
-                )}
-
-                {isVoiceActive && (
-                    <div style={styles.spinner}></div>
-                )}
-                
-                {isDataReady && !isVoiceActive && !searchTerm && (
-                     <span style={{...styles.totalCountBadge, right: '40px'}}>
-                        {(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}
-                     </span>
-                )}
-
-                {isLoading && !isVoiceActive && <div style={styles.spinner}></div>}
-                
-                {searchTerm && !isLoading && (
-                    <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
-                )}
+      <PremiumBackground />
+      <div style={styles.header}>
+        <div style={styles.topBar}>
+            <button style={styles.iconBtn} onClick={() => { HapticManager.light(); setIsSettingsOpen(true); }}>⚙️</button>
+            <div style={{...styles.brandCapsule, boxShadow: `0 0 20px ${accentColor}33`, borderColor: `${accentColor}44`}}>Snabba Lexin</div>
+            <div style={{...styles.statsBadge, borderColor: `${accentColor}44`, gap: '8px'}} className="premium-card">
+                <span className="fire-active" title="Streak" aria-label={`Streak: ${stats.streak}`}>🔥 {stats.streak}</span>
+                <span style={{opacity: 0.3}}>|</span>
+                <span title="Achievements" aria-label={`Achievements: ${stats.unlocked}/${stats.total}`}>🏆 {stats.unlocked}</span>
             </div>
-            {!isSearchFocused && (
-                <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} style={{...styles.filterToggleBtn, ...(isFiltersOpen || hasActiveFilters ? styles.filterToggleActive : {})}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                </button>
-            )}
-            {isSearchFocused && (
-                 <button onClick={() => { setIsSearchFocused(false); setSearchTerm(''); }} style={{color: '#0A84FF', background: 'none', border: 'none', fontWeight: '600', padding: '0 8px', cursor: 'pointer'}}>
-                     Klar
-                 </button>
-            )}
         </div>
-        
-        {/* SMART SEARCH OVERLAY CONTENT */}
-        {isSearchFocused && !searchTerm && (
-            <div style={{padding: '0 16px', animation: 'slideInDown 0.2s'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
-                    <span style={{fontSize: '0.8rem', color: '#8e8e93', fontWeight: '600', textTransform: 'uppercase'}}>Senaste (الأخيرة)</span>
+        {(activeTab === 'search' || activeTab === 'favorites') && (
+            <div style={styles.searchRow}>
+                <div style={styles.searchBox}>
+                    <span style={styles.searchIconInside}>🔍</span>
+                    <input type="text" placeholder="Sök..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={styles.premiumInput} />
+                    {results.length > 0 && <span style={styles.resultCounterInside}>{results.length}x</span>}
+                </div>
+            </div>
+        )}
+      </div>
+      <div style={styles.contentArea}>
+        {isSettingsOpen && (
+            <FullSettings 
+                onClose={() => setIsSettingsOpen(false)} 
+                accentColor={accentColor} 
+                onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }} 
+            />
+        )}
+        <div style={styles.scrollList} key={activeTab} ref={scrollContainerRef} onScroll={handleScroll}>
+            {activeTab === 'search' && !searchTerm && (
+                <div style={{marginBottom: '20px', padding: '0 20px'}} className="tab-content-active">
+                    <MistakesView />
+                    {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setIsSettingsOpen(true)} />}
+                    
                     {history.length > 0 && (
-                        <button onClick={() => { SearchHistoryManager.clear(); setHistory([]); }} style={{fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer'}}>
-                            Rensa / مسح
-                        </button>
+                        <div style={{marginTop: '20px'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
+                                <h3 style={{fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px'}}>Senaste sökningar</h3>
+                                <button 
+                                    onClick={() => { SearchHistoryManager.clear(); setHistory([]); }}
+                                    style={{background: 'transparent', border: 'none', color: accentColor, fontSize: '0.8rem', cursor: 'pointer'}}
+                                >
+                                    Rensa
+                                </button>
+                            </div>
+                            <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                                {history.map((h, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => setSearchTerm(h)}
+                                        style={{
+                                            background: 'rgba(255,255,255,0.05)', 
+                                            border: '1px solid rgba(255,255,255,0.1)', 
+                                            padding: '8px 15px', 
+                                            borderRadius: '12px', 
+                                            color: '#fff', 
+                                            fontSize: '0.9rem',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {h}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
-                {history.length > 0 ? (
-                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
-                        {history.slice(0, 8).map((item, idx) => (
-                            <button key={idx} style={{...styles.historyChip, backgroundColor: '#2c2c2e', border: '1px solid #3a3a3c'}} onClick={() => setSearchTerm(item)}>
-                                🕒 {item}
-                            </button>
-                        ))}
-                    </div>
-                ) : (
-                    <div style={{textAlign: 'center', padding: '20px 0', color: '#636366', fontSize: '0.9rem'}}>
-                        <i>Ingen historik / لا يوجد سجل</i>
-                    </div>
-                )}
-            </div>
-        )}
-
-        {isFiltersOpen && !isSearchFocused && (
-            <div style={styles.filtersSection}>
-                <div style={styles.filtersGrid}>
-                    <FilterSelect label="Läge" icon="⚙️" value={mode} options={MODES} onChange={setMode} />
-                    <FilterSelect label="Sortering" icon="🔃" value={sort} options={SORTS} onChange={setSort} />
-                    <FilterSelect label="Typ" icon="📝" value={type} options={TYPES} onChange={setType} statsData={stats} />
-                </div>
-                {hasActiveFilters && <button onClick={clearFilters} style={styles.resetFiltersBtn}>Återställ filter / إعادة ضبط</button>}
-            </div>
-        )}
-        
-        {!isFiltersOpen && hasActiveFilters && !isSearchFocused && (
-             <div style={styles.activeFiltersRow}>
-                 {mode !== 'all' && <span style={styles.activeChip}>Mode: {mode}</span>}
-                 {type !== 'all' && <span style={styles.activeChip}>Typ: {type}</span>}
-             </div>
-        )}
-      </div>
-      
-      <div style={styles.list} ref={listRef}>
-        {!isDataReady && <div style={styles.emptyState}><p>Laddar lexikon...</p></div>}
-        
-        {isDataReady && !searchTerm && !hasActiveFilters && (
-            <>
-                <MistakesView />
-                {dailyContent && (
-                    <div style={{ marginBottom: '16px', animation: 'fadeIn 0.5s' }}>
-                        <DailyCard 
-                            content={dailyContent} 
-                            onOpenSettings={() => setIsSettingsOpen(true)}
-                        />
-                    </div>
-                )}
-            </>
-        )}
-
-        {isDataReady && results.length === 0 && !isLoading && !hasActiveFilters && !searchTerm && (
-            <div style={styles.historySection}>
-                {history.length > 0 ? (
-                     <div style={styles.historyGrid}>
-                        {history.map((item, idx) => (
-                            <button key={idx} style={styles.historyChip} onClick={() => setSearchTerm(item)}>🕒 {item}</button>
-                        ))}
-                     </div>
-                ) : (<div style={styles.emptyState}><p style={{opacity: 0.6}}>Sök efter ord...</p></div>)}
-            </div>
-        )}
-
-        {isDataReady && results.length === 0 && !isLoading && (searchTerm || hasActiveFilters) && (
-             <div style={styles.emptyState}><p>Inga resultat / لا توجد نتائج</p></div>
-        )}
-
-        {/* INFINITE SCROLL RENDER - VIRTUALIZED */}
-        {results.length > 0 ? (
-            <div style={{ flex: 1, height: '100%', width: '100%' }}>
-                <AutoSizerComponent>
-                    {({ height, width }: { height: number, width: number }) => (
-                        <List
-                            height={height}
-                            itemCount={results.length}
-                            itemSize={135} // Card height + margin
-                            width={width}
-                        >
-                            {({ index, style }: { index: number, style: React.CSSProperties }) => (
-                                <div style={{ ...style, paddingRight: '10px' }}>
-                                    <WordCard 
-                                        word={results[index]} 
-                                        onClick={() => handleResultClick(results[index].id)} 
-                                    />
-                                </div>
-                            )}
-                        </List>
+            )}
+            {(activeTab === 'search' || activeTab === 'favorites') && (
+                <div className="tab-content-active">
+                    {isLoading ? Array(5).fill(0).map((_, i) => <div key={i} style={{...styles.card, background: '#222', opacity: 0.5}} className="shimmer"></div>) : (
+                        <>
+                            {results.slice(0, visibleCount).map((word) => (
+                                <WordCard key={word.id} word={word} isFav={favoritesSet.has(word.id.toString())} onClick={() => handleWordClick(word.id, word.swedish)} onToggleFav={(id: string) => FavoritesManager.toggle(id)} accentColor={accentColor} />
+                            ))}
+                            {isDataReady && results.length === 0 && searchTerm && <div style={styles.emptyState}>Inga resultat</div>}
+                        </>
                     )}
-                </AutoSizerComponent>
-            </div>
-        ) : null}
-        
-        {/* Only show loader if we have results, otherwise List handles it? No, List handles existing results. Loader is for fetching. */}
-        {results.length === 0 && results.length > visibleLimit && (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>Laddar fler... / جاري تحميل المزيد...</div>
-        )}
-
-        {/* Physical spacer to push content above fixed Dock - Only needed for non-virtualized content */}
-        {!results.length && <div className='safe-area-spacer' style={{ height: '220px', width: '100%', flexShrink: 0 }}></div>}
+                </div>
+            )}
+            {activeTab === 'games' && <GamesView />}
+            {activeTab === 'learn' && <LearnView />}
+        </div>
       </div>
-
-      {showScrollTop && (
-          <button 
-            onClick={scrollToTop} 
-            style={styles.scrollTopBtn}
-            aria-label="Till toppen"
-          >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
-          </button>
-      )}
-      </>
-      )}
+      <div style={styles.dockContainer}>
+          <div style={styles.dock}>
+              {(['search', 'games', 'learn', 'favorites', 'quiz'] as const).map(tab => {
+                  const icons = { search: '🔍', games: '🎮', learn: '📚', favorites: '⭐', quiz: '⚡' };
+                  const isActive = activeTab === tab;
+                  return (
+                      <button key={tab} onClick={() => handleTabChange(tab)} style={{ ...styles.dockItem, backgroundColor: isActive ? `${accentColor}33` : 'transparent', color: isActive ? accentColor : '#fff', transform: isActive ? 'scale(1.1) translateY(-5px)' : 'scale(1)' }}>
+                          {icons[tab]}{isActive && <div style={{position: 'absolute', bottom: '5px', width: '4px', height: '4px', borderRadius: '50%', background: accentColor}} />}
+                      </button>
+                  );
+              })}
+          </div>
+      </div>
     </div>
   );
 };
 
-// Styles
 const styles: { [key: string]: React.CSSProperties } = {
-  container: { 
-    height: '100dvh', 
-    position: 'fixed',
-    inset: 0,
-    overflow: 'hidden',
-    backgroundColor: '#121212', 
-    color: '#fff', 
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
-    display: 'flex', 
-    flexDirection: 'column' 
-  },
-  header: { 
-    flexShrink: 0,
-    position: 'relative', 
-    zIndex: 50, 
-    backgroundColor: '#121212', 
-    borderBottom: '1px solid #333', 
-    paddingBottom: '8px',
-    paddingTop: 'max(12px, env(safe-area-inset-top))' 
-  },
-  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px 4px 16px', marginBottom: '4px' },
-  brandTitle: { fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#fff' },
-  settingsBtn: { background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  searchRow: { display: 'flex', alignItems: 'center', padding: '4px 16px 12px 16px', gap: '10px' },
-  searchContainer: { position: 'relative', flex: 1 },
-  searchIcon: { position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8e8e93', pointerEvents: 'none' },
-  input: { width: '100%', padding: '12px 90px 12px 40px', borderRadius: '12px', border: 'none', backgroundColor: '#2c2c2e', color: '#fff', fontSize: '16px', outline: 'none' },
-  totalCountBadge: { position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#636366', fontSize: '12px', fontWeight: '600', pointerEvents: 'none' },
-  spinner: { position: 'absolute', right: '12px', top: '50%', marginTop: '-8px', width: '16px', height: '16px', border: '2px solid #8e8e93', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' },
-  clearBtn: { position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#8e8e93', cursor: 'pointer', fontSize: '16px' },
-  filterToggleBtn: { backgroundColor: '#2c2c2e', border: 'none', borderRadius: '12px', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8e8e93', cursor: 'pointer', transition: 'all 0.2s' },
-  filterToggleActive: { backgroundColor: '#0A84FF', color: '#fff' },
-  filtersSection: { padding: '0 16px 12px 16px', animation: 'fadeIn 0.2s' },
-  filtersGrid: { display: 'flex', gap: '8px', marginBottom: '10px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' },
-  selectWrapper: { display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px', flex: '1 0 0' },
-  selectLabel: { fontSize: '11px', color: '#8e8e93', marginLeft: '4px' },
-  selectInput: { width: '100%', padding: '8px 12px', borderRadius: '8px', backgroundColor: '#2c2c2e', border: '1px solid transparent', color: '#fff', fontSize: '13px', outline: 'none', appearance: 'none' },
-  selectActive: { borderColor: '#0A84FF', color: '#0A84FF', backgroundColor: 'rgba(10, 132, 255, 0.1)' },
-  resetFiltersBtn: { width: '100%', padding: '8px', backgroundColor: 'transparent', border: '1px dashed #3a3a3c', color: '#8e8e93', borderRadius: '8px', cursor: 'pointer', fontSize: '12px' },
-  activeFiltersRow: { display: 'flex', gap: '8px', padding: '0 16px 8px 16px', overflowX: 'auto' },
-  activeChip: { fontSize: '11px', backgroundColor: '#0A84FF', color: '#fff', padding: '2px 8px', borderRadius: '10px', whiteSpace: 'nowrap' },
-  list: { 
-    padding: '16px', 
-    maxWidth: '600px', 
-    margin: '0 auto', 
-    width: '100%', 
-    flex: 1, 
-    overflowY: 'auto', 
-    WebkitOverflowScrolling: 'touch' 
-  },
-  emptyState: { textAlign: 'center', color: '#8e8e93', marginTop: '40px' },
-  historySection: { marginTop: '10px' },
-  historyGrid: { display: 'flex', flexWrap: 'wrap', gap: '8px' },
-  historyChip: { backgroundColor: '#2c2c2e', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '8px', fontSize: '14px', cursor: 'pointer' },
-  card: { position: 'relative', height: '120px', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: '#1c1c1e', border: '1px solid #333', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', marginBottom: '12px', boxSizing: 'border-box', overflow: 'hidden', transition: 'transform 0.2s ease, box-shadow 0.2s ease', cursor: 'pointer' },
-  cardContent: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' },
-  cardTopRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '0px' },
-  cardMainContent: { display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', paddingBottom: '2px' },
-  swedish: { fontSize: '1.1rem', fontWeight: '700', color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '1.4' },
-  wordTypeBadge: { fontSize: '0.7rem', fontWeight: '700', padding: '2px 6px', borderRadius: '5px', letterSpacing: '0.02em', textTransform: 'uppercase', background: 'transparent', border: '1.2px solid' },
-  actionRow: { display: 'flex', gap: '8px', flexShrink: 0, alignItems: 'center' },
-  actionBtn: { padding: '0', width: '30px', height: '30px', minWidth: '30px', minHeight: '30px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer' },
-  forms: { fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', opacity: 0.8, marginTop: '-2px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  arabic: { fontSize: '1rem', color: '#8e8e93', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', whiteSpace: 'normal', textAlign: 'right' },
-  scrollTopBtn: { 
-    position: 'fixed', 
-    bottom: '100px', 
-    right: '20px', 
-    width: '44px', 
-    height: '44px', 
-    borderRadius: '22px', 
-    backgroundColor: '#0A84FF', 
-    color: '#fff', 
-    border: 'none', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)', 
-    cursor: 'pointer', 
-    zIndex: 1000,
-    animation: 'fadeIn 0.3s'
-  },
-  cubeContainer: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', overflow: 'hidden', padding: '20px 0' },
-  checkboxLabel: { display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '0.9rem', cursor: 'pointer', padding: '8px', background: '#2c2c2e', borderRadius: '8px' }
+  container: { height: '100dvh', width: '100vw', position: 'fixed', inset: 0, overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999 },
+  header: { flexShrink: 0, paddingBottom: '10px' },
+  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' },
+  brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
+  statsBadge: { background: 'rgba(28, 28, 30, 0.6)', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center' },
+  iconBtn: { background: 'transparent', border: 'none', fontSize: '22px', cursor: 'pointer' },
+  searchRow: { display: 'flex', padding: '0 20px', gap: '12px', alignItems: 'center' },
+  searchBox: { position: 'relative', flex: 1, display: 'flex', alignItems: 'center' },
+  premiumInput: { width: '100%', padding: '14px 15px 14px 45px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(28, 28, 30, 0.6)', color: '#fff', fontSize: '1rem', outline: 'none', backdropFilter: 'blur(15px)' },
+  searchIconInside: { position: 'absolute', left: '15px', color: '#8e8e93', fontSize: '18px' },
+  resultCounterInside: { position: 'absolute', right: '15px', color: '#636366', fontSize: '0.8rem' },
+  contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
+  scrollList: { flex: 1, overflowY: 'auto', padding: '10px 0', paddingBottom: '100px' },
+  emptyState: { textAlign: 'center', padding: '40px', color: '#8e8e93' },
+  card: { backgroundColor: 'rgba(28, 28, 30, 0.6)', borderRadius: '20px', marginBottom: '15px', display: 'flex', flexDirection: 'column', padding: '18px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', margin: '0 20px 15px 20px', backdropFilter: 'blur(10px)', minHeight: '120px' },
+  menuCard: { flex: 1, background: 'rgba(28, 28, 30, 0.6)', borderRadius: '24px', padding: '25px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(10px)' },
+  actionRow: { display: 'flex', gap: '12px', alignItems: 'center' },
+  actionBtn: { background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer', display: 'flex', alignItems: 'center', fontSize: '20px' },
+  cardMainContent: { display: 'flex', flexDirection: 'column', gap: '4px' },
+  swedish: { fontWeight: '800', color: '#fff' },
+  arabic: { color: '#eee', textAlign: 'right' },
+  dockContainer: { position: 'fixed', bottom: '20px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10000 },
+  dock: { display: 'flex', background: 'rgba(28, 28, 30, 0.8)', backdropFilter: 'blur(20px)', padding: '10px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.1)', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
+  dockItem: { width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', borderRadius: '15px', cursor: 'pointer', border: 'none', color: '#fff', background: 'transparent', position: 'relative', transition: 'all 0.3s' }
 };
+
+export const HomeView: React.FC = () => (<ErrorBoundary><HomeViewInner /></ErrorBoundary>);

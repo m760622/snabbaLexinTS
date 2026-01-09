@@ -2724,7 +2724,7 @@ header {
 
 .sticky-header {
   position: sticky;
-  top: 1rem;
+  top: 50px;
   /* Adjusted for nav bar */
   z-index: 100;
   background: transparent;
@@ -4613,18 +4613,10 @@ header {
 /* Sticky Header for Search */
 .sticky-header {
   position: sticky;
-  top: 0;
+  top: 50px;
   z-index: 40;
   background: transparent;
   /* Matches light theme background */
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  padding: 0 0 0.5rem 0;
-  margin: 0 -2rem;
-  /* Extend to edges */
-  padding-left: 2rem;
-  padding-right: 2rem;
-  transition: background 0.3s ease;
 }
 
 [data-theme="dark"] .sticky-header {
@@ -5357,7 +5349,7 @@ h1 {
     /* Match mobile body padding */
     padding-left: 1rem;
     padding-right: 1rem;
-    top: 0;
+    top: 50px;
   }
 
   .search-container {

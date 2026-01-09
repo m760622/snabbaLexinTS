@@ -105,6 +105,7 @@ export const DailyCard: React.FC<DailyCardProps> = ({ content, onOpenSettings })
                 .cyber-panel {
                     background: rgba(20, 20, 25, 0.95);
                     border: 1px solid ${themeColor}66;
+                    border-left: 8px solid ${themeColor};
                     border-radius: 16px;
                     padding: 20px;
                     animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);

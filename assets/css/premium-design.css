@@ -1830,3 +1830,172 @@ body.focus-mode .focus-mode-toggle {
         display: none !important;
     }
 }
+
+/* ============================================================
+   FILTER PILLS - كبسولات التصفية
+   ============================================================ */
+
+.filter-pills-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 12px 4px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+    width: 100%;
+}
+
+.filter-pills-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.filter-pill {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.filter-pill:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-pill.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme="dark"] .filter-pill {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .filter-pill:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+[data-theme="dark"] .filter-pill.active {
+    background: var(--primary);
+    color: white;
+}
+
+.filter-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    flex: 0 0 auto;
+    margin: 0 4px;
+}
+
+/* ============================================================
+   SKELETON SEARCH RESULTS - تحميل الهيكل
+   ============================================================ */
+
+.skeleton-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    width: 100%;
+    padding: 16px;
+}
+
+.skeleton-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    height: 120px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.skeleton-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        transparent 100%);
+    animation: shimmer 1.5s infinite;
+    transform: translateX(-100%);
+}
+
+[data-theme="dark"] .skeleton-shimmer {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        transparent 100%);
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.skeleton-line {
+    height: 12px;
+    background: var(--border);
+    border-radius: 6px;
+    opacity: 0.6;
+}
+
+.skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.skeleton-badge {
+    width: 60px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--border);
+}
+
+.skeleton-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.skeleton-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.skeleton-title {
+    width: 60%;
+    height: 24px;
+    margin-bottom: 8px;
+}
+
+.skeleton-subtitle {
+    width: 40%;
+}

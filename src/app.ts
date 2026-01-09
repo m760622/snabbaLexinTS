@@ -1,3 +1,4 @@
+import { FilterPills } from './filter-pills';
 import { Loader } from './loader';
 import './utils';
 import './quiz';
@@ -36,6 +37,7 @@ export class App {
         LanguageManager.init();
 
         initMainUI();
+        FilterPills.init();
         Loader.checkCacheAndLoad();
         this.initStreaks();
         this.setupSearchListeners();
@@ -420,6 +422,28 @@ export class App {
         this.performSearch(input.value);
     }, 300);
 
+    private getSkeletonHTML(): string {
+        return `
+            <div class="skeleton-wrapper">
+                ${Array(6).fill(0).map(() => `
+                <div class="skeleton-card">
+                    <div class="skeleton-shimmer"></div>
+                    <div class="skeleton-header">
+                        <div class="skeleton-badge"></div>
+                        <div class="skeleton-actions">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-circle"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-title skeleton-line"></div>
+                        <div class="skeleton-subtitle skeleton-line" style="margin-top: 8px;"></div>
+                    </div>
+                </div>`).join('')}
+            </div>
+        `;
+    }
+
     public performSearch(query: string) {
         // Normalization Helpers
         const normalizeSwe = (str: string) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -436,148 +460,132 @@ export class App {
             window.history.replaceState({ path: newUrl }, '', newUrl);
         }
 
-        const data = (window as any).dictionaryData || [];
-        if (!data) return;
-
         const landingPage = document.getElementById('landingPageContent');
         const searchResults = document.getElementById('searchResults');
         const emptyState = document.getElementById('emptyState');
 
-        this.renderedCount = 0; // Reset pagination
+        // Check for legacy elements
+        if (!landingPage || !searchResults) return;
 
-        // Check if legacy elements exist before trying to render
-        if (!landingPage || !searchResults) {
-            // Legacy DOM elements missing (likely replaced by React), stop legacy rendering
-            return;
-        }
-
-        // Check if legacy elements exist before trying to render
-        if (!landingPage || !searchResults) {
-            // Legacy DOM elements missing (likely replaced by React), stop legacy rendering
-            return;
-        }
-
-        // If no query and "all" filter, show landing page
-        if (!normalizedQuery && this.activeFilterMode === 'all' && this.activeTypeFilter === 'all') {
-            if (landingPage) landingPage.style.display = 'block';
-            if (searchResults) {
+        // SHOW SKELETON if query is present
+        if (normalizedQuery || this.activeFilterMode !== 'all' || this.activeTypeFilter !== 'all') {
+            searchResults.innerHTML = this.getSkeletonHTML();
+            searchResults.style.display = 'grid';
+            if (landingPage) landingPage.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'none';
+        } else {
+             // Empty query and no filters -> Show Landing Page
+             if (landingPage) landingPage.style.display = 'block';
+             if (searchResults) {
                 searchResults.style.display = 'none';
                 searchResults.innerHTML = '';
-            }
-            if (emptyState) emptyState.style.display = 'block';
-            this.renderSearchHistory();
-            return;
+             }
+             if (emptyState) emptyState.style.display = 'block';
+             this.renderSearchHistory();
+             return;
         }
 
-        // --- SINGLE PASS FILTERING & SCORING ---
-        // We will map matches to an object { row, score } then sort.
-        let scoredResults: { row: any[], score: number }[] = [];
+        // Defer Heavy Search Logic to allow Paint
+        setTimeout(() => {
+            const data = (window as any).dictionaryData || [];
+            if (!data || data.length === 0) return;
 
-        // Pre-calc filter usage
-        const useFavFilter = this.activeFilterMode === 'favorites';
-        const useTypeFilter = this.activeTypeFilter !== 'all';
-        
-        // Check for Topic Filter
-        const categorySelect = document.getElementById('categorySelect') as HTMLSelectElement | null;
-        const topicFilter = (categorySelect && categorySelect.value !== 'all') ? categorySelect.value : null;
+            this.renderedCount = 0; // Reset pagination
 
-        for (let i = 0; i < data.length; i++) {
-            const row = data[i];
+            // --- SINGLE PASS FILTERING & SCORING ---
+            let scoredResults: { row: any[], score: number }[] = [];
+
+            // Pre-calc filter usage
+            const useFavFilter = this.activeFilterMode === 'favorites';
+            const useTypeFilter = this.activeTypeFilter !== 'all';
             
-            // 1. Hard Filters (Favorites, Type, Topic)
-            if (useFavFilter && !FavoritesManager.has(row[0].toString())) continue;
-            
-            if (useTypeFilter) {
-                 const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
-                 if (cat !== this.activeTypeFilter) continue;
-            }
+            // Check for Topic Filter
+            const categorySelect = document.getElementById('categorySelect') as HTMLSelectElement | null;
+            const topicFilter = (categorySelect && categorySelect.value !== 'all') ? categorySelect.value : null;
 
-            if (topicFilter) {
-                const tags = (row[11] || '').toLowerCase();
-                if (!tags.includes(topicFilter)) continue;
-            }
-
-            // 2. Query Matching & Scoring
-            let score = 0;
-
-            if (!normalizedQuery) {
-                // If no query but filters exist, give generic score to show results
-                score = 1; 
-            } else {
-                const sweRaw = row[2] || '';
-                const sweNorm = normalizeSwe(sweRaw);
-                const arbRaw = row[3] || '';
-                const arbNorm = normalizeArb(arbRaw);
-
-                // --- SCORING RULES ---
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
                 
-                // Rule A: Exact Match (Highest Priority) - 100pts
-                if (sweNorm === normalizedQuery || arbNorm === normalizedQuery) {
-                    score = 100;
-                } 
-                // Rule B: Starts With (High Priority) - 80pts
-                else if (sweNorm.startsWith(normalizedQuery) || arbNorm.startsWith(normalizedQuery)) {
-                    score = 80;
-                    // Bonus: Shorter words starting with query are more relevant than long ones
-                    score -= Math.min(20, (sweNorm.length - normalizedQuery.length) * 0.5); 
-                }
-                // Rule C: Whole Word in phrase (Medium Priority) - 60pts
-                // e.g. Query "bok" matches "en bok"
-                else if (sweNorm.includes(` ${normalizedQuery} `) || sweNorm.startsWith(`${normalizedQuery} `) || sweNorm.endsWith(` ${normalizedQuery}`)) {
-                    score = 60;
-                }
-                else if (arbNorm.includes(` ${normalizedQuery} `) || arbNorm.startsWith(`${normalizedQuery} `) || arbNorm.endsWith(` ${normalizedQuery}`)) {
-                     score = 60;
-                }
-                // Rule D: General Contains (Low Priority) - 20pts
-                else if (sweNorm.includes(normalizedQuery) || arbNorm.includes(normalizedQuery)) {
-                    score = 20;
-                    // Penalty for very long words containing short query to reduce noise
-                    score -= Math.min(10, (sweNorm.length - normalizedQuery.length) * 0.2); 
+                // 1. Hard Filters (Favorites, Type, Topic)
+                if (useFavFilter && !FavoritesManager.has(row[0].toString())) continue;
+                
+                if (useTypeFilter) {
+                    const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
+                    if (cat !== this.activeTypeFilter) continue;
                 }
 
-                // If score is 0, it doesn't match
-                if (score <= 0) continue;
+                if (topicFilter) {
+                    const tags = (row[11] || '').toLowerCase();
+                    if (!tags.includes(topicFilter)) continue;
+                }
+
+                // 2. Query Matching & Scoring
+                let score = 0;
+
+                if (!normalizedQuery) {
+                    // If no query but filters exist, give generic score to show results
+                    score = 1; 
+                } else {
+                    const sweRaw = row[2] || '';
+                    const sweNorm = normalizeSwe(sweRaw);
+                    const arbRaw = row[3] || '';
+                    const arbNorm = normalizeArb(arbRaw);
+
+                    // --- SCORING RULES ---
+                    if (sweNorm === normalizedQuery || arbNorm === normalizedQuery) {
+                        score = 100;
+                    } 
+                    else if (sweNorm.startsWith(normalizedQuery) || arbNorm.startsWith(normalizedQuery)) {
+                        score = 80;
+                        score -= Math.min(20, (sweNorm.length - normalizedQuery.length) * 0.5); 
+                    }
+                    else if (sweNorm.includes(` ${normalizedQuery} `) || sweNorm.startsWith(`${normalizedQuery} `) || sweNorm.endsWith(` ${normalizedQuery}`)) {
+                        score = 60;
+                    }
+                    else if (arbNorm.includes(` ${normalizedQuery} `) || arbNorm.startsWith(`${normalizedQuery} `) || arbNorm.endsWith(` ${normalizedQuery}`)) {
+                        score = 60;
+                    }
+                    else if (sweNorm.includes(normalizedQuery) || arbNorm.includes(normalizedQuery)) {
+                        score = 20;
+                        score -= Math.min(10, (sweNorm.length - normalizedQuery.length) * 0.2); 
+                    }
+
+                    if (score <= 0) continue;
+                }
+
+                scoredResults.push({ row, score });
             }
 
-            scoredResults.push({ row, score });
-        }
+            // --- SORTING ---
+            if (this.activeSortMethod === 'relevance') {
+                scoredResults.sort((a, b) => b.score - a.score);
+            } else if (this.activeSortMethod === 'az' || this.activeSortMethod === 'alpha_asc') {
+                scoredResults.sort((a, b) => a.row[2].localeCompare(b.row[2], 'sv'));
+            } else if (this.activeSortMethod === 'za' || this.activeSortMethod === 'alpha_desc') {
+                scoredResults.sort((a, b) => b.row[2].localeCompare(a.row[2], 'sv'));
+            } else if (this.activeSortMethod === 'richness') {
+                scoredResults.sort((a, b) => {
+                    const aLen = (a.row[5] || '').length + (a.row[7] || '').length;
+                    const bLen = (b.row[5] || '').length + (b.row[7] || '').length;
+                    return bLen - aLen;
+                });
+            }
 
-        // --- SORTING ---
-        // If "relevance" (default), sort by score DESC
-        // If others, sort by that criteria
-        if (this.activeSortMethod === 'relevance') {
-            scoredResults.sort((a, b) => b.score - a.score);
-        } else if (this.activeSortMethod === 'az' || this.activeSortMethod === 'alpha_asc') {
-            scoredResults.sort((a, b) => a.row[2].localeCompare(b.row[2], 'sv'));
-        } else if (this.activeSortMethod === 'za' || this.activeSortMethod === 'alpha_desc') {
-            scoredResults.sort((a, b) => b.row[2].localeCompare(a.row[2], 'sv'));
-        } else if (this.activeSortMethod === 'richness') {
-             scoredResults.sort((a, b) => {
-                const aLen = (a.row[5] || '').length + (a.row[7] || '').length;
-                const bLen = (b.row[5] || '').length + (b.row[7] || '').length;
-                return bLen - aLen;
-            });
-        }
+            // Unwrap results
+            this.currentResults = scoredResults.map(item => item.row);
 
-        // Unwrap results
-        this.currentResults = scoredResults.map(item => item.row);
+            // Update UI (Clear skeleton)
+            if (searchResults) {
+                searchResults.innerHTML = '';
+            }
+            
+            if (emptyState) emptyState.style.display = this.currentResults.length === 0 ? 'block' : 'none';
+            
+            this.updateTypeCounts(this.currentResults);
 
-        // Update UI
-        if (landingPage) landingPage.style.display = 'none';
-        if (searchResults) {
-            searchResults.style.display = 'grid';
-            searchResults.innerHTML = '';
-        }
-        
-        if (emptyState) emptyState.style.display = this.currentResults.length === 0 ? 'block' : 'none';
-        
-        // Update Counts based on the *filtered* set (Relevance speedup: we iterate once, but for counts we might need raw list? 
-        // Actually, updating counts based on "what's visible" is better UX for filtering context)
-        this.updateTypeCounts(this.currentResults);
-
-        this.renderNextBatch();
-        this.updateResultCount();
+            this.renderNextBatch();
+            this.updateResultCount();
+        }, 10);
     }
 
     private renderNextBatch() {

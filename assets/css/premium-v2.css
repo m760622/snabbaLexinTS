@@ -1,0 +1,145 @@
+
+/* Premium UI V2 Enhancements */
+
+:root {
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-gold: #f59e0b;
+    --accent-emerald: #10b981;
+    --accent-rose: #f43f5e;
+    
+    --glass-bg: rgba(28, 28, 30, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Animated Background Orbs --- */
+.premium-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+
+.orb-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: blur(80px);
+    opacity: 0.4;
+}
+
+.premium-orb {
+    position: absolute;
+    border-radius: 50%;
+    animation: orb-float 20s infinite alternate ease-in-out;
+}
+
+.orb-blue {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-blue);
+    top: -100px;
+    left: -100px;
+    animation-duration: 25s;
+}
+
+.orb-purple {
+    width: 350px;
+    height: 350px;
+    background: var(--accent-purple);
+    bottom: 10%;
+    right: -50px;
+    animation-duration: 30s;
+    animation-delay: -5s;
+}
+
+.orb-gold {
+    width: 300px;
+    height: 300px;
+    background: var(--accent-gold);
+    top: 40%;
+    left: 20%;
+    animation-duration: 35s;
+    animation-delay: -10s;
+}
+
+@keyframes orb-float {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(100px, 50px) scale(1.2); }
+    100% { transform: translate(-50px, 100px) scale(0.9); }
+}
+
+/* --- Fire Streak Animation --- */
+@keyframes fire-glow {
+    0% { filter: drop-shadow(0 0 2px #f59e0b) brightness(1); }
+    50% { filter: drop-shadow(0 0 8px #ef4444) brightness(1.3); }
+    100% { filter: drop-shadow(0 0 2px #f59e0b) brightness(1); }
+}
+
+.fire-active {
+    animation: fire-glow 1.5s infinite ease-in-out;
+    color: #f59e0b !important;
+}
+
+/* --- Advanced Shadows & Depths --- */
+.premium-card {
+    border: 1px solid var(--glass-border) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(15px) saturate(180%);
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.premium-card:hover {
+    transform: translateY(-5px) scale(1.02) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 0 15px var(--accent-blue, rgba(59, 130, 246, 0.2));
+}
+
+/* --- Smooth Scroll Fix for iOS --- */
+.scroll-touch {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- Skeleton Shimmer Speed --- */
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-anim 1.2s infinite linear;
+}
+
+
+/* --- Waveform Animation --- */
+.waveform {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 15px;
+}
+.wave-bar {
+    width: 2px;
+    height: 100%;
+    background: var(--accent-blue);
+    border-radius: 1px;
+}
+.wave-active .wave-bar {
+    animation: wave-play 0.5s infinite alternate ease-in-out;
+}
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes wave-play {
+    from { height: 20%; }
+    to { height: 100%; }
+}

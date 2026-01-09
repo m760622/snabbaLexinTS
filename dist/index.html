@@ -19,16 +19,36 @@
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" href="/assets/icon-IoVpuwm3.svg">
     <link rel="apple-touch-icon" href="/assets/icon-CFBBOZJI.png">
-  <script type="module" crossorigin src="/assets/main-Csar6Zsm.js"></script>
+    <style>
+        /* Hide Legacy UI to prevent conflict with React View */
+        .top-nav, 
+        .sticky-header, 
+        .glass-dock-container, 
+        .quick-actions-bar,
+        .dashboard-container,
+        .container header,
+        .placeholder-message,
+        #searchResults {
+            display: none !important;
+        }
+        
+        /* Ensure React root fills the space if needed, 
+           though HomeView handles its own positioning */
+        #react-root {
+            position: relative;
+            z-index: 100;
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/main-BeglyI2u.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/pronunciation-data-_OdRw6nA.js">
+  <link rel="modulepreload" crossorigin href="/assets/pronunciation-data-D7C2Tjka.js">
   <link rel="modulepreload" crossorigin href="/assets/config-C2usAgi3.js">
   <link rel="modulepreload" crossorigin href="/assets/db-CDJvXXn2.js">
   <link rel="modulepreload" crossorigin href="/assets/loader-dpivfNje.js">
   <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-CfsGp8IC.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-CQt9ycLG.js">
   <link rel="modulepreload" crossorigin href="/assets/tts-BZUKiY6M.js">
-  <link rel="modulepreload" crossorigin href="/assets/quiz-stats-BL77K9JB.js">
+  <link rel="modulepreload" crossorigin href="/assets/quiz-stats-CC5LGAgv.js">
   <link rel="modulepreload" crossorigin href="/assets/i18n-D0OWfz62.js">
   <link rel="modulepreload" crossorigin href="/assets/pwa-Bn3RWWLO.js">
   <link rel="modulepreload" crossorigin href="/assets/ordsprak-D1Yflj3Y.js">
@@ -36,8 +56,8 @@
   <link rel="modulepreload" crossorigin href="/assets/cognatesData-BlpZJuMf.js">
   <link rel="modulepreload" crossorigin href="/assets/ui-enhancements-DNIZEc2q.js">
   <link rel="modulepreload" crossorigin href="/assets/mistakes-review-DLeHaHPD.js">
-  <link rel="stylesheet" crossorigin href="/assets/pronunciation-data-2AhlwqxI.css">
-  <link rel="stylesheet" crossorigin href="/assets/main-D2-5wB1c.css">
+  <link rel="stylesheet" crossorigin href="/assets/pronunciation-data-Bj2M7_G-.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-BrLdbhVb.css">
 </head>
 
 <body>
@@ -167,8 +187,8 @@
 
 
     <!-- REACT REPLACEMENT: Commenting out legacy UI -->
-    <!--
-    <div class="quick-actions-bar">
+    
+    <div class="quick-actions-bar" style="display: none;">
         <button class="quick-action-btn hidden" id="quickWodBtn" title="كلمة اليوم / Dagens Ord">
             <span class="quick-icon">📅</span>
             <span class="quick-label"><span class="sv-text">Ord</span><span class="ar-text">كلمة</span></span>
@@ -295,7 +315,8 @@
             </div>
 
             <div id="filterChipsContainer" class="filter-chips-container hidden">
-                <div class="select-chip-wrapper">
+                <!-- Hidden selects for backward compatibility with app.ts logic -->
+                <div style="display: none;">
                     <select id="filterModeSelect" class="chip-select" aria-label="Välj sökläge">
                         <option value="start">Börjar</option>
                         <option value="end">Slutar</option>
@@ -303,57 +324,35 @@
                         <option value="known">✓ Kan / أعرفها</option>
                         <option value="learning">📚 Lär mig / أتعلمها</option>
                         <option value="review">⟳ Repetera / أراجعها</option>
-                        <option value="all">Alla</option>
+                        <option value="all" selected>Alla</option>
                         <option value="exact">Exakt</option>
                         <option value="synonym">Betydelse</option>
                     </select>
-                    <span class="chip-arrow">▼</span>
-                </div>
 
-                <div class="select-chip-wrapper">
-                    <span class="chip-label">Sortering:</span>
                     <select id="sortSelect" class="chip-select" aria-label="Sortera">
-                        <option value="relevance">Relevans</option>
+                        <option value="relevance" selected>Relevans</option>
                         <option value="richness">Mest info</option>
                         <option value="alpha_asc">A-Ö</option>
                         <option value="alpha_desc">Ö-A</option>
                         <option value="last_char">Sista bokstav</option>
                     </select>
-                    <span class="chip-arrow">▼</span>
-                </div>
 
-                <div class="select-chip-wrapper">
-                    <span class="chip-label">Typ:</span>
                     <select id="typeSelect" class="chip-select" aria-label="Filtrera typ">
-                        <option value="all">Alla</option>
-                        <optgroup label="📝 Grammatik">
-                            <option value="subst">Substantiv</option>
-                            <option value="verb">Verb</option>
-                            <option value="adj">Adjektiv</option>
-                            <option value="adv">Adverb</option>
-                            <option value="prep">Preposition</option>
-                            <option value="pron">Pronomen</option>
-                            <option value="konj">Konjunktion</option>
-                            <option value="interj">Interjektion</option>
-                            <option value="num">Räkneord</option>
-                            <option value="fras">Fras/Uttryck</option>
-                        </optgroup>
-                        <optgroup label="🏷️ Fackområde">
-                            <option value="juridik">⚖️ Juridik</option>
-                            <option value="medicin">🏥 Medicin</option>
-                            <option value="it">💻 IT/Teknik</option>
-                            <option value="politik">🏛️ Politik</option>
-                            <option value="religion">🕌 Religion</option>
-                        </optgroup>
-                        </optgroup>
+                        <option value="all" selected>Alla typer</option>
+                        <option value="subst">Substantiv</option>
+                        <option value="verb">Verb</option>
+                        <option value="adj">Adjektiv</option>
+                        <option value="adv">Adverb</option>
+                        <option value="prep">Preposition</option>
+                        <option value="pron">Pronomen</option>
+                        <option value="konj">Konjunktion</option>
+                        <option value="interj">Interjektion</option>
+                        <option value="num">Räkneord</option>
+                        <option value="fras">Fras/Uttryck</option>
                     </select>
-                    <span class="chip-arrow">▼</span>
-                </div>
 
-                <div class="select-chip-wrapper">
-                    <span class="chip-label">🏷️</span>
                     <select id="categorySelect" class="chip-select" aria-label="Kategori">
-                        <option value="all">Ämnen</option>
+                        <option value="all" selected>Alla ämnen</option>
                         <option value="food">🍽️ Mat</option>
                         <option value="work">💼 Arbete</option>
                         <option value="health">🏥 Hälsa</option>
@@ -363,14 +362,17 @@
                         <option value="home">🏠 Hem</option>
                         <option value="nature">🌳 Natur</option>
                     </select>
-                    <span class="chip-arrow">▼</span>
+                </div>
+
+                <!-- New Scrollable Filter Pills Container -->
+                <div id="newFilterPills" class="filter-pills-scroll-container">
+                    <!-- Populated by filter-pills.ts -->
                 </div>
             </div>
         </div>
     </div>
 
     </header>
-    -->
 
     <!-- شريط الاختصارات السريعة - يظهر دائماً -->
     <!--
@@ -985,7 +987,7 @@
     </div>
 
 
-    <div id="mistakes-react-root"></div>
+
 
 </body>
 
