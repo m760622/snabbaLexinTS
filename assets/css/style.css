@@ -12920,13 +12920,13 @@ body.lang-ar .sv-text {
 }
 
    .glass-dock-container {
-     position: fixed;
-     bottom: 20px;
-     left: 50%;
-     transform: translateX(-50%);
-     width: 95%;
-     max-width: 400px;
-     z-index: 2000;
+     z-index: 9999;          /* Force it to be the top-most layer */
+     position: fixed;        /* Stick to the screen, not the document */
+     bottom: 20px;           /* Distance from bottom edge */
+     left: 50%;              /* Center horizontally */
+     transform: translateX(-50%); /* Perfect centering */
+     width: 90%;             /* Responsive width */
+     max-width: 400px;       /* Max width for tablets */
      background: rgba(30, 41, 59, 0.9);
      backdrop-filter: blur(12px);
      -webkit-backdrop-filter: blur(12px);

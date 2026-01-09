@@ -178,19 +178,26 @@ export const HomeView: React.FC = () => {
   const [type, setType] = useState('all');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDataReady, setIsDataReady] = useState(false);
+
   const [results, setResults] = useState<SearchResult[]>([]);
   const [stats, setStats] = useState<SearchStats | null>(null);
   const [visibleLimit, setVisibleLimit] = useState(50); // Infinite scroll limit
   const [showScrollTop, setShowScrollTop] = useState(false);
   const observerTarget = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const listEl = listRef.current;
+    if (!listEl) return;
+
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+      setShowScrollTop(listEl.scrollTop > 400);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    listEl.addEventListener('scroll', handleScroll);
+    return () => listEl.removeEventListener('scroll', handleScroll);
+  }, [isDataReady]); // Re-bind when data is ready and listRef is attached
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -199,7 +206,10 @@ export const HomeView: React.FC = () => {
           setVisibleLimit((prev) => prev + 50);
         }
       },
-      { threshold: 1.0 }
+      { 
+        threshold: 1.0,
+        root: listRef.current // Important for local scroll
+      }
     );
 
     if (observerTarget.current) {
@@ -214,11 +224,11 @@ export const HomeView: React.FC = () => {
   }, [results.length, visibleLimit]);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (listRef.current) {
+        listRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDataReady, setIsDataReady] = useState(false);
   const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [initialRestoreDone, setInitialRestoreDone] = useState(false);
@@ -259,7 +269,11 @@ export const HomeView: React.FC = () => {
             if (parsed.mode !== 'all' || parsed.type !== 'all') {
                 setIsFiltersOpen(true);
             }
-            if (parsed.scrollY) setTimeout(() => window.scrollTo(0, parsed.scrollY), 150);
+            if (parsed.scrollY && listRef.current) {
+                setTimeout(() => {
+                    if (listRef.current) listRef.current.scrollTop = parsed.scrollY;
+                }, 150);
+            }
         } catch {}
     }
     setInitialRestoreDone(true);
@@ -302,7 +316,13 @@ export const HomeView: React.FC = () => {
   // 2. Persist State
   useEffect(() => {
       if (!initialRestoreDone) return;
-      const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
+      const stateToSave = { 
+          searchTerm, 
+          mode, 
+          type, 
+          sort, 
+          scrollY: listRef.current ? listRef.current.scrollTop : 0 
+      };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [searchTerm, mode, type, sort, initialRestoreDone]);
 
@@ -346,7 +366,13 @@ export const HomeView: React.FC = () => {
       SearchHistoryManager.add(searchTerm.trim());
       setHistory(SearchHistoryManager.get());
     }
-    const stateToSave = { searchTerm, mode, type, sort, scrollY: window.scrollY };
+    const stateToSave = { 
+        searchTerm, 
+        mode, 
+        type, 
+        sort, 
+        scrollY: listRef.current ? listRef.current.scrollTop : 0 
+    };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     
     // Switch to Details View
@@ -502,7 +528,7 @@ export const HomeView: React.FC = () => {
         )}
       </div>
       
-      <div style={styles.list}>
+      <div style={styles.list} ref={listRef}>
         {!isDataReady && <div style={styles.emptyState}><p>Laddar lexikon...</p></div>}
         
         {isDataReady && !searchTerm && !hasActiveFilters && dailyContent && (
@@ -542,7 +568,7 @@ export const HomeView: React.FC = () => {
         )}
 
         {/* Physical spacer to push content above fixed Dock */}
-        <div className='safe-area-spacer' style={{ height: '180px', width: '100%', flexShrink: 0 }}></div>
+        <div className='safe-area-spacer' style={{ height: '220px', width: '100%', flexShrink: 0 }}></div>
       </div>
 
       {showScrollTop && (
@@ -562,8 +588,26 @@ export const HomeView: React.FC = () => {
 
 // Styles
 const styles: { [key: string]: React.CSSProperties } = {
-  container: { minHeight: '100vh', backgroundColor: '#121212', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', flexDirection: 'column' },
-  header: { position: 'sticky', top: 0, backgroundColor: 'rgba(18, 18, 18, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #333', zIndex: 100, paddingBottom: '8px' },
+  container: { 
+    height: '100dvh', 
+    position: 'fixed',
+    inset: 0,
+    overflow: 'hidden',
+    backgroundColor: '#121212', 
+    color: '#fff', 
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+    display: 'flex', 
+    flexDirection: 'column' 
+  },
+  header: { 
+    flexShrink: 0,
+    position: 'relative', 
+    zIndex: 50, 
+    backgroundColor: '#121212', 
+    borderBottom: '1px solid #333', 
+    paddingBottom: '8px',
+    paddingTop: 'max(12px, env(safe-area-inset-top))' 
+  },
   topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px 4px 16px', marginBottom: '4px' },
   brandTitle: { fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#fff' },
   settingsBtn: { background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
@@ -585,7 +629,15 @@ const styles: { [key: string]: React.CSSProperties } = {
   resetFiltersBtn: { width: '100%', padding: '8px', backgroundColor: 'transparent', border: '1px dashed #3a3a3c', color: '#8e8e93', borderRadius: '8px', cursor: 'pointer', fontSize: '12px' },
   activeFiltersRow: { display: 'flex', gap: '8px', padding: '0 16px 8px 16px', overflowX: 'auto' },
   activeChip: { fontSize: '11px', backgroundColor: '#0A84FF', color: '#fff', padding: '2px 8px', borderRadius: '10px', whiteSpace: 'nowrap' },
-  list: { padding: '16px', maxWidth: '600px', margin: '0 auto', width: '100%' },
+  list: { 
+    padding: '16px', 
+    maxWidth: '600px', 
+    margin: '0 auto', 
+    width: '100%', 
+    flex: 1, 
+    overflowY: 'auto', 
+    WebkitOverflowScrolling: 'touch' 
+  },
   emptyState: { textAlign: 'center', color: '#8e8e93', marginTop: '40px' },
   historySection: { marginTop: '10px' },
   historyGrid: { display: 'flex', flexWrap: 'wrap', gap: '8px' },

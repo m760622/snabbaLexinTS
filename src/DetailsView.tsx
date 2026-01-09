@@ -47,6 +47,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     const stopRepeatRef = useRef(false);
     const heroSweRef = useRef<HTMLHeadingElement>(null);
     const heroArbRef = useRef<HTMLParagraphElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const allData = (window as any).dictionaryData as any[][];
 
@@ -109,7 +110,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                 setRelatedWords(related);
             }
         }
-        window.scrollTo(0, 0);
+        if (containerRef.current) containerRef.current.scrollTop = 0;
     }, [wordId, allData]);
 
     useEffect(() => {
@@ -146,7 +147,14 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     );
 
     return (
-        <div className="details-page-container" style={{ paddingBottom: '100px', minHeight: '100vh', background: '#121212' }}>
+        <div ref={containerRef} className="details-page-container" style={{ 
+            height: '100%', 
+            overflowY: 'auto', 
+            WebkitOverflowScrolling: 'touch',
+            background: '#121212',
+            display: 'flex',
+            flexDirection: 'column'
+        }}>
             {/* Nav Header */}
             <div style={{ 
                 display: 'flex', justifyContent: 'space-between', padding: '12px 16px', position: 'sticky', top: 0, 
@@ -326,7 +334,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             </div>
 
             {/* Physical spacer for dock */}
-            <div className='safe-area-spacer' style={{ height: '180px', width: '100%', flexShrink: 0 }}></div>
+            <div className='safe-area-spacer' style={{ height: '220px', width: '100%', flexShrink: 0 }}></div>
 
             {/* Glass Dock Menu (Fixed Bottom) - Injected directly into Component */}
             <div className='glass-dock-container'>
