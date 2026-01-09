@@ -195,6 +195,31 @@ export const HomeView: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const observerTarget = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const searchWorkerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    // Initialize Search Worker
+    searchWorkerRef.current = new Worker(new URL('./workers/search.worker.ts', import.meta.url), { type: 'module' });
+    
+    searchWorkerRef.current.onmessage = (e) => {
+        const { type, payload } = e.data;
+        if (type === 'SEARCH_RESULT') {
+            setResults(payload.results);
+            setStats(payload.stats);
+            setVisibleLimit(50); // Actually with virtual list this isn't strictly needed for limits but maybe for other logic
+            setIsLoading(false);
+            
+            // Cache stats
+            localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(payload.stats));
+        }
+    };
+
+    return () => {
+        if (searchWorkerRef.current) {
+            searchWorkerRef.current.terminate();
+        }
+    };
+  }, []);
 
   useEffect(() => {
     const listEl = listRef.current;
@@ -291,6 +316,11 @@ export const HomeView: React.FC = () => {
       const data = (window as any).dictionaryData;
       if (data && data.length > 0) {
         setIsDataReady(true);
+        // Send data to worker once
+        if (searchWorkerRef.current) {
+            searchWorkerRef.current.postMessage({ type: 'INIT_DATA', payload: data });
+        }
+
         // Use current config or default if not yet loaded (useEffect runs after render)
         const config = savedConfig ? JSON.parse(savedConfig) : dailyConfig;
         setDailyContent(DailyContentService.getRandomContent(data, config));
@@ -355,29 +385,21 @@ export const HomeView: React.FC = () => {
     
     const performSearch = () => {
       setIsLoading(true);
-      try {
-        const data = (window as any).dictionaryData;
-        if (!data) return;
-
-        const options = {
-          query: debouncedSearchTerm,
-          mode,
-          type,
-          sort
-        };
-
-        const { results: searchResults, stats: searchStats } = SearchService.searchWithStats(data, options);
-        
-        setResults(searchResults);
-        setStats(searchStats);
-        setVisibleLimit(50); // Reset limit on new search
-
-        // Save stats to cache for faster initial load next time
-        localStorage.setItem('snabbaLexin_stats_cache', JSON.stringify(searchStats));
-      } catch (error) {
-        console.error('Search error:', error);
-      } finally {
-        setIsLoading(false);
+      if (searchWorkerRef.current) {
+          const options = {
+            query: debouncedSearchTerm,
+            mode,
+            type,
+            sort
+          };
+          // Pass only necessary data
+          searchWorkerRef.current.postMessage({ 
+              type: 'SEARCH', 
+              payload: { 
+                  options, 
+                  favIds: FavoritesManager.getAll() 
+              } 
+          });
       }
     };
 
