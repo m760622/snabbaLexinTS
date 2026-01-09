@@ -12918,3 +12918,105 @@ body.lang-ar .sv-text {
     border-top: 1px solid #333;
     padding-top: 20px;
 }
+
+   .glass-dock-container {
+     position: fixed;
+     bottom: 20px;
+     left: 50%;
+     transform: translateX(-50%);
+     width: 95%;
+     max-width: 400px;
+     z-index: 2000;
+     background: rgba(30, 41, 59, 0.9);
+     backdrop-filter: blur(12px);
+     -webkit-backdrop-filter: blur(12px);
+     padding: 8px;
+     border-radius: 24px;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 8px;
+     margin: 0;
+     border: 1px solid rgba(255, 255, 255, 0.1);
+     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+     overflow-x: visible;
+   }
+   
+   /* Adjust dock items for the smaller bar */
+   .dock-item {
+     flex: 1;
+     justify-content: center;
+     min-width: 0;
+     background: transparent; /* Remove individual background for cleaner look */
+     color: rgba(255, 255, 255, 0.6) !important;
+     text-decoration: none;
+     padding: 10px 0;
+     border-radius: 16px;
+     font-weight: bold;
+     font-size: 0.85rem;
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     border: 1px solid transparent;
+     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+     white-space: nowrap;
+     position: relative;
+   }
+
+   .dock-item.active {
+     background: rgba(59, 130, 246, 0.2);
+     color: #fff !important;
+     box-shadow: none; /* Cleaner active state */
+     border-color: rgba(59, 130, 246, 0.3);
+     transform: translateY(-2px);
+   }
+
+   /* Tooltip adjustments for bottom position */
+   .dock-item::after {
+     content: attr(data-tooltip);
+     position: absolute;
+     bottom: 125%; /* Ensure it appears above the dock */
+     left: 50%;
+     transform: translateX(-50%) scale(0.8);
+     background: rgba(15, 23, 42, 0.95);
+     color: #fff;
+     padding: 5px 10px;
+     border-radius: 8px;
+     font-size: 0.75rem;
+     font-weight: 600;
+     opacity: 0;
+     visibility: hidden;
+     transition: all 0.2s;
+     pointer-events: none;
+     white-space: nowrap;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+     border: 1px solid rgba(255,255,255,0.1);
+   }
+
+   .dock-item:hover::after {
+     opacity: 1;
+     visibility: visible;
+     transform: translateX(-50%) scale(1);
+     bottom: 135%;
+   }
+
+   @media (max-width: 380px) {
+     .dock-item {
+       padding: 8px 0;
+     }
+     .dock-icon {
+       font-size: 1.2rem;
+     }
+   }
+
+   .dock-item:hover {
+     background: rgba(255, 255, 255, 0.05);
+     color: #fff !important;
+     transform: translateY(-2px);
+   }
+
+   .dock-icon {
+     font-size: 1.5rem;
+     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+   }
+

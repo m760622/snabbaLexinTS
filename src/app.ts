@@ -46,6 +46,7 @@ export class App {
         this.setupFilters();
         this.setupVoiceSearch();
         this.setupVoiceSelection();
+        this.setupDockNavigation();
         this.updateDailyChallenge(); // Initial update
         this.updateDailyProgressBar(); // Update daily progress bar
 
@@ -420,7 +421,12 @@ export class App {
     }, 300);
 
     public performSearch(query: string) {
-        const normalizedQuery = query.toLowerCase().trim();
+        // Normalization Helpers
+        const normalizeSwe = (str: string) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const normalizeArb = (str: string) => normalizeArabic(str || '').toLowerCase();
+
+        const normalizedQuery = normalizeSwe(query.trim());
+        const rawQuery = query.toLowerCase().trim(); // Keep raw for exact matches if needed
 
         // Update URL to persist state
         if (window.history.replaceState) {
@@ -439,129 +445,138 @@ export class App {
 
         this.renderedCount = 0; // Reset pagination
 
-        // Apply filters
-        let filtered = data;
-
-        // 1. Mode Filter (Favorites, etc)
-        if (this.activeFilterMode === 'favorites') {
-            filtered = filtered.filter((row: any[]) => FavoritesManager.has(row[0].toString()));
+        // Check if legacy elements exist before trying to render
+        if (!landingPage || !searchResults) {
+            // Legacy DOM elements missing (likely replaced by React), stop legacy rendering
+            return;
         }
 
-        // 2. Search Query Filter
-        if (normalizedQuery) {
-            filtered = filtered.filter((row: any[]) => {
-                const swe = row[2].toLowerCase();
-
-                // Arabic: Normalize to ignore diacritics
-                const arb = normalizeArabic(row[3] || '').toLowerCase();
-
-                // Normalize query too (e.g. if user types diacritics, we match without)
-                const q = normalizeArabic(normalizedQuery);
-
-                if (this.activeFilterMode === 'start') {
-                    return swe.startsWith(q) || arb.startsWith(q);
-                }
-                if (this.activeFilterMode === 'end') {
-                    return swe.endsWith(q) || arb.endsWith(q);
-                }
-                if (this.activeFilterMode === 'exact') {
-                    return swe === q || arb === q;
-                }
-
-                // Default: Contains (Check both explicitly)
-                return swe.includes(q) || arb.includes(q);
-            });
+        // Check if legacy elements exist before trying to render
+        if (!landingPage || !searchResults) {
+            // Legacy DOM elements missing (likely replaced by React), stop legacy rendering
+            return;
         }
 
-        // NEW: Update counts based on query matches (before type filtering)
-        // This ensures the user sees how many Nouns/Verbs match the current search query
-        this.updateTypeCounts(filtered);
-
-        // 3. Type Filter
-        if (this.activeTypeFilter !== 'all') {
-            filtered = filtered.filter((row: any[]) => {
-                const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
-                return cat === this.activeTypeFilter;
-            });
-        }
-
-        // 3.5 Category Filter (Topic)
-        const categorySelect = document.getElementById('categorySelect') as HTMLSelectElement | null;
-        if (categorySelect && categorySelect.value !== 'all') {
-            const topic = categorySelect.value;
-            filtered = filtered.filter((row: any[]) => {
-                // Topic matches usually involve checking if the word belongs to a certain set
-                // For now we use the word category field if available (row[11] is usually tags/categories in Lexin)
-                const tags = (row[11] || '').toLowerCase();
-                return tags.includes(topic);
-            });
-        }
-
-        // 4. Sorting
-        if (this.activeSortMethod === 'az' || this.activeSortMethod === 'alpha_asc') {
-            filtered = [...filtered].sort((a, b) => a[2].localeCompare(b[2], 'sv'));
-        } else if (this.activeSortMethod === 'za' || this.activeSortMethod === 'alpha_desc') {
-            filtered = [...filtered].sort((a, b) => b[2].localeCompare(a[2], 'sv'));
-        } else if (this.activeSortMethod === 'richness') {
-            filtered = [...filtered].sort((a, b) => {
-                const aLen = (a[5] || '').length + (a[7] || '').length;
-                const bLen = (b[5] || '').length + (b[7] || '').length;
-                return bLen - aLen;
-            });
-        } else {
-            // Default: Relevance (Exact match > Starts with > Original)
-            filtered = [...filtered].sort((a, b) => {
-                const aSwe = a[2].toLowerCase();
-                const bSwe = b[2].toLowerCase();
-
-                // Arabic: Normalize to ignore diacritics
-                const aArb = normalizeArabic(a[3] || '').toLowerCase();
-                const bArb = normalizeArabic(b[3] || '').toLowerCase();
-
-                const q = normalizeArabic(normalizedQuery);
-
-                // 1. Exact match priority (Check BOTH languages)
-                const aExact = (aSwe === q || aArb === q);
-                const bExact = (bSwe === q || bArb === q);
-
-                if (aExact && !bExact) return -1;
-                if (!aExact && bExact) return 1;
-
-                // 2. Starts with priority (Check BOTH languages)
-                const aStarts = (aSwe.startsWith(q) || aArb.startsWith(q));
-                const bStarts = (bSwe.startsWith(q) || bArb.startsWith(q));
-
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-
-                return 0;
-            });
-        }
-
-        this.currentResults = filtered;
-
-        const showLanding = !normalizedQuery && this.activeFilterMode === 'all';
-
-        if (showLanding) {
+        // If no query and "all" filter, show landing page
+        if (!normalizedQuery && this.activeFilterMode === 'all' && this.activeTypeFilter === 'all') {
             if (landingPage) landingPage.style.display = 'block';
             if (searchResults) {
                 searchResults.style.display = 'none';
                 searchResults.innerHTML = '';
             }
             if (emptyState) emptyState.style.display = 'block';
-
-            // Render History
             this.renderSearchHistory();
-        } else {
-            if (landingPage) landingPage.style.display = 'none';
-            if (searchResults) {
-                searchResults.style.display = 'grid';
-                searchResults.innerHTML = '';
-            }
-            if (emptyState) emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
-            this.renderNextBatch();
+            return;
         }
 
+        // --- SINGLE PASS FILTERING & SCORING ---
+        // We will map matches to an object { row, score } then sort.
+        let scoredResults: { row: any[], score: number }[] = [];
+
+        // Pre-calc filter usage
+        const useFavFilter = this.activeFilterMode === 'favorites';
+        const useTypeFilter = this.activeTypeFilter !== 'all';
+        
+        // Check for Topic Filter
+        const categorySelect = document.getElementById('categorySelect') as HTMLSelectElement | null;
+        const topicFilter = (categorySelect && categorySelect.value !== 'all') ? categorySelect.value : null;
+
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            
+            // 1. Hard Filters (Favorites, Type, Topic)
+            if (useFavFilter && !FavoritesManager.has(row[0].toString())) continue;
+            
+            if (useTypeFilter) {
+                 const cat = TypeColorSystem.getCategory(row[1], row[2], row[6], row[13] || '', row[3] || '');
+                 if (cat !== this.activeTypeFilter) continue;
+            }
+
+            if (topicFilter) {
+                const tags = (row[11] || '').toLowerCase();
+                if (!tags.includes(topicFilter)) continue;
+            }
+
+            // 2. Query Matching & Scoring
+            let score = 0;
+
+            if (!normalizedQuery) {
+                // If no query but filters exist, give generic score to show results
+                score = 1; 
+            } else {
+                const sweRaw = row[2] || '';
+                const sweNorm = normalizeSwe(sweRaw);
+                const arbRaw = row[3] || '';
+                const arbNorm = normalizeArb(arbRaw);
+
+                // --- SCORING RULES ---
+                
+                // Rule A: Exact Match (Highest Priority) - 100pts
+                if (sweNorm === normalizedQuery || arbNorm === normalizedQuery) {
+                    score = 100;
+                } 
+                // Rule B: Starts With (High Priority) - 80pts
+                else if (sweNorm.startsWith(normalizedQuery) || arbNorm.startsWith(normalizedQuery)) {
+                    score = 80;
+                    // Bonus: Shorter words starting with query are more relevant than long ones
+                    score -= Math.min(20, (sweNorm.length - normalizedQuery.length) * 0.5); 
+                }
+                // Rule C: Whole Word in phrase (Medium Priority) - 60pts
+                // e.g. Query "bok" matches "en bok"
+                else if (sweNorm.includes(` ${normalizedQuery} `) || sweNorm.startsWith(`${normalizedQuery} `) || sweNorm.endsWith(` ${normalizedQuery}`)) {
+                    score = 60;
+                }
+                else if (arbNorm.includes(` ${normalizedQuery} `) || arbNorm.startsWith(`${normalizedQuery} `) || arbNorm.endsWith(` ${normalizedQuery}`)) {
+                     score = 60;
+                }
+                // Rule D: General Contains (Low Priority) - 20pts
+                else if (sweNorm.includes(normalizedQuery) || arbNorm.includes(normalizedQuery)) {
+                    score = 20;
+                    // Penalty for very long words containing short query to reduce noise
+                    score -= Math.min(10, (sweNorm.length - normalizedQuery.length) * 0.2); 
+                }
+
+                // If score is 0, it doesn't match
+                if (score <= 0) continue;
+            }
+
+            scoredResults.push({ row, score });
+        }
+
+        // --- SORTING ---
+        // If "relevance" (default), sort by score DESC
+        // If others, sort by that criteria
+        if (this.activeSortMethod === 'relevance') {
+            scoredResults.sort((a, b) => b.score - a.score);
+        } else if (this.activeSortMethod === 'az' || this.activeSortMethod === 'alpha_asc') {
+            scoredResults.sort((a, b) => a.row[2].localeCompare(b.row[2], 'sv'));
+        } else if (this.activeSortMethod === 'za' || this.activeSortMethod === 'alpha_desc') {
+            scoredResults.sort((a, b) => b.row[2].localeCompare(a.row[2], 'sv'));
+        } else if (this.activeSortMethod === 'richness') {
+             scoredResults.sort((a, b) => {
+                const aLen = (a.row[5] || '').length + (a.row[7] || '').length;
+                const bLen = (b.row[5] || '').length + (b.row[7] || '').length;
+                return bLen - aLen;
+            });
+        }
+
+        // Unwrap results
+        this.currentResults = scoredResults.map(item => item.row);
+
+        // Update UI
+        if (landingPage) landingPage.style.display = 'none';
+        if (searchResults) {
+            searchResults.style.display = 'grid';
+            searchResults.innerHTML = '';
+        }
+        
+        if (emptyState) emptyState.style.display = this.currentResults.length === 0 ? 'block' : 'none';
+        
+        // Update Counts based on the *filtered* set (Relevance speedup: we iterate once, but for counts we might need raw list? 
+        // Actually, updating counts based on "what's visible" is better UX for filtering context)
+        this.updateTypeCounts(this.currentResults);
+
+        this.renderNextBatch();
         this.updateResultCount();
     }
 
@@ -792,6 +807,81 @@ export class App {
                 localStorage.setItem('ttsVoicePreference', voice);
                 showToast(`🗣️ ${t('settings.voiceChanged') || 'Rösttyp ändrad'}`);
             });
+        });
+    }
+
+    private setupDockNavigation() {
+        const dockItems = document.querySelectorAll('.dock-item');
+        if (!dockItems.length) return;
+
+        dockItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const href = item.getAttribute('href');
+                
+                // Allow normal navigation for external pages like learn.html
+                if (href && !href.startsWith('#')) return;
+
+                e.preventDefault();
+
+                // Visual update
+                dockItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                if (href === '#') {
+                    // Search Action
+                    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+                    if (searchInput) {
+                        searchInput.focus();
+                        // Reset to All mode
+                        this.activeFilterMode = 'all';
+                        const modeSelect = document.getElementById('filterModeSelect') as HTMLSelectElement;
+                        if (modeSelect) modeSelect.value = 'all';
+                        
+                        this.performSearch(searchInput.value || '');
+                    }
+                }
+                else if (href === '#favorites') {
+                    // Favorites Action
+                    this.activeFilterMode = 'favorites';
+                    const modeSelect = document.getElementById('filterModeSelect') as HTMLSelectElement;
+                    if (modeSelect) modeSelect.value = 'favorites';
+                    
+                    // Clear search input to show all favorites
+                    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+                    if (searchInput) searchInput.value = '';
+                    
+                    this.performSearch('');
+                }
+                else if (href === '#games') {
+                    // Games Action - Navigate
+                    window.location.href = 'games/games.html';
+                }
+                else if (href === '#quiz') {
+                    // Quiz Action - Dispatch event for React Component
+                    window.dispatchEvent(new CustomEvent('openQuiz'));
+                }
+            });
+        });
+
+        // Set active state on load
+        const currentHash = window.location.hash;
+        const currentPath = window.location.pathname;
+
+        dockItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href) {
+                if (href === currentHash) {
+                    dockItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                } else if (href.includes('.html') && currentPath.includes(href)) {
+                    dockItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                } else if ((currentPath.endsWith('/') || currentPath.endsWith('index.html')) && !currentHash && href === '#') {
+                    // Default active
+                    dockItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            }
         });
     }
 

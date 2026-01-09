@@ -324,6 +324,25 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                     </>
                 )}
             </div>
+
+            {/* Physical spacer for dock */}
+            <div className='safe-area-spacer' style={{ height: '180px', width: '100%', flexShrink: 0 }}></div>
+
+            {/* Glass Dock Menu (Fixed Bottom) - Injected directly into Component */}
+            <div className='glass-dock-container'>
+                <a href='/' className='dock-item' data-tooltip='Sök' onClick={(e) => {
+                    e.preventDefault();
+                    window.history.pushState({ view: 'home' }, '', '/');
+                    window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'home' } }));
+                }}><span className='dock-icon'>🔍</span></a>
+                <a href='games/games.html' className='dock-item' data-tooltip='Spel'><span className='dock-icon'>🎮</span></a>
+                <a href='learn/learn.html' className='dock-item' data-tooltip='Lär'><span className='dock-icon'>📚</span></a>
+                <a href='/?s=favorites' className='dock-item' data-tooltip='Favoriter'><span className='dock-icon'>⭐️</span></a>
+                <a href='#' className='dock-item' data-tooltip='Quiz' onClick={(e) => {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('openQuiz'));
+                }}><span className='dock-icon'>⚡️</span></a>
+            </div>
         </div>
     );
 };

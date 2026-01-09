@@ -93,6 +93,9 @@ export class SearchService {
 
 
             // 4. Filter Results
+            // If no query and not browsing (filtering), we typically don't return the whole dictionary 
+            // to avoid performance hit, unless specifically requested.
+            // However, HomeView handles the "History" view when results are empty.
             if (!hasQuery && !isBrowsing) continue;
 
             let includeInResults = true;

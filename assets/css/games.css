@@ -12021,3 +12021,7 @@ body {
         border-width: 2px;
     }
 }
+/* Dock Spacing for Games Page */
+.games-container {
+    padding-bottom: 120px !important;
+}
