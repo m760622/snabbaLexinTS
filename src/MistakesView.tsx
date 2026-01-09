@@ -4,6 +4,7 @@ import { TTSManager } from './tts';
 
 export const MistakesView: React.FC = () => {
     const [mistakes, setMistakes] = useState<MistakeEntry[]>([]);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const loadMistakes = () => {
         setMistakes(mistakesManager.getMistakes());
@@ -43,14 +44,40 @@ export const MistakesView: React.FC = () => {
         );
     }
 
+    if (!isExpanded) {
+        return (
+            <div style={styles.container}>
+                <button 
+                    style={styles.expandToggleBtn} 
+                    onClick={() => setIsExpanded(true)}
+                >
+                    <span style={{ fontSize: '1.5rem' }}>🎯</span>
+                    <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontWeight: '800', fontSize: '1.1rem' }}>Mina Fel ({mistakes.length} ord)</div>
+                        <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Visa ord du missat / عرض الكلمات التي أخطأت بها</div>
+                    </div>
+                    <span style={{ marginLeft: 'auto', fontSize: '1.2rem' }}>▼</span>
+                </button>
+            </div>
+        );
+    }
+
     return (
-        <div style={styles.container}>
+        <div style={{...styles.container, animation: 'fadeIn 0.3s ease-out'}}>
             <div style={styles.header}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <h2 style={styles.title}>
-                        <span style={{ marginRight: '10px' }}>🎯</span>
-                        Mina Fel / مراجعة أخطائي
-                    </h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <h2 style={styles.title}>
+                            <span style={{ marginRight: '10px' }}>🎯</span>
+                            Mina Fel / مراجعة أخطائي
+                        </h2>
+                        <button 
+                            style={styles.collapseBtn}
+                            onClick={() => setIsExpanded(false)}
+                        >
+                            Dölj / إخفاء ▲
+                        </button>
+                    </div>
                     <button 
                         style={styles.practiceBtn}
                         onClick={() => window.location.href = '/games/flashcards.html?mode=review'}
@@ -131,6 +158,30 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderRadius: '20px',
         fontSize: '0.9rem',
         fontWeight: 'bold'
+    },
+    expandToggleBtn: {
+        width: '100%',
+        background: 'rgba(251, 191, 36, 0.1)',
+        border: '1px solid rgba(251, 191, 36, 0.3)',
+        borderRadius: '16px',
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '15px',
+        color: '#fff',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        marginBottom: '20px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+    },
+    collapseBtn: {
+        background: 'rgba(255, 255, 255, 0.05)',
+        color: '#8e8e93',
+        border: 'none',
+        padding: '4px 12px',
+        borderRadius: '8px',
+        fontSize: '0.75rem',
+        cursor: 'pointer'
     },
     practiceBtn: {
         background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
