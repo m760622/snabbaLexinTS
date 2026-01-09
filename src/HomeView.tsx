@@ -4,7 +4,7 @@ import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
 import { TTSManager } from './tts';
-import { showToast, TextSizeManager } from './utils';
+import { showToast, TextSizeManager, VoiceSearchManager } from './utils';
 import { DailyContentService, DailyContent } from './daily-content';
 import { DetailsView } from './DetailsView';
 import { QuizComponent } from './components/QuizComponent';
@@ -177,6 +177,8 @@ export const HomeView: React.FC = () => {
   const [sort, setSort] = useState('relevance');
   const [type, setType] = useState('all');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -294,6 +296,21 @@ export const HomeView: React.FC = () => {
 
     const handleOpenQuiz = () => setShowQuiz(true);
     window.addEventListener('openQuiz', handleOpenQuiz);
+
+    // Initialize Voice Search
+    if (VoiceSearchManager.isSupported()) {
+        VoiceSearchManager.init((transcript, isFinal) => {
+            if (transcript) {
+                setSearchTerm(transcript);
+                if (isFinal) {
+                    setIsVoiceActive(false);
+                    VoiceSearchManager.stop();
+                } else {
+                    setIsVoiceActive(true);
+                }
+            }
+        });
+    }
 
     return () => {
         window.removeEventListener('dictionaryLoaded', checkData);
@@ -416,8 +433,32 @@ export const HomeView: React.FC = () => {
     </div>
   );
 
+  const handleVoiceToggle = () => {
+    if (!VoiceSearchManager.isSupported()) {
+        showToast('Röstsökning stöds inte / البحث الصوتي غير مدعوم ❌');
+        return;
+    }
+    VoiceSearchManager.toggle();
+    setIsVoiceActive(!isVoiceActive);
+  };
+
   return (
     <div style={styles.container}>
+      {/* Backdrop for Focus Mode */}
+      {isSearchFocused && (
+          <div 
+            style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(3px)',
+                zIndex: 45, // Below header (50), above list
+                animation: 'fadeIn 0.2s'
+            }}
+            onClick={() => setIsSearchFocused(false)}
+          />
+      )}
+
       {showQuiz && <QuizComponent onClose={() => setShowQuiz(false)} />}
       
       {/* Show Details View if a word is selected */}
@@ -480,36 +521,97 @@ export const HomeView: React.FC = () => {
           </div>
       )}
 
-      <div style={styles.header}>
+      <div style={{...styles.header, transition: 'all 0.3s ease', paddingBottom: isSearchFocused ? '16px' : '8px' }}>
         <div style={styles.searchRow}>
-            <div style={styles.searchContainer}>
-                <span style={styles.searchIcon}>🔍</span>
+            <div style={{...styles.searchContainer, transform: isSearchFocused ? 'scale(1.02)' : 'scale(1)', transition: 'transform 0.2s'}}>
+                <span style={{...styles.searchIcon, color: isSearchFocused ? '#0A84FF' : '#8e8e93'}}>🔍</span>
                 <input 
                     type="text" 
-                    placeholder={isDataReady ? "Sök / بحث..." : "Laddar..."} 
+                    placeholder={isVoiceActive ? "Lyssnar... / أستمع..." : (isDataReady ? "Sök / بحث..." : "Laddar...")} 
                     value={searchTerm} 
                     onChange={(e) => setSearchTerm(e.target.value)} 
-                    style={styles.input} 
+                    onFocus={() => setIsSearchFocused(true)}
+                    // Delay blur to allow clicking history items
+                    onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                    style={{...styles.input, borderColor: isSearchFocused ? '#0A84FF' : 'transparent', borderWidth: '1px', borderStyle: 'solid'}} 
                     disabled={!isDataReady} 
                 />
                 
-                {isDataReady && (
-                     <span style={styles.totalCountBadge}>
+                {isDataReady && !isVoiceActive && !searchTerm && (
+                     <button 
+                        onClick={handleVoiceToggle} 
+                        style={{
+                            position: 'absolute', 
+                            right: '12px', 
+                            top: '50%', 
+                            transform: 'translateY(-50%)', 
+                            background: 'none', 
+                            border: 'none', 
+                            cursor: 'pointer',
+                            fontSize: '18px'
+                        }}
+                        aria-label="Röstsökning"
+                     >
+                        🎤
+                     </button>
+                )}
+
+                {isVoiceActive && (
+                    <div style={styles.spinner}></div>
+                )}
+                
+                {isDataReady && !isVoiceActive && !searchTerm && (
+                     <span style={{...styles.totalCountBadge, right: '40px'}}>
                         {(stats && stats.total > 0 ? stats.total : ((window as any).dictionaryData?.length || 0)).toLocaleString()}
                      </span>
                 )}
 
-                {isLoading && <div style={styles.spinner}></div>}
+                {isLoading && !isVoiceActive && <div style={styles.spinner}></div>}
+                
                 {searchTerm && !isLoading && (
                     <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>✕</button>
                 )}
             </div>
-            <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} style={{...styles.filterToggleBtn, ...(isFiltersOpen || hasActiveFilters ? styles.filterToggleActive : {})}}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-            </button>
+            {!isSearchFocused && (
+                <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} style={{...styles.filterToggleBtn, ...(isFiltersOpen || hasActiveFilters ? styles.filterToggleActive : {})}}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                </button>
+            )}
+            {isSearchFocused && (
+                 <button onClick={() => { setIsSearchFocused(false); setSearchTerm(''); }} style={{color: '#0A84FF', background: 'none', border: 'none', fontWeight: '600', padding: '0 8px', cursor: 'pointer'}}>
+                     Klar
+                 </button>
+            )}
         </div>
         
-        {isFiltersOpen && (
+        {/* SMART SEARCH OVERLAY CONTENT */}
+        {isSearchFocused && !searchTerm && (
+            <div style={{padding: '0 16px', animation: 'slideInDown 0.2s'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                    <span style={{fontSize: '0.8rem', color: '#8e8e93', fontWeight: '600', textTransform: 'uppercase'}}>Senaste (الأخيرة)</span>
+                    {history.length > 0 && (
+                        <button onClick={() => { SearchHistoryManager.clear(); setHistory([]); }} style={{fontSize: '0.75rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer'}}>
+                            Rensa / مسح
+                        </button>
+                    )}
+                </div>
+                {history.length > 0 ? (
+                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                        {history.slice(0, 8).map((item, idx) => (
+                            <button key={idx} style={{...styles.historyChip, backgroundColor: '#2c2c2e', border: '1px solid #3a3a3c'}} onClick={() => setSearchTerm(item)}>
+                                🕒 {item}
+                            </button>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{textAlign: 'center', padding: '20px 0', color: '#636366', fontSize: '0.9rem'}}>
+                        <i>Ingen historik / لا يوجد سجل</i>
+                    </div>
+                )}
+            </div>
+        )}
+
+        {isFiltersOpen && !isSearchFocused && (
             <div style={styles.filtersSection}>
                 <div style={styles.filtersGrid}>
                     <FilterSelect label="Läge" icon="⚙️" value={mode} options={MODES} onChange={setMode} />
@@ -520,7 +622,7 @@ export const HomeView: React.FC = () => {
             </div>
         )}
         
-        {!isFiltersOpen && hasActiveFilters && (
+        {!isFiltersOpen && hasActiveFilters && !isSearchFocused && (
              <div style={styles.activeFiltersRow}>
                  {mode !== 'all' && <span style={styles.activeChip}>Mode: {mode}</span>}
                  {type !== 'all' && <span style={styles.activeChip}>Typ: {type}</span>}
