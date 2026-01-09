@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import * as ReactWindow from 'react-window';
+import { AutoSizer } from 'react-virtualized-auto-sizer';
 import { SearchService, SearchResult, SearchStats } from './search-service';
+
+const List = (ReactWindow as any).FixedSizeList;
+const AutoSizerComponent = AutoSizer as any;
 import { SearchHistoryManager } from './search-history';
 import { FavoritesManager } from './favorites';
 import { TypeColorSystem } from './type-color-system';
@@ -664,19 +669,38 @@ export const HomeView: React.FC = () => {
              <div style={styles.emptyState}><p>Inga resultat / لا توجد نتائج</p></div>
         )}
 
-        {/* INFINITE SCROLL RENDER */}
-        {results.slice(0, visibleLimit).map((word) => (
-            <WordCard key={word.id} word={word} onClick={() => handleResultClick(word.id)} />
-        ))}
+        {/* INFINITE SCROLL RENDER - VIRTUALIZED */}
+        {results.length > 0 ? (
+            <div style={{ flex: 1, height: '100%', width: '100%' }}>
+                <AutoSizerComponent>
+                    {({ height, width }: { height: number, width: number }) => (
+                        <List
+                            height={height}
+                            itemCount={results.length}
+                            itemSize={135} // Card height + margin
+                            width={width}
+                        >
+                            {({ index, style }: { index: number, style: React.CSSProperties }) => (
+                                <div style={{ ...style, paddingRight: '10px' }}>
+                                    <WordCard 
+                                        word={results[index]} 
+                                        onClick={() => handleResultClick(results[index].id)} 
+                                    />
+                                </div>
+                            )}
+                        </List>
+                    )}
+                </AutoSizerComponent>
+            </div>
+        ) : null}
         
-        <div ref={observerTarget} style={{ height: '20px' }}></div>
-
-        {results.length > visibleLimit && (
+        {/* Only show loader if we have results, otherwise List handles it? No, List handles existing results. Loader is for fetching. */}
+        {results.length === 0 && results.length > visibleLimit && (
             <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>Laddar fler... / جاري تحميل المزيد...</div>
         )}
 
-        {/* Physical spacer to push content above fixed Dock */}
-        <div className='safe-area-spacer' style={{ height: '220px', width: '100%', flexShrink: 0 }}></div>
+        {/* Physical spacer to push content above fixed Dock - Only needed for non-virtualized content */}
+        {!results.length && <div className='safe-area-spacer' style={{ height: '220px', width: '100%', flexShrink: 0 }}></div>}
       </div>
 
       {showScrollTop && (

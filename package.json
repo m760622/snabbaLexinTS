@@ -31,8 +31,12 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "@types/react-virtualized-auto-sizer": "^1.0.4",
+    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^5.1.2",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-virtualized-auto-sizer": "^2.0.2",
+    "react-window": "^2.2.4"
   }
 }
