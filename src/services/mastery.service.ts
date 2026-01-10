@@ -46,6 +46,19 @@ export class MasteryManager {
         localStorage.setItem(`lastStudied_${wordId}`, new Date().toISOString());
     }
 
+    static getMasteryInfo(wordId: string) {
+        const mastery = this.getMastery(wordId);
+        const last = localStorage.getItem(`lastStudied_${wordId}`);
+        const daysSince = last ? (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24) : 999;
+        
+        return {
+            mastery,
+            daysSince,
+            isMastered: mastery >= 100,
+            needsReview: mastery > 0 && daysSince > 7
+        };
+    }
+
     static getTimeAgo(wordId: string): string {
         const last = localStorage.getItem(`lastStudied_${wordId}`);
         if (!last) return '';

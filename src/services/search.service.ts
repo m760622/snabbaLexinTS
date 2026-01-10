@@ -10,12 +10,13 @@ export interface SearchResult {
     gender?: string;
     definition?: string;
     example?: string;
+    score?: number; // Relevance score from engine
 }
 
 export interface SearchStats {
     total: number;
     types: Record<string, number>;
-    categories: Record<string, number>;
+    categories?: Record<string, number>;
 }
 
 export interface SearchResultWithStats {

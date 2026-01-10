@@ -4,7 +4,7 @@
 /* Increase specificity to override potential conflicts */
 .card.compact-card,
 .card.card-link.compact-card {
-    height: 120px !important;
+    height: auto;
     min-height: 120px !important;
     display: flex;
     flex-direction: column;
@@ -586,7 +586,11 @@
 }
 
 /* Adverb - Orange */
+
 .card.compact-card[data-type="adv"],
+
 .card.compact-card[data-type="adverb"] {
+
     --glow-color: #0ea5e9;
+
 }

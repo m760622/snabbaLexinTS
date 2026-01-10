@@ -60,5 +60,17 @@ export const LeitnerService = {
         return Object.entries(data)
             .filter(([, info]) => info.nextReview <= now)
             .map(([id]) => id);
+    },
+
+    checkAndNotify(): void {
+        const dueCount = this.getDueWords().length;
+        if (dueCount > 0 && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: 'SHOW_NOTIFICATION',
+                title: '📚 Dags för repetition!',
+                body: `Du har ${dueCount} ord som väntar på att repeteras.`,
+                data: { url: './' } // Redirect to home to start quiz
+            });
+        }
     }
 };

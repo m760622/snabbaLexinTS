@@ -6,6 +6,7 @@ import { showToast, TextSizeManager, HapticManager } from './utils/utils';
 import { PronunciationLab } from './components/PronunciationLab';
 import { MiniQuiz } from './components/MiniQuiz';
 import { AIStoryFlash } from './components/AIStoryFlash';
+import { AIAnalysis } from './components/AIAnalysis';
 import { t } from './utils/i18n.util';
 import { DictionaryDB } from './services/db.service';
 
@@ -25,15 +26,26 @@ const PremiumBackground = () => (
 
 const SmartLinkedText = ({ text, onLinkClick }: { text: string, onLinkClick: (word: string) => void }) => {
     if (!text) return null;
-    const parts = text.split(/([ \t\n,.!?;:"]+)/);
+    // Split by spaces, punctuation, and Arabic characters vs Latin
+    const parts = text.split(/([ \t\n,.!?;:"]+|[أ-ي]+)/);
     return (        <span>
             {parts.map((part, i) => {
-                if (part.match(/^[a-zåäöA-ZÅÄÖ]{4,}$/)) {
+                // Match Swedish words (at least 3 chars) or any Arabic sequence
+                const isSwedish = part.match(/^[a-zåäöA-ZÅÄÖ]{3,}$/);
+                const isArabic = part.match(/^[أ-ي]{2,}$/);
+                
+                if (isSwedish || isArabic) {
                     return (
                         <span 
                             key={i} 
                             onClick={(e) => { e.stopPropagation(); onLinkClick(part); }}
-                            style={{ cursor: 'pointer', borderBottom: '1px dotted currentColor', color: 'var(--accent-blue, #3b82f6)' }}
+                            style={{ 
+                                cursor: 'pointer', 
+                                borderBottom: '1.5px solid rgba(59, 130, 246, 0.3)', 
+                                color: isArabic ? 'var(--accent-gold, #fbbf24)' : 'var(--accent-blue, #3b82f6)',
+                                transition: 'all 0.2s'
+                            }}
+                            className="smart-link"
                         >
                             {part}
                         </span>
@@ -240,6 +252,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             </div>
 
             <div style={{ padding: '0 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+                <AIAnalysis word={swe} type={type} forms={forms} />
                 <AIStoryFlash swe={swe} arb={arb} type={type} />
                 
                 {/* Tabs */}
