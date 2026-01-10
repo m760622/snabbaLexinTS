@@ -126,7 +126,7 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
         if (rawType.includes('medicin')) stats.types['medicin'] = (stats.types['medicin'] || 0) + 1;
         if (rawType.includes('it') || rawType.includes('teknik') || rawType.includes('data') || rawType.includes('dator')) stats.types['it'] = (stats.types['it'] || 0) + 1;
 
-        // 4. Type Filter
+        // 4. Filter Results
         if (!hasQuery && !isBrowsing) continue;
 
         let includeInResults = true;

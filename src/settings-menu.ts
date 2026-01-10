@@ -25,8 +25,7 @@ export async function initSettingsMenuLazy(): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
-        // Load content on first open - DISABLED FOR REACT MIGRATION
-        /*
+        // Load content on first open
         if (!isMenuLoaded) {
             // Use Shared UI Generator
             settingsMenu.innerHTML = SettingsUI.generateSections();
@@ -36,7 +35,6 @@ export async function initSettingsMenuLazy(): Promise<void> {
 
             isMenuLoaded = true;
         }
-        */
 
         const isHidden = settingsMenu.classList.contains('hidden');
         if (isHidden) {
@@ -328,12 +326,26 @@ function initSettingsMenuHandlers(): void {
     // Language Selector
     const langSelector = menu.querySelector('#languageSelector');
     if (langSelector) {
+        // Init state
+        const savedLang = localStorage.getItem('appLanguage') || 'both';
+        langSelector.querySelectorAll('.lang-card-premium').forEach(card => {
+            if (card.getAttribute('data-lang') === savedLang) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+
         langSelector.addEventListener('click', (e) => {
             const btn = (e.target as Element).closest('.lang-card-premium');
             if (!btn) return;
 
             const lang = btn.getAttribute('data-lang') || 'both';
             localStorage.setItem('appLanguage', lang);
+
+            // Update UI
+            langSelector.querySelectorAll('.lang-card-premium').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
 
             if ((window as any).LanguageManager) {
                 (window as any).LanguageManager.setLanguage(lang);
@@ -342,4 +354,36 @@ function initSettingsMenuHandlers(): void {
             }
         });
     }
+
+    // --- Data & Actions ---
+    // Export Data
+    (window as any).exportData = () => {
+        if ((window as any).ExportManager) {
+            (window as any).ExportManager.exportToJSON();
+        } else {
+            alert('Export functionality not loaded.');
+        }
+    };
+
+    // Clear Favorites
+    (window as any).clearFavorites = () => {
+        if (confirm('Är du säker på att du vill rensa alla favoriter? / هل أنت متأكد من مسح جميع المفضلة؟')) {
+            localStorage.removeItem('snabbaLexin_favorites');
+            alert('Favoriter rensade / تم مسح المفضلة');
+            location.reload();
+        }
+    };
+
+    // Clear All Data
+    (window as any).clearAllData = () => {
+        if (confirm('VARNING: Detta tar bort all data och återställer appen. Fortsätt? / تحذير: سيتم حذف جميع البيانات. الاستمرار؟')) {
+            localStorage.clear();
+            location.reload();
+        }
+    };
+    
+    // Theme Toggle Button (in Appearance)
+    const themeBtn = menu.querySelector('#themeToggleBtn'); // Assuming you might add a specific button
+    // Note: Dark Mode Toggle is already handled above.
 }
+

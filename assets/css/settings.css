@@ -29,6 +29,25 @@
 /* ============================================================
    BASE STYLES
    ============================================================ */
+.settings-menu-header {
+    padding: 24px 24px 12px;
+}
+
+.settings-menu-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.settings-header-line {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 16px;
+    width: 100%;
+}
+
 .settings-page {
     min-height: 100vh;
     background: var(--settings-bg);
@@ -549,7 +568,7 @@
 .section-icon {
     width: 52px;
     height: 52px;
-    border-radius: 18px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -557,6 +576,8 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-icon::after {
@@ -566,27 +587,37 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
 }
 
-.gradient-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
-.gradient-green { background: linear-gradient(135deg, #059669, #10b981); }
-.gradient-amber { background: linear-gradient(135deg, #d97706, #f59e0b); }
-.gradient-cyan { background: linear-gradient(135deg, #0891b2, #06b6d4); }
-.gradient-rose { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+.gradient-blue { background: rgba(59, 130, 246, 0.2); }
+.gradient-green { background: rgba(16, 185, 129, 0.2); }
+.gradient-amber { background: rgba(245, 158, 11, 0.2); }
+.gradient-cyan { background: rgba(6, 182, 212, 0.2); }
+.gradient-rose { background: rgba(244, 63, 94, 0.2); }
 
 .section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     margin: 0;
     color: #ffffff;
-    letter-spacing: 0.2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.section-subtitle {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 4px 0 0;
+.settings-section.expanded {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.settings-section.expanded .section-header {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.settings-section.expanded .section-title-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 24px;
+    border-radius: 20px;
 }
 
 .section-arrow {
@@ -1484,6 +1515,62 @@ body:not(.dark-mode) .toast-close:hover {
     color: rgba(0, 0, 0, 0.8);
 }
 
+.settings-menu-footer {
+    margin-top: 12px;
+    padding: 0 12px 24px;
+}
+
+.settings-close-btn {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-close-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.color-themes {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 0 4px;
+}
+
+.color-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    flex: 1;
+    max-width: 60px;
+}
+
+.color-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.color-btn.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 10px 25px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+    z-index: 2;
+}
+
 /* ============================================================
    RESPONSIVE DESIGN
    ============================================================ */
@@ -1682,29 +1769,34 @@ body:not(.dark-mode) .toast-close:hover {
 }
 
 .settings-subtitle {
-    font-size: 0.9rem;
-    color: var(--settings-text-secondary);
-    margin: 0 0 16px;
-    font-weight: 500;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 20px 0 12px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .language-grid-premium {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.lang-card-premium:last-child {
+    grid-column: span 2;
 }
 
 .lang-card-premium {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--settings-border);
-    border-radius: 16px;
-    padding: 20px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 10px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -1712,30 +1804,25 @@ body:not(.dark-mode) .toast-close:hover {
 }
 
 .lang-card-premium:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .lang-card-premium.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
-    border-color: var(--settings-primary);
-    box-shadow: 0 0 0 1px var(--settings-primary), 0 10px 25px rgba(37, 99, 235, 0.25);
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
 }
 
 .lang-flag-large {
-    font-size: 2.5rem;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    font-size: 1.2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     transition: transform 0.3s ease;
-}
-
-.lang-card-premium:hover .lang-flag-large {
-    transform: scale(1.1);
 }
 
 .lang-name-large {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--settings-text);
 }
 

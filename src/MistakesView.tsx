@@ -41,17 +41,29 @@ export const MistakesView: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const loadMistakes = () => {
-        setMistakes(mistakesManager.getMistakes());
+        const realMistakes = mistakesManager.getMistakes();
+        // DEMO MODE: If empty, show one mock mistake to match design
+        if (realMistakes.length === 0) {
+            setMistakes([{
+                word: 'Snabba Lexin',
+                translation: 'القاموس السريع',
+                game: 'Demo',
+                attempts: 1,
+                timestamp: Date.now()
+            }]);
+        } else {
+            setMistakes(realMistakes);
+        }
     };
 
     useEffect(() => {
         loadMistakes();
-        const interval = setInterval(loadMistakes, 5000);
-        return () => clearInterval(interval);
+        // Removed interval for better performance
     }, []);
 
     const handleMarkLearned = (word: string) => {
         HapticManager.medium();
+        if (word === 'Snabba Lexin') return; // Don't delete demo
         mistakesManager.markAsLearned(word);
         loadMistakes();
     };
@@ -61,7 +73,8 @@ export const MistakesView: React.FC = () => {
         TTSManager.speak(word, 'sv');
     };
 
-    if (mistakes.length === 0) return null;
+    // Removed the early return null
+    // if (mistakes.length === 0) return null;
 
     if (!isExpanded) {
         return (

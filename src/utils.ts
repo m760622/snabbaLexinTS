@@ -5,6 +5,8 @@
 
 // import { TTSManager } from './tts';
 // import { ProgressManager } from './progress';
+export { measurePerformance } from './performance-utils';
+export { memoize } from './memoization';
 
 // --- Voice Search Manager ---
 

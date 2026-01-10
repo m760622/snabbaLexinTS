@@ -5,26 +5,30 @@
 
 export class SettingsUI {
     static generateSections(): string {
+        const header = `
+            <div class="settings-menu-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px;">
+                <h2 class="settings-menu-title" style="font-size: 1.5rem; margin: 0;">Inställningar</h2>
+                <button class="close-x-btn" onclick="document.getElementById('settingsBtn').click()" style="background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 50%; color: #fff; cursor: pointer;">✕</button>
+            </div>
+        `;
+
         const sections = [
             this.getGeneralSection(),
             this.getAppearanceSection(),
             this.getSoundSection(),
-            this.getLearningSection(),
-            this.getNavigationSection(),
-            this.getDataSection(),
-            this.getAboutSection()
+            this.getProgressSection()
         ];
 
-        return sections.join('');
+        return header + '<div class="settings-content-scroll">' + sections.join('') + '</div>' + this.getFooter();
     }
 
     private static getGeneralSection(): string {
         return `
             <section class="settings-section glass-card expanded" data-section="general">
                 <div class="section-header" onclick="toggleSection('general')">
-                    <div class="section-icon gradient-amber">🌍</div>
+                    <div class="section-icon gradient-green">🌍</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Allmänt</span><span class="ar-text">عام</span></h3>
+                        <h3 class="section-title">Allmänt</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -33,22 +37,15 @@ export class SettingsUI {
                 <div class="section-content" id="general-content">
                     <div class="section-inner">
                     <div class="language-selection-container">
-                        <h4 class="settings-subtitle"><span class="sv-text">Välj Språk</span><span class="ar-text">اختر اللغة</span></h4>
-                        <div class="language-grid-premium" id="languageSelector">
-                            <button class="lang-card-premium" data-lang="sv">
-                                <span class="lang-flag-large">🇸🇪</span>
-                                <span class="lang-name-large">Svenska</span>
-                                <span class="lang-check">✓</span>
+                        <div class="language-grid-compact" id="languageSelector">
+                            <button class="lang-icon-btn" data-lang="sv" title="Svenska">
+                                <span class="lang-flag">🇸🇪</span>
                             </button>
-                            <button class="lang-card-premium" data-lang="ar">
-                                <span class="lang-flag-large">🇸🇦</span>
-                                <span class="lang-name-large">العربية</span>
-                                <span class="lang-check">✓</span>
+                            <button class="lang-icon-btn" data-lang="ar" title="العربية">
+                                <span class="lang-flag">🇸🇦</span>
                             </button>
-                            <button class="lang-card-premium" data-lang="both">
-                                <span class="lang-flag-large">🌍</span>
-                                <span class="lang-name-large"><span class="sv-text">Båda</span><span class="ar-text">كلتا</span></span>
-                                <span class="lang-check">✓</span>
+                            <button class="lang-icon-btn" data-lang="both" title="Båda">
+                                <span class="lang-flag">🌍</span>
                             </button>
                         </div>
                     </div>
@@ -57,13 +54,50 @@ export class SettingsUI {
             </section>`;
     }
 
+    private static getProgressSection(): string {
+        return `
+            <section class="settings-section glass-card" data-section="progress">
+                <div class="section-header" onclick="toggleSection('progress')">
+                    <div class="section-icon gradient-amber">🏆</div>
+                    <div class="section-title-wrapper">
+                        <h3 class="section-title">Framsteg</h3>
+                    </div>
+                    <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="section-content" id="progress-content">
+                    <div class="section-inner">
+                        <div class="settings-item clickable" onclick="if(window.app) window.app.updateDailyProgressBar(); document.getElementById('progressModal').style.display='flex';">
+                            <div class="item-left">
+                                <span class="item-icon">📊</span>
+                                <div class="item-info">
+                                    <span class="item-name">Visa statistik</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>`;
+    }
+
+    private static getFooter(): string {
+        return `
+            <div class="settings-menu-footer" style="padding: 20px;">
+                <button class="settings-done-btn" onclick="document.getElementById('settingsBtn').click()">
+                    Klar / تم
+                </button>
+            </div>
+        `;
+    }
+
     private static getAppearanceSection(): string {
         return `
             <section class="settings-section glass-card" data-section="appearance">
                 <div class="section-header" onclick="toggleSection('appearance')">
                     <div class="section-icon gradient-blue">🎨</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Utseende</span><span class="ar-text">المظهر</span></h3>
+                        <h3 class="section-title">Utseende</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -76,7 +110,7 @@ export class SettingsUI {
                         <div class="item-left">
                             <span class="item-icon">🌙</span>
                             <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Mörkt läge</span><span class="ar-text">الوضع الداكن</span></span>
+                                <span class="item-name">Mörkt läge</span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -90,7 +124,7 @@ export class SettingsUI {
                         <div class="item-left">
                             <span class="item-icon">📱</span>
                             <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Mobilvy</span><span class="ar-text">عرض الجوال</span></span>
+                                <span class="item-name">Mobilvy</span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -104,7 +138,7 @@ export class SettingsUI {
                         <div class="item-left">
                             <span class="item-icon">🎨</span>
                             <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Färgtema</span><span class="ar-text">لون الثيم</span></span>
+                                <span class="item-name">Färgtema</span>
                             </div>
                         </div>
                         <div class="color-themes" id="colorThemes">
@@ -113,37 +147,7 @@ export class SettingsUI {
                             <button class="color-btn" data-theme="sunset" style="background: linear-gradient(135deg, #f97316, #ea580c)" title="Sunset"></button>
                             <button class="color-btn" data-theme="forest" style="background: linear-gradient(135deg, #22c55e, #16a34a)" title="Forest"></button>
                             <button class="color-btn" data-theme="rose" style="background: linear-gradient(135deg, #ef4444, #b91c1c)" title="Ruby"></button>
-                            <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #0ea5e9, #22d3ee)" title="Neon"></button>
                         </div>
-                    </div>
-
-                    <!-- Font Size -->
-                    <div class="settings-item">
-                        <div class="item-left">
-                            <span class="item-icon">🔤</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Textstorlek</span><span class="ar-text">حجم الخط</span></span>
-                            </div>
-                        </div>
-                        <div class="font-size-control">
-                            <button class="font-btn" data-size="small">A</button>
-                            <button class="font-btn active" data-size="medium">A</button>
-                            <button class="font-btn" data-size="large">A</button>
-                        </div>
-                    </div>
-
-                    <!-- Reduce Motion -->
-                    <div class="settings-item">
-                        <div class="item-left">
-                            <span class="item-icon">✨</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Animationer</span><span class="ar-text">الحركات</span></span>
-                            </div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="animationsToggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                 </div>
             </section>`;
@@ -153,9 +157,9 @@ export class SettingsUI {
         return `
             <section class="settings-section glass-card" data-section="sound">
                 <div class="section-header" onclick="toggleSection('sound')">
-                    <div class="section-icon gradient-blue">🔔</div>
+                    <div class="section-icon gradient-amber">🔔</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Ljud & Notiser</span><span class="ar-text">الصوت والإشعارات</span></h3>
+                        <h3 class="section-title">Ljud</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -168,7 +172,7 @@ export class SettingsUI {
                         <div class="item-left">
                             <span class="item-icon">🔊</span>
                             <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Ljudeffekter</span><span class="ar-text">المؤثرات الصوتية</span></span>
+                                <span class="item-name">Ljudeffekter</span>
                             </div>
                         </div>
                         <label class="toggle-switch">
@@ -182,61 +186,13 @@ export class SettingsUI {
                         <div class="item-left">
                             <span class="item-icon">🗣️</span>
                             <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Uttalshastighet</span><span class="ar-text">سرعة النطق</span></span>
+                                <span class="item-name">Uttalshastighet</span>
                             </div>
                         </div>
                         <div class="slider-control">
                             <input type="range" id="ttsSpeedSlider" min="50" max="150" value="85">
                             <span class="slider-value" id="ttsSpeedValue">85%</span>
                         </div>
-                    </div>
-                    
-                     <!-- TTS Voice Selection -->
-                    <div class="settings-item">
-                        <div class="item-left">
-                            <span class="item-icon">🎭</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Rösttyp</span><span class="ar-text">نوع الصوت</span></span>
-                            </div>
-                        </div>
-                        <div class="voice-selector">
-                            <button class="voice-btn active" data-voice="natural" title="Naturlig / طبيعي">🌍</button>
-                            <button class="voice-btn" data-voice="female" title="Kvinna / أنثى">👩</button>
-                            <button class="voice-btn" data-voice="male" title="Man / ذكر">👨</button>
-                        </div>
-                    </div>
-
-
-                    <!-- Test TTS -->
-                    <div class="settings-item center-item">
-                        <button class="test-btn" id="testTTSBtn">
-                            <span>🔊</span> <span class="sv-text">Testa uttal</span><span class="ar-text">اختبر النطق</span>
-                        </button>
-                    </div>
-
-                    <!-- Daily Reminder -->
-                    <div class="settings-item">
-                        <div class="item-left">
-                            <span class="item-icon">⏰</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Daglig påminnelse</span><span class="ar-text">تذكير يومي</span></span>
-                            </div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="reminderToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <!-- Reminder Time -->
-                    <div class="settings-item" id="reminderTimeItem" style="display: none;">
-                        <div class="item-left">
-                            <span class="item-icon">🕐</span>
-                            <div class="item-info">
-                                <span class="item-name"><span class="sv-text">Påminnelsetid</span><span class="ar-text">وقت التذكير</span></span>
-                            </div>
-                        </div>
-                        <input type="time" id="reminderTime" value="18:00" class="time-input">
                     </div>
                 </div>
             </section>`;
@@ -248,7 +204,7 @@ export class SettingsUI {
                 <div class="section-header" onclick="toggleSection('learning')">
                     <div class="section-icon gradient-green">📚</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Lärverktyg</span><span class="ar-text">أدوات التعلم</span></h3>
+                        <h3 class="section-title">LÄRVERKTYG</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -338,7 +294,7 @@ export class SettingsUI {
                 <div class="section-header" onclick="toggleSection('navigation')">
                     <div class="section-icon gradient-amber">🧭</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Snabbnavigering</span><span class="ar-text">التنقل السريع</span></h3>
+                        <h3 class="section-title">SNABBNAVIGERING</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -374,7 +330,7 @@ export class SettingsUI {
                 <div class="section-header" onclick="toggleSection('data')">
                     <div class="section-icon gradient-cyan">💾</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Data & Sekretess</span><span class="ar-text">البيانات والخصوصية</span></h3>
+                        <h3 class="section-title">DATA & SEKRETESS</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -455,7 +411,7 @@ export class SettingsUI {
                 <div class="section-header" onclick="toggleSection('about')">
                     <div class="section-icon gradient-rose">ℹ️</div>
                     <div class="section-title-wrapper">
-                        <h3 class="section-title"><span class="sv-text">Om SnabbaLexin</span><span class="ar-text">حول التطبيق</span></h3>
+                        <h3 class="section-title">OM SNABBALEXIN</h3>
                     </div>
                     <svg class="section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"></polyline>
