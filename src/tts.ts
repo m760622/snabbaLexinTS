@@ -27,6 +27,7 @@ export const TTSManager = {
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
     isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
     isAndroid: /Android/i.test(navigator.userAgent),
+    isInitialized: false,
 
     // Configuration
     config: {
@@ -38,6 +39,9 @@ export const TTSManager = {
     },
 
     init() {
+        if (this.isInitialized) return;
+        this.isInitialized = true;
+
         console.log('🔊 TTSManager initializing...', {
             isIOS: this.isIOS,
             isSafari: this.isSafari,
@@ -202,6 +206,8 @@ export const TTSManager = {
     },
 
     async speak(text: string, lang = 'sv', options: TTSOptions & { slow?: boolean } = {}) {
+        if (!this.isInitialized) this.init();
+        
         if (!text || text.trim() === '') return;
 
         const cleanText = text.replace(/['']/g, "'").trim();
@@ -591,9 +597,6 @@ if (typeof window !== 'undefined') {
     (window as any).speakSwedish = speakSwedish;
     (window as any).speakArabic = speakArabic;
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => TTSManager.init());
-    } else {
-        TTSManager.init();
-    }
+    // Lazy Init: Removed auto-execution to prevent audio interruption
+    // TTSManager.init() will be called on first user interaction via speak()
 }

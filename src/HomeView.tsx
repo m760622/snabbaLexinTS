@@ -334,7 +334,7 @@ const HomeViewInner: React.FC = () => {
       <PremiumBackground />
       <div style={styles.header}>
         <div style={styles.topBar}>
-            <button style={styles.iconBtn} onClick={() => { HapticManager.light(); setIsSettingsOpen(true); }}>⚙️</button>
+            {/* Settings moved to dock */}
             <div style={{...styles.brandCapsule, boxShadow: `0 0 20px ${accentColor}33`, borderColor: `${accentColor}44`}}>Snabba Lexin</div>
             <div style={{...styles.statsBadge, borderColor: `${accentColor}44`, gap: '8px'}} className="premium-card">
                 <span className="fire-active" title="Streak" aria-label={`Streak: ${stats.streak}`}>🔥 {stats.streak}</span>
@@ -418,11 +418,22 @@ const HomeViewInner: React.FC = () => {
       </div>
       <div style={styles.dockContainer}>
           <div style={styles.dock}>
-              {(['search', 'games', 'learn', 'favorites', 'quiz'] as const).map(tab => {
-                  const icons = { search: '🔍', games: '🎮', learn: '📚', favorites: '⭐', quiz: '⚡' };
+              {(['search', 'games', 'learn', 'favorites', 'quiz', 'settings'] as const).map(tab => {
+                  const icons = { search: '🔍', games: '🎮', learn: '📚', favorites: '⭐', quiz: '⚡', settings: '⚙️' };
                   const isActive = activeTab === tab;
                   return (
-                      <button key={tab} onClick={() => handleTabChange(tab)} style={{ ...styles.dockItem, backgroundColor: isActive ? `${accentColor}33` : 'transparent', color: isActive ? accentColor : '#fff', transform: isActive ? 'scale(1.1) translateY(-5px)' : 'scale(1)' }}>
+                      <button key={tab} 
+                          onClick={() => {
+                              if (tab === 'settings') {
+                                  HapticManager.light();
+                                  setIsSettingsOpen(true);
+                              } else {
+                                  handleTabChange(tab);
+                              }
+                          }} 
+                          style={{ ...styles.dockItem, backgroundColor: isActive ? `${accentColor}33` : 'transparent', color: isActive ? accentColor : '#fff', transform: isActive ? 'scale(1.1) translateY(-5px)' : 'scale(1)' }}
+                          aria-label={tab === 'settings' ? 'Inställningar' : tab}
+                      >
                           {icons[tab]}{isActive && <div style={{position: 'absolute', bottom: '5px', width: '4px', height: '4px', borderRadius: '50%', background: accentColor}} />}
                       </button>
                   );

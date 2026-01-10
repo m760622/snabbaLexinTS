@@ -20,6 +20,14 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
   const [ttsSpeed, setTtsSpeed] = useState<number>(85);
   const [fontSize, setFontSize] = useState<number>(100); // Percentage
   const [dailyGoal, setDailyGoal] = useState<number>(10);
+  
+  // New Settings States
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [showExamples, setShowExamples] = useState(true);
+  const [focusMode, setFocusMode] = useState(false);
+  const [eyeCare, setEyeCare] = useState(false);
+  const [animations, setAnimations] = useState(true);
+  const [voiceType, setVoiceType] = useState('natural');
 
   useEffect(() => {
     const savedSettingsStr = localStorage.getItem('userSettings');
@@ -32,12 +40,63 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
     setTtsSpeed(parseInt(localStorage.getItem('ttsSpeed') || '85'));
     setFontSize(parseInt(localStorage.getItem('fontSizePercent') || '100'));
     setDailyGoal(savedSettings.dailyGoal || 10);
+
+    // Load new settings
+    setAutoPlay(savedSettings.autoPlay || false);
+    setShowExamples(savedSettings.showExamples !== false); // Default true
+    setFocusMode(localStorage.getItem('focusMode') === 'true');
+    setEyeCare(savedSettings.eyeCare || false);
+    setAnimations(savedSettings.animations !== false); // Default true
+    setVoiceType(localStorage.getItem('ttsVoicePreference') || 'natural');
   }, []);
 
   const saveSetting = (key: string, value: any) => {
     const saved = JSON.parse(localStorage.getItem('userSettings') || '{}');
     saved[key] = value;
     localStorage.setItem('userSettings', JSON.stringify(saved));
+  };
+
+  const handleToggle = (key: string, value: boolean, setter: (v: boolean) => void, storageKey?: string) => {
+      setter(value);
+      saveSetting(key, value);
+      if (storageKey) localStorage.setItem(storageKey, String(value));
+      
+      if (key === 'focusMode') document.body.classList.toggle('focus-mode', value);
+      if (key === 'eyeCare') document.body.classList.toggle('eye-care-mode', value);
+      if (key === 'animations') document.body.classList.toggle('reduce-motion', !value);
+      if (key === 'mobileView') {
+           document.body.classList.toggle('iphone-view', value);
+           if ((window as any).MobileViewManager) (window as any).MobileViewManager.apply(value);
+      }
+  };
+  
+  const handleVoiceChange = (voice: string) => {
+      setVoiceType(voice);
+      localStorage.setItem('ttsVoicePreference', voice);
+      saveSetting('ttsVoicePreference', voice);
+  };
+
+  const handleGoalChange = (goal: number) => {
+      setDailyGoal(goal);
+      saveSetting('dailyGoal', goal);
+      localStorage.setItem('dailyGoal', String(goal));
+  };
+
+  const handleDataAction = (action: 'export' | 'clearFav' | 'reset') => {
+      if (action === 'export') {
+          if ((window as any).ExportManager) (window as any).ExportManager.exportToJSON();
+          else showToast('Export module not loaded', { type: 'error' });
+      } else if (action === 'clearFav') {
+          if (confirm('Rensa alla favoriter? / مسح كل المفضلة؟')) {
+              localStorage.removeItem('snabbaLexin_favorites');
+              window.location.reload();
+          }
+      } else if (action === 'reset') {
+          if (confirm('Återställ allt? / إعادة ضبط المصنع؟')) {
+              localStorage.clear();
+              window.location.reload();
+          }
+      }
   };
 
   const handleDarkMode = (checked: boolean) => {
@@ -112,6 +171,9 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
 
             <Section id="appearance" icon="🎨" titleSv="Utseende" titleAr="المظهر">
                 <ToggleItem icon="🌙" nameSv="Mörkt läge" nameAr="الوضع الداكن" checked={darkMode} onChange={handleDarkMode} />
+                <ToggleItem icon="📱" nameSv="Mobilvy" nameAr="عرض الجوال" checked={mobileView} onChange={(c) => handleToggle('mobileView', c, setMobileView, 'mobileView')} />
+                <ToggleItem icon="✨" nameSv="Animationer" nameAr="تأثيرات حركية" checked={animations} onChange={(c) => handleToggle('animations', c, setAnimations)} />
+                
                 <div style={{ margin: '15px 0' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <span style={{ fontSize: '0.9rem' }}>Textstorlek / حجم الخط</span>
@@ -135,6 +197,56 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
                     <span style={{ color: accentColor, fontWeight: 'bold' }}>{ttsSpeed}%</span>
                 </div>
                 <input type="range" min="50" max="150" value={ttsSpeed} onChange={(e: any) => { setTtsSpeed(e.target.value); localStorage.setItem('ttsSpeed', e.target.value); }} style={{ width: '100%', accentColor: accentColor } as any} />
+                
+                <div style={{marginTop: '15px', marginBottom: '15px'}}>
+                     <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Rösttyp / نوع الصوت</div>
+                     <div style={{display: 'flex', gap: '8px'}}>
+                        {['natural', 'female', 'male'].map(v => (
+                            <button key={v} onClick={() => handleVoiceChange(v)} 
+                                style={{
+                                    flex: 1, padding: '8px', borderRadius: '8px', 
+                                    background: voiceType === v ? `${accentColor}33` : '#333',
+                                    border: `1px solid ${voiceType === v ? accentColor : 'transparent'}`,
+                                    color: voiceType === v ? accentColor : '#bbb'
+                                }}>
+                                {v === 'natural' ? '✨ Natural' : v === 'female' ? '👩 Female' : '👨 Male'}
+                            </button>
+                        ))}
+                     </div>
+                </div>
+
+                <div style={{marginTop: '10px'}}>
+                     <ToggleItem icon="🔊" nameSv="Auto-uppspelning" nameAr="تشغيل تلقائي للصوت" checked={autoPlay} onChange={(c) => handleToggle('autoPlay', c, setAutoPlay)} />
+                </div>
+            </Section>
+
+            <Section id="learning" icon="📚" titleSv="Inlärning" titleAr="التعلم">
+                <ToggleItem icon="📝" nameSv="Visa exempel" nameAr="إظهار الأمثلة" checked={showExamples} onChange={(c) => handleToggle('showExamples', c, setShowExamples)} />
+                <ToggleItem icon="🎯" nameSv="Fokusläge" nameAr="وضع التركيز" checked={focusMode} onChange={(c) => handleToggle('focusMode', c, setFocusMode, 'focusMode')} />
+                <ToggleItem icon="👁️" nameSv="Ögonvård" nameAr="حماية العين" checked={eyeCare} onChange={(c) => handleToggle('eyeCare', c, setEyeCare)} />
+                
+                <div style={{marginTop: '15px'}}>
+                     <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Dagligt mål / الهدف اليومي</div>
+                     <div style={{display: 'flex', gap: '8px'}}>
+                        {[10, 20, 50].map(g => (
+                            <button key={g} onClick={() => handleGoalChange(g)}
+                                style={{
+                                    flex: 1, padding: '8px', borderRadius: '8px', 
+                                    background: dailyGoal === g ? `${accentColor}33` : '#333',
+                                    border: `1px solid ${dailyGoal === g ? accentColor : 'transparent'}`,
+                                    color: dailyGoal === g ? accentColor : '#bbb'
+                                }}>
+                                {g}
+                            </button>
+                        ))}
+                     </div>
+                </div>
+            </Section>
+
+            <Section id="data" icon="💾" titleSv="Data" titleAr="البيانات">
+                <button onClick={() => handleDataAction('export')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left'}}>📤 Exportera Data / تصدير</button>
+                <button onClick={() => handleDataAction('clearFav')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left', borderColor: '#eab308', color: '#eab308'}}>🗑️ Rensa Favoriter / مسح المفضلة</button>
+                <button onClick={() => handleDataAction('reset')} style={{...styles.button, width: '100%', textAlign: 'left', borderColor: '#ef4444', color: '#ef4444'}}>⚠️ Återställ Appen / إعادة ضبط</button>
             </Section>
 
             <Section id="gamify" icon="🏆" titleSv="Framsteg" titleAr="الإنجازات">
