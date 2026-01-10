@@ -21,7 +21,6 @@ export interface SearchResult {
 export interface SearchStats {
     total: number;
     types: Record<string, number>;
-    categories: Record<string, number>;
 }
 
 export interface SearchResultWithStats {
@@ -30,7 +29,8 @@ export interface SearchResultWithStats {
 }
 
 // Optimization: Pre-calculated index
-let searchIndex: { swe: string, arb: string }[] = [];
+// We store simplified objects to avoid property access overhead in tight loops
+let optimizedIndex: { s: string, a: string }[] = []; 
 
 self.onmessage = (e: MessageEvent) => {
     try {
@@ -40,11 +40,15 @@ self.onmessage = (e: MessageEvent) => {
             const data = payload as any[][];
             (self as any).dictionaryData = data;
             
-            // Build Index
-            searchIndex = data.map(row => ({
-                swe: (row[2] || '').toLowerCase(),
-                arb: normalizeArabicWorker(row[3] || '').toLowerCase()
-            }));
+            // Build Index - Optimized
+            console.log('[SearchWorker] Building optimized index for ' + data.length + ' words');
+            optimizedIndex = new Array(data.length);
+            for (let i = 0; i < data.length; i++) {
+                optimizedIndex[i] = {
+                    s: (data[i][2] || '').toLowerCase(),
+                    a: normalizeArabicWorker(data[i][3] || '').toLowerCase()
+                };
+            }
 
             self.postMessage({ type: 'DATA_LOADED' });
         } else if (type === 'SEARCH') {
@@ -52,13 +56,23 @@ self.onmessage = (e: MessageEvent) => {
             const data = (self as any).dictionaryData || [];
             
             if (data.length === 0) {
-                 self.postMessage({ type: 'SEARCH_RESULT', payload: { results: [], stats: { total: 0, types: {}, categories: {} } } });
+                 self.postMessage({ type: 'SEARCH_RESULT', payload: { results: [], stats: { total: 0, types: {} } } });
                  return;
             }
 
-            console.log(`Worker searching for: "${options.query}" in ${data.length} words...`);
+            // SELF-HEALING: Ensure index is ready and matches data
+            if (!optimizedIndex || optimizedIndex.length !== data.length) {
+                console.warn('[SearchWorker] Index mismatch (Data: ' + data.length + ', Index: ' + (optimizedIndex ? optimizedIndex.length : 0) + '). Rebuilding...');
+                optimizedIndex = new Array(data.length);
+                for (let i = 0; i < data.length; i++) {
+                    optimizedIndex[i] = {
+                        s: (data[i][2] || '').toLowerCase(),
+                        a: normalizeArabicWorker(data[i][3] || '').toLowerCase()
+                    };
+                }
+            }
+
             const results = searchWithStats(data, options, favIds);
-            console.log(`Worker found ${results.results.length} matches.`);
             self.postMessage({ type: 'SEARCH_RESULT', payload: results });
         }
     } catch (error: any) {
@@ -73,8 +87,7 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     
     const stats: SearchStats = {
         total: 0,
-        types: {},
-        categories: {}
+        types: {}
     };
     
     const isBrowsing = mode === 'favorites' || type !== 'all';
@@ -84,24 +97,38 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     let allMatches: any[][] = [];
 
     // Use loop with index access for performance
-    for (let i = 0; i < data.length; i++) {
+    const len = data.length;
+    for (let i = 0; i < len; i++) {
         const row = data[i];
         
         // 1. Favorites Filter (Fastest check)
         if (favSet && !favSet.has(row[0].toString())) continue;
 
-        // 2. Query Match (Using Index)
+        // 2. Query Match (Using Optimized Index)
         let matchesQuery = false;
         if (hasQuery) {
-            const idx = searchIndex[i];
-            if (!idx) continue; // Safety
-
-            const q = normalizedQuery;
+            const idx = optimizedIndex[i];
             
-            if (mode === 'start') matchesQuery = idx.swe.startsWith(q) || idx.arb.startsWith(q);
-            else if (mode === 'end') matchesQuery = idx.swe.endsWith(q) || idx.arb.endsWith(q);
-            else if (mode === 'exact') matchesQuery = idx.swe === q || idx.arb === q;
-            else matchesQuery = idx.swe.includes(q) || idx.arb.includes(q);
+            // Safety fallback if index is still corrupted for this specific row
+            if (!idx) {
+                 const safeS = (row[2] || '').toLowerCase();
+                 const safeA = normalizeArabicWorker(row[3] || '').toLowerCase();
+                 if (safeS.includes(normalizedQuery) || safeA.includes(normalizedQuery)) matchesQuery = true;
+            } else {
+                // Optimized check
+                const q = normalizedQuery;
+                
+                if (mode === 'start') {
+                     if (idx.s.startsWith(q) || idx.a.startsWith(q)) matchesQuery = true;
+                } else if (mode === 'end') {
+                     if (idx.s.endsWith(q) || idx.a.endsWith(q)) matchesQuery = true;
+                } else if (mode === 'exact') {
+                     if (idx.s === q || idx.a === q) matchesQuery = true;
+                } else {
+                     // Default to contains for 'contains', 'favorites', undefined, etc.
+                     if (idx.s.includes(q) || idx.a.includes(q)) matchesQuery = true;
+                }
+            }
         } else {
             matchesQuery = true;
         }
@@ -110,10 +137,12 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
 
         const rawType = (row[1] || '').toLowerCase();
 
-        // 3. Type Stats
+        // 3. Type Stats - Optimized with specific checks
         stats.types['all'] = (stats.types['all'] || 0) + 1;
 
-        if (rawType.includes('subst') || rawType === 'noun') stats.types['subst'] = (stats.types['subst'] || 0) + 1;
+        const isSubst = rawType.includes('subst') || rawType === 'noun';
+        if (isSubst) stats.types['subst'] = (stats.types['subst'] || 0) + 1;
+        
         if (rawType.includes('verb')) stats.types['verb'] = (stats.types['verb'] || 0) + 1;
         if (rawType.includes('adj')) stats.types['adj'] = (stats.types['adj'] || 0) + 1;
         if (rawType.includes('adv')) stats.types['adv'] = (stats.types['adv'] || 0) + 1;
@@ -132,7 +161,7 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
         let includeInResults = true;
         if (type !== 'all') {
              let matchesType = false;
-             if (type === 'subst' && (rawType.includes('subst') || rawType === 'noun')) matchesType = true;
+             if (type === 'subst' && isSubst) matchesType = true;
              else if (type === 'verb' && rawType.includes('verb')) matchesType = true;
              else if (type === 'adj' && rawType.includes('adj')) matchesType = true;
              else if (type === 'adv' && rawType.includes('adv')) matchesType = true;
@@ -154,18 +183,17 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
     
     stats.total = allMatches.length;
 
-    const MAX_RESULTS = 1000;
+    const MAX_RESULTS = 1000; // Restore standard limit
 
     // Sort
     allMatches.sort((a, b) => {
-         // Using the original data (a and b are rows)
-         // We can recreate the index access if we had indices, but here we have the rows.
-         // Optimization: We could store the normalized values in the row or use the index if we passed indices.
-         // For now, re-normalizing for sort is acceptable as result set is small (max 1000).
-         
          const aSwe = a[2].toLowerCase();
          const bSwe = b[2].toLowerCase();
          
+         // Exact match priority
+         if (aSwe === normalizedQuery && bSwe !== normalizedQuery) return -1;
+         if (bSwe === normalizedQuery && aSwe !== normalizedQuery) return 1;
+
          if (sort === 'alpha_asc' || sort === 'az') return aSwe.localeCompare(bSwe, 'sv');
          if (sort === 'alpha_desc' || sort === 'za') return bSwe.localeCompare(aSwe, 'sv');
          if (sort === 'last_char') return aSwe.slice(-1).localeCompare(bSwe.slice(-1), 'sv');
@@ -174,21 +202,7 @@ function searchWithStats(data: any[][], options: any, favIdsList: string[]): Sea
              const bLen = (b[5] || '').length + (b[7] || '').length + (b[9] || '').length;
              return bLen - aLen;
          }
-
-         const q = normalizedQuery;
-         const aArb = normalizeArabicWorker(a[3] || '').toLowerCase();
-         const bArb = normalizeArabicWorker(b[3] || '').toLowerCase();
-
-         const aExact = (aSwe === q || aArb === q);
-         const bExact = (bSwe === q || bArb === q);
-         if (aExact && !bExact) return -1;
-         if (!aExact && bExact) return 1;
-
-         const aStarts = (aSwe.startsWith(q) || aArb.startsWith(q));
-         const bStarts = (bSwe.startsWith(q) || bArb.startsWith(q));
-         if (aStarts && !bStarts) return -1;
-         if (!aStarts && bStarts) return 1;
-
+         
          return aSwe.length - bSwe.length;
     });
 
