@@ -14,6 +14,7 @@ import { QuizStats } from './quiz-stats';
 import { Achievements } from './achievements';
 // @ts-ignore
 import FullSettings from './views/Settings/FullSettings';
+import LearnView from './views/Learn/LearnView';
 
 // --- Error Boundary ---
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -136,26 +137,6 @@ const GamesView = () => {
                     <div key={game.id} style={styles.menuCard} onClick={() => { HapticManager.light(); window.location.href = game.path; }} className="premium-card">
                         <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>{game.icon}</div>
                         <div style={{fontWeight: 'bold', color: '#fff'}}>{game.name}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-const LearnView = () => {
-    const modules = [
-        { id: 'quran', name: 'Koranord', icon: '📖', path: 'learn/quran.html' },
-        { id: 'asma', name: '99 Namn', icon: '📿', path: 'learn/asma_ul_husna.html' },
-    ];
-    return (
-        <div style={{padding: '20px'}} className="tab-content-active">
-            <h2 style={{fontSize: '1.5rem', marginBottom: '20px', textAlign: 'center'}}>Lär dig</h2>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
-                {modules.map(mod => (
-                    <div key={mod.id} style={{...styles.menuCard, flexDirection: 'row', gap: '20px'}} onClick={() => { HapticManager.light(); window.location.href = mod.path; }} className="premium-card">
-                        <div style={{fontSize: '2.2rem'}}>{mod.icon}</div>
-                        <div style={{fontWeight: 'bold', color: '#fff'}}>{mod.name}</div>
                     </div>
                 ))}
             </div>
