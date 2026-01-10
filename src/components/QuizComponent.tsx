@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TTSManager } from '../tts';
 import { QuizStats } from '../quiz-stats';
+import { mistakesManager } from '../mistakes-review';
 import { showToast } from '../utils';
 
 interface Question {
@@ -9,9 +10,16 @@ interface Question {
     arabic: string;
     options: string[];
     correct: string;
+    originalWord?: any; // To pass full context to mistakes manager
 }
 
-export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface QuizProps {
+    onClose: () => void;
+    mode?: 'normal' | 'review' | 'weak';
+    targetWords?: string[];
+}
+
+export const QuizComponent: React.FC<QuizProps> = ({ onClose, mode = 'normal', targetWords = [] }) => {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -21,7 +29,7 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
 
     useEffect(() => {
         startGame();
-    }, []);
+    }, [mode, targetWords]);
 
     const startGame = () => {
         const data = (window as any).dictionaryData as any[][];
@@ -30,17 +38,36 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             return;
         }
 
-        const shuffled = [...data].sort(() => 0.5 - Math.random()).slice(0, 10);
-        const generatedQuestions = shuffled.map(row => {
+        let sourceData: any[][] = [];
+
+        if (mode === 'review' && targetWords.length > 0) {
+            // Filter data to only include target words
+            const targetSet = new Set(targetWords);
+            sourceData = data.filter(row => targetSet.has(row[2])); // row[2] is swedish
+            
+            // If we can't find enough target words (maybe deleted), fallback or fill
+            if (sourceData.length === 0) {
+                showToast('Inga ord att repetera / لا توجد كلمات للمراجعة');
+                onClose();
+                return;
+            }
+        } else {
+            sourceData = [...data].sort(() => 0.5 - Math.random()).slice(0, 10);
+        }
+
+        // Limit questions for review to avoid too long session
+        const quizItems = sourceData.slice(0, 20); 
+
+        const generatedQuestions = quizItems.map(row => {
             const correct = row[3];
             const type = row[1];
+            // Get distractors from FULL database, not just review set
             const distractors = data
                 .filter(r => r[1] === type && r[0] !== row[0])
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 3)
                 .map(r => r[3]);
             
-            // If not enough same-type distractors, take random ones
             while (distractors.length < 3) {
                 const randomWord = data[Math.floor(Math.random() * data.length)][3];
                 if (randomWord !== correct && !distractors.includes(randomWord)) {
@@ -53,7 +80,8 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
                 swedish: row[2],
                 arabic: correct,
                 correct: correct,
-                options: [correct, ...distractors].sort(() => 0.5 - Math.random())
+                options: [correct, ...distractors].sort(() => 0.5 - Math.random()),
+                originalWord: row
             };
         });
 
@@ -76,8 +104,21 @@ export const QuizComponent: React.FC<{ onClose: () => void }> = ({ onClose }) =>
         if (isCorrect) {
             setScore(s => s + 1);
             showToast('Rätt! 🎉');
+            // If in review mode, mark as learned if correct
+            if (mode === 'review') {
+                mistakesManager.markAsLearned(current.swedish);
+            }
         } else {
             showToast('Fel ❌');
+            // Track mistake
+            if (current.originalWord) {
+                mistakesManager.addMistake({
+                    word: current.originalWord[2],
+                    translation: current.originalWord[3],
+                    game: 'Quiz',
+                    correctAnswer: current.originalWord[3]
+                });
+            }
         }
 
         QuizStats.recordAnswer(current.id, isCorrect);

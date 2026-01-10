@@ -122,7 +122,11 @@ export const MistakesView: React.FC = () => {
             </div>
 
             <button 
-                onClick={() => { HapticManager.medium(); window.location.href = 'games/flashcards.html?mode=review'; }}
+                onClick={() => { 
+                    HapticManager.medium(); 
+                    // Dispatch event to open Quiz with review mode
+                    window.dispatchEvent(new CustomEvent('openQuiz', { detail: { mode: 'review', words: mistakes.map(m => m.word) } }));
+                }}
                 style={{
                     width: '100%',
                     background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',

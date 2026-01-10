@@ -179,6 +179,7 @@ const HomeViewInner: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [accentColor, setAccentColor] = useState('#3b82f6');
   const [stats, setStats] = useState({ streak: 0, unlocked: 0, total: 0 });
+  const [quizConfig, setQuizConfig] = useState<{ mode: 'normal'|'review', words: string[] }>({ mode: 'normal', words: [] });
   
   const searchWorkerRef = useRef<Worker | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -211,9 +212,23 @@ const HomeViewInner: React.FC = () => {
           document.documentElement.style.fontSize = `${16 * scale}px`;
       }
 
-      return FavoritesManager.onChange((id, isFav) => {
-          setFavoritesSet(prev => { const next = new Set(prev); if (isFav) next.add(id); else next.delete(id); return next; });
-      });
+      const handleOpenQuiz = (e: Event) => {
+          const detail = (e as CustomEvent).detail;
+          if (detail) {
+              setQuizConfig({ mode: detail.mode || 'normal', words: detail.words || [] });
+          } else {
+              setQuizConfig({ mode: 'normal', words: [] });
+          }
+          handleTabChange('quiz');
+      };
+      window.addEventListener('openQuiz', handleOpenQuiz);
+
+      return () => {
+          window.removeEventListener('openQuiz', handleOpenQuiz);
+          FavoritesManager.onChange((id, isFav) => {
+              setFavoritesSet(prev => { const next = new Set(prev); if (isFav) next.add(id); else next.delete(id); return next; });
+          });
+      };
   }, []);
 
   useEffect(() => {
@@ -326,7 +341,7 @@ const HomeViewInner: React.FC = () => {
       }
   }, []);
 
-  if (activeTab === 'quiz') return <QuizComponent onClose={() => handleTabChange('search')} />;
+  if (activeTab === 'quiz') return <QuizComponent onClose={() => handleTabChange('search')} mode={quizConfig.mode} targetWords={quizConfig.words} />;
   if (selectedWordId) { return <ErrorBoundary><DetailsView wordId={selectedWordId} onBack={() => { setSelectedWordId(null); window.history.back(); }} /></ErrorBoundary>; }
 
   return (
