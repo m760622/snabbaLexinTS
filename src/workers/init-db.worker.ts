@@ -1,4 +1,4 @@
-import { DictionaryDB } from '../db';
+import { DictionaryDB } from '../services/db.service';
 import { AppConfig } from '../config';
 
 self.onmessage = async (e: MessageEvent) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { QuranEntry } from '../types';
-import { TTSManager } from '../../../../tts';
+import { TTSManager } from '../../../../services/tts.service';
 
 interface QuranCardProps {
     item: QuranEntry;

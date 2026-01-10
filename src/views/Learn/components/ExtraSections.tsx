@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TTSManager } from '../../../tts';
+import { TTSManager } from '../../../services/tts.service';
 
 interface ExtraSectionsProps {
     currentFilter: string;

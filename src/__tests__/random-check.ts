@@ -3,7 +3,7 @@
  * Tests 10 random words against TypeColorSystem
  */
 
-import { TypeColorSystem } from '../type-color-system';
+import { TypeColorSystem } from '../utils/type-color.util';
 
 const testWords = [
     { word: 'Solros', type: 'subst.', forms: 'solrosen, solrosor', gender: 'en', expected: 'En (Turquoise)' },

@@ -1,21 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-// @ts-ignore
-import FullSettings from './views/Settings/FullSettings';
 import { HomeView } from './HomeView';
 
 console.log("[React] Entry point starting...");
-
-// Mount Settings View
-const settingsRootElement = document.getElementById('settingsMenu');
-if (settingsRootElement) {
-  const settingsRoot = createRoot(settingsRootElement);
-  settingsRoot.render(
-    <StrictMode>
-      <FullSettings onClose={() => {}} accentColor="#3b82f6" onAccentChange={() => {}} />
-    </StrictMode>
-  );
-}
 
 // Mount Home View
 const homeRootElement = document.getElementById('react-root');

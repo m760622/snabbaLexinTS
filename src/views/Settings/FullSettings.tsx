@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { showToast } from '../../utils';
+import { showToast } from '../../utils/utils';
 
 /**
  * FullSettings Component
@@ -10,9 +10,11 @@ interface FullSettingsProps {
   onClose: () => void;
   accentColor: string;
   onAccentChange: (color: string) => void;
+  onOpenChangelog: () => void;
+  onOpenDeviceInfo: () => void;
 }
 
-const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAccentChange }) => {
+const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAccentChange, onOpenChangelog, onOpenDeviceInfo }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>('general');
   const [language, setLanguage] = useState('both');
   const [darkMode, setDarkMode] = useState(false);
@@ -247,6 +249,11 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
                 <button onClick={() => handleDataAction('export')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left'}}>📤 Exportera Data / تصدير</button>
                 <button onClick={() => handleDataAction('clearFav')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left', borderColor: '#eab308', color: '#eab308'}}>🗑️ Rensa Favoriter / مسح المفضلة</button>
                 <button onClick={() => handleDataAction('reset')} style={{...styles.button, width: '100%', textAlign: 'left', borderColor: '#ef4444', color: '#ef4444'}}>⚠️ Återställ Appen / إعادة ضبط</button>
+            </Section>
+
+            <Section id="info" icon="ℹ️" titleSv="Information" titleAr="معلومات">
+                <button onClick={onOpenChangelog} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left'}}>📋 Changelog / سجل التحديثات</button>
+                <button onClick={onOpenDeviceInfo} style={{...styles.button, width: '100%', textAlign: 'left'}}>🖥️ Enhetsinfo / معلومات الجهاز</button>
             </Section>
 
             <Section id="gamify" icon="🏆" titleSv="Framsteg" titleAr="الإنجازات">

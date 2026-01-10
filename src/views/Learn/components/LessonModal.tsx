@@ -1,6 +1,6 @@
 import React from 'react';
 import { Lesson, ExampleItem } from './types';
-import { TTSManager } from '../../../tts';
+import { TTSManager } from '../../../services/tts.service';
 
 interface LessonModalProps {
     lesson: Lesson | null;

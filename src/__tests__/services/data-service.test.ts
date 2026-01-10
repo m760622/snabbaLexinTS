@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DataService } from '../../services/api/data-service';
-import { DictionaryDB } from '../../db';
-import { SearchService } from '../../search-service';
+import { DictionaryDB } from '../../services/db.service';
+import { SearchService } from '../../services/search.service';
 
 // Mock dependencies
-vi.mock('../../db', () => ({
+vi.mock('../../services/db.service', () => ({
     DictionaryDB: {
         init: vi.fn().mockResolvedValue(true),
         getAllWords: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../../db', () => ({
     }
 }));
 
-vi.mock('../../search-service', () => ({
+vi.mock('../../services/search.service', () => ({
     SearchService: {
         searchWithStats: vi.fn(),
     }

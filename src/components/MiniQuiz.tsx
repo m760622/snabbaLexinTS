@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { showToast } from '../utils';
-import { MasteryManager } from '../details_modules/MasteryManager';
+import { showToast } from '../utils/utils';
+import { MasteryManager } from '../services/mastery.service';
 
 interface MiniQuizProps {
     wordData: any[];

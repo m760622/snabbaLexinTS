@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { TypeColorSystem, TypeColors } from '../type-color-system';
+import { TypeColorSystem, TypeColors } from '../utils/type-color.util';
 
 describe('TypeColorSystem', () => {
 

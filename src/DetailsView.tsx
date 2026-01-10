@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { TypeColorSystem } from './type-color-system';
-import { TTSManager } from './tts';
-import { FavoritesManager } from './favorites';
-import { showToast, TextSizeManager, HapticManager } from './utils';
+import { TypeColorSystem } from './utils/type-color.util';
+import { TTSManager } from './services/tts.service';
+import { FavoritesManager } from './services/favorites.service';
+import { showToast, TextSizeManager, HapticManager } from './utils/utils';
 import { PronunciationLab } from './components/PronunciationLab';
 import { MiniQuiz } from './components/MiniQuiz';
 import { AIStoryFlash } from './components/AIStoryFlash';
-import { t } from './i18n';
+import { t } from './utils/i18n.util';
+import { DictionaryDB } from './services/db.service';
 
 interface DetailsViewProps {
     wordId: number | string;
@@ -145,6 +146,24 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
         }
     };
 
+    const [note, setNote] = useState('');
+    const [isSavingNote, setIsSavingNote] = useState(false);
+
+    useEffect(() => {
+        const loadNote = async () => {
+            const n = await DictionaryDB.getNote(wordId.toString());
+            setNote(n || '');
+        };
+        loadNote();
+    }, [wordId]);
+
+    const handleSaveNote = async () => {
+        setIsSavingNote(true);
+        await DictionaryDB.saveNote(wordId.toString(), note);
+        setIsSavingNote(false);
+        showToast('Notat sparat! / تم حفظ الملاحظة!');
+    };
+
     if (!wordData) return <div style={{padding: '40px', textAlign: 'center', color: '#fff'}}>{t('details.loading')}</div>;
 
     const typeInfo = TypeColorSystem.detect(type, swe, forms, '', arb);
@@ -279,6 +298,28 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                                 </div>
                             </Card>
                         )}
+
+                        <Card title={t('details.notes') || 'Anteckningar'} icon="✍️">
+                            <textarea 
+                                value={note}
+                                onChange={(e) => setNote(e.target.value)}
+                                placeholder={t('details.notesPlaceholder') || 'Skriv en anteckning...'}
+                                style={{
+                                    width: '100%', minHeight: '100px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px', padding: '10px', color: 'white', fontFamily: 'inherit', fontSize: '0.95rem', marginBottom: '10px'
+                                }}
+                            />
+                            <button 
+                                onClick={handleSaveNote}
+                                disabled={isSavingNote}
+                                style={{
+                                    width: '100%', padding: '10px', borderRadius: '10px', background: primaryColor, border: 'none',
+                                    color: 'white', fontWeight: 'bold', cursor: 'pointer', opacity: isSavingNote ? 0.5 : 1
+                                }}
+                            >
+                                {isSavingNote ? 'Sparar...' : 'Spara'}
+                            </button>
+                        </Card>
                     </div>
                 ) : (
                     <div className="tab-content-active">

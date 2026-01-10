@@ -1,6 +1,6 @@
 import React from 'react';
 import { AsmaName } from '../types';
-import { TTSManager } from '../../../../tts';
+import { TTSManager } from '../../../../services/tts.service';
 
 interface AsmaCardProps {
     name: AsmaName;

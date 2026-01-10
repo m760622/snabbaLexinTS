@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { mistakesManager, MistakeEntry } from './mistakes-review';
-import { TTSManager } from './tts';
-import { HapticManager } from './utils';
+import { mistakesManager, MistakeEntry } from './services/mistakes.service';
+import { TTSManager } from './services/tts.service';
+import { HapticManager } from './utils/utils';
 
 const MistakeCard = ({ entry, onLearned, onSpeak }: { entry: MistakeEntry, onLearned: (w: string) => void, onSpeak: (w: string) => void }) => {
     return (

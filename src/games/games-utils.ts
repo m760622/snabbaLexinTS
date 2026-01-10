@@ -68,7 +68,7 @@ export const COL_IDIOM_ARB = AppConfig.COLUMNS.IDIOM_ARB;
 (window as any).COL_IDIOM = COL_IDIOM;
 (window as any).COL_IDIOM_ARB = COL_IDIOM_ARB;
 
-import { ToastManager } from '../toast-manager';
+import { ToastManager } from '../utils/toast.util';
 
 // State
 let gameScore = 0;

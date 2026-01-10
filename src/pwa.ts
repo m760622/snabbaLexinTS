@@ -17,10 +17,9 @@ interface BeforeInstallPromptEvent extends Event {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      // Use a more robust way to register the service worker that works well with Vite
-      const swUrl = new URL('./sw.ts', import.meta.url);
-      const registration = await navigator.serviceWorker.register(swUrl, { type: 'module' });
-      console.log("[PWA] ServiceWorker registered with URL:", swUrl.href);
+      // Register the service worker from root
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log("[PWA] ServiceWorker registered");
 
       // Check for updates
       registration.addEventListener("updatefound", () => {

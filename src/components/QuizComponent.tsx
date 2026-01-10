@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TTSManager } from '../tts';
-import { QuizStats } from '../quiz-stats';
-import { mistakesManager } from '../mistakes-review';
-import { showToast } from '../utils';
+import { TTSManager } from '../services/tts.service';
+import { QuizStats } from '../services/quiz-stats.service';
+import { mistakesManager } from '../services/mistakes.service';
+import { showToast } from '../utils/utils';
 
 interface Question {
     id: string;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { DailyContent } from '../daily-content';
-import { FavoritesManager } from '../favorites';
-import { TTSManager } from '../tts';
-import { showToast } from '../utils';
+import { DailyContent } from '../services/daily-content.service';
+import { FavoritesManager } from '../services/favorites.service';
+import { TTSManager } from '../services/tts.service';
+import { showToast } from '../utils/utils';
 
 interface DailyCardProps {
     content: DailyContent;

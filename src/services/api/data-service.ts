@@ -1,6 +1,6 @@
 import { IDataService, SearchRequest, SearchResponse, Word } from './schemas';
-import { DictionaryDB } from '../../db';
-import { SearchService as LegacySearchService, SearchOptions } from '../../search-service';
+import { DictionaryDB } from '../db.service';
+import { SearchService as LegacySearchService, SearchOptions } from '../search.service';
 import { AppConfig } from '../../config';
 
 export class DataService implements IDataService {
@@ -99,7 +99,7 @@ export class DataService implements IDataService {
         // But we want to return full `Word` objects usually.
         // Let's re-map based on IDs if needed, or update SearchService.
         // For performance, let's trust SearchService's filtering but maybe we need to map back to full objects if the UI needs them.
-        // The current SearchResult interface in search-service is decent but maybe missing some fields.
+        // The current SearchResult interface in search.service is decent but maybe missing some fields.
         
         // Let's just map what we get back for now.
         const mappedResults: Word[] = resultWithStats.results.map(r => ({

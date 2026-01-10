@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AudioVisualizer, PronunciationRecorder, HapticFeedback, MasteryBadges } from '../ui-enhancements';
-import { TTSManager } from '../tts';
-import { PronunciationHelper } from '../pronunciation-data';
-import { TextSizeManager } from '../utils';
+import { AudioVisualizer, PronunciationRecorder, HapticFeedback, MasteryBadges } from '../utils/ui-enhancements.util';
+import { TTSManager } from '../services/tts.service';
+import { PronunciationHelper } from '../utils/pronunciation.util';
+import { TextSizeManager } from '../utils/utils';
 
 interface PronunciationLabProps {
     word: string;

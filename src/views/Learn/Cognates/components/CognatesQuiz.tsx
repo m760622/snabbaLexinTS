@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { CognateEntry } from '../types';
-import { TTSManager } from '../../../../tts';
+import { TTSManager } from '../../../../services/tts.service';
 
 interface CognatesQuizProps {
     cognates: CognateEntry[];

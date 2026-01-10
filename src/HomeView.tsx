@@ -1,20 +1,26 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { SearchResult, SearchStats } from './search-service';
-import { SearchHistoryManager } from './search-history';
-import { FavoritesManager } from './favorites';
-import { TypeColorSystem } from './type-color-system';
-import { TTSManager } from './tts';
-import { showToast, ThemeManager, HapticManager, measurePerformance } from './utils';
-import { DailyContentService, DailyContent } from './daily-content';
+import { SearchResult, SearchStats } from './services/search.service';
+import { SearchHistoryManager } from './services/search-history.service';
+import { FavoritesManager } from './services/favorites.service';
+import { TypeColorSystem } from './utils/type-color.util';
+import { TTSManager } from './services/tts.service';
+import { showToast, ThemeManager, HapticManager, measurePerformance } from './utils/utils';
+import { DailyContentService, DailyContent } from './services/daily-content.service';
 import { DetailsView } from './DetailsView';
 import { QuizComponent } from './components/QuizComponent';
 import { DailyCard } from './components/DailyCard';
 import { MistakesView } from './MistakesView';
-import { QuizStats } from './quiz-stats';
-import { Achievements } from './achievements';
+import { QuizStats } from './services/quiz-stats.service';
+import { Achievements } from './services/achievements.service';
 // @ts-ignore
 import FullSettings from './views/Settings/FullSettings';
 import LearnView from './views/Learn/LearnView';
+import GamesView from './views/Games/GamesView';
+import ProfileView from './views/Profile/ProfileView';
+import AddWordView from './views/Add/AddWordView';
+import ChangelogView from './views/Settings/ChangelogView';
+import DeviceInfoView from './views/Settings/DeviceInfoView';
+import SplashView from './views/Welcome/SplashView';
 
 // --- Error Boundary ---
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -122,28 +128,6 @@ const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }:
 
 // --- Sub Views ---
 
-const GamesView = () => {
-    const games = [
-        { id: 'flashcards', name: 'Minneskort', ar: 'بطاقات الذاكرة', icon: '🃏', path: 'games/flashcards.html' },
-        { id: 'hangman', name: 'Hangman', icon: '👤', path: 'games/hangman.html' },
-        { id: 'word_search', name: 'Sökord', icon: '🔍', path: 'games/word_search.html' },
-        { id: 'memory', name: 'Memory', icon: '🧩', path: 'games/memory.html' },
-    ];
-    return (
-        <div style={{padding: '20px'}} className="tab-content-active">
-            <h2 style={{fontSize: '1.5rem', marginBottom: '20px', textAlign: 'center'}}>Spelzon</h2>
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px'}}>
-                {games.map(game => (
-                    <div key={game.id} style={styles.menuCard} onClick={() => { HapticManager.light(); window.location.href = game.path; }} className="premium-card">
-                        <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>{game.icon}</div>
-                        <div style={{fontWeight: 'bold', color: '#fff'}}>{game.name}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
 // --- Main Container ---
 
 const HomeViewInner: React.FC = () => {
@@ -204,11 +188,13 @@ const HomeViewInner: React.FC = () => {
       };
       window.addEventListener('openQuiz', handleOpenQuiz);
 
+      const unsubscribeFavorites = FavoritesManager.onChange((id, isFav) => {
+          setFavoritesSet(prev => { const next = new Set(prev); if (isFav) next.add(id); else next.delete(id); return next; });
+      });
+
       return () => {
           window.removeEventListener('openQuiz', handleOpenQuiz);
-          FavoritesManager.onChange((id, isFav) => {
-              setFavoritesSet(prev => { const next = new Set(prev); if (isFav) next.add(id); else next.delete(id); return next; });
-          });
+          unsubscribeFavorites();
       };
   }, []);
 
@@ -229,39 +215,9 @@ const HomeViewInner: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const initData = () => {
-      const data = (window as any).dictionaryData;
-      if (data && data.length > 0) {
-        setIsDataReady(true);
-        searchWorkerRef.current?.postMessage({ type: 'INIT_DATA', payload: data });
-        // Ensure we show Proverbs to match sr09.png
-        setDailyContent({
-            type: 'proverb',
-            swedish: 'Bättre en fågel i handen än tio i skogen',
-            translation: 'عصفور في اليد خير من عشرة على الشجرة',
-            id: 'demo-proverb'
-        } as DailyContent);
-      } else {
-          // Fallback if data is delayed
-          setDailyContent({
-            type: 'proverb',
-            swedish: 'Bättre en fågel i handen än tio i skogen',
-            translation: 'عصفور في اليد خير من عشرة على الشجرة',
-            id: 'demo-proverb'
-        } as DailyContent);
-      }
-    };
-
-    if ((window as any).dictionaryData) {
-      initData();
-    } else {
-      window.addEventListener('dictionaryLoaded', initData);
-    }
-    
     const h = () => setSelectedWordId(window.history.state?.id || null);
     window.addEventListener('popstate', h);
     return () => {
-      window.removeEventListener('dictionaryLoaded', initData);
       window.removeEventListener('popstate', h);
     };
   }, []);
@@ -322,6 +278,17 @@ const HomeViewInner: React.FC = () => {
       }
   }, []);
 
+  const handleDataReady = (data: any[][]) => {
+      (window as any).dictionaryData = data;
+      setIsDataReady(true);
+      setDailyContent(DailyContentService.getDailyContent(data));
+      searchWorkerRef.current?.postMessage({ type: 'INIT_DATA', payload: data });
+  };
+
+  if (!isDataReady) {
+      return <SplashView onComplete={handleDataReady} />;
+  }
+
   if (activeTab === 'quiz') return <QuizComponent onClose={() => handleTabChange('search')} mode={quizConfig.mode} targetWords={quizConfig.words} />;
   if (selectedWordId) { return <ErrorBoundary><DetailsView wordId={selectedWordId} onBack={() => { setSelectedWordId(null); window.history.back(); }} /></ErrorBoundary>; }
 
@@ -349,13 +316,6 @@ const HomeViewInner: React.FC = () => {
         )}
       </div>
       <div style={styles.contentArea}>
-        {isSettingsOpen && (
-            <FullSettings 
-                onClose={() => setIsSettingsOpen(false)} 
-                accentColor={accentColor} 
-                onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }} 
-            />
-        )}
         <div style={styles.scrollList} key={activeTab} ref={scrollContainerRef} onScroll={handleScroll}>
             {activeTab === 'search' && !searchTerm && (
                 <div style={{marginBottom: '20px', padding: '0 20px'}} className="tab-content-active">
@@ -410,12 +370,16 @@ const HomeViewInner: React.FC = () => {
             )}
             {activeTab === 'games' && <GamesView />}
             {activeTab === 'learn' && <LearnView />}
+            {activeTab === 'profile' && <ProfileView />}
+            {activeTab === 'add' && <AddWordView onBack={() => setActiveTab('search')} />}
+            {activeTab === 'changelog' && <ChangelogView onBack={() => setActiveTab('settings' as any)} />}
+            {activeTab === 'device' && <DeviceInfoView onBack={() => setActiveTab('settings' as any)} />}
         </div>
       </div>
       <div style={styles.dockContainer}>
           <div style={styles.dock}>
-              {(['search', 'games', 'learn', 'favorites', 'quiz', 'settings'] as const).map(tab => {
-                  const icons = { search: '🔍', games: '🎮', learn: '📚', favorites: '⭐', quiz: '⚡', settings: '⚙️' };
+              {(['search', 'games', 'learn', 'add', 'profile', 'settings'] as const).map(tab => {
+                  const icons = { search: '🔍', games: '🎮', learn: '📚', add: '➕', profile: '👤', settings: '⚙️' };
                   const isActive = activeTab === tab;
                   return (
                       <button key={tab} 
@@ -436,6 +400,15 @@ const HomeViewInner: React.FC = () => {
               })}
           </div>
       </div>
+      {isSettingsOpen && (
+          <FullSettings 
+              onClose={() => setIsSettingsOpen(false)} 
+              accentColor={accentColor} 
+              onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }} 
+              onOpenChangelog={() => { setIsSettingsOpen(false); setActiveTab('changelog' as any); }}
+              onOpenDeviceInfo={() => { setIsSettingsOpen(false); setActiveTab('device' as any); }}
+          />
+      )}
     </div>
   );
 };

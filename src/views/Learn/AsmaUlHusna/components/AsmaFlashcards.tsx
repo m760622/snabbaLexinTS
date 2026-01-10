@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { AsmaName } from '../types';
-import { TTSManager } from '../../../../tts';
+import { TTSManager } from '../../../../services/tts.service';
 
 interface AsmaFlashcardsProps {
     names: AsmaName[];

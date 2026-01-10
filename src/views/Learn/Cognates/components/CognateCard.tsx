@@ -1,6 +1,6 @@
 import React from 'react';
 import { CognateEntry } from '../types';
-import { TTSManager } from '../../../../tts';
+import { TTSManager } from '../../../../services/tts.service';
 
 interface CognateCardProps {
     cognate: CognateEntry;

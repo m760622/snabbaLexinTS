@@ -1,161 +1,0 @@
-<!DOCTYPE html>
-<html lang="sv" dir="ltr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liknande Ord Pro | المتشابهات - SnabbaLexin</title>
-    <meta name="description"
-        content="Ord som låter lika på svenska och arabiska. كلمات تتشابه في اللفظ والمعنى بين السويدية والعربية.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@400;600;700&display=swap"
-        rel="stylesheet">
-  <script type="module" crossorigin src="/assets/cognates-Bj2HY48p.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/tts-BUoVW8XK.js">
-  <link rel="modulepreload" crossorigin href="/assets/toast-manager-B6dAfcdf.js">
-  <link rel="modulepreload" crossorigin href="/assets/utils-Bk2xb2al.js">
-  <link rel="modulepreload" crossorigin href="/assets/i18n-D0OWfz62.js">
-  <link rel="modulepreload" crossorigin href="/assets/LearnViewManager-RsT_Dh_9.js">
-  <link rel="modulepreload" crossorigin href="/assets/pwa-Bn3RWWLO.js">
-  <link rel="stylesheet" crossorigin href="/assets/cognates-0qpOiI-Q.css">
-  <link rel="stylesheet" crossorigin href="/assets/games-DVBpuZJY.css">
-  <link rel="stylesheet" crossorigin href="/assets/mobile-enhancements-BypUMHLa.css">
-</head>
-
-<body>
-    <header class="cognates-header">
-        <div class="nav-buttons-row"
-            style="display: flex; gap: 0.5rem; width: 100%; justify-content: space-between; align-items: center;">
-            <!-- Left Group: Back & Mobile -->
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="back-btn" onclick="window.location.href='learn.html'" title="Tillbaka / رجوع"
-                    aria-label="Tillbaka / رجوع">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                </button>
-                <button id="mobileToggle" class="mobile-toggle-btn" onclick="toggleMobileView()"
-                    title="Mobilvy / عرض الجوال">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Right Group: Stats -->
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <!-- Stats Badges -->
-                <div class="stats-badge" title="Totalt antal ord / إجمالي الكلمات">📚 <span id="totalWords">673</span>
-                </div>
-                <div class="stats-badge learned" title="Antal lärda / عدد المتعلمة">✅ <span id="learnedCount">0</span>
-                </div>
-                <div class="stats-badge streak" title="Streak / السلسلة">🔥 <span id="streakCount">0</span></div>
-            </div>
-        </div>
-
-        <div class="mode-selection-bar" id="modeSelectionBar">
-            <span class="mode-indicator" id="modeIndicator"></span>
-            <button class="mode-btn active" onclick="switchMode('browse')" id="btn-browse" title="Bläddra / تصفح">
-                <span class="mode-icon">📖</span>
-            </button>
-            <button class="mode-btn" onclick="openSavedModal()" id="btn-saved" title="Sparade / المحفوظات">
-                <span class="mode-icon">⭐</span>
-            </button>
-            <button class="mode-btn" onclick="switchMode('flashcard')" id="btn-flashcard" title="Flashcards / بطاقات">
-                <span class="mode-icon">🂴</span>
-            </button>
-            <button class="mode-btn" onclick="switchMode('quiz')" id="btn-quiz" title="Quiz / اختبار">
-                <span class="mode-icon">📝</span>
-            </button>
-        </div>
-    </header>
-
-    <main>
-        <!-- Browse View -->
-        <div class="browse-view" id="browseView">
-
-            <!-- Screen Title (In-View) -->
-            <div style="text-align: center; margin-bottom: 1.5rem; margin-top: 1rem;">
-                <h1
-                    style="font-family: 'Amiri', serif; font-size: 2.5rem; color: #3b82f6; margin: 0; text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">
-                    <span class="ar-text">المتشابهات</span>
-                </h1>
-                <div style="font-size: 1.2rem; color: #cbd5e1; margin-top: 0.2rem;">Liknande Ord</div>
-
-            </div>
-
-            <div class="search-row">
-                <input type="text" id="searchInput" placeholder="Sök ord / ابحث...">
-                <button class="filter-toggle-btn" id="filterToggle" onclick="toggleFilters()" title="Filtrera / تصفية">
-                    🔽
-                </button>
-            </div>
-
-            <div class="filter-chips collapsed" id="filterChips"></div>
-            <div id="content"></div>
-        </div>
-
-        <!-- Flashcard View -->
-        <div class="flashcard-container" id="flashcardView">
-            <!-- Filter chips for flashcards -->
-            <div class="fc-filter-chips" id="fcFilterChips"></div>
-
-            <div class="flashcard-progress">
-                <div class="progress-text"><span id="fcCurrent">0</span> / <span id="fcTotal">0</span></div>
-                <div class="progress-bar">
-                    <div class="fill" id="fcProgress"></div>
-                </div>
-            </div>
-
-            <div class="flashcard" id="flashcard" onclick="flipCard()">
-                <div class="flashcard-inner">
-                    <div class="flashcard-front">
-                        <div class="flashcard-word" id="fcWord">Hej</div>
-                        <div class="flashcard-hint"><span class="sv-text">Klicka för att vända</span><span
-                                class="ar-text">اضغط للقلب</span></div>
-                    </div>
-                    <div class="flashcard-back">
-                        <div class="flashcard-translation" id="fcTranslation">مرحباً</div>
-                        <div class="flashcard-type" id="fcType">Substantiv</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flashcard-controls">
-                <button class="fc-btn wrong" onclick="flashcardAnswer(false)">❌ <span class="sv-text">Inte
-                        än</span><span class="ar-text">ليس بعد</span></button>
-                <button class="fc-btn correct" onclick="flashcardAnswer(true)">✅ <span class="sv-text">Kan
-                        det!</span><span class="ar-text">أعرفها!</span></button>
-            </div>
-        </div>
-
-        <!-- Quiz View (inline like flashcards) -->
-        <div class="quiz-view" id="quizView">
-            <div class="quiz-container" id="quizContent"></div>
-        </div>
-
-        <!-- Saved Words View (inline like flashcards) -->
-        <div class="saved-view" id="savedView">
-            <div class="saved-header-inline">
-                <h2>⭐ <span class="sv-text">Sparade ord</span><span class="ar-text">الكلمات المحفوظة</span></h2>
-            </div>
-            <div class="saved-list" id="savedList"></div>
-        </div>
-
-        <!-- Intro text moved to bottom -->
-        <div class="intro-text">
-            <p><span class="sv-text">Ord som låter lika på svenska och arabiska. Klicka för att lyssna!</span><span
-                    class="ar-text">كلمات متشابهة بين السويدية والعربية. اضغط للاستماع!</span> 🔊</p>
-        </div>
-    </main>
-
-</body>
-
-</html>
