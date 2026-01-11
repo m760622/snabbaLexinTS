@@ -4,22 +4,23 @@
 /* Increase specificity to override potential conflicts */
 .card.compact-card,
 .card.card-link.compact-card {
-    height: auto;
-    min-height: 120px !important;
+    height: auto; /* Allow dynamic height */
+    min-height: auto !important; /* Remove fixed min-height */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 10px 14px;
-    background: var(--surface);
-    border: 7px solid #FF0000;
-    /* Dynamic Left Border Override */
-    border-left: 7px solid var(--glow-color, #ccc) !important;
+    background: rgba(28, 28, 30, 0.6); /* Slightly darker, more glass-like background */
+    backdrop-filter: blur(15px); /* Enhanced blur for glassmorphism */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for definition */
+    /* Dynamic Left Border Override - Use --glow-color for ambient glow */
+    border-left: 4px solid var(--glow-color, #ccc); /* Adjusted glow border */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 12px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 16px; /* Slightly larger radius */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease; /* Smoother transitions */
     box-sizing: border-box;
     position: relative;
-    overflow: hidden !important;
+    overflow: visible !important; /* Allow content to dictate height */
 }
 
 .compact-card:hover {
