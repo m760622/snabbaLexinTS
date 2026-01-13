@@ -45,14 +45,14 @@ export const MiniQuiz: React.FC<MiniQuizProps> = ({ wordData }) => {
 
         const isCorrect = opt === correctAnswer;
         if (isCorrect) {
-            setFeedback('Rätt! Correct! 🎉');
+            setFeedback('إجابة صحيحة! أحسنت! 🎉');
             setStreak(s => s + 1);
-            showToast('✅ Rätt svar! +10 XP');
+            showToast('✅ إجابة صحيحة! +10 XP');
             MasteryManager.updateMastery(wordData[0], true);
         } else {
-            setFeedback(`Fel. Rätt svar var: ${correctAnswer}`);
+            setFeedback(`خطأ. الإجابة الصحيحة هي: ${correctAnswer}`);
             setStreak(0);
-            showToast('❌ Fel svar', { type: 'error' });
+            showToast('❌ إجابة خاطئة', { type: 'error' });
             MasteryManager.updateMastery(wordData[0], false);
         }
     };
@@ -72,7 +72,7 @@ export const MiniQuiz: React.FC<MiniQuizProps> = ({ wordData }) => {
                 {options.map((opt, i) => {
                     let bg = '#2c2c2e';
                     let borderColor = '#444';
-                    
+
                     if (selected) {
                         if (opt === correctAnswer) {
                             bg = 'rgba(34, 197, 94, 0.2)'; // Green
@@ -108,7 +108,7 @@ export const MiniQuiz: React.FC<MiniQuizProps> = ({ wordData }) => {
                     <div style={{ marginBottom: '10px', color: selected === correctAnswer ? '#4ade80' : '#ef4444' }}>
                         {feedback}
                     </div>
-                    <button 
+                    <button
                         onClick={generateQuestion}
                         style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: 'pointer' }}
                     >

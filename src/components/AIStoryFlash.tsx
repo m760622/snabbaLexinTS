@@ -34,11 +34,21 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type, exam
     const [status, setStatus] = useState<'idle' | 'busy' | 'ready' | 'error'>('idle');
     const [content, setContent] = useState<{ sv: string, ar: string, tag: string, isReal: boolean } | null>(null);
 
-    // Reset when word changes
+    // Auto-load if real example exists
     useEffect(() => {
-        setStatus('idle');
-        setContent(null);
-    }, [swe, arb]);
+        if (exampleSwe && exampleArb) {
+            setContent({
+                sv: exampleSwe,
+                ar: exampleArb,
+                tag: '📚 Dictionary Context',
+                isReal: true
+            });
+            setStatus('ready');
+        } else {
+            setStatus('idle');
+            setContent(null);
+        }
+    }, [swe, arb, exampleSwe, exampleArb]);
 
     const handleGenerate = async () => {
         if (!swe || !arb) {
@@ -47,20 +57,6 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type, exam
         }
 
         setStatus('busy');
-
-        // Priority 1: Check for Real Dictionary Examples
-        if (exampleSwe && exampleArb) {
-            // Emulate "Searching" delay for UX consistency
-            await new Promise(resolve => setTimeout(resolve, 600));
-            setContent({
-                sv: exampleSwe,
-                ar: exampleArb,
-                tag: '📚 Dictionary Context',
-                isReal: true
-            });
-            setStatus('ready');
-            return;
-        }
 
         // Priority 2: Fallback to POS Templates
         const cleanType = (type || '').toLowerCase().trim();
@@ -93,7 +89,6 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type, exam
     const formatText = (text: string, color: string, highlightWord: string) => {
         if (!text) return null;
 
-        // If it's a real example, we try to highlight the word if possible, else just show text
         // If it's a template, we use ** markers.
         if (text.includes('**')) {
             return text.split('**').map((part, i) =>
@@ -104,15 +99,23 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type, exam
                 ) : part
             );
         } else {
-            // Simple highlight for real examples if word exists case-insensitive
-            const parts = text.split(new RegExp(`(${highlightWord})`, 'gi'));
-            return parts.map((part, i) =>
-                part.toLowerCase() === highlightWord.toLowerCase() ? (
-                    <strong key={i} style={{ color: color, fontWeight: '900', textDecoration: 'underline decoration-dotted' }}>
-                        {part}
-                    </strong>
-                ) : part
-            );
+            // Simple highlight for real examples
+            try {
+                if (!highlightWord) return text;
+                // Escape regex special characters
+                const escapedWord = highlightWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const parts = text.split(new RegExp(`(${escapedWord})`, 'gi'));
+                return parts.map((part, i) =>
+                    part.toLowerCase() === highlightWord.toLowerCase() ? (
+                        <strong key={i} style={{ color: color, fontWeight: '900', textDecoration: 'underline decoration-dotted' }}>
+                            {part}
+                        </strong>
+                    ) : part
+                );
+            } catch (e) {
+                console.error("Highlight error:", e);
+                return text;
+            }
         }
     };
 

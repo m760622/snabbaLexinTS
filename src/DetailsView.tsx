@@ -334,7 +334,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             background: 'rgba(5, 16, 36, 0.25)', display: 'flex', flexDirection: 'column',
             maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-            overscrollBehavior: 'contain'
+            overscrollBehavior: 'contain',
+            touchAction: 'pan-y' // Fix for mobile scrolling
         }}>
             <style>{`
                 @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -593,12 +594,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                             {def && <div style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '14px' }}><SmartLinkedText text={def} onLinkClick={handleSmartLink} /></div>}
                         </GlassCard>
 
-                        {(exSwe || exArb) && (
-                            <GlassCard title={t('learn.examples')} icon="💡" color={primaryColor} delay={0.2}>
-                                {exSwe && <div style={{ fontStyle: 'italic', marginBottom: exArb ? '10px' : 0, color: 'rgba(255,255,255,0.8)', fontSize: '1rem', lineHeight: 1.5 }}><SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} /></div>}
-                                {exArb && <div dir="rtl" style={{ color: primaryColor, fontFamily: '"Tajawal", sans-serif', fontSize: '1rem' }}>{exArb}</div>}
-                            </GlassCard>
-                        )}
+
                         {formsList.length > 0 && (
                             <GlassCard title={t('details.forms')} icon="🔗" color={primaryColor} delay={0.3}>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
