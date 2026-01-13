@@ -335,7 +335,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             overscrollBehavior: 'contain',
-            touchAction: 'pan-y' // Fix for mobile scrolling
+            touchAction: 'pan-y', // Fix for mobile scrolling
+            minHeight: 0
         }}>
             <style>{`
                 @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }

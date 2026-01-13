@@ -153,7 +153,9 @@ body {
   overscroll-behavior-y: contain;
 
   /* Allow natural touch scrolling */
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* ========================================
