@@ -154,7 +154,7 @@ body {
 
   /* Allow natural touch scrolling */
   touch-action: pan-y;
-  overflow-y: auto;
+  overflow-y: auto !important;
   overflow-x: hidden;
 }
 

@@ -473,7 +473,7 @@ const HomeViewInner: React.FC = () => {
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999 },
+    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y' },
     header: { flexShrink: 0, paddingBottom: '10px' },
     topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' },
     brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
