@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { TypeColorSystem } from './utils/type-color.util';
 import { TTSManager } from './services/tts.service';
 import { FavoritesManager } from './services/favorites.service';
 import { showToast, TextSizeManager, HapticManager } from './utils/utils';
 import { PronunciationLab } from './components/PronunciationLab';
+import { SentenceBuilder } from './components/SentenceBuilder';
 import { MiniQuiz } from './components/MiniQuiz';
 import { AIStoryFlash } from './components/AIStoryFlash';
 import { AIAnalysis } from './components/AIAnalysis';
@@ -18,21 +20,55 @@ interface DetailsViewProps {
 
 
 
-// Animated Wave Background
-const WaveBackground = ({ color }: { color: string }) => (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '200%', height: '120px', animation: 'waveMove 8s linear infinite' }}
-            viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z"
-                fill={`${color}15`} />
-        </svg>
-        <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '200%', height: '100px', animation: 'waveMove 6s linear infinite reverse' }}
-            viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M0,40 C150,100 350,0 500,50 C700,110 900,20 1200,70 L1200,120 L0,120 Z"
-                fill={`${color}10`} />
-        </svg>
-    </div>
-);
+// Gas Bubbles Background
+const BubblesBackground = ({ color, usePortal = true }: { color: string, usePortal?: boolean }) => {
+    // Determine dynamic color for bubbles (lighter opacity)
+    const bubbleColor = color;
+
+    // Generate static random values to avoid re-renders causing jumps
+    // Using a fixed seed-like approach or just useMemo with empty dep array
+    const bubbles = React.useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        size: `${Math.random() * 15 + 5}px`, // 5px to 20px
+        duration: `${Math.random() * 8 + 4}s`,
+        delay: `${Math.random() * 5}s`,
+        opacity: Math.random() * 0.5 + 0.3 // Brighter: 0.3 to 0.8
+    })), []);
+
+    // Style content
+    const content = (
+        <div style={{ position: usePortal ? 'fixed' : 'absolute', inset: 0, zIndex: usePortal ? 10 : 0, overflow: 'hidden', pointerEvents: 'none' }}>
+            <style>{`
+                @keyframes heavyRise {
+                    0% { transform: translateY(120vh) scale(0.5); opacity: 0; }
+                    20% { opacity: var(--bubble-opacity); }
+                    80% { opacity: var(--bubble-opacity); }
+                    100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+                }
+            `}</style>
+            {bubbles.map(b => (
+                <div key={b.id} style={{
+                    position: 'absolute',
+                    left: b.left,
+                    bottom: '-20px',
+                    width: b.size,
+                    height: b.size,
+                    borderRadius: '50%',
+                    background: bubbleColor,
+                    opacity: b.opacity,
+                    '--bubble-opacity': b.opacity,
+                    animation: `heavyRise ${b.duration} infinite linear`,
+                    animationDelay: b.delay,
+                    boxShadow: `0 0 10px ${bubbleColor}40`
+                } as any} />
+            ))}
+        </div>
+    );
+
+    if (usePortal) return ReactDOM.createPortal(content, document.body);
+    return content;
+};
 
 // Glass Card Component
 const GlassCard = ({ title, icon, children, color, delay = 0 }: any) => (
@@ -295,7 +331,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     return (
         <div ref={containerRef} onScroll={handleScroll} className="details-page-container" style={{
             height: '100%', width: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch',
-            background: 'transparent', display: 'flex', flexDirection: 'column'
+            background: 'rgba(5, 16, 36, 0.25)', display: 'flex', flexDirection: 'column',
+            maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+            overscrollBehavior: 'contain'
         }}>
             <style>{`
                 @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -303,10 +342,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                 @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
             `}</style>
 
-            {/* Background Wave Effect - Premium Feel */}
-            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '35vh', zIndex: 0, pointerEvents: 'none' }}>
-                <WaveBackground color={primaryColor} />
-            </div>
+            {/* Background Bubbles Effect - Premium Feel - Floating OVER content via Portal */}
+
 
 
 
@@ -346,7 +383,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             }}>
                 {/* Main Floating Card */}
                 <div style={{
-                    background: 'rgba(25, 25, 30, 0.95)',
+                    background: 'rgba(25, 25, 30, 0.2)',
+                    backdropFilter: 'blur(10px)',
                     borderRadius: '28px',
                     padding: '30px 24px',
                     border: `1px solid ${primaryColor}25`,
@@ -367,11 +405,12 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                         top: 0,
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        width: '60%',
-                        height: '3px',
                         background: `linear-gradient(90deg, transparent, ${primaryColor}, transparent)`,
                         borderRadius: '0 0 10px 10px'
                     }} />
+
+                    {/* Local Bubbles for Hero Card */}
+                    <BubblesBackground color={primaryColor} usePortal={false} />
 
                     {/* Swedish Word - Option 3: BOLD HEADLINE (CLEAN) */}
                     <h2 style={{
@@ -458,8 +497,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             </div>
 
             {/* 3. Tabs System (Moved Here) */}
-            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', marginBottom: '0', marginTop: '-20px', position: 'relative', zIndex: 2 }}>
-                <div style={{ display: 'flex', background: 'rgba(25, 25, 30, 0.95)', borderRadius: '16px 16px 0 0', padding: '4px', border: `1px solid ${primaryColor}25`, borderBottom: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', marginBottom: '0', marginTop: '-20px', position: 'sticky', top: '65px', zIndex: 90 }}>
+                <div style={{ display: 'flex', background: 'rgba(20, 20, 25, 0.85)', backdropFilter: 'blur(15px)', borderRadius: '16px 16px 0 0', padding: '4px', border: `1px solid ${primaryColor}25`, borderBottom: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                     <button onClick={() => { HapticManager.light(); setActiveTab('info'); }}
                         style={{ flex: 1, padding: '12px', background: activeTab === 'info' ? `${primaryColor}25` : 'transparent', border: activeTab === 'info' ? `1px solid ${primaryColor}30` : 'none', color: activeTab === 'info' ? '#fff' : 'rgba(255,255,255,0.4)', borderRadius: '12px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.3s' }}>📋 معلومات</button>
                     <button onClick={() => { HapticManager.light(); setActiveTab('interact'); }}
@@ -474,82 +513,86 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
 
             {/* Content Container (Moved Here) */}
             {/* Content Container (Moved Here) */}
-            <div style={{ padding: '16px', maxWidth: '600px', margin: '0 auto', width: '100%', background: 'rgba(25, 25, 30, 0.95)', border: `1px solid ${primaryColor}25`, borderTop: 'none', borderRadius: '0 0 16px 16px', marginTop: '-1px' }}>
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1, marginTop: '10px' }}>
 
-                {/* Smart Knowledge Bar (Relocated) */}
-                <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px',
-                    margin: '-16px -16px 16px -16px', // Full width
-                    background: `linear-gradient(90deg, ${primaryColor}12, transparent)`,
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    borderRadius: '0' // Reset radius if any
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        {/* Small Progress Ring */}
-                        <div style={{ position: 'relative', width: '50px', height: '50px' }}>
-                            <svg width="50" height="50" style={{ transform: 'rotate(-90deg)' }}>
-                                <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
-                                <circle cx="25" cy="25" r="20" fill="none" stroke={primaryColor} strokeWidth="4"
-                                    strokeDasharray={2 * Math.PI * 20} strokeDashoffset={(2 * Math.PI * 20) - (knowledgeLevel / 100) * (2 * Math.PI * 20)}
-                                    strokeLinecap="round" style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
-                            </svg>
-                            <div style={{
-                                position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.7rem', fontWeight: '700', color: primaryColor
-                            }}>{knowledgeLevel}%</div>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>مستوى معرفتك</div>
-                            <div style={{ fontSize: '1rem', fontWeight: '600', color: '#fff' }}>
-                                {knowledgeLevel >= 70 ? '⭐ متقن' : knowledgeLevel >= 40 ? '📚 تتعلم' : '🆕 جديد'}
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={() => { HapticManager.light(); TTSManager.speak(swe, 'sv'); }}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
-                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
-                            }}>🔊 استمع</button>
-                        <button onClick={() => { HapticManager.light(); setShowFlipCard(true); }}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
-                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
-                            }}>🎴 بطاقة</button>
-                        <button onClick={() => { HapticManager.light(); setShowQuickQuiz(true); }}
-                            style={{
-                                background: `${primaryColor}18`, border: `1px solid ${primaryColor}35`, color: primaryColor,
-                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
-                            }}>⚡ تحدي</button>
-                    </div>
-                </div>
 
-                {similarFavorites.length > 0 && (
-                    <GlassCard title="كلمات مشابهة حفظتها" icon="⭐" color={primaryColor} delay={0}>
-                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
-                            {similarFavorites.map(w => (
-                                <button key={w[0]} onClick={() => handleSmartLink(w[2])}
-                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '12px 18px', borderRadius: '16px', color: '#fff', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                                    <span>{w[2]}</span><span style={{ fontSize: '0.75rem', color: primaryColor }}>{w[3]}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </GlassCard>
-                )}
 
-                <AIAnalysis word={swe} type={type} forms={forms} />
-                <AIStoryFlash swe={swe} arb={arb} type={type} />
+
+
+
+
 
 
 
                 {activeTab === 'info' ? (
                     <>
-                        {(def || arbExt) && (
-                            <GlassCard title={t('details.meaning')} icon="📝" color={primaryColor} delay={0.1}>
-                                {arbExt && <div dir="rtl" style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.75)', fontFamily: '"Tajawal", sans-serif', lineHeight: 1.6, marginBottom: def ? '12px' : 0 }}>{arbExt}</div>}
-                                {def && <div style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '14px' }}><SmartLinkedText text={def} onLinkClick={handleSmartLink} /></div>}
+                        {/* Smart Knowledge Bar (Inside Info Tab) */}
+                        <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px',
+                            margin: '-16px -16px 16px -16px', // Full width relative to this tab container
+                            background: `linear-gradient(90deg, ${primaryColor}12, transparent)`,
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            borderRadius: '0'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                {/* Small Progress Ring */}
+                                <div style={{ position: 'relative', width: '50px', height: '50px' }}>
+                                    <svg width="50" height="50" style={{ transform: 'rotate(-90deg)' }}>
+                                        <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
+                                        <circle cx="25" cy="25" r="20" fill="none" stroke={primaryColor} strokeWidth="4"
+                                            strokeDasharray={2 * Math.PI * 20} strokeDashoffset={(2 * Math.PI * 20) - (knowledgeLevel / 100) * (2 * Math.PI * 20)}
+                                            strokeLinecap="round" style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
+                                    </svg>
+                                    <div style={{
+                                        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        fontSize: '0.7rem', fontWeight: '700', color: primaryColor
+                                    }}>{knowledgeLevel}%</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>مستوى معرفتك</div>
+                                    <div style={{ fontSize: '1rem', fontWeight: '600', color: '#fff' }}>
+                                        {knowledgeLevel >= 70 ? '⭐ متقن' : knowledgeLevel >= 40 ? '📚 تتعلم' : '🆕 جديد'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button onClick={() => { HapticManager.light(); TTSManager.speak(swe, 'sv'); }}
+                                    style={{
+                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
+                                        padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                                    }}>🔊 استمع</button>
+                                <button onClick={() => { HapticManager.light(); setShowFlipCard(true); }}
+                                    style={{
+                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
+                                        padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                                    }}>🎴 بطاقة</button>
+                                <button onClick={() => { HapticManager.light(); setShowQuickQuiz(true); }}
+                                    style={{
+                                        background: `${primaryColor}18`, border: `1px solid ${primaryColor}35`, color: primaryColor,
+                                        padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                                    }}>⚡ تحدي</button>
+                            </div>
+                        </div>
+
+                        {(similarFavorites.length > 0) && (
+                            <GlassCard title="كلمات مشابهة حفظتها" icon="⭐" color={primaryColor} delay={0}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', paddingBottom: '0' }}>
+                                    {similarFavorites.map(w => (
+                                        <button key={w[0]} onClick={() => handleSmartLink(w[2])}
+                                            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '12px 18px', borderRadius: '16px', flex: '1 1 30%', color: '#fff', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                            <span>{w[2]}</span><span style={{ fontSize: '0.75rem', color: primaryColor }}>{w[3]}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </GlassCard>
                         )}
+                        <AIAnalysis word={swe} type={type} forms={forms} />
+                        <AIStoryFlash swe={swe} arb={arb} type={type} exampleSwe={exSwe} exampleArb={exArb} />
+                        <GlassCard title={t('details.meaning')} icon="📝" color={primaryColor} delay={0.1}>
+                            {arbExt && <div dir="rtl" style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.75)', fontFamily: '"Tajawal", sans-serif', lineHeight: 1.6, marginBottom: def ? '12px' : 0 }}>{arbExt}</div>}
+                            {def && <div style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '14px' }}><SmartLinkedText text={def} onLinkClick={handleSmartLink} /></div>}
+                        </GlassCard>
+
                         {(exSwe || exArb) && (
                             <GlassCard title={t('learn.examples')} icon="💡" color={primaryColor} delay={0.2}>
                                 {exSwe && <div style={{ fontStyle: 'italic', marginBottom: exArb ? '10px' : 0, color: 'rgba(255,255,255,0.8)', fontSize: '1rem', lineHeight: 1.5 }}><SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} /></div>}
@@ -563,6 +606,18 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                                 </div>
                             </GlassCard>
                         )}
+
+                        <GlassCard title="كلمات ذات صلة" icon="✨" color={primaryColor}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', paddingBottom: '0', paddingTop: '4px' }}>
+                                {relatedWords.map(rw => (
+                                    <button key={rw[0]} onClick={() => handleSmartLink(rw[2])}
+                                        style={{ background: 'rgba(255,255,255,0.03)', padding: '16px 20px', borderRadius: '18px', flex: '1 1 30%', minWidth: '135px', minHeight: '80px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div style={{ fontWeight: '700', color: '#fff', fontSize: '1rem', marginBottom: '6px', whiteSpace: 'nowrap' }}>{rw[2]}</div>
+                                        <div dir="rtl" style={{ fontSize: '0.85rem', color: primaryColor, fontFamily: '"Tajawal", sans-serif', opacity: 0.9 }}>{rw[3]}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </GlassCard>
                         <GlassCard title="ملاحظاتك" icon="✍️" color={primaryColor} delay={0.4}>
                             <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="اكتب ملاحظة..."
                                 style={{ width: '100%', minHeight: '85px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '14px', padding: '14px', color: '#fff', fontSize: '0.9rem', resize: 'none', marginBottom: '12px' }} />
@@ -574,21 +629,15 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                     </>
                 ) : (
                     <>
+
                         <PronunciationLab word={swe} />
                         <div style={{ height: '14px' }} />
                         <MiniQuiz wordData={wordData} />
                         <div style={{ height: '14px' }} />
-                        <GlassCard title="كلمات ذات صلة" icon="✨" color={primaryColor}>
-                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px' }}>
-                                {relatedWords.map(rw => (
-                                    <button key={rw[0]} onClick={() => handleSmartLink(rw[2])}
-                                        style={{ background: 'rgba(255,255,255,0.03)', padding: '14px 18px', borderRadius: '16px', minWidth: '125px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                                        <div style={{ fontWeight: '600', color: '#fff', fontSize: '0.95rem', marginBottom: '5px' }}>{rw[2]}</div>
-                                        <div dir="rtl" style={{ fontSize: '0.8rem', color: primaryColor, fontFamily: '"Tajawal", sans-serif' }}>{rw[3]}</div>
-                                    </button>
-                                ))}
-                            </div>
-                        </GlassCard>
+                        {exSwe && (
+                            <SentenceBuilder sentence={exSwe} translation={exArb} color={primaryColor} />
+                        )}
+
                     </>
                 )}
             </div>

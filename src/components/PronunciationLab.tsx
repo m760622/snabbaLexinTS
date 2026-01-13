@@ -1,50 +1,47 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AudioVisualizer, PronunciationRecorder, HapticFeedback, MasteryBadges } from '../utils/ui-enhancements.util';
+import { AudioVisualizer, PronunciationRecorder, HapticFeedback } from '../utils/ui-enhancements.util';
 import { TTSManager } from '../services/tts.service';
 import { PronunciationHelper } from '../utils/pronunciation.util';
-import { TextSizeManager } from '../utils/utils';
 
 interface PronunciationLabProps {
     word: string;
 }
 
-type PracticeLevel = 'listen' | 'repeat' | 'challenge';
-
 export const PronunciationLab: React.FC<PronunciationLabProps> = ({ word }) => {
-    const [level, setLevel] = useState<PracticeLevel>('listen');
     const [isRecording, setIsRecording] = useState(false);
     const [score, setScore] = useState<number | null>(null);
-    const [speed, setSpeed] = useState(1.0);
+    const [state, setState] = useState<'idle' | 'listening' | 'recording' | 'processing' | 'result'>('idle');
     const [lastBlob, setLastBlob] = useState<Blob | null>(null);
-    const [karaokeActive, setKaraokeActive] = useState(false);
-    const [activeSyllableIndex, setActiveSyllableIndex] = useState<number | null>(null);
-    
+
     const visualizerContainerRef = useRef<HTMLDivElement>(null);
     const visualizerRef = useRef<AudioVisualizer | null>(null);
     const recorderRef = useRef<PronunciationRecorder | null>(null);
     const recognitionRef = useRef<any>(null);
-    const syllableTimeoutRef = useRef<any>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const audioSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
-    // Initialize Visualizer & Recorder
+    // --- Dynamic Styles based on State ---
+    const getWaveColor = () => {
+        switch (state) {
+            case 'recording': return '#f97316'; // Orange Fire
+            case 'listening': return '#22d3ee'; // Cyan
+            case 'processing': return '#a855f7'; // Purple
+            case 'result': return score && score > 80 ? '#22c55e' : '#eab308'; // Green or Yellow
+            default: return '#3b82f6'; // Default Blue
+        }
+    };
+
+    const waveColor = getWaveColor();
+
+    // --- Init ---
     useEffect(() => {
         if (visualizerContainerRef.current && !visualizerRef.current) {
-            try {
-                visualizerRef.current = new AudioVisualizer(visualizerContainerRef.current, '#2dd4bf');
-                visualizerRef.current.setMode('liquid');
-            } catch (e) { console.error('Visualizer init failed', e); }
+            visualizerRef.current = new AudioVisualizer(visualizerContainerRef.current, waveColor);
+            visualizerRef.current.setMode('liquid'); // Ensure liquid mode is active
         }
-        
-        if (!recorderRef.current) {
-            recorderRef.current = new PronunciationRecorder();
-        }
+        if (!recorderRef.current) recorderRef.current = new PronunciationRecorder();
 
-        return () => {
-            visualizerRef.current?.stop();
-        };
-    }, []);
-
-    // Speech Recognition Setup
-    useEffect(() => {
+        // Setup Speech Recognition
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
@@ -58,228 +55,248 @@ export const PronunciationLab: React.FC<PronunciationLabProps> = ({ word }) => {
             };
             recognitionRef.current = recognition;
         }
-    }, [word]);
 
-    // TTS Events
+        return () => { visualizerRef.current?.stop(); };
+    }, []);
+
+    // Update visualizer color when state changes
     useEffect(() => {
-        const onStart = () => {
-            visualizerRef.current?.start();
-            setKaraokeActive(true);
-            startSyllableAnim();
-        };
-        const onEnd = () => {
-            visualizerRef.current?.stop();
-            setKaraokeActive(false);
-            stopSyllableAnim();
-        };
-        const onBoundary = () => {
-            // Optional: highlight specific word if needed
-        };
-
-        window.addEventListener('tts-start', onStart);
-        window.addEventListener('tts-end', onEnd);
-        window.addEventListener('tts-boundary', onBoundary);
-
-        return () => {
-            window.removeEventListener('tts-start', onStart);
-            window.removeEventListener('tts-end', onEnd);
-            window.removeEventListener('tts-boundary', onBoundary);
-        };
-    }, [word, speed]); // Re-bind if word/speed changes
-
-    const startSyllableAnim = () => {
-        const syllables = PronunciationHelper.splitIntoSyllables(word);
-        if (!syllables.length) return;
-        
-        stopSyllableAnim();
-        
-        // Approx calculation
-        const totalChars = word.length;
-        const estimatedDuration = (totalChars * 80) / speed;
-        const syllableDurations = syllables.map(s => Math.max(200, (s.length / totalChars) * estimatedDuration));
-
-        let index = 0;
-        const playNext = () => {
-            if (index >= syllables.length) {
-                setActiveSyllableIndex(null);
-                return;
+        if (visualizerRef.current) {
+            visualizerRef.current.setColor(waveColor);
+            if (state === 'recording' || state === 'listening') {
+                visualizerRef.current.start();
             }
-            setActiveSyllableIndex(index);
-            const duration = syllableDurations[index];
-            index++;
-            syllableTimeoutRef.current = setTimeout(playNext, duration);
-        };
-        playNext();
+        }
+    }, [state, waveColor]);
+
+    // --- Logic ---
+    const handleListen = () => {
+        if (state === 'recording') return;
+        setState('listening');
+        visualizerRef.current?.start();
+        TTSManager.speakSwedish(word);
+
+        // Auto-stop visualizer after approx speech duration (simulated)
+        setTimeout(() => {
+            if (state === 'listening') {
+                setState('idle');
+                visualizerRef.current?.stop();
+            }
+        }, word.length * 100 + 1000);
     };
 
-    const stopSyllableAnim = () => {
-        if (syllableTimeoutRef.current) clearTimeout(syllableTimeoutRef.current);
-        setActiveSyllableIndex(null);
+    const toggleRecording = async () => {
+        if (state !== 'recording') {
+            // Start
+            HapticFeedback.light();
+            setState('recording');
+            setScore(null);
+
+            // Start Recorder and get Stream
+            const stream = await recorderRef.current?.start();
+            if (stream) {
+                // Setup Audio Analysis for Visualizer
+                if (!audioContextRef.current) {
+                    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                }
+                const ctx = audioContextRef.current;
+
+                // Resume context if suspended (browser policy)
+                if (ctx.state === 'suspended') await ctx.resume();
+
+                audioSourceRef.current = ctx.createMediaStreamSource(stream);
+                const analyser = ctx.createAnalyser();
+                analyser.fftSize = 256;
+                audioSourceRef.current.connect(analyser); // Connect source to analyser
+                // Do NOT connect to destination to avoid feedback loop (echo)
+
+                if (visualizerRef.current) {
+                    visualizerRef.current.connectAnalyser(analyser);
+                    visualizerRef.current.start();
+                }
+            } else {
+                // Failed to start (Permission denied or other error)
+                console.error('Failed to get media stream');
+                setState('idle');
+                HapticFeedback.error();
+                return;
+            }
+
+            try { recognitionRef.current?.start(); } catch { }
+        } else {
+            // Stop
+            HapticFeedback.success();
+            setState('processing');
+
+            // Stop Visualizer & Cleanup Audio
+            visualizerRef.current?.stop();
+            if (audioSourceRef.current) {
+                audioSourceRef.current.disconnect();
+                audioSourceRef.current = null;
+            }
+            // Optional: Close context or keep it reusable. Keeping it reusable is better.
+
+            const blob = await recorderRef.current?.stop();
+            setLastBlob(blob || null);
+            try { recognitionRef.current?.stop(); } catch { }
+
+            // Fallback timeout to result or idle if no recognition
+            setTimeout(() => {
+                setState(prev => (prev === 'processing' && score === null ? 'idle' : prev));
+            }, 1500);
+        }
     };
 
     const calculateScore = (spoken: string, confidence: number) => {
         const target = word.toLowerCase();
         let s = 0;
-        if (spoken === target) s = Math.round(confidence * 100);
+        if (spoken === target) s = Math.round(confidence * 100) + 10;
         else if (spoken.includes(target) || target.includes(spoken)) s = Math.round(confidence * 80);
         else s = Math.round(confidence * 40);
-        
-        setScore(s);
-        if (s > 80) HapticFeedback.success();
-    };
+        s = Math.min(100, Math.max(0, s));
 
-    const toggleRecording = async () => {
-        if (!isRecording) {
-            setIsRecording(true);
-            setScore(null);
-            visualizerRef.current?.start();
-            await recorderRef.current?.start();
-            try { recognitionRef.current?.start(); } catch {}
-        } else {
-            setIsRecording(false);
-            visualizerRef.current?.stop();
-            const blob = await recorderRef.current?.stop();
-            setLastBlob(blob || null);
-            try { recognitionRef.current?.stop(); } catch {}
-        }
+        setScore(s);
+        setState('result');
     };
 
     const playRecording = () => {
-        if (lastBlob) PronunciationRecorder.playBlob(lastBlob);
+        if (lastBlob) {
+            HapticFeedback.light();
+            PronunciationRecorder.playBlob(lastBlob);
+        }
     };
 
-    const syllables = PronunciationHelper.splitIntoSyllables(word);
-    const tips = PronunciationHelper.getTipsForWord(word);
-
     return (
-        <div className="pronunciation-lab-section premium-glow-section" style={{ padding: '16px', background: '#1c1c1e', borderRadius: '16px', border: '1px solid #333' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', marginBottom: '16px' }}>
-                🎙️ <span className="sv-text">Uttalslabb / مختبر النطق</span>
-            </h3>
+        <div style={{
+            position: 'relative',
+            width: '100%',
+            height: '400px',
+            background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
+            borderRadius: '32px',
+            overflow: 'hidden',
+            border: `1px solid ${waveColor}33`,
+            boxShadow: `0 20px 60px -10px ${waveColor}22`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.5s ease'
+        }}>
+            {/* Background Pulse */}
+            <div style={{
+                position: 'absolute', inset: 0,
+                background: `radial-gradient(circle at center, ${waveColor}11 0%, transparent 60%)`,
+                animation: state === 'recording' ? 'pulse 1.5s infinite' : 'none',
+                pointerEvents: 'none'
+            }} />
 
-            {/* Levels */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                {[
-                    { id: 'listen', icon: '👂', label: 'Lyssna', labelAr: 'استمع' },
-                    { id: 'repeat', icon: '🔁', label: 'Upprepa', labelAr: 'كرر' },
-                    { id: 'challenge', icon: '🎯', label: 'Utmaning', labelAr: 'تحدي' }
-                ].map((lvl) => (
-                    <button 
-                        key={lvl.id}
-                        onClick={() => setLevel(lvl.id as any)}
-                        style={{
-                            flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #444',
-                            background: level === lvl.id ? '#2dd4bf22' : 'transparent',
-                            borderColor: level === lvl.id ? '#2dd4bf' : '#444',
-                            color: level === lvl.id ? '#2dd4bf' : '#888',
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.8rem', gap: '4px'
-                        }}
-                    >
-                        <span style={{ fontSize: '1.2rem' }}>{lvl.icon}</span>
-                        <span>{lvl.label}</span>
-                        <span style={{ fontSize: '0.7rem' }}>{lvl.labelAr}</span>
-                    </button>
-                ))}
-            </div>
-
-            {/* Main Stage */}
-            <div style={{ position: 'relative', marginBottom: '20px', minHeight: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div ref={visualizerContainerRef} style={{ width: '100%', height: '80px', position: 'absolute', top: 0, opacity: 0.3 }} />
-                
-                {/* Karaoke Word */}
-                <div style={{ 
-                    fontSize: word.length > 10 ? '2rem' : '3rem', fontWeight: '900', zIndex: 2, 
-                    color: karaokeActive ? '#2dd4bf' : '#fff', transition: 'color 0.2s', textAlign: 'center',
-                    textShadow: karaokeActive ? '0 0 20px #2dd4bf' : 'none'
-                }}>
-                    {word}
-                </div>
-
-                {/* Syllables */}
-                <div style={{ display: 'flex', gap: '4px', marginTop: '10px', zIndex: 2 }}>
-                    {syllables.map((s, i) => (
-                        <span key={i} style={{ 
-                            padding: '4px 8px', borderRadius: '4px', background: activeSyllableIndex === i ? '#2dd4bf' : '#333', 
-                            color: activeSyllableIndex === i ? '#000' : '#888', fontSize: '0.9rem', fontWeight: 'bold',
-                            transition: 'all 0.2s'
-                        }}>
-                            {s}
-                        </span>
-                    ))}
-                </div>
-            </div>
-
-            {/* Controls */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                {level !== 'challenge' && (
-                    <button 
-                        onClick={() => TTSManager.speakSwedish(word)}
-                        style={{ padding: '16px', borderRadius: '12px', background: '#3b82f6', color: '#fff', border: 'none', fontSize: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    >
-                        🔊 Lyssna
-                    </button>
-                )}
-                
-                {level !== 'listen' && (
-                    <button 
-                        onClick={toggleRecording}
-                        style={{ 
-                            padding: '16px', borderRadius: '12px', 
-                            background: isRecording ? '#ef4444' : '#2c2c2e', 
-                            color: '#fff', border: 'none', fontSize: '1rem', fontWeight: 'bold',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            animation: isRecording ? 'pulse 1.5s infinite' : 'none'
-                        }}
-                    >
-                        {isRecording ? '⏹️ Stopp' : '🎙️ Spela in'}
-                    </button>
-                )}
-            </div>
-
-            {/* Score & Playback */}
-            {score !== null && (
-                <div style={{ marginTop: '20px', padding: '15px', background: '#2c2c2e', borderRadius: '12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '8px', color: score > 70 ? '#4ade80' : '#facc15' }}>
-                        {score}% Match
+            {/* Main Word Display */}
+            <div style={{
+                position: 'relative', zIndex: 10,
+                fontSize: '3rem', fontWeight: '900',
+                color: '#fff',
+                textShadow: `0 0 30px ${waveColor}66`,
+                marginBottom: '20px',
+                textAlign: 'center',
+                transition: 'all 0.3s'
+            }}>
+                {word}
+                {/* Score Badge */}
+                {state === 'result' && score !== null && (
+                    <div style={{
+                        position: 'absolute', top: '-25px', right: '-20px',
+                        background: score > 80 ? '#22c55e' : '#eab308',
+                        color: '#000', fontSize: '0.8rem', fontWeight: 'bold',
+                        padding: '4px 10px', borderRadius: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                        animation: 'bounce 0.5s'
+                    }}>
+                        {score}%
                     </div>
-                    {lastBlob && (
-                        <button onClick={playRecording} style={{ background: 'none', border: '1px solid #555', color: '#fff', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer' }}>
-                            ▶️ Hör din inspelning
-                        </button>
-                    )}
-                </div>
-            )}
-
-            {/* Speed Control */}
-            <div style={{ marginTop: '20px', padding: '0 10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#888', fontSize: '0.8rem', marginBottom: '5px' }}>
-                    <span>0.5x</span>
-                    <span>Hastighet: {speed}x</span>
-                    <span>1.5x</span>
-                </div>
-                <input 
-                    type="range" min="0.5" max="1.5" step="0.1" value={speed} 
-                    onChange={(e) => {
-                        const v = parseFloat(e.target.value);
-                        setSpeed(v);
-                        TTSManager.setSpeed(v);
-                    }}
-                    style={{ width: '100%', accentColor: '#3b82f6' }} 
-                />
+                )}
             </div>
 
-            {/* Tips */}
-            {tips.length > 0 && (
-                <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {tips.map((tip, i) => (
-                        <div key={i} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', borderLeft: '3px solid #facc15' }}>
-                            <div style={{ fontSize: '0.9rem', color: '#fff', marginBottom: '4px' }}>💡 Tips</div>
-                            <div style={{ fontSize: '0.85rem', color: '#ccc' }}>{tip.tip.sv}</div>
-                            <div style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic', marginTop: '4px' }}>Ex: {tip.example}</div>
-                        </div>
-                    ))}
+            {/* THE SONIC WAVE CONTAINER */}
+            <div
+                onClick={toggleRecording}
+                style={{
+                    width: '180px', height: '180px',
+                    borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.3)',
+                    border: `2px solid ${waveColor}44`,
+                    position: 'relative',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'transform 0.2s',
+                    transform: state === 'recording' ? 'scale(1.05)' : 'scale(1)',
+                    boxShadow: `0 0 30px ${waveColor}22, inset 0 0 20px ${waveColor}11`
+                }}
+            >
+                {/* Visualizer Canvas injected here */}
+                <div ref={visualizerContainerRef} style={{ position: 'absolute', inset: -20, opacity: 0.8 }} />
+
+                {/* Center Icon */}
+                <div style={{
+                    position: 'relative', zIndex: 5,
+                    fontSize: '2.5rem',
+                    color: '#fff',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                    pointerEvents: 'none'
+                }}>
+                    {state === 'recording' ? '⏹️' : state === 'listening' ? '🔊' : '🎙️'}
                 </div>
-            )}
+
+                {/* Processing Spinner */}
+                {state === 'processing' && (
+                    <div style={{
+                        position: 'absolute', inset: 0,
+                        border: '4px solid transparent',
+                        borderTopColor: '#fff',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }} />
+                )}
+            </div>
+
+            <div style={{ marginTop: '25px', display: 'flex', gap: '20px', zIndex: 10 }}>
+                <button
+                    onClick={(e) => { e.stopPropagation(); handleListen(); }}
+                    style={{
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff', padding: '12px 24px', borderRadius: '30px',
+                        fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: '8px'
+                    }}
+                >
+                    <span>Lyssna</span>
+                </button>
+
+                {lastBlob && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); playRecording(); }}
+                        style={{
+                            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                            color: '#fff', padding: '12px 24px', borderRadius: '30px',
+                            fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '8px'
+                        }}
+                    >
+                        <span>Din röst</span>
+                    </button>
+                )}
+            </div>
+
+            <div style={{ marginTop: '15px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
+                {state === 'idle' ? 'Tryck på cirkeln för att spela in' :
+                    state === 'recording' ? 'Klicka för att stoppa' :
+                        state === 'listening' ? 'Lyssnar...' : 'Bearbetar...'}
+            </div>
+
+            <style>{`
+                @keyframes spin { 100% { transform: rotate(360deg); } }
+                @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.02); } 100% { opacity: 0.5; transform: scale(1); } }
+            `}</style>
         </div>
     );
 };

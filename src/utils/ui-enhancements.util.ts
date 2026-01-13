@@ -304,7 +304,7 @@ export class AudioVisualizer {
         } else {
             container = containerOrId;
         }
-        
+
         if (!container) throw new Error('Visualizer container not found');
 
         this.canvas = document.createElement('canvas');
@@ -336,6 +336,10 @@ export class AudioVisualizer {
 
     setMode(mode: 'bars' | 'liquid' | 'circle') {
         this.mode = mode;
+    }
+
+    setColor(color: string) {
+        this.color = color;
     }
 
     connectAnalyser(analyser: AnalyserNode) {
@@ -533,8 +537,8 @@ export class PronunciationRecorder {
     private audioChunks: Blob[] = [];
     private isRecording = false;
 
-    async start() {
-        if (this.isRecording) return;
+    async start(): Promise<MediaStream | null> {
+        if (this.isRecording) return null;
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -548,14 +552,19 @@ export class PronunciationRecorder {
             this.mediaRecorder.start();
             this.isRecording = true;
             window.dispatchEvent(new CustomEvent('recorder-start'));
+            return stream;
         } catch (err) {
             console.error('Recording failed:', err);
+            return null;
         }
     }
 
-    stop(): Promise<Blob> {
+    stop(): Promise<Blob | null> {
         return new Promise((resolve) => {
-            if (!this.mediaRecorder || !this.isRecording) return;
+            if (!this.mediaRecorder || !this.isRecording) {
+                resolve(null);
+                return;
+            }
 
             this.mediaRecorder.onstop = () => {
                 const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });

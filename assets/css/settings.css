@@ -92,7 +92,7 @@
 .settings-orb-2 {
     width: 450px;
     height: 450px;
-    background: radial-gradient(circle, #090972 0%, transparent 70%);
+    background: radial-gradient(circle, #1e3a8a 0%, transparent 70%);
     bottom: -10%;
     right: -10%;
     animation-duration: 35s;
@@ -755,7 +755,7 @@
 }
 
 .toggle-switch input:checked+.toggle-slider {
-    background: linear-gradient(135deg, #3b82f6, #090972);
+    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
     border-color: transparent;
 }
 

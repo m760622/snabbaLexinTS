@@ -1390,7 +1390,7 @@ body::after {
 
 [data-theme="dark"] body::before {
   opacity: 0.2;
-  background: #090972;
+  background: #1e3a8a;
 }
 
 [data-theme="dark"] body::after {

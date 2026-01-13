@@ -2,7 +2,7 @@
 
 :root {
     --accent-blue: #3b82f6;
-    --accent-purple: #090972;
+    --accent-deep-blue: #1e3a8a;
     --accent-gold: #f59e0b;
     --accent-emerald: #10b981;
     --accent-rose: #f43f5e;
@@ -48,10 +48,10 @@
     animation-duration: 25s;
 }
 
-.orb-purple {
+.orb-deep-blue {
     width: 350px;
     height: 350px;
-    background: var(--accent-purple);
+    background: var(--accent-deep-blue);
     bottom: 10%;
     right: -50px;
     animation-duration: 30s;
