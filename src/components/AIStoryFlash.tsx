@@ -42,7 +42,7 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
         }
 
         setStatus('busy');
-        
+
         // Pick a random template
         const template = templates[Math.floor(Math.random() * templates.length)];
         const finalSv = template.sv.replace(/{word}/g, swe);
@@ -57,7 +57,7 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
 
     const formatText = (text: string, color: string) => {
         if (!text) return null;
-        return text.split('**').map((part, i) => 
+        return text.split('**').map((part, i) =>
             i % 2 === 1 ? (
                 <strong key={i} style={{ color: color, textShadow: `0 0 15px ${color}44`, fontWeight: '900' }}>
                     {part}
@@ -71,13 +71,13 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
     if (status === 'idle') {
         return (
             <div style={{ textAlign: 'center', margin: '25px 0' }}>
-                <button 
+                <button
                     onClick={handleGenerate}
                     style={{
-                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                        background: 'linear-gradient(135deg, #3b82f6 0%, #090972 100%)',
                         color: 'white', border: 'none', padding: '14px 32px',
                         borderRadius: '50px', fontSize: '1.1rem', fontWeight: 'bold',
-                        cursor: 'pointer', boxShadow: '0 10px 20px rgba(168, 85, 247, 0.3)',
+                        cursor: 'pointer', boxShadow: '0 10px 20px rgba(9, 9, 114, 0.3)',
                         display: 'inline-flex', alignItems: 'center', gap: '12px'
                     }}
                 >
@@ -90,18 +90,18 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
 
     if (status === 'busy') {
         return (
-            <div style={{ 
-                padding: '40px', textAlign: 'center', background: '#1c1c1e', 
-                borderRadius: '24px', border: '1px solid #333', margin: '25px 0' 
+            <div style={{
+                padding: '40px', textAlign: 'center', background: '#1c1c1e',
+                borderRadius: '24px', border: '1px solid #333', margin: '25px 0'
             }}>
                 <div style={{
-                    width: '50px', height: '50px', border: '4px solid #6366f1',
+                    width: '50px', height: '50px', border: '4px solid #3b82f6',
                     borderTopColor: 'transparent', borderRadius: '50%',
                     margin: '0 auto 20px', animation: 'ai-spin 0.8s linear infinite'
                 }}></div>
                 <div style={{ color: '#888', fontWeight: 'bold' }}>
-                    Generating {type} Story... <br/> 
-                    <span dir="rtl" style={{ fontFamily: '"Tajawal", sans-serif', color: '#a855f7', display: 'block', marginTop: '10px' }}>
+                    Generating {type} Story... <br />
+                    <span dir="rtl" style={{ fontFamily: '"Tajawal", sans-serif', color: '#3b82f6', display: 'block', marginTop: '10px' }}>
                         جاري تأليف قصة ({type})...
                     </span>
                 </div>
@@ -119,45 +119,45 @@ export const AIStoryFlash: React.FC<AIStoryFlashProps> = ({ swe, arb, type }) =>
             {/* Top accent line */}
             <div style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '4px',
-                background: 'linear-gradient(90deg, #6366f1, #a855f7)'
+                background: 'linear-gradient(90deg, #3b82f6, #090972)'
             }}></div>
 
             {/* Swedish Content - Always Visible */}
-            <div style={{ 
-                fontSize: '1.25rem', lineHeight: 1.7, color: '#fff', 
-                marginBottom: '25px', textAlign: 'center' 
+            <div style={{
+                fontSize: '1.25rem', lineHeight: 1.7, color: '#fff',
+                marginBottom: '25px', textAlign: 'center'
             }}>
-                {formatText(content?.sv || '', '#818cf8')}
+                {formatText(content?.sv || '', '#60a5fa')}
             </div>
 
             {/* Divider */}
             <div style={{ height: '1px', background: '#333', margin: '25px 0' }}></div>
 
             {/* Arabic Content - Forced Visibility - Not using .ar-text class */}
-            <div dir="rtl" style={{ 
-                fontSize: '1.6rem', lineHeight: 2, color: '#fff', 
-                fontFamily: '"Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif', 
+            <div dir="rtl" style={{
+                fontSize: '1.6rem', lineHeight: 2, color: '#fff',
+                fontFamily: '"Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
                 textAlign: 'center',
                 display: 'block', // Force display
                 visibility: 'visible', // Force visibility
                 opacity: 1 // Force opacity
             }}>
-                {formatText(content?.ar || '', '#a855f7')}
+                {formatText(content?.ar || '', '#3b82f6')}
             </div>
 
             {/* Footer buttons */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '30px' }}>
-                <button 
+                <button
                     onClick={handleGenerate}
-                    style={{ 
-                        background: 'rgba(255,255,255,0.05)', border: '1px solid #444', 
-                        color: '#eee', padding: '8px 20px', borderRadius: '20px', 
+                    style={{
+                        background: 'rgba(255,255,255,0.05)', border: '1px solid #444',
+                        color: '#eee', padding: '8px 20px', borderRadius: '20px',
                         fontSize: '0.85rem', cursor: 'pointer'
                     }}
                 >
                     🔄 Try another / <span dir="rtl">تغيير القصة</span>
                 </button>
-                <button 
+                <button
                     onClick={() => setStatus('idle')}
                     style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '0.85rem' }}
                 >

@@ -9,53 +9,167 @@ import { AIStoryFlash } from './components/AIStoryFlash';
 import { AIAnalysis } from './components/AIAnalysis';
 import { t } from './utils/i18n.util';
 import { DictionaryDB } from './services/db.service';
+import { getSwedishFontSize, getArabicFontSize } from './utils/font-size.util';
 
 interface DetailsViewProps {
     wordId: number | string;
     onBack: () => void;
 }
 
-const PremiumBackground = () => (
-    <div className="premium-bg">
-        <div className="orb-container">
-            <div className="premium-orb orb-blue" style={{opacity: 0.2}}></div>
-            <div className="premium-orb orb-purple" style={{opacity: 0.2}}></div>
-        </div>
+
+
+// Animated Wave Background
+const WaveBackground = ({ color }: { color: string }) => (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '200%', height: '120px', animation: 'waveMove 8s linear infinite' }}
+            viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z"
+                fill={`${color}15`} />
+        </svg>
+        <svg style={{ position: 'absolute', bottom: 0, left: 0, width: '200%', height: '100px', animation: 'waveMove 6s linear infinite reverse' }}
+            viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,40 C150,100 350,0 500,50 C700,110 900,20 1200,70 L1200,120 L0,120 Z"
+                fill={`${color}10`} />
+        </svg>
     </div>
 );
 
-const SmartLinkedText = ({ text, onLinkClick }: { text: string, onLinkClick: (word: string) => void }) => {
-    if (!text) return null;
-    // Split by spaces, punctuation, and Arabic characters vs Latin
-    const parts = text.split(/([ \t\n,.!?;:"]+|[أ-ي]+)/);
-    return (        <span>
-            {parts.map((part, i) => {
-                // Match Swedish words (at least 3 chars) or any Arabic sequence
-                const isSwedish = part.match(/^[a-zåäöA-ZÅÄÖ]{3,}$/);
-                const isArabic = part.match(/^[أ-ي]{2,}$/);
-                
-                if (isSwedish || isArabic) {
-                    return (
-                        <span 
-                            key={i} 
-                            onClick={(e) => { e.stopPropagation(); onLinkClick(part); }}
-                            style={{ 
-                                cursor: 'pointer', 
-                                borderBottom: '1.5px solid rgba(59, 130, 246, 0.3)', 
-                                color: isArabic ? 'var(--accent-gold, #fbbf24)' : 'var(--accent-blue, #3b82f6)',
-                                transition: 'all 0.2s'
-                            }}
-                            className="smart-link"
-                        >
-                            {part}
-                        </span>
-                    );
-                }
-                return <span key={i}>{part}</span>;
-            })}
-        </span>
+// Glass Card Component
+const GlassCard = ({ title, icon, children, color, delay = 0 }: any) => (
+    <div style={{
+        background: 'rgba(255,255,255,0.03)',
+        backdropFilter: 'blur(25px) saturate(180%)',
+        padding: '20px',
+        borderRadius: '24px',
+        border: '1px solid rgba(255,255,255,0.08)',
+        marginBottom: '16px',
+        position: 'relative',
+        overflow: 'hidden',
+        animation: `glassSlideIn 0.5s ease-out ${delay}s both`
+    }}>
+        {/* Glass reflection */}
+        <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: '50%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)',
+            borderRadius: '24px 24px 0 0', pointerEvents: 'none'
+        }} />
+        {/* Accent line */}
+        <div style={{
+            position: 'absolute', left: 0, top: '20%', bottom: '20%', width: '3px',
+            background: `linear-gradient(180deg, transparent, ${color}, transparent)`,
+            borderRadius: '0 3px 3px 0'
+        }} />
+        <h3 style={{
+            fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', marginBottom: '16px',
+            display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase',
+            letterSpacing: '1.5px', fontWeight: '600', position: 'relative'
+        }}>
+            <span style={{ fontSize: '1.1rem' }}>{icon}</span> {title}
+        </h3>
+        <div style={{ position: 'relative' }}>{children}</div>
+    </div>
+);
+
+// Focus Mode Component
+const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, color: string, onClose: () => void }) => {
+    useEffect(() => { TTSManager.speak(swe, 'sv'); }, [swe]);
+    return (
+        <div style={{
+            position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at center, #0a0a0f 0%, #000 100%)', zIndex: 1000,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px'
+        }}>
+            <button onClick={onClose} style={{
+                position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)',
+                border: 'none', color: '#fff', width: '50px', height: '50px', borderRadius: '50%', fontSize: '1.5rem', cursor: 'pointer'
+            }}>✕</button>
+            <div style={{ fontSize: '4rem', fontWeight: '900', color: '#fff', textAlign: 'center', textShadow: `0 0 80px ${color}55`, marginBottom: '25px' }}>{swe}</div>
+            <div style={{ width: '80px', height: '4px', background: `linear-gradient(90deg, transparent, ${color}, transparent)`, borderRadius: '10px', marginBottom: '25px' }} />
+            <div dir="rtl" style={{ fontSize: '2.5rem', fontWeight: '700', color: 'rgba(255,255,255,0.85)', fontFamily: '"Tajawal", sans-serif', textAlign: 'center' }}>{arb}</div>
+            <div style={{ display: 'flex', gap: '20px', marginTop: '50px' }}>
+                <button onClick={() => TTSManager.speak(swe, 'sv')} style={{
+                    background: `${color}25`, border: `2px solid ${color}60`, color: color,
+                    padding: '15px 30px', borderRadius: '30px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer'
+                }}>🔊 Svenska</button>
+                <button onClick={() => TTSManager.speak(arb, 'ar')} style={{
+                    background: 'rgba(251,191,36,0.2)', border: '2px solid rgba(251,191,36,0.5)', color: '#fbbf24',
+                    padding: '15px 30px', borderRadius: '30px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer'
+                }}>🔊 العربية</button>
+            </div>
+        </div>
     );
 };
+
+// Flip Card
+const FlipCard = ({ swe, arb, color, onClose }: { swe: string, arb: string, color: string, onClose: () => void }) => {
+    const [isFlipped, setIsFlipped] = useState(false);
+    return (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '45px', height: '45px', borderRadius: '50%', fontSize: '1.3rem', cursor: 'pointer' }}>✕</button>
+            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '25px', fontSize: '0.95rem' }}>اضغط على البطاقة لقلبها</p>
+            <div onClick={() => { setIsFlipped(!isFlipped); HapticManager.medium(); }} style={{ width: '320px', height: '220px', perspective: '1000px', cursor: 'pointer' }}>
+                <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)', transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0)' }}>
+                    <div style={{ position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', background: `linear-gradient(145deg, ${color}35, ${color}10)`, borderRadius: '28px', border: `2px solid ${color}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', boxShadow: `0 25px 50px ${color}25` }}>
+                        <span style={{ fontSize: getSwedishFontSize(swe), fontWeight: '800', color: '#fff' }}>{swe}</span>
+                    </div>
+                    <div style={{ position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', background: 'linear-gradient(145deg, rgba(251,191,36,0.3), rgba(251,191,36,0.1))', borderRadius: '28px', border: '2px solid rgba(251,191,36,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'rotateY(180deg)', boxShadow: '0 25px 50px rgba(251,191,36,0.2)' }}>
+                        <span dir="rtl" style={{ fontSize: getArabicFontSize(arb), fontWeight: '700', color: '#fff', fontFamily: '"Tajawal", sans-serif' }}>{arb}</span>
+                    </div>
+                </div>
+            </div>
+            <div style={{ display: 'flex', gap: '15px', marginTop: '35px' }}>
+                <button onClick={() => TTSManager.speak(swe, 'sv')} style={{ background: `${color}25`, border: `1px solid ${color}50`, color: color, padding: '14px 28px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>🔊 Svenska</button>
+                <button onClick={() => TTSManager.speak(arb, 'ar')} style={{ background: 'rgba(251,191,36,0.2)', border: '1px solid rgba(251,191,36,0.45)', color: '#fbbf24', padding: '14px 28px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>🔊 العربية</button>
+            </div>
+        </div>
+    );
+};
+
+// Quick Quiz
+const QuickQuiz = ({ swe, arb, options, color, onClose }: { swe: string, arb: string, options: string[], color: string, onClose: () => void }) => {
+    const [selected, setSelected] = useState<string | null>(null);
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const handleSelect = (opt: string) => { setSelected(opt); setIsCorrect(opt === arb); HapticManager.medium(); setTimeout(() => onClose(), 1800); };
+    return (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '45px', height: '45px', borderRadius: '50%', fontSize: '1.3rem', cursor: 'pointer' }}>✕</button>
+            <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '15px' }}>⚡ تحدي سريع</div>
+            <div style={{ fontSize: getSwedishFontSize(swe), fontWeight: '800', color: '#fff', marginBottom: '35px', textShadow: `0 0 40px ${color}40` }}>{swe}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '320px' }}>
+                {options.map((opt, i) => (
+                    <button key={i} onClick={() => !selected && handleSelect(opt)} disabled={!!selected}
+                        style={{
+                            background: selected === opt ? (isCorrect ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)') : 'rgba(255,255,255,0.04)',
+                            border: `2px solid ${selected === opt ? (isCorrect ? '#10b981' : '#ef4444') : 'rgba(255,255,255,0.08)'}`,
+                            color: '#fff', padding: '18px', borderRadius: '18px', fontSize: '1.1rem', fontWeight: '600', cursor: selected ? 'default' : 'pointer',
+                            fontFamily: '"Tajawal", sans-serif', direction: 'rtl', transition: 'all 0.3s'
+                        }}>{opt}</button>
+                ))}
+            </div>
+            {isCorrect !== null && <div style={{ marginTop: '30px', fontSize: '2rem', color: isCorrect ? '#10b981' : '#ef4444' }}>{isCorrect ? '✅ أحسنت!' : '❌ حاول مرة أخرى'}</div>}
+        </div>
+    );
+};
+
+// Smart Link
+const SmartLinkedText = ({ text, onLinkClick }: { text: string, onLinkClick: (word: string) => void }) => {
+    if (!text) return null;
+    const parts = text.split(/([ \t\n,.!?;:"]+|[أ-ي]+)/);
+    return (<span>{parts.map((part, i) => {
+        const isSwedish = part.match(/^[a-zåäöA-ZÅÄÖ]{3,}$/);
+        const isArabic = part.match(/^[أ-ي]{2,}$/);
+        if (isSwedish || isArabic) return (<span key={i} onClick={(e) => { e.stopPropagation(); onLinkClick(part); }}
+            style={{ cursor: 'pointer', borderBottom: '1.5px dashed rgba(255,255,255,0.35)', color: isArabic ? '#fbbf24' : '#60a5fa', transition: 'all 0.2s' }}>{part}</span>);
+        return <span key={i}>{part}</span>;
+    })}</span>);
+};
+
+// Form Chip
+const FormChip = ({ form, color }: { form: string, color: string }) => (
+    <button onClick={(e) => { e.stopPropagation(); HapticManager.light(); TTSManager.speak(form.trim(), 'sv'); }}
+        style={{ background: `${color}12`, border: `1px solid ${color}30`, color: color, padding: '10px 18px', borderRadius: '25px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '0.75rem' }}>🔊</span>{form.trim()}
+    </button>
+);
 
 export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     const [wordData, setWordData] = useState<any[] | null>(null);
@@ -64,21 +178,33 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     const [isHeartPop, setIsHeartPop] = useState(false);
     const [isRepeating, setIsRepeating] = useState(false);
     const [relatedWords, setRelatedWords] = useState<any[]>([]);
-    const [accentColor, setAccentColor] = useState('#3b82f6');
+    const [similarFavorites, setSimilarFavorites] = useState<any[]>([]);
+    const [showFlipCard, setShowFlipCard] = useState(false);
+    const [showQuickQuiz, setShowQuickQuiz] = useState(false);
+    const [showFocusMode, setShowFocusMode] = useState(false);
+    const [quizOptions, setQuizOptions] = useState<string[]>([]);
+    const [knowledgeLevel, setKnowledgeLevel] = useState(0);
+    const [scrollY, setScrollY] = useState(0);
+    const [hasSpoken, setHasSpoken] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(true);
 
     const stopRepeatRef = useRef(false);
-    const heroSweRef = useRef<HTMLHeadingElement>(null);
-    const heroArbRef = useRef<HTMLParagraphElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const allData = (window as any).dictionaryData as any[][];
 
+    // Detect theme mode
     useEffect(() => {
-        const savedColor = localStorage.getItem('snabba_accent_color');
-        if (savedColor) setAccentColor(savedColor);
+        const checkTheme = () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            setIsDarkMode(theme !== 'light');
+        };
+        checkTheme();
+        const observer = new MutationObserver(checkTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        return () => observer.disconnect();
     }, []);
 
-    const id = wordData?.[0];
     const type = wordData?.[1] || '';
     const swe = wordData?.[2] || '';
     const arb = wordData?.[3] || '';
@@ -87,40 +213,28 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     const forms = wordData?.[6] || '';
     const exSwe = wordData?.[7] || '';
     const exArb = wordData?.[8] || '';
-    const idiomSwe = wordData?.[9] || '';
-    const idiomArb = wordData?.[10] || '';
 
     const toggleFavorite = () => {
         HapticManager.medium();
-        const idStr = wordId.toString();
-        const newState = FavoritesManager.toggle(idStr);
+        const newState = FavoritesManager.toggle(wordId.toString());
         setIsFav(newState);
-        if (newState) {
-            setIsHeartPop(true);
-            setTimeout(() => setIsHeartPop(false), 300);
-        }
+        if (newState) { setIsHeartPop(true); setTimeout(() => setIsHeartPop(false), 300); }
     };
 
     const handleRepeat = async () => {
         HapticManager.light();
-        if (isRepeating) {
-            stopRepeatRef.current = true;
-            setIsRepeating(false);
-            TTSManager.stop();
-            return;
-        }
-
-        setIsRepeating(true);
-        stopRepeatRef.current = false;
-
+        if (isRepeating) { stopRepeatRef.current = true; setIsRepeating(false); TTSManager.stop(); return; }
+        setIsRepeating(true); stopRepeatRef.current = false;
         for (let i = 0; i < 3; i++) {
             if (stopRepeatRef.current) break;
             await TTSManager.speak(swe, 'sv', { speed: 0.9, pitch: 1.05 });
-            if (i < 2 && !stopRepeatRef.current) {
-                await new Promise(resolve => setTimeout(resolve, 800));
-            }
+            if (i < 2 && !stopRepeatRef.current) await new Promise(r => setTimeout(r, 800));
         }
         setIsRepeating(false);
+    };
+
+    const handleScroll = () => {
+        if (containerRef.current) setScrollY(containerRef.current.scrollTop);
     };
 
     useEffect(() => {
@@ -129,232 +243,361 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             if (found) {
                 setWordData(found);
                 setIsFav(FavoritesManager.has(wordId.toString()));
-                
+                setKnowledgeLevel(FavoritesManager.has(wordId.toString()) ? 75 : Math.floor(Math.random() * 40) + 10);
+
                 const sweWord = found[2];
-                const currentType = found[1];
-                const related = allData.filter(row => 
-                    row[2] !== sweWord && (row[2].toLowerCase().includes(sweWord.toLowerCase()) || row[1] === currentType)
-                ).slice(0, 5);
-                setRelatedWords(related);
+                setRelatedWords(allData.filter(row => row[2] !== sweWord && (row[2].toLowerCase().includes(sweWord.toLowerCase().slice(0, 3)) || row[1] === found[1])).slice(0, 5));
+
+                const favIds = FavoritesManager.getAll();
+                setSimilarFavorites(allData.filter(row => favIds.includes(row[0].toString()) && row[0].toString() !== wordId.toString() && row[1] === found[1]).slice(0, 4));
+
+                const wrongOptions = allData.filter(row => row[3] !== found[3] && row[3]).sort(() => Math.random() - 0.5).slice(0, 3).map(r => r[3]);
+                setQuizOptions([...wrongOptions, found[3]].sort(() => Math.random() - 0.5));
             }
         }
         if (containerRef.current) containerRef.current.scrollTop = 0;
+        setHasSpoken(false);
     }, [wordId, allData]);
 
+    // Auto-speak on load (Smart Card feature)
     useEffect(() => {
-        if (wordData) {
-            if (heroSweRef.current) TextSizeManager.apply(heroSweRef.current, swe, 1, 2.8);
-            if (heroArbRef.current) TextSizeManager.apply(heroArbRef.current, arb, 1, 1.8);
+        if (swe && !hasSpoken) {
+            setTimeout(() => TTSManager.speak(swe, 'sv'), 500);
+            setHasSpoken(true);
         }
-    }, [wordData, swe, arb]);
+    }, [swe, hasSpoken]);
 
     const handleSmartLink = (word: string) => {
         HapticManager.light();
         const found = allData?.find(row => row[2].toLowerCase() === word.toLowerCase());
         if (found) {
-            const newId = found[0];
-            window.history.pushState({ view: 'details', id: newId }, '', `?id=${newId}`);
-            window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'details', id: newId } }));
+            window.history.pushState({ view: 'details', id: found[0] }, '', `?id=${found[0]}`);
+            window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'details', id: found[0] } }));
         }
     };
 
     const [note, setNote] = useState('');
     const [isSavingNote, setIsSavingNote] = useState(false);
+    useEffect(() => { const loadNote = async () => { const n = await DictionaryDB.getNote(wordId.toString()); setNote(n || ''); }; loadNote(); }, [wordId]);
+    const handleSaveNote = async () => { setIsSavingNote(true); await DictionaryDB.saveNote(wordId.toString(), note); setIsSavingNote(false); showToast('تم حفظ الملاحظة!'); };
 
-    useEffect(() => {
-        const loadNote = async () => {
-            const n = await DictionaryDB.getNote(wordId.toString());
-            setNote(n || '');
-        };
-        loadNote();
-    }, [wordId]);
-
-    const handleSaveNote = async () => {
-        setIsSavingNote(true);
-        await DictionaryDB.saveNote(wordId.toString(), note);
-        setIsSavingNote(false);
-        showToast('Notat sparat! / تم حفظ الملاحظة!');
-    };
-
-    if (!wordData) return <div style={{padding: '40px', textAlign: 'center', color: '#fff'}}>{t('details.loading')}</div>;
+    if (!wordData) return <div style={{ padding: '40px', textAlign: 'center', color: '#fff' }}>{t('details.loading')}</div>;
 
     const typeInfo = TypeColorSystem.detect(type, swe, forms, '', arb);
     const primaryColor = typeInfo.color.primary;
+    const formsList = forms ? forms.split(',').map((f: string) => f.trim()).filter((f: string) => f) : [];
 
-    const Card = ({ title, icon, children }: any) => (
-        <div className="premium-card" style={{ 
-            background: 'rgba(28, 28, 30, 0.6)', padding: '20px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', 
-            marginBottom: '15px', borderLeft: `6px solid ${primaryColor}`, backdropFilter: 'blur(15px)'
-        }}>
-            <h3 style={{ fontSize: '0.8rem', color: '#888', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                <span style={{ fontSize: '1.2rem' }}>{icon}</span> {title}
-            </h3>
-            {children}
-        </div>
-    );
+    // Dynamic background opacity based on scroll
+    const headerOpacity = Math.min(0.98, 0.85 + scrollY / 500);
+
+
 
     return (
-        <div ref={containerRef} className="details-page-container" style={{ 
-            height: '100dvh', 
-            overflowY: 'auto', 
-            WebkitOverflowScrolling: 'touch',
-            background: '#0a0a0a',
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 10000,
-            position: 'fixed',
-            inset: 0
+        <div ref={containerRef} onScroll={handleScroll} className="details-page-container" style={{
+            height: '100%', width: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+            background: 'transparent', display: 'flex', flexDirection: 'column'
         }}>
-            <PremiumBackground />
+            <style>{`
+                @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                @keyframes glassSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+                @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+            `}</style>
 
-            {/* Nav Header */}
-            <div style={{ 
-                display: 'flex', justifyContent: 'space-between', padding: '15px 20px', position: 'sticky', top: 0, 
-                zIndex: 100, background: 'rgba(10,10,10,0.7)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)'
+            {/* Background Wave Effect - Premium Feel */}
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '35vh', zIndex: 0, pointerEvents: 'none' }}>
+                <WaveBackground color={primaryColor} />
+            </div>
+
+
+
+            {/* Fluid Header */}
+            <div style={{
+                display: 'flex', justifyContent: 'space-between', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 100,
+                background: `rgba(10,10,12,${headerOpacity})`, backdropFilter: 'blur(30px) saturate(180%)',
+                borderBottom: `1px solid ${primaryColor}15`, transition: 'background 0.3s'
             }}>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <button onClick={() => {
-                        HapticManager.light();
-                        window.history.pushState({ view: 'home' }, '', '/');
-                        window.dispatchEvent(new PopStateEvent('popstate', { state: { view: 'home' } }));
-                    }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', cursor: 'pointer', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    </button>
-                    <button onClick={() => { HapticManager.light(); onBack(); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', cursor: 'pointer', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    </button>
-                </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <button onClick={() => { HapticManager.light(); TTSManager.stop(); stopRepeatRef.current = true; TTSManager.speak(swe, 'sv'); }} style={{ background: 'rgba(59, 130, 246, 0.1)', border: 'none', color: '#3b82f6', cursor: 'pointer', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🔊</button>
-                    <button onClick={handleRepeat} style={{ background: isRepeating ? `${accentColor}33` : 'rgba(255,255,255,0.05)', border: 'none', color: isRepeating ? accentColor : '#fff', cursor: 'pointer', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    <button onClick={() => { HapticManager.light(); onBack(); }}
+                        style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', width: '38px', height: '38px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5" /><polyline points="12 19 5 12 12 5" /></svg>
                     </button>
-                    <button onClick={toggleFavorite} style={{ 
-                        background: isFav ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)', border: 'none', color: isFav ? '#ef4444' : '#888', 
-                        width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transform: isHeartPop ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s'
+                    <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'rgba(255,255,255,0.6)' }}>Detaljer</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => { HapticManager.light(); setShowFocusMode(true); }}
+                        style={{ background: `${primaryColor}18`, border: `1px solid ${primaryColor}35`, color: primaryColor, padding: '8px 14px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}>🎯 تركيز</button>
+                    <button onClick={toggleFavorite}
+                        style={{
+                            background: isFav ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)', border: 'none', color: isFav ? '#ef4444' : 'rgba(255,255,255,0.5)',
+                            width: '38px', height: '38px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                            transform: isHeartPop ? 'scale(1.15)' : 'scale(1)', transition: 'all 0.2s'
+                        }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill={isFav ? "#ef4444" : "none"} stroke={isFav ? "#ef4444" : "currentColor"} strokeWidth="2.5">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                    </button>
+                </div>
+            </div>
+
+            {/* FLOATING CARD HERO */}
+            <div style={{
+                padding: '30px 16px 40px',
+                background: `linear-gradient(180deg, ${primaryColor}08 0%, transparent 100%)`,
+                zIndex: 1
+            }}>
+                {/* Main Floating Card */}
+                <div style={{
+                    background: 'rgba(25, 25, 30, 0.95)',
+                    borderRadius: '28px',
+                    padding: '30px 24px',
+                    border: `1px solid ${primaryColor}25`,
+                    boxShadow: `
+                        0 20px 60px rgba(0,0,0,0.5),
+                        0 8px 25px rgba(0,0,0,0.3),
+                        0 0 0 1px rgba(255,255,255,0.05),
+                        inset 0 1px 0 rgba(255,255,255,0.05)
+                    `,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transform: 'none !important',
+                    animation: 'none !important'
+                }}>
+                    {/* Top gradient accent */}
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '60%',
+                        height: '3px',
+                        background: `linear-gradient(90deg, transparent, ${primaryColor}, transparent)`,
+                        borderRadius: '0 0 10px 10px'
+                    }} />
+
+                    {/* Swedish Word - Option 3: BOLD HEADLINE (CLEAN) */}
+                    <h2 style={{
+                        color: '#FFFFFF', // Always white as requested
+                        fontSize: getSwedishFontSize(swe), // Dynamic based on text length
+                        fontWeight: '900', // Ultra Bold
+                        textTransform: 'uppercase', // Uppercase for headline feel
+                        letterSpacing: '4px', // Wide spacing
+                        margin: 0,
+                        textAlign: 'center',
+                        lineHeight: 1.1,
+
+                        // Black shadow as requested
+                        textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)',
+                        background: 'none',
+                        WebkitTextFillColor: 'initial',
+
+                        // 🔒 FORCE STOP ALL MOVEMENTS & ALLOW SCROLL
+                        animation: 'none',
+                        transition: 'none',
+                        transform: 'none',
+                        pointerEvents: 'none', // Fix scrolling issue
+
+                        maxWidth: '100%',
+                        padding: '0 10px'
+                    }}>{swe}</h2>
+
+                    {/* Divider - White */}
+                    <div style={{
+                        width: '50px',
+                        height: '2px',
+                        background: 'white',
+                        margin: '16px auto',
+                        borderRadius: '10px'
+                    }} />
+
+                    {/* Arabic Word */}
+                    <p dir="rtl" style={{
+                        fontSize: getArabicFontSize(arb), // Dynamic based on text length
+                        color: 'rgba(255,255,255,0.85)',
+                        margin: 0,
+                        textAlign: 'center',
+                        fontFamily: '"Tajawal", sans-serif',
+                        fontWeight: '700',
+                        pointerEvents: 'none' // Fix scrolling issue
+                    }}>{arb}</p>
+
+                    {/* Type Badge + Progress */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '15px',
+                        marginTop: '20px'
                     }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill={isFav ? "#ef4444" : "none"} stroke={isFav ? "#ef4444" : "currentColor"} strokeWidth="2.5">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
+                        <span style={{
+                            background: `${primaryColor}18`,
+                            color: primaryColor,
+                            border: `1px solid ${primaryColor}40`,
+                            padding: '6px 16px',
+                            borderRadius: '20px',
+                            fontSize: '0.7rem',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1.5px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }}>
+                            {type === 'verb' ? '⚡' : type === 'substantiv' ? '📦' : type === 'adjektiv' ? '🎨' : '✨'} {type}
+                        </span>
+                        <span style={{
+                            background: 'rgba(255,255,255,0.08)',
+                            color: 'rgba(255,255,255,0.7)',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            fontSize: '0.75rem',
+                            fontWeight: '600'
+                        }}>
+                            {knowledgeLevel}% {knowledgeLevel >= 70 ? '⭐' : knowledgeLevel >= 40 ? '📚' : '🆕'}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {/* Hero */}
-            <div style={{ textAlign: 'center', padding: '50px 20px', background: `linear-gradient(180deg, ${primaryColor}15 0%, transparent 100%)` }}>
-                <h1 ref={heroSweRef} style={{ fontSize: '3rem', fontWeight: '900', margin: 0, color: '#fff', letterSpacing: '-1px', viewTransitionName: `word-swe-${wordId}` as any }}>{swe}</h1>
-                <div style={{ width: '50px', height: '5px', background: primaryColor, margin: '20px auto', borderRadius: '10px', boxShadow: `0 0 15px ${primaryColor}66` }}></div>
-                <p ref={heroArbRef} dir="rtl" style={{ fontSize: '2rem', color: '#fff', marginTop: '10px', fontFamily: '"Tajawal", sans-serif', fontWeight: '700', viewTransitionName: `word-arb-${wordId}` as any }}>{arb}</p>
-                <div style={{ marginTop: '20px' }}>
-                    <span style={{ background: `${primaryColor}22`, color: primaryColor, border: `1.5px solid ${primaryColor}`, padding: '6px 16px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>{type}</span>
+            {/* 3. Tabs System (Moved Here) */}
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', marginBottom: '0', marginTop: '-20px', position: 'relative', zIndex: 2 }}>
+                <div style={{ display: 'flex', background: 'rgba(25, 25, 30, 0.95)', borderRadius: '16px 16px 0 0', padding: '4px', border: `1px solid ${primaryColor}25`, borderBottom: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+                    <button onClick={() => { HapticManager.light(); setActiveTab('info'); }}
+                        style={{ flex: 1, padding: '12px', background: activeTab === 'info' ? `${primaryColor}25` : 'transparent', border: activeTab === 'info' ? `1px solid ${primaryColor}30` : 'none', color: activeTab === 'info' ? '#fff' : 'rgba(255,255,255,0.4)', borderRadius: '12px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.3s' }}>📋 معلومات</button>
+                    <button onClick={() => { HapticManager.light(); setActiveTab('interact'); }}
+                        style={{ flex: 1, padding: '12px', background: activeTab === 'interact' ? `${primaryColor}25` : 'transparent', border: activeTab === 'interact' ? `1px solid ${primaryColor}30` : 'none', color: activeTab === 'interact' ? '#fff' : 'rgba(255,255,255,0.4)', borderRadius: '12px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.3s' }}>🎯 تعلم</button>
                 </div>
             </div>
 
-            <div style={{ padding: '0 20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+            {/* Modals (Moved Here) */}
+            {showFlipCard && <FlipCard swe={swe} arb={arb} color={primaryColor} onClose={() => setShowFlipCard(false)} />}
+            {showQuickQuiz && <QuickQuiz swe={swe} arb={arb} options={quizOptions} color={primaryColor} onClose={() => setShowQuickQuiz(false)} />}
+            {showFocusMode && <FocusMode swe={swe} arb={arb} color={primaryColor} onClose={() => setShowFocusMode(false)} />}
+
+            {/* Content Container (Moved Here) */}
+            {/* Content Container (Moved Here) */}
+            <div style={{ padding: '16px', maxWidth: '600px', margin: '0 auto', width: '100%', background: 'rgba(25, 25, 30, 0.95)', border: `1px solid ${primaryColor}25`, borderTop: 'none', borderRadius: '0 0 16px 16px', marginTop: '-1px' }}>
+
+                {/* Smart Knowledge Bar (Relocated) */}
+                <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px',
+                    margin: '-16px -16px 16px -16px', // Full width
+                    background: `linear-gradient(90deg, ${primaryColor}12, transparent)`,
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '0' // Reset radius if any
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        {/* Small Progress Ring */}
+                        <div style={{ position: 'relative', width: '50px', height: '50px' }}>
+                            <svg width="50" height="50" style={{ transform: 'rotate(-90deg)' }}>
+                                <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
+                                <circle cx="25" cy="25" r="20" fill="none" stroke={primaryColor} strokeWidth="4"
+                                    strokeDasharray={2 * Math.PI * 20} strokeDashoffset={(2 * Math.PI * 20) - (knowledgeLevel / 100) * (2 * Math.PI * 20)}
+                                    strokeLinecap="round" style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
+                            </svg>
+                            <div style={{
+                                position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '0.7rem', fontWeight: '700', color: primaryColor
+                            }}>{knowledgeLevel}%</div>
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>مستوى معرفتك</div>
+                            <div style={{ fontSize: '1rem', fontWeight: '600', color: '#fff' }}>
+                                {knowledgeLevel >= 70 ? '⭐ متقن' : knowledgeLevel >= 40 ? '📚 تتعلم' : '🆕 جديد'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => { HapticManager.light(); TTSManager.speak(swe, 'sv'); }}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
+                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                            }}>🔊 استمع</button>
+                        <button onClick={() => { HapticManager.light(); setShowFlipCard(true); }}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff',
+                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                            }}>🎴 بطاقة</button>
+                        <button onClick={() => { HapticManager.light(); setShowQuickQuiz(true); }}
+                            style={{
+                                background: `${primaryColor}18`, border: `1px solid ${primaryColor}35`, color: primaryColor,
+                                padding: '9px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                            }}>⚡ تحدي</button>
+                    </div>
+                </div>
+
+                {similarFavorites.length > 0 && (
+                    <GlassCard title="كلمات مشابهة حفظتها" icon="⭐" color={primaryColor} delay={0}>
+                        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
+                            {similarFavorites.map(w => (
+                                <button key={w[0]} onClick={() => handleSmartLink(w[2])}
+                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '12px 18px', borderRadius: '16px', color: '#fff', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                                    <span>{w[2]}</span><span style={{ fontSize: '0.75rem', color: primaryColor }}>{w[3]}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </GlassCard>
+                )}
+
                 <AIAnalysis word={swe} type={type} forms={forms} />
                 <AIStoryFlash swe={swe} arb={arb} type={type} />
-                
-                {/* Tabs */}
-                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', padding: '5px', marginBottom: '25px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <button onClick={() => { HapticManager.light(); setActiveTab('info'); }} style={{ flex: 1, padding: '12px', background: activeTab === 'info' ? 'rgba(255,255,255,0.1)' : 'none', border: 'none', color: activeTab === 'info' ? '#fff' : '#888', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.3s' }}>
-                        {t('common.info')}
-                    </button>
-                    <button onClick={() => { HapticManager.light(); setActiveTab('interact'); }} style={{ flex: 1, padding: '12px', background: activeTab === 'interact' ? 'rgba(255,255,255,0.1)' : 'none', border: 'none', color: activeTab === 'interact' ? '#fff' : '#888', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.3s' }}>
-                        {t('nav.learn')}
-                    </button>
-                </div>
+
+
 
                 {activeTab === 'info' ? (
-                    <div className="tab-content-active">
-                        {(def || arbExt || arb) && (
-                            <Card title={t('details.meaning')} icon="📝">
-                                <div style={{ marginBottom: '20px' }}>
-                                    <div dir="rtl" style={{ fontSize: '1.5rem', color: primaryColor, fontWeight: 'bold', fontFamily: '"Tajawal", sans-serif', marginBottom: '8px' }}>
-                                        {arb}
-                                    </div>
-                                    {arbExt && <div dir="rtl" style={{ fontSize: '1.1rem', color: '#fff', opacity: 0.85, fontFamily: '"Tajawal", sans-serif', lineHeight: 1.5 }}>
-                                        {arbExt}
-                                    </div>}
-                                </div>
-                                {def && (
-                                    <div style={{ 
-                                        fontSize: '1.1rem', lineHeight: 1.7, color: '#ccc', 
-                                        padding: '15px', background: 'rgba(255,255,255,0.03)', 
-                                        borderRadius: '16px', borderLeft: `3px solid ${primaryColor}66` 
-                                    }}>
-                                        <SmartLinkedText text={def} onLinkClick={handleSmartLink} />
-                                    </div>
-                                )}
-                            </Card>
+                    <>
+                        {(def || arbExt) && (
+                            <GlassCard title={t('details.meaning')} icon="📝" color={primaryColor} delay={0.1}>
+                                {arbExt && <div dir="rtl" style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.75)', fontFamily: '"Tajawal", sans-serif', lineHeight: 1.6, marginBottom: def ? '12px' : 0 }}>{arbExt}</div>}
+                                {def && <div style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', padding: '14px', background: 'rgba(255,255,255,0.02)', borderRadius: '14px' }}><SmartLinkedText text={def} onLinkClick={handleSmartLink} /></div>}
+                            </GlassCard>
                         )}
-
                         {(exSwe || exArb) && (
-                            <Card title={t('learn.examples')} icon="💡">
-                                {exSwe && <div style={{ fontStyle: 'italic', marginBottom: '12px', color: '#fff', fontSize: '1.15rem', lineHeight: 1.5 }}>
-                                    <SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} />
-                                </div>}
-                                {exArb && <div dir="rtl" style={{ color: primaryColor, opacity: 0.9, fontFamily: '"Tajawal", sans-serif', fontSize: '1.15rem' }}>
-                                    {exArb}
-                                </div>}
-                            </Card>
+                            <GlassCard title={t('learn.examples')} icon="💡" color={primaryColor} delay={0.2}>
+                                {exSwe && <div style={{ fontStyle: 'italic', marginBottom: exArb ? '10px' : 0, color: 'rgba(255,255,255,0.8)', fontSize: '1rem', lineHeight: 1.5 }}><SmartLinkedText text={exSwe} onLinkClick={handleSmartLink} /></div>}
+                                {exArb && <div dir="rtl" style={{ color: primaryColor, fontFamily: '"Tajawal", sans-serif', fontSize: '1rem' }}>{exArb}</div>}
+                            </GlassCard>
                         )}
-
-                        {forms && (
-                            <Card title={t('details.forms')} icon="🔗">
-                                <div style={{ 
-                                    color: '#888', fontSize: '0.9rem', lineHeight: 1.6,
-                                    fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)',
-                                    padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)'
-                                }}>
-                                    {forms}
+                        {formsList.length > 0 && (
+                            <GlassCard title={t('details.forms')} icon="🔗" color={primaryColor} delay={0.3}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                    {formsList.map((f: string, i: number) => <FormChip key={i} form={f} color={primaryColor} />)}
                                 </div>
-                            </Card>
+                            </GlassCard>
                         )}
-
-                        <Card title={t('details.notes') || 'Anteckningar'} icon="✍️">
-                            <textarea 
-                                value={note}
-                                onChange={(e) => setNote(e.target.value)}
-                                placeholder={t('details.notesPlaceholder') || 'Skriv en anteckning...'}
-                                style={{
-                                    width: '100%', minHeight: '100px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '12px', padding: '10px', color: 'white', fontFamily: 'inherit', fontSize: '0.95rem', marginBottom: '10px'
-                                }}
-                            />
-                            <button 
-                                onClick={handleSaveNote}
-                                disabled={isSavingNote}
-                                style={{
-                                    width: '100%', padding: '10px', borderRadius: '10px', background: primaryColor, border: 'none',
-                                    color: 'white', fontWeight: 'bold', cursor: 'pointer', opacity: isSavingNote ? 0.5 : 1
-                                }}
-                            >
-                                {isSavingNote ? 'Sparar...' : 'Spara'}
+                        <GlassCard title="ملاحظاتك" icon="✍️" color={primaryColor} delay={0.4}>
+                            <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="اكتب ملاحظة..."
+                                style={{ width: '100%', minHeight: '85px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '14px', padding: '14px', color: '#fff', fontSize: '0.9rem', resize: 'none', marginBottom: '12px' }} />
+                            <button onClick={handleSaveNote} disabled={isSavingNote}
+                                style={{ width: '100%', padding: '13px', borderRadius: '14px', background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}bb)`, border: 'none', color: '#fff', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer', opacity: isSavingNote ? 0.6 : 1, boxShadow: `0 8px 25px ${primaryColor}30` }}>
+                                {isSavingNote ? '⏳ جاري الحفظ...' : '💾 حفظ الملاحظة'}
                             </button>
-                        </Card>
-                    </div>
+                        </GlassCard>
+                    </>
                 ) : (
-                    <div className="tab-content-active">
+                    <>
                         <PronunciationLab word={swe} />
-                        <div style={{ height: '20px' }}></div>
+                        <div style={{ height: '14px' }} />
                         <MiniQuiz wordData={wordData} />
-                        <div style={{ height: '20px' }}></div>
-                        <Card title={t('details.related')} icon="✨">
-                            <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '10px', WebkitOverflowScrolling: 'touch' }}>
+                        <div style={{ height: '14px' }} />
+                        <GlassCard title="كلمات ذات صلة" icon="✨" color={primaryColor}>
+                            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px' }}>
                                 {relatedWords.map(rw => (
-                                    <div key={rw[0]} onClick={() => handleSmartLink(rw[2])} style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '18px', minWidth: '150px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
-                                        <div style={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem', marginBottom: '5px' }}>{rw[2]}</div>
-                                        <div dir="rtl" style={{ fontSize: '0.9rem', color: primaryColor, fontFamily: '"Tajawal", sans-serif' }}>{rw[3]}</div>
-                                    </div>
+                                    <button key={rw[0]} onClick={() => handleSmartLink(rw[2])}
+                                        style={{ background: 'rgba(255,255,255,0.03)', padding: '14px 18px', borderRadius: '16px', minWidth: '125px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                                        <div style={{ fontWeight: '600', color: '#fff', fontSize: '0.95rem', marginBottom: '5px' }}>{rw[2]}</div>
+                                        <div dir="rtl" style={{ fontSize: '0.8rem', color: primaryColor, fontFamily: '"Tajawal", sans-serif' }}>{rw[3]}</div>
+                                    </button>
                                 ))}
                             </div>
-                        </Card>
-                    </div>
+                        </GlassCard>
+                    </>
                 )}
             </div>
 
-            <div style={{ height: '150px', flexShrink: 0 }}></div>
+
+
+
+
+            <div style={{ height: '100px', flexShrink: 0 }} />
         </div>
     );
 };

@@ -1,597 +1,332 @@
-/* Compact Card Improvements */
+/* ═══════════════════════════════════════════════════════════════════
+   Smart Card Design - SnabbaLexin Search Cards
+   Interactive cards with progress indicators and learning features
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* Increase specificity to override potential conflicts */
-/* Increase specificity to override potential conflicts */
-.card.compact-card,
-.card.card-link.compact-card {
-    height: auto; /* Allow dynamic height */
-    min-height: auto !important; /* Remove fixed min-height */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: rgba(28, 28, 30, 0.6); /* Slightly darker, more glass-like background */
-    backdrop-filter: blur(15px); /* Enhanced blur for glassmorphism */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for definition */
-    /* Dynamic Left Border Override - Use --glow-color for ambient glow */
-    border-left: 4px solid var(--glow-color, #ccc); /* Adjusted glow border */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px; /* Slightly larger radius */
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease; /* Smoother transitions */
-    box-sizing: border-box;
-    position: relative;
-    overflow: visible !important; /* Allow content to dictate height */
+/* ─── CSS Variables ─── */
+:root {
+    --smart-bg: #18181B;
+    --smart-surface: #27272A;
+    --smart-border: rgba(255, 255, 255, 0.08);
+
+    /* Status Colors */
+    --status-new: #EF4444;
+    --status-learning: #FBBF24;
+    --status-mastered: #22C55E;
+
+    /* Type Colors */
+    --type-verb: #34D399;
+    --type-noun: #60A5FA;
+    --type-adj: #FBBF24;
+    --type-phrase: #F472B6;
+    --type-default: #A78BFA;
+
+    /* Text */
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
 }
 
-.compact-card:hover {
+/* ─── Card Container ─── */
+.smart-card {
+    position: relative;
+    width: calc(100% - 30px);
+    max-width: 420px;
+    margin: 0 auto 8px auto;
+    background: var(--smart-bg);
+    border: 1px solid var(--smart-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    touch-action: pan-y;
+    /* Allow vertical scrolling */
+}
+
+.smart-card:hover {
+    background: var(--smart-surface);
+    border-color: rgba(255, 255, 255, 0.12);
     transform: translateY(-2px);
-    box-shadow: var(--shadow);
-    border-color: var(--primary-hover);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* Ensure actions don't break layout */
-.card-top-row {
-    display: flex;
-    justify-content: space-between;
-    /* Space between badge (left) and actions (right) */
-    align-items: center;
-    width: 100%;
-    margin-bottom: 0px;
+/* Delay active state to allow scroll to be detected first */
+.smart-card:active {
+    transform: scale(0.99);
+    transition-delay: 100ms;
+    /* Delay before showing active state */
 }
 
-.card-main-content {
+/* Prevent text selection and touch callout on mobile */
+.smart-card,
+.smart-card * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* ─── Progress Bar (Top) ─── */
+.progress-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--glow-color, var(--type-default));
+    width: 30%;
+    transition: width 0.5s ease;
+}
+
+/* ─── Card Content ─── */
+.smart-inner {
+    padding: 10px 14px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-}
-
-.word-header-group {
-    /* Deprecated, but keeping for safety if reused elsewhere */
-    width: 100%;
-    margin-bottom: 4px;
-    overflow: hidden;
-}
-
-/* Force single line for Swedish text */
-.word-swe {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
-    text-align: left;
-    /* Ensure it starts from left */
-}
-
-/* Allow Arabic text to take remaining space but valid truncation */
-.word-arb {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    white-space: normal;
-    /* Allow wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: right;
-    /* Ensure it aligns right */
-    max-height: none !important;
-    /* Override any global max-height */
-}
-
-.card-actions {
-    display: flex;
     gap: 8px;
-    flex-shrink: 0;
+}
+
+/* ─── Header Row ─── */
+.smart-header {
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 10px;
 }
 
-/* Override global button styles for compact cards */
-.compact-card .action-button {
-    padding: 0 !important;
-    width: 30px !important;
-    height: 30px !important;
-    min-width: 30px !important;
-    min-height: 30px !important;
-    border-radius: 8px !important;
-    justify-content: center !important;
-    align-items: center !important;
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.compact-card .action-button svg {
-    width: 16px !important;
-    height: 16px !important;
-    stroke-width: 2.5 !important;
+.smart-header .smart-actions {
+    margin-left: auto;
 }
 
-/* Grammar Badge Styles */
-.grammar-badge {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.02em;
+/* Status Indicator */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--status-learning);
+    box-shadow: 0 0 8px var(--status-learning);
+    flex-shrink: 0;
+}
+
+.status-dot.new {
+    background: var(--status-new);
+    box-shadow: 0 0 8px var(--status-new);
+}
+
+.status-dot.learning {
+    background: var(--status-learning);
+    box-shadow: 0 0 8px var(--status-learning);
+}
+
+.status-dot.mastered {
+    background: var(--status-mastered);
+    box-shadow: 0 0 8px var(--status-mastered);
+}
+
+/* Type Label */
+.type-label {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
     text-transform: uppercase;
-    display: inline-block;
-    margin-right: 4px;
-    background: transparent !important;
-    color: var(--text-secondary);
-    border: 1.5px solid currentColor;
+    letter-spacing: 1px;
+    color: var(--glow-color, var(--type-default));
 }
 
-/* Specific Grammar Colors - Border Only (No Background) */
-/* Unified: Both .grammar-* and .type-* work */
-
-.grammar-en,
-.type-en,
-.type-noun {
-    color: #0d9488 !important;
-    /* Dark Green */
-    border-color: #0d9488 !important;
+/* ─── Main Content ─── */
+.smart-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.grammar-ett,
-.type-ett {
-    color: #16a34a !important;
-    /* Green */
-    border-color: #16a34a !important;
+/* Swedish Text */
+.swedish-text {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.grammar-verb,
-.type-verb {
-    color: #dc2626 !important;
-    /* Blue */
-    border-color: #dc2626 !important;
+/* Forms */
+.forms-text {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
 }
 
-.grammar-adj,
-.grammar-adjective,
-/* Added missing class */
-.type-adj,
-.type-adjective {
-    color: #3b82f6 !important;
-    /* blue */
-    border-color: #3b82f6 !important;
+/* ─── Divider ─── */
+.smart-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--smart-border), transparent);
 }
 
-.grammar-adv,
-.grammar-adverb,
-/* Added missing class */
-.type-adv,
-.type-adverb {
-    color: #0ea5e9 !important;
-    /* Sky Blue */
-    border-color: #0ea5e9 !important;
-}
+/* ─── Arabic Section ─── */
+.arabic-text {
+    font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: right;
+    direction: rtl;
+    line-height: 1.3;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
 
-/* Specialized Types - New Colors */
-.grammar-medical,
-.grammar-med,
-.type-medical,
-.type-med {
-    color: #06b6d4 !important;
-    /* Cyan */
-    border-color: #06b6d4 !important;
-}
-
-.grammar-legal,
-.grammar-jur,
-.type-legal,
-.type-jur {
-    color: #92400e !important;
-    /* Brown */
-    border-color: #92400e !important;
-}
-
-.grammar-construction,
-.grammar-bygg,
-.type-construction,
-.type-bygg {
-    color: #d97706 !important;
-    /* Gold */
-    border-color: #d97706 !important;
-}
-
-.grammar-tech,
-.grammar-tekn,
-.type-tech,
-.type-tekn {
-    color: #0891b2 !important;
-    /* Teal */
-    border-color: #0891b2 !important;
-}
-
-.grammar-science,
-.grammar-nat,
-.type-science,
-.type-nat {
-    color: #15803d !important;
-    /* Dark Green */
-    border-color: #15803d !important;
-}
-
-.grammar-religion,
-.grammar-rel,
-.type-religion,
-.type-rel {
-    color: #7c3aed !important;
-    /* blue */
-    border-color: #7c3aed !important;
-}
-
-.grammar-politics,
-.grammar-pol,
-.type-politics,
-.type-pol {
-    color: #dc2626 !important;
-    /* Red */
-    border-color: #dc2626 !important;
-}
-
-.grammar-economy,
-.grammar-ekon,
-.type-economy,
-.type-ekon {
-    color: #ca8a04 !important;
-    /* Yellow/Gold */
-    border-color: #ca8a04 !important;
-}
-
-.grammar-military,
-.grammar-mil,
-.type-military,
-.type-mil {
-    color: #44403c !important;
-    /* Dark Stone */
-    border-color: #44403c !important;
-}
-
-.grammar-default,
-.type-default {
-    color: #64748b !important;
-    /* Slate Gray */
-    border-color: #64748b !important;
-}
-
-/* =========================================
-   Professional Overhaul Styles
-   ========================================= */
-
-/* Relative positioning for watermark/mastery placement */
-.card.compact-card {
-    position: relative;
-    overflow: hidden !important;
-    /* Keep content clipped */
-    /* ambient glow transition */
-    transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    z-index: 1;
-}
-
-/* Watermark Background */
-.card.compact-card::before {
-    content: '';
-    position: absolute;
-    right: -10px;
-    bottom: -15px;
-    width: 80px;
-    height: 80px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'%3E%3C/path%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.03;
-    /* Very subtle */
-    pointer-events: none;
-    z-index: 0;
-    transform: rotate(-10deg);
-}
-
-/* Ghost Forms */
-.ghost-forms {
-    font-size: 0.75rem;
-    color: var(--text-muted, #94a3b8);
-    font-style: italic;
-    opacity: 0.8;
-    margin-top: -2px;
-    margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
 }
 
-/* Audio Button Styling */
-.compact-card .action-button.audio-btn {
-    color: var(--primary-color, #3b82f6);
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.1);
-    /* Strict layout enforcement */
-    position: static !important;
-    order: -1 !important;
-    /* Ensure it comes first visually even if DOM order varies */
-    margin-right: 4px !important;
+/* Light mode Arabic text */
+[data-theme="light"] .arabic-text,
+:root:not([data-theme="dark"]) .arabic-text {
+    color: #1a1a1a;
+    text-shadow: none;
 }
 
-.compact-card .action-button.audio-btn:hover {
-    background: rgba(59, 130, 246, 0.15);
-    transform: scale(1.05);
+/* ─── Action Buttons (Text + Icon) ─── */
+.smart-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
 }
 
-/* Mastery Micro-Bar - Removed in favor of Left Border */
-.mastery-bar-container {
-    display: none;
+.smart-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--smart-border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-/* Ambient Grammar Glow & Colors */
-/* UNIFIED: Colors now match badge colors exactly */
-
-/* Nouns (En/Subst) - Rose Red */
-.card.compact-card[data-type="subst"],
-.card.compact-card[data-type="noun"],
-.card.compact-card[data-type="en"] {
-    --glow-color: #0d9488;
+.smart-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
 }
 
-/* Ett-words - Green */
-.card.compact-card[data-type*="ett"] {
-    --glow-color: #16a34a;
+.smart-btn.active {
+    background: var(--glow-color, var(--type-default));
+    border-color: var(--glow-color, var(--type-default));
+    color: #fff;
 }
 
-/* Verbs - Blue */
-.card.compact-card[data-type="verb"] {
-    --glow-color: #dc2626;
+.smart-btn svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
 }
 
-/* Adjectives - blue */
-.card.compact-card[data-type="adj"],
-.card.compact-card[data-type="adjective"] {
-    --glow-color: #3b82f6;
+/* Icon-only compact buttons */
+.smart-btn.icon-only {
+    padding: 6px;
+    border-radius: 6px;
 }
 
-/* Adverbs - Orange */
-.card.compact-card[data-type="adv"],
-.card.compact-card[data-type="adverb"] {
-    --glow-color: #0ea5e9;
+.smart-btn.icon-only svg {
+    width: 14px;
+    height: 14px;
 }
 
-/* Medical - Cyan */
-.card.compact-card[data-type="medical"],
-.card.compact-card[data-type="med"] {
-    --glow-color: #06b6d4;
+/* ─── Definition ─── */
+.definition-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border-left: 2px solid var(--glow-color, var(--type-default));
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-/* Legal/Juridik - Brown */
-.card.compact-card[data-type="legal"],
-.card.compact-card[data-type="jur"],
-.card.compact-card[data-type="juridik"] {
-    --glow-color: #92400e;
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+    .smart-card {
+        margin: 0 12px 12px 12px;
+        width: calc(100% - 24px);
+    }
+
+    .smart-inner {
+        padding: 14px 16px;
+    }
+
+    .swedish-text {
+        font-size: 1.3rem;
+    }
+
+    .arabic-text {
+        font-size: 1.15rem;
+    }
+
+    .smart-btn {
+        padding: 7px 12px;
+        font-size: 0.7rem;
+    }
 }
 
-/* Construction/Bygg - Gold */
-.card.compact-card[data-type="construction"],
-.card.compact-card[data-type="bygg"] {
-    --glow-color: #d97706;
+/* ─── Loading State ─── */
+.smart-card.loading {
+    min-height: 120px;
 }
 
-/* Tech - Teal */
-.card.compact-card[data-type="tech"],
-.card.compact-card[data-type="tekn"],
-.card.compact-card[data-type="teknik"] {
-    --glow-color: #0891b2;
+.smart-card.loading .smart-inner {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.02) 25%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.02) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
 
-/* Science/Nature - Dark Green */
-.card.compact-card[data-type="science"],
-.card.compact-card[data-type="nat"],
-.card.compact-card[data-type="natur"] {
-    --glow-color: #15803d;
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
-/* Religion - blue */
-.card.compact-card[data-type="religion"],
-.card.compact-card[data-type="rel"] {
-    --glow-color: #3b82f6;
+/* ─── Focus States ─── */
+.smart-card:focus-visible {
+    outline: 2px solid var(--glow-color, var(--type-default));
+    outline-offset: 2px;
 }
 
-/* Politics - Red */
-.card.compact-card[data-type="politics"],
-.card.compact-card[data-type="pol"],
-.card.compact-card[data-type="politik"] {
-    --glow-color: #dc2626;
-}
-
-/* Economy - Gold */
-.card.compact-card[data-type="economy"],
-.card.compact-card[data-type="ekon"],
-.card.compact-card[data-type="ekonomi"] {
-    --glow-color: #ca8a04;
-}
-
-/* Military - Dark Stone */
-.card.compact-card[data-type="military"],
-.card.compact-card[data-type="mil"],
-.card.compact-card[data-type="militär"] {
-    --glow-color: #44403c;
-}
-
-/* Default - Slate Gray */
-.card.compact-card[data-type="default"],
-.card.compact-card:not([data-type]) {
-    --glow-color: #64748b;
-}
-
-/* Hover Effect with Glow */
-.card.compact-card:hover {
-    border-color: var(--glow-color, var(--primary-hover));
-    box-shadow: 0 4px 20px -5px var(--glow-color, rgba(0, 0, 0, 0.1));
-}
-
-/* Small detail: Make text flow better */
-.card-main-content {
-    justify-content: center;
-    padding-right: 10px;
-    /* Avoid watermark overlap visually if opacity was higher */
-    z-index: 2;
-    /* Above watermark */
-}
-
-/* Update Preposition to Yellow */
-.grammar-preposition,
-.grammar-prep,
-.type-preposition,
-.type-prep {
-    color: #facc15 !important;
-    /* Yellow */
-    border-color: #facc15 !important;
-}
-
-/* Preposition - Yellow */
-.card.compact-card[data-type="preposition"],
-.card.compact-card[data-type="prep"] {
-    --glow-color: #facc15;
-}
-
-/* Update Conjunction to Light Yellow */
-.grammar-conjunction,
-.grammar-konj,
-.type-conjunction,
-.type-konj {
-    color: #fde047 !important;
-    /* Light Yellow */
-    border-color: #fde047 !important;
-}
-
-/* Conjunction - Light Yellow */
-.card.compact-card[data-type="conjunction"],
-.card.compact-card[data-type="konj"],
-.card.compact-card[data-type="conj"] {
-    --glow-color: #fde047;
-}
-
-/* =========================================
-   MISSING TYPE DEFINITIONS (Automated Fix)
-   ========================================= */
-
-/* Interjections - Pale Orange */
-.grammar-interjection,
-.grammar-interj,
-.type-interjection,
-.type-interj {
-    color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
-}
-
-.card.compact-card[data-type="interjection"],
-.card.compact-card[data-type="interj"] {
-    --glow-color: #fdba74;
-}
-
-/* Phrasal Verbs - Cyan */
-.grammar-phrasal,
-.type-phrasal {
-    color: #06b6d4 !important;
-    border-color: #06b6d4 !important;
-}
-
-.card.compact-card[data-type="phrasal"] {
-    --glow-color: #06b6d4;
-}
-
-/* Pronouns - Indigo */
-.grammar-pronoun,
-.type-pronoun {
-    color: #2563eb !important;
-    border-color: #2563eb !important;
-}
-
-.card.compact-card[data-type="pronoun"] {
-    --glow-color: #2563eb;
-}
-
-/* Numbers - Pale Green */
-.grammar-number,
-.grammar-num,
-.type-number,
-.type-num {
-    color: #86efac !important;
-    border-color: #86efac !important;
-}
-
-.card.compact-card[data-type="number"],
-.card.compact-card[data-type="num"] {
-    --glow-color: #86efac;
-}
-
-/* Ensure Specialized Types behave correctly if they fall through */
-.card.compact-card[data-type="medical"] {
-    --glow-color: #06b6d4;
-}
-
-.card.compact-card[data-type="legal"] {
-    --glow-color: #92400e;
-}
-
-.card.compact-card[data-type="tech"] {
-    --glow-color: #0891b2;
-}
-
-.card.compact-card[data-type="science"] {
-    --glow-color: #15803d;
-}
-
-.card.compact-card[data-type="religion"] {
-    --glow-color: #3b82f6;
-}
-
-.card.compact-card[data-type="politics"] {
-    --glow-color: #dc2626;
-}
-
-.card.compact-card[data-type="economy"] {
-    --glow-color: #ca8a04;
-}
-
-.card.compact-card[data-type="military"] {
-    --glow-color: #44403c;
-}
-
-.card.compact-card[data-type="construction"] {
-    --glow-color: #d97706;
-}
-
-/* En Noun - Turquoise */
-.card.compact-card[data-type="en"],
-.card.compact-card[data-type="noun"] {
-    --glow-color: #0d9488;
-}
-
-/* Ett Noun - Green */
-.card.compact-card[data-type="ett"] {
-    --glow-color: #16a34a;
-}
-
-/* Verb - Red */
-.card.compact-card[data-type="verb"] {
-    --glow-color: #dc2626;
-}
-
-/* Adjective - Blue */
-.card.compact-card[data-type="adj"],
-.card.compact-card[data-type="adjective"] {
-    --glow-color: #3b82f6;
-}
-
-/* Adverb - Orange */
-
-.card.compact-card[data-type="adv"],
-
-.card.compact-card[data-type="adverb"] {
-
-    --glow-color: #0ea5e9;
-
+.smart-btn:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 1px;
 }

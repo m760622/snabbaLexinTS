@@ -8,10 +8,17 @@ description: Prohibit the use of purple color
 
 ## Instructions
 
-1. **Replacement**: Always use **Blue** (e.g., `#3b82f6`, `#2563eb`, or `var(--primary)`) instead of Purple.
-2. **CSS Variables**: Do not define or use variables like `--purple`, `--violet`. Rename them to `--blue-accent` or similar if needed, or point them to blue color codes.
-3. **Class Names**: Avoid class names containing `purple` or `violet`. Use `blue` or functional names instead.
-4. **Design System**: All components, buttons, icons, and themes that were previously purple must be converted to Blue.
+1. **Replacement**:
+   - For **Dark/Premium Backgrounds**: Use **Dark Blue** (`#090972` or `#1e3a8a`).
+   - For **Highlights/Text**: Use **Bright Blue** (`#3b82f6` or `#60a5fa`).
+2. **Forbidden Hex Codes**:
+   - `#8b5cf6` (Old Purple)
+   - `#a855f7` (Bright Purple)
+   - `#6366f1` (Indigo/Purple mix)
+   - `#d946ef` (Fuchsia)
+   - Any other color in the Purple/Violet/Pink spectrum.
+3. **CSS Variables**: Do not define or use variables like `--purple`, `--violet`. Rename them to `--blue-dark` or `--blue-accent` if needed.
+4. **Design System**: All components (gradients, buttons, icons) must align with the **Blue/Dark Blue** theme.
 
 ## Exceptions
 

@@ -22,7 +22,7 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
   const [ttsSpeed, setTtsSpeed] = useState<number>(85);
   const [fontSize, setFontSize] = useState<number>(100); // Percentage
   const [dailyGoal, setDailyGoal] = useState<number>(10);
-  
+
   // New Settings States
   const [autoPlay, setAutoPlay] = useState(false);
   const [showExamples, setShowExamples] = useState(true);
@@ -37,7 +37,7 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
 
     setLanguage(localStorage.getItem('appLanguage') || 'both');
     setDarkMode(document.documentElement.getAttribute('data-theme') === 'dark');
-    
+
     setMobileView(localStorage.getItem('mobileView') !== 'false');
     setTtsSpeed(parseInt(localStorage.getItem('ttsSpeed') || '85'));
     setFontSize(parseInt(localStorage.getItem('fontSizePercent') || '100'));
@@ -59,46 +59,46 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
   };
 
   const handleToggle = (key: string, value: boolean, setter: (v: boolean) => void, storageKey?: string) => {
-      setter(value);
-      saveSetting(key, value);
-      if (storageKey) localStorage.setItem(storageKey, String(value));
-      
-      if (key === 'focusMode') document.body.classList.toggle('focus-mode', value);
-      if (key === 'eyeCare') document.body.classList.toggle('eye-care-mode', value);
-      if (key === 'animations') document.body.classList.toggle('reduce-motion', !value);
-      if (key === 'mobileView') {
-           document.body.classList.toggle('iphone-view', value);
-           if ((window as any).MobileViewManager) (window as any).MobileViewManager.apply(value);
-      }
+    setter(value);
+    saveSetting(key, value);
+    if (storageKey) localStorage.setItem(storageKey, String(value));
+
+    if (key === 'focusMode') document.body.classList.toggle('focus-mode', value);
+    if (key === 'eyeCare') document.body.classList.toggle('eye-care-mode', value);
+    if (key === 'animations') document.body.classList.toggle('reduce-motion', !value);
+    if (key === 'mobileView') {
+      document.body.classList.toggle('iphone-view', value);
+      if ((window as any).MobileViewManager) (window as any).MobileViewManager.apply(value);
+    }
   };
-  
+
   const handleVoiceChange = (voice: string) => {
-      setVoiceType(voice);
-      localStorage.setItem('ttsVoicePreference', voice);
-      saveSetting('ttsVoicePreference', voice);
+    setVoiceType(voice);
+    localStorage.setItem('ttsVoicePreference', voice);
+    saveSetting('ttsVoicePreference', voice);
   };
 
   const handleGoalChange = (goal: number) => {
-      setDailyGoal(goal);
-      saveSetting('dailyGoal', goal);
-      localStorage.setItem('dailyGoal', String(goal));
+    setDailyGoal(goal);
+    saveSetting('dailyGoal', goal);
+    localStorage.setItem('dailyGoal', String(goal));
   };
 
   const handleDataAction = (action: 'export' | 'clearFav' | 'reset') => {
-      if (action === 'export') {
-          if ((window as any).ExportManager) (window as any).ExportManager.exportToJSON();
-          else showToast('Export module not loaded', { type: 'error' });
-      } else if (action === 'clearFav') {
-          if (confirm('Rensa alla favoriter? / مسح كل المفضلة؟')) {
-              localStorage.removeItem('snabbaLexin_favorites');
-              window.location.reload();
-          }
-      } else if (action === 'reset') {
-          if (confirm('Återställ allt? / إعادة ضبط المصنع؟')) {
-              localStorage.clear();
-              window.location.reload();
-          }
+    if (action === 'export') {
+      if ((window as any).ExportManager) (window as any).ExportManager.exportToJSON();
+      else showToast('Export module not loaded', { type: 'error' });
+    } else if (action === 'clearFav') {
+      if (confirm('Rensa alla favoriter? / مسح كل المفضلة؟')) {
+        localStorage.removeItem('snabbaLexin_favorites');
+        window.location.reload();
       }
+    } else if (action === 'reset') {
+      if (confirm('Återställ allt? / إعادة ضبط المصنع؟')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+    }
   };
 
   const handleDarkMode = (checked: boolean) => {
@@ -119,15 +119,15 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
     document.documentElement.style.fontSize = `${16 * scale}px`;
   };
 
-  const Section: React.FC<{id: string, icon: string, titleSv: string, titleAr: string, children: React.ReactNode}> = ({ id, icon, titleSv, titleAr, children }) => {
+  const Section: React.FC<{ id: string, icon: string, titleSv: string, titleAr: string, children: React.ReactNode }> = ({ id, icon, titleSv, titleAr, children }) => {
     const isExpanded = expandedSection === id;
     return (
-      <section style={{...styles.section, borderColor: isExpanded ? `${accentColor}66` : 'rgba(255,255,255,0.1)'}}>
+      <section style={{ ...styles.section, borderColor: isExpanded ? `${accentColor}66` : 'rgba(255,255,255,0.1)' }}>
         <div onClick={() => setExpandedSection(isExpanded ? null : id)} style={styles.sectionHeader}>
-          <div style={{...styles.sectionIconContainer, background: isExpanded ? `${accentColor}33` : '#2c2c2e', color: isExpanded ? accentColor : '#fff'}}>{icon}</div>
+          <div style={{ ...styles.sectionIconContainer, background: isExpanded ? `${accentColor}33` : '#2c2c2e', color: isExpanded ? accentColor : '#fff' }}>{icon}</div>
           <div style={{ flex: 1 }}>
             <h3 style={styles.sectionTitle}>
-              <span className="sv-text">{titleSv}</span> 
+              <span className="sv-text">{titleSv}</span>
               <span className="ar-text" style={styles.arTitle}>{titleAr}</span>
             </h3>
           </div>
@@ -138,7 +138,7 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
     );
   };
 
-  const ToggleItem: React.FC<{icon: string, nameSv: string, nameAr: string, checked: boolean, onChange: (c: boolean) => void}> = ({ icon, nameSv, nameAr, checked, onChange }) => (
+  const ToggleItem: React.FC<{ icon: string, nameSv: string, nameAr: string, checked: boolean, onChange: (c: boolean) => void }> = ({ icon, nameSv, nameAr, checked, onChange }) => (
     <div style={styles.item}>
       <div style={styles.itemLeft}>
         <span style={styles.itemIcon}>{icon}</span>
@@ -155,114 +155,114 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
     <div className="full-settings-modal" style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div style={styles.headerRow}>
-            <h2 style={styles.header}>Inställningar</h2>
-            <button onClick={onClose} style={styles.closeCircle}>×</button>
+          <h2 style={styles.header}>Inställningar</h2>
+          <button onClick={onClose} style={styles.closeCircle}>×</button>
         </div>
 
         <div style={styles.scrollArea}>
-            <Section id="general" icon="🌍" titleSv="Allmänt" titleAr="عام">
-                <div style={styles.grid}>
-                {['sv', 'ar', 'both'].map(l => (
-                    <button key={l} onClick={() => { localStorage.setItem('appLanguage', l); window.location.reload(); }} 
-                        style={{...styles.button, borderColor: language === l ? accentColor : '#333', color: language === l ? accentColor : '#fff', background: language === l ? `${accentColor}22` : 'transparent'}}>
-                        {l === 'sv' ? '🇸🇪' : l === 'ar' ? '🇸🇦' : '🌍'}
-                    </button>
+          <Section id="general" icon="🌍" titleSv="Allmänt" titleAr="عام">
+            <div style={styles.grid}>
+              {['sv', 'ar', 'both'].map(l => (
+                <button key={l} onClick={() => { localStorage.setItem('appLanguage', l); window.location.reload(); }}
+                  style={{ ...styles.button, borderColor: language === l ? accentColor : '#333', color: language === l ? accentColor : '#fff', background: language === l ? `${accentColor}22` : 'transparent' }}>
+                  {l === 'sv' ? '🇸🇪' : l === 'ar' ? '🇸🇦' : '🌍'}
+                </button>
+              ))}
+            </div>
+          </Section>
+
+          <Section id="appearance" icon="🎨" titleSv="Utseende" titleAr="المظهر">
+            <ToggleItem icon="🌙" nameSv="Mörkt läge" nameAr="الوضع الداكن" checked={darkMode} onChange={handleDarkMode} />
+            <ToggleItem icon="📱" nameSv="Mobilvy" nameAr="عرض الجوال" checked={mobileView} onChange={(c) => handleToggle('mobileView', c, setMobileView, 'mobileView')} />
+            <ToggleItem icon="✨" nameSv="Animationer" nameAr="تأثيرات حركية" checked={animations} onChange={(c) => handleToggle('animations', c, setAnimations)} />
+
+            <div style={{ margin: '15px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.9rem' }}>Textstorlek / حجم الخط</span>
+                <span style={{ color: accentColor, fontWeight: 'bold' }}>{fontSize}%</span>
+              </div>
+              <input type="range" min="80" max="130" value={fontSize} onChange={(e: any) => handleFontSize(parseInt(e.target.value))} style={{ width: '100%', accentColor: accentColor } as any} />
+            </div>
+            <div style={{ marginTop: '15px' }}>
+              <div style={{ color: '#888', marginBottom: '10px', fontSize: '0.75rem' }}>Accentfärg</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e'].map(c => (
+                  <button key={c} onClick={() => onAccentChange(c)} style={{ width: '35px', height: '35px', borderRadius: '10px', background: c, border: accentColor === c ? '3px solid #fff' : 'none', cursor: 'pointer' }} />
                 ))}
-                </div>
-            </Section>
+              </div>
+            </div>
+          </Section>
 
-            <Section id="appearance" icon="🎨" titleSv="Utseende" titleAr="المظهر">
-                <ToggleItem icon="🌙" nameSv="Mörkt läge" nameAr="الوضع الداكن" checked={darkMode} onChange={handleDarkMode} />
-                <ToggleItem icon="📱" nameSv="Mobilvy" nameAr="عرض الجوال" checked={mobileView} onChange={(c) => handleToggle('mobileView', c, setMobileView, 'mobileView')} />
-                <ToggleItem icon="✨" nameSv="Animationer" nameAr="تأثيرات حركية" checked={animations} onChange={(c) => handleToggle('animations', c, setAnimations)} />
-                
-                <div style={{ margin: '15px 0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.9rem' }}>Textstorlek / حجم الخط</span>
-                        <span style={{ color: accentColor, fontWeight: 'bold' }}>{fontSize}%</span>
-                    </div>
-                    <input type="range" min="80" max="130" value={fontSize} onChange={(e: any) => handleFontSize(parseInt(e.target.value))} style={{ width: '100%', accentColor: accentColor } as any} />
-                </div>
-                <div style={{ marginTop: '15px' }}>
-                    <div style={{ color: '#888', marginBottom: '10px', fontSize: '0.75rem' }}>Accentfärg</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        {['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e'].map(c => (
-                            <button key={c} onClick={() => onAccentChange(c)} style={{ width: '35px', height: '35px', borderRadius: '10px', background: c, border: accentColor === c ? '3px solid #fff' : 'none', cursor: 'pointer' }} />
-                        ))}
-                    </div>
-                </div>
-            </Section>
+          <Section id="sound" icon="🔔" titleSv="Ljud" titleAr="الصوت">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.9rem' }}>Hastighet / سرعة النطق</span>
+              <span style={{ color: accentColor, fontWeight: 'bold' }}>{ttsSpeed}%</span>
+            </div>
+            <input type="range" min="50" max="150" value={ttsSpeed} onChange={(e: any) => { setTtsSpeed(e.target.value); localStorage.setItem('ttsSpeed', e.target.value); }} style={{ width: '100%', accentColor: accentColor } as any} />
 
-            <Section id="sound" icon="🔔" titleSv="Ljud" titleAr="الصوت">
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.9rem' }}>Hastighet / سرعة النطق</span>
-                    <span style={{ color: accentColor, fontWeight: 'bold' }}>{ttsSpeed}%</span>
-                </div>
-                <input type="range" min="50" max="150" value={ttsSpeed} onChange={(e: any) => { setTtsSpeed(e.target.value); localStorage.setItem('ttsSpeed', e.target.value); }} style={{ width: '100%', accentColor: accentColor } as any} />
-                
-                <div style={{marginTop: '15px', marginBottom: '15px'}}>
-                     <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Rösttyp / نوع الصوت</div>
-                     <div style={{display: 'flex', gap: '8px'}}>
-                        {['natural', 'female', 'male'].map(v => (
-                            <button key={v} onClick={() => handleVoiceChange(v)} 
-                                style={{
-                                    flex: 1, padding: '8px', borderRadius: '8px', 
-                                    background: voiceType === v ? `${accentColor}33` : '#333',
-                                    border: `1px solid ${voiceType === v ? accentColor : 'transparent'}`,
-                                    color: voiceType === v ? accentColor : '#bbb'
-                                }}>
-                                {v === 'natural' ? '✨ Natural' : v === 'female' ? '👩 Female' : '👨 Male'}
-                            </button>
-                        ))}
-                     </div>
-                </div>
+            <div style={{ marginTop: '15px', marginBottom: '15px' }}>
+              <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Rösttyp / نوع الصوت</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {['natural', 'female', 'male'].map(v => (
+                  <button key={v} onClick={() => handleVoiceChange(v)}
+                    style={{
+                      flex: 1, padding: '8px', borderRadius: '8px',
+                      background: voiceType === v ? `${accentColor}33` : '#333',
+                      border: `1px solid ${voiceType === v ? accentColor : 'transparent'}`,
+                      color: voiceType === v ? accentColor : '#bbb'
+                    }}>
+                    {v === 'natural' ? '✨ Natural' : v === 'female' ? '👩 Female' : '👨 Male'}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                <div style={{marginTop: '10px'}}>
-                     <ToggleItem icon="🔊" nameSv="Auto-uppspelning" nameAr="تشغيل تلقائي للصوت" checked={autoPlay} onChange={(c) => handleToggle('autoPlay', c, setAutoPlay)} />
-                </div>
-            </Section>
+            <div style={{ marginTop: '10px' }}>
+              <ToggleItem icon="🔊" nameSv="Auto-uppspelning" nameAr="تشغيل تلقائي للصوت" checked={autoPlay} onChange={(c) => handleToggle('autoPlay', c, setAutoPlay)} />
+            </div>
+          </Section>
 
-            <Section id="learning" icon="📚" titleSv="Inlärning" titleAr="التعلم">
-                <ToggleItem icon="📝" nameSv="Visa exempel" nameAr="إظهار الأمثلة" checked={showExamples} onChange={(c) => handleToggle('showExamples', c, setShowExamples)} />
-                <ToggleItem icon="🎯" nameSv="Fokusläge" nameAr="وضع التركيز" checked={focusMode} onChange={(c) => handleToggle('focusMode', c, setFocusMode, 'focusMode')} />
-                <ToggleItem icon="👁️" nameSv="Ögonvård" nameAr="حماية العين" checked={eyeCare} onChange={(c) => handleToggle('eyeCare', c, setEyeCare)} />
-                
-                <div style={{marginTop: '15px'}}>
-                     <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Dagligt mål / الهدف اليومي</div>
-                     <div style={{display: 'flex', gap: '8px'}}>
-                        {[10, 20, 50].map(g => (
-                            <button key={g} onClick={() => handleGoalChange(g)}
-                                style={{
-                                    flex: 1, padding: '8px', borderRadius: '8px', 
-                                    background: dailyGoal === g ? `${accentColor}33` : '#333',
-                                    border: `1px solid ${dailyGoal === g ? accentColor : 'transparent'}`,
-                                    color: dailyGoal === g ? accentColor : '#bbb'
-                                }}>
-                                {g}
-                            </button>
-                        ))}
-                     </div>
-                </div>
-            </Section>
+          <Section id="learning" icon="📚" titleSv="Inlärning" titleAr="التعلم">
+            <ToggleItem icon="📝" nameSv="Visa exempel" nameAr="إظهار الأمثلة" checked={showExamples} onChange={(c) => handleToggle('showExamples', c, setShowExamples)} />
+            <ToggleItem icon="🎯" nameSv="Fokusläge" nameAr="وضع التركيز" checked={focusMode} onChange={(c) => handleToggle('focusMode', c, setFocusMode, 'focusMode')} />
+            <ToggleItem icon="👁️" nameSv="Ögonvård" nameAr="حماية العين" checked={eyeCare} onChange={(c) => handleToggle('eyeCare', c, setEyeCare)} />
 
-            <Section id="data" icon="💾" titleSv="Data" titleAr="البيانات">
-                <button onClick={() => handleDataAction('export')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left'}}>📤 Exportera Data / تصدير</button>
-                <button onClick={() => handleDataAction('clearFav')} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left', borderColor: '#eab308', color: '#eab308'}}>🗑️ Rensa Favoriter / مسح المفضلة</button>
-                <button onClick={() => handleDataAction('reset')} style={{...styles.button, width: '100%', textAlign: 'left', borderColor: '#ef4444', color: '#ef4444'}}>⚠️ Återställ Appen / إعادة ضبط</button>
-            </Section>
+            <div style={{ marginTop: '15px' }}>
+              <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.8rem' }}>Dagligt mål / الهدف اليومي</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {[10, 20, 50].map(g => (
+                  <button key={g} onClick={() => handleGoalChange(g)}
+                    style={{
+                      flex: 1, padding: '8px', borderRadius: '8px',
+                      background: dailyGoal === g ? `${accentColor}33` : '#333',
+                      border: `1px solid ${dailyGoal === g ? accentColor : 'transparent'}`,
+                      color: dailyGoal === g ? accentColor : '#bbb'
+                    }}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Section>
 
-            <Section id="info" icon="ℹ️" titleSv="Information" titleAr="معلومات">
-                <button onClick={onOpenChangelog} style={{...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left'}}>📋 Changelog / سجل التحديثات</button>
-                <button onClick={onOpenDeviceInfo} style={{...styles.button, width: '100%', textAlign: 'left'}}>🖥️ Enhetsinfo / معلومات الجهاز</button>
-            </Section>
+          <Section id="data" icon="💾" titleSv="Data" titleAr="البيانات">
+            <button onClick={() => handleDataAction('export')} style={{ ...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left' }}>📤 Exportera Data / تصدير</button>
+            <button onClick={() => handleDataAction('clearFav')} style={{ ...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left', borderColor: '#eab308', color: '#eab308' }}>🗑️ Rensa Favoriter / مسح المفضلة</button>
+            <button onClick={() => handleDataAction('reset')} style={{ ...styles.button, width: '100%', textAlign: 'left', borderColor: '#ef4444', color: '#ef4444' }}>⚠️ Återställ Appen / إعادة ضبط</button>
+          </Section>
 
-            <Section id="gamify" icon="🏆" titleSv="Framsteg" titleAr="الإنجازات">
-                <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-                    <div style={styles.badge} title="5 Words Today">🏅</div>
-                    <div style={styles.badge} title="7 Day Streak">🔥</div>
-                    <div style={{...styles.badge, opacity: 0.3}} title="Locked">🔒</div>
-                </div>
-            </Section>
+          <Section id="info" icon="ℹ️" titleSv="Information" titleAr="معلومات">
+            <button onClick={onOpenChangelog} style={{ ...styles.button, width: '100%', marginBottom: '8px', textAlign: 'left' }}>📋 Changelog / سجل التحديثات</button>
+            <button onClick={onOpenDeviceInfo} style={{ ...styles.button, width: '100%', textAlign: 'left' }}>🖥️ Enhetsinfo / معلومات الجهاز</button>
+          </Section>
+
+          <Section id="gamify" icon="🏆" titleSv="Framsteg" titleAr="الإنجازات">
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={styles.badge} title="5 Words Today">🏅</div>
+              <div style={styles.badge} title="7 Day Streak">🔥</div>
+              <div style={{ ...styles.badge, opacity: 0.3 }} title="Locked">🔒</div>
+            </div>
+          </Section>
         </div>
 
         <button onClick={onClose} style={{ ...styles.finalBtn, background: accentColor }}>Klar / تم</button>
@@ -272,7 +272,7 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  modalOverlay: { position: 'fixed', inset: 0, zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
+  modalOverlay: { position: 'absolute', inset: 0, zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', touchAction: 'pan-y' },
   modalContent: { background: '#1c1c1e', width: '95%', maxWidth: '420px', maxHeight: '85vh', borderRadius: '28px', padding: '25px', border: '1px solid #333', display: 'flex', flexDirection: 'column' },
   headerRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
   header: { fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', margin: 0 },

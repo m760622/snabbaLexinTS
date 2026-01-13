@@ -208,7 +208,7 @@
     margin: 0 0 10px 0;
     font-weight: 800;
     color: var(--text-main, #fff);
-    word-break: break-word;
+    overflow-wrap: break-word;
     max-width: 100%;
 }
 

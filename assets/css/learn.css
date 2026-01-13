@@ -23,6 +23,14 @@
      padding: 0;
  }
 
+ /* Touch Scrolling Fix for Mobile */
+ .learn-view-container,
+ .lessons-grid,
+ .special-cards {
+     -webkit-overflow-scrolling: touch;
+     touch-action: pan-y;
+ }
+
  body {
      font-family: 'Inter', sans-serif;
      background: var(--bg-color);
@@ -420,6 +428,8 @@
      display: flex;
      gap: 1rem;
      align-items: center;
+     touch-action: pan-y;
+     -webkit-user-drag: none;
  }
 
  .lesson-card:hover {
@@ -3117,7 +3127,8 @@
      padding: 0;
      margin-bottom: 0.75rem;
  }
-/* Dock Spacing for Learn Page */
-main {
-    padding-bottom: 120px !important;
-}
+
+ /* Dock Spacing for Learn Page */
+ main {
+     padding-bottom: 120px !important;
+ }

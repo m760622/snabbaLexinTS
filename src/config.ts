@@ -8,7 +8,7 @@ export const AppConfig = {
     DEBUG_MODE: false,
 
     // Data versioning - increment when data.json changes
-    DATA_VERSION: '2025.12.22.1',
+    DATA_VERSION: '2026.01.12.1',
 
     // Database settings
     DB_NAME: 'snabba-lexin-db',

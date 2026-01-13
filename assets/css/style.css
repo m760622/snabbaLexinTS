@@ -149,16 +149,21 @@ body {
   /* Prevent tap highlight flicker */
   -webkit-tap-highlight-color: transparent;
 
-  /* Prevent pull-to-refresh */
-  overscroll-behavior-y: none;
+  /* Prevent pull-to-refresh but allow scroll */
+  overscroll-behavior-y: contain;
 
-  /* Improve touch response */
-  touch-action: manipulation;
+  /* Allow natural touch scrolling */
+  touch-action: pan-x pan-y;
 }
 
 /* ========================================
    MOBILE VIEW SIMULATION (iPhone Mode)
    ======================================== */
+/* ========================================
+   GLOBAL MOBILE VIEW (App Mode)
+   Enforces mobile width (414px) on all devices
+   ======================================== */
+body,
 body.iphone-view {
   max-width: 414px !important;
   /* iPhone Max width */
@@ -169,6 +174,7 @@ body.iphone-view {
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
   background-color: var(--background);
   overflow-x: hidden;
+  position: relative;
 }
 
 /* Ensure fixed elements stay within the mobile container */
@@ -283,6 +289,19 @@ textarea,
 [contenteditable] {
   -webkit-user-select: text;
   user-select: text;
+}
+
+/* ========================================
+   GLOBAL TOUCH SCROLLING FIX
+   Allow scrolling on all interactive elements
+   ======================================== */
+[onclick],
+[role="button"],
+.clickable,
+.card,
+.btn,
+button:not([disabled]) {
+  touch-action: pan-y pinch-zoom;
 }
 
 /* ========================================
@@ -594,7 +613,7 @@ body.lang-sv .ar-text {
 /* Base text sizing with smooth transition */
 [class*="text-"] {
   transition: font-size 0.2s ease;
-  word-break: break-word;
+  overflow-wrap: break-word;
   overflow-wrap: break-word;
 }
 
@@ -1140,10 +1159,21 @@ body.lang-sv .ar-text {
 }
 
 @keyframes floatOrb {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  33% { transform: translate(50px, 80px) scale(1.1) rotate(120deg); }
-  66% { transform: translate(-30px, 40px) scale(0.9) rotate(240deg); }
-  100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(50px, 80px) scale(1.1) rotate(120deg);
+  }
+
+  66% {
+    transform: translate(-30px, 40px) scale(0.9) rotate(240deg);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1) rotate(360deg);
+  }
 }
 
 [data-theme="dark"] .orb-1 {
@@ -1360,7 +1390,7 @@ body::after {
 
 [data-theme="dark"] body::before {
   opacity: 0.2;
-  background: #4f46e5;
+  background: #090972;
 }
 
 [data-theme="dark"] body::after {
@@ -1689,7 +1719,7 @@ body::after {
   font-size: 1.75rem;
   font-weight: 700;
   text-align: center;
-  word-break: break-word;
+  overflow-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
   line-height: 1.3;
@@ -3560,7 +3590,8 @@ header {
   -webkit-backdrop-filter: blur(30px) saturate(180%);
 
   border-radius: 32px;
-  padding: 0; /* Changed to 0 to handle internal header padding */
+  padding: 0;
+  /* Changed to 0 to handle internal header padding */
 
   /* Refined Shadow & Border */
   box-shadow:
@@ -4643,16 +4674,23 @@ header {
 
 h1 {
   font-family: var(--header-font);
-  font-size: clamp(2rem, 8vw, 4.5rem);
-  /* Responsive font size */
+  font-size: clamp(1.5rem, 6vw, 3rem);
+  /* Safer responsive sizing */
   font-weight: 800;
-  color: var(--primary);
-  /* blue color */
+  color: #ffffff;
   margin-bottom: 1rem;
-  /* Breathing room */
   letter-spacing: 0;
-  text-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
-  animation: float 6s ease-in-out infinite;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  /* Prevent text breaking */
+  overflow: visible;
+  /* Allow text to show fully */
+  overflow-wrap: break-word;
+  /* Safety fallback for very long words */
+  text-align: center;
+  /* Center by default */
+  width: 100%;
+  /* Full width for centering */
   pointer-events: none;
   /* Let clicks pass to buttons underneath */
 }
@@ -5324,8 +5362,10 @@ h1 {
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 8vw, 2rem);
+    /* Smaller for mobile */
     margin-bottom: 0.25rem;
+    /* white-space, overflow inherited from base h1 style */
   }
 
   .main-title-text {
@@ -10303,14 +10343,7 @@ footer,
   }
 }
 
-.splash-title {
-  font-family: "Inter", sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: 1px;
-}
+/* splash-title definition moved to line 10848 */
 
 .splash-subtitle {
   font-family: "Tajawal", sans-serif;
@@ -10552,11 +10585,13 @@ footer,
 
 /* Animated Gradient Background */
 .splash-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
   background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
   background-size: 400% 400%;
   animation: gradientShift 8s ease infinite;
@@ -10565,7 +10600,7 @@ footer,
   justify-content: center;
   z-index: 99999;
   transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 @keyframes gradientShift {
@@ -10801,16 +10836,29 @@ footer,
   }
 }
 
-/* Title */
+/* Title - MAIN DEFINITION */
 .splash-title {
-  font-family: "Inter", sans-serif;
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 0.5rem 0;
-  letter-spacing: 2px;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-family: "Inter", sans-serif !important;
+  font-size: clamp(1.5rem, 8vw, 2.2rem) !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  margin: 0 0 0.5rem 0 !important;
+  letter-spacing: 2px !important;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+  width: auto !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  display: block !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #fff !important;
 }
+
 
 .splash-subtitle {
   font-family: "Tajawal", sans-serif;
@@ -10941,7 +10989,9 @@ footer,
   }
 
   .splash-title {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 8vw, 2rem) !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
   }
 
   .splash-subtitle {
@@ -12227,15 +12277,15 @@ body.dark-mode .onboarding-container {
    Controls visibility of text based on lang-sv, lang-ar, lang-both classes
    ============================================================ */
 
-/* Swedish Only Mode - Hide all Arabic text */
-body.lang-sv [dir="rtl"]:not(.card *):not(.details-page-container *):not(.quiz-option),
-body.lang-sv .ar-text,
-body.lang-sv .arabic-text,
-body.lang-sv .text-ar,
-body.lang-sv [lang="ar"],
-body.lang-sv .bilingual-ar,
-body.lang-sv .word-arb:not(.card .word-arb):not(.details-page-container *):not(.cognate-card *),
-body.lang-sv .subtitle-ar {
+/* Swedish Only Mode - Hide all Arabic text (except search cards) */
+body.lang-sv [dir="rtl"]:not(.card *):not(.details-page-container *):not(.quiz-option):not(.smart-card *),
+body.lang-sv .ar-text:not(.smart-card .ar-text),
+body.lang-sv .arabic-text:not(.smart-card .arabic-text),
+body.lang-sv .text-ar:not(.smart-card .text-ar),
+body.lang-sv [lang="ar"]:not(.smart-card [lang="ar"]),
+body.lang-sv .bilingual-ar:not(.smart-card .bilingual-ar),
+body.lang-sv .word-arb:not(.card .word-arb):not(.details-page-container *):not(.cognate-card *):not(.smart-card *),
+body.lang-sv .subtitle-ar:not(.smart-card .subtitle-ar) {
   display: none !important;
 }
 
@@ -12813,102 +12863,103 @@ body.lang-ar .sv-text {
     font-size: 1.2rem;
   }
 }
+
 /* ==========================================================================
    DASHBOARD STYLES
    ========================================================================== */
 .dashboard-container {
-    padding: 20px 16px;
-    max-width: 800px;
-    margin: 0 auto;
+  padding: 20px 16px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .dashboard-section {
-    margin-bottom: 32px;
+  margin-bottom: 32px;
 }
 
 .section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-main, #fff);
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main, #fff);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
 }
 
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
 }
 
 .dashboard-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none !important;
-    transition: transform 0.2s, background 0.2s;
-    color: #ffffff !important;
-    font-weight: bold;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  transition: transform 0.2s, background 0.2s;
+  color: #ffffff !important;
+  font-weight: bold;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .card-icon {
-    font-size: 2rem;
-    background: rgba(255, 255, 255, 0.05);
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    margin-bottom: 12px;
+  font-size: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  margin-bottom: 12px;
 }
 
 .card-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .card-title-sv {
-    font-weight: 700;
-    color: #fff;
-    font-size: 1.1rem;
-    margin-bottom: 4px;
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
 }
 
 .card-title-ar {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-family: 'Tajawal', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Tajawal', sans-serif;
 }
 
 @media (max-width: 480px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* ==========================================================================
    REACT ROOTS
    ========================================================================== */
 #mistakes-react-root {
-    margin-top: 40px;
-    border-top: 1px solid #333;
-    padding-top: 20px;
+  margin-top: 40px;
+  border-top: 1px solid #333;
+  padding-top: 20px;
 }
 
 /* Floating Glass Dock - SR08 Style */
@@ -12955,7 +13006,8 @@ body.lang-ar .sv-text {
 }
 
 .dock-item.active {
-  background: #3b82f6 !important; /* SR08 Blue */
+  background: #3b82f6 !important;
+  /* SR08 Blue */
   color: #ffffff !important;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
   transform: scale(1.1) translateY(-5px);
@@ -12983,11 +13035,11 @@ body.lang-ar .sv-text {
   background: #fff;
   border-radius: 50%;
   opacity: 0.8;
-  display: none; /* Hide tooltip arrow logic or override it */
+  display: none;
+  /* Hide tooltip arrow logic or override it */
 }
 
 /* Tooltip Override - SR08 style doesn't show standard tooltip, keeping it simple or hidden */
 .dock-item::before {
-   display: none;
+  display: none;
 }
-

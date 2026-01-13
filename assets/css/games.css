@@ -77,6 +77,8 @@ body {
     /* Default to dark mode text for this dark theme */
     transition: background 0.5s ease;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
 }
 
 /* iPhone View Mode - Realistic Bezel */
@@ -251,6 +253,8 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     flex-direction: column;
     gap: 1rem;
     box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .game-menu-container {
@@ -507,6 +511,9 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     /* Default visible */
     transform: translateY(0);
     transition: opacity 0.6s ease-out, transform 0.6s var(--spring-easing), box-shadow 0.4s var(--spring-easing), border-color 0.3s ease;
+    /* Allow vertical scrolling on touch */
+    touch-action: pan-y;
+    -webkit-user-drag: none;
 }
 
 .game-card-item.scroll-in-view {
@@ -2218,7 +2225,7 @@ body.iphone-view.dark-mode .high-score {
     flex: 1 1 auto;
     min-width: 120px;
     max-width: 100%;
-    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .spelling-option-btn::before {
@@ -12021,6 +12028,7 @@ body {
         border-width: 2px;
     }
 }
+
 /* Dock Spacing for Games Page */
 .games-container {
     padding-bottom: 120px !important;

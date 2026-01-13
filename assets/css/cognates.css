@@ -1341,7 +1341,7 @@ body .cognate-card .word-arb {
     .question-text {
         font-size: 1.3rem;
         margin-bottom: 0.4rem;
-        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
     .question-hint {

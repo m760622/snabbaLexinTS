@@ -92,7 +92,7 @@
 .settings-orb-2 {
     width: 450px;
     height: 450px;
-    background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+    background: radial-gradient(circle, #090972 0%, transparent 70%);
     bottom: -10%;
     right: -10%;
     animation-duration: 35s;
@@ -120,10 +120,21 @@
 }
 
 @keyframes liquidMove {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    33% { transform: translate(100px, 50px) scale(1.2) rotate(120deg); }
-    66% { transform: translate(-50px, 100px) scale(0.8) rotate(240deg); }
-    100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(100px, 50px) scale(1.2) rotate(120deg);
+    }
+
+    66% {
+        transform: translate(-50px, 100px) scale(0.8) rotate(240deg);
+    }
+
+    100% {
+        transform: translate(0, 0) scale(1) rotate(360deg);
+    }
 }
 
 /* ============================================================
@@ -250,8 +261,8 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
     transition: all 0.4s ease;
 }
 
@@ -303,8 +314,15 @@
 }
 
 @keyframes avatarShine {
-    0%, 100% { transform: translateX(-100%) rotate(45deg); }
-    50% { transform: translateX(100%) rotate(45deg); }
+
+    0%,
+    100% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    50% {
+        transform: translateX(100%) rotate(45deg);
+    }
 }
 
 .avatar-edit-btn {
@@ -590,11 +608,25 @@
     background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
 }
 
-.gradient-blue { background: rgba(59, 130, 246, 0.2); }
-.gradient-green { background: rgba(16, 185, 129, 0.2); }
-.gradient-amber { background: rgba(245, 158, 11, 0.2); }
-.gradient-cyan { background: rgba(6, 182, 212, 0.2); }
-.gradient-rose { background: rgba(244, 63, 94, 0.2); }
+.gradient-blue {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.gradient-green {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.gradient-amber {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+.gradient-cyan {
+    background: rgba(6, 182, 212, 0.2);
+}
+
+.gradient-rose {
+    background: rgba(244, 63, 94, 0.2);
+}
 
 .section-title {
     font-size: 1.2rem;
@@ -722,12 +754,12 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.toggle-switch input:checked + .toggle-slider {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+.toggle-switch input:checked+.toggle-slider {
+    background: linear-gradient(135deg, #3b82f6, #090972);
     border-color: transparent;
 }
 
-.toggle-switch input:checked + .toggle-slider::before {
+.toggle-switch input:checked+.toggle-slider::before {
     transform: translateX(26px);
 }
 
@@ -942,6 +974,7 @@
         opacity: 0;
         transform: translateY(20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1397,8 +1430,13 @@ body.rtl .toast-progress {
 }
 
 @keyframes toastProgress {
-    from { transform: scaleX(1); }
-    to { transform: scaleX(0); }
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
 }
 
 .toast-item.success {
@@ -1575,93 +1613,386 @@ body:not(.dark-mode) .toast-close:hover {
    RESPONSIVE DESIGN
    ============================================================ */
 @media (max-width: 374px) {
-    .settings-container { padding: 0 8px 100px; }
-    .settings-header { gap: 8px; padding: 12px 0; }
-    .settings-back-btn, .settings-reset-btn { width: 38px; height: 38px; border-radius: 10px; }
-    .settings-header-title h1 { font-size: 1.2rem; }
-    .settings-header-title p { font-size: 0.75rem; }
-    .settings-profile-card { padding: 16px 12px; }
-    .profile-avatar { width: 60px; height: 60px; font-size: 1.8rem; }
-    .avatar-edit-btn { width: 24px; height: 24px; }
-    .avatar-edit-btn svg { width: 12px; height: 12px; }
-    .profile-name { font-size: 1rem; }
-    .profile-level { flex-direction: column; gap: 6px; }
-    .level-badge { font-size: 0.7rem; padding: 3px 10px; }
-    .profile-stats { padding: 12px 0; gap: 4px; }
-    .stat-value { font-size: 1.2rem; }
-    .stat-label { font-size: 0.65rem; }
-    .settings-completion { flex-wrap: wrap; padding: 12px; gap: 8px; }
-    .completion-info { width: 100%; order: 1; }
-    .completion-bar-bg { width: 100%; order: 2; flex: none; }
-    .completion-icon { font-size: 1.2rem; }
-    .section-header { padding: 12px; gap: 10px; }
-    .section-icon { width: 36px; height: 36px; font-size: 1rem; border-radius: 10px; }
-    .section-title { font-size: 0.9rem; }
-    .section-subtitle { font-size: 0.7rem; }
-    .settings-item { padding: 10px 0; }
-    .item-icon { width: 32px; height: 32px; font-size: 0.9rem; }
-    .item-label { font-size: 0.85rem; }
-    .item-sublabel { font-size: 0.65rem; }
-    .toggle-switch { width: 44px; height: 24px; }
-    .toggle-slider::before { height: 18px; width: 18px; }
-    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
-    .color-themes { flex-wrap: wrap; gap: 6px; }
-    .color-btn { width: 26px; height: 26px; }
-    .font-size-control { padding: 3px; }
-    .font-btn { width: 30px; height: 28px; }
-    .goal-selector { gap: 4px; }
-    .goal-btn { width: 38px; height: 32px; font-size: 0.85rem; }
-    .quick-links-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .quick-link-card { padding: 14px 8px; }
-    .quick-link-icon { font-size: 1.3rem; }
-    .quick-link-label { font-size: 0.75rem; }
-    .test-btn { padding: 10px 16px; font-size: 0.85rem; }
-    .motivation-card { padding: 16px; }
-    .motivation-icon { font-size: 1.5rem; }
-    .motivation-text { font-size: 0.85rem; }
-    .motivation-text-ar { font-size: 0.75rem; }
+    .settings-container {
+        padding: 0 8px 100px;
+    }
+
+    .settings-header {
+        gap: 8px;
+        padding: 12px 0;
+    }
+
+    .settings-back-btn,
+    .settings-reset-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+    }
+
+    .settings-header-title h1 {
+        font-size: 1.2rem;
+    }
+
+    .settings-header-title p {
+        font-size: 0.75rem;
+    }
+
+    .settings-profile-card {
+        padding: 16px 12px;
+    }
+
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+
+    .avatar-edit-btn {
+        width: 24px;
+        height: 24px;
+    }
+
+    .avatar-edit-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .profile-name {
+        font-size: 1rem;
+    }
+
+    .profile-level {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .level-badge {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+
+    .profile-stats {
+        padding: 12px 0;
+        gap: 4px;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+    }
+
+    .settings-completion {
+        flex-wrap: wrap;
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .completion-info {
+        width: 100%;
+        order: 1;
+    }
+
+    .completion-bar-bg {
+        width: 100%;
+        order: 2;
+        flex: none;
+    }
+
+    .completion-icon {
+        font-size: 1.2rem;
+    }
+
+    .section-header {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .section-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .settings-item {
+        padding: 10px 0;
+    }
+
+    .item-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .item-label {
+        font-size: 0.85rem;
+    }
+
+    .item-sublabel {
+        font-size: 0.65rem;
+    }
+
+    .toggle-switch {
+        width: 44px;
+        height: 24px;
+    }
+
+    .toggle-slider::before {
+        height: 18px;
+        width: 18px;
+    }
+
+    .toggle-switch input:checked+.toggle-slider::before {
+        transform: translateX(20px);
+    }
+
+    .color-themes {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .color-btn {
+        width: 26px;
+        height: 26px;
+    }
+
+    .font-size-control {
+        padding: 3px;
+    }
+
+    .font-btn {
+        width: 30px;
+        height: 28px;
+    }
+
+    .goal-selector {
+        gap: 4px;
+    }
+
+    .goal-btn {
+        width: 38px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+
+    .quick-links-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .quick-link-card {
+        padding: 14px 8px;
+    }
+
+    .quick-link-icon {
+        font-size: 1.3rem;
+    }
+
+    .quick-link-label {
+        font-size: 0.75rem;
+    }
+
+    .test-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .motivation-card {
+        padding: 16px;
+    }
+
+    .motivation-icon {
+        font-size: 1.5rem;
+    }
+
+    .motivation-text {
+        font-size: 0.85rem;
+    }
+
+    .motivation-text-ar {
+        font-size: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .settings-container { padding: 0 12px 100px; }
-    .settings-header { padding: 16px 0; }
-    .settings-back-btn, .settings-reset-btn { width: 40px; height: 40px; border-radius: 12px; }
-    .settings-header-title h1 { font-size: 1.3rem; }
-    .settings-profile-card { padding: 20px 16px; }
-    .profile-avatar { width: 70px; height: 70px; font-size: 2rem; }
-    .profile-stats { gap: 8px; }
-    .stat-value { font-size: 1.25rem; }
-    .stat-label { font-size: 0.7rem; }
-    .section-header { padding: 14px; }
-    .section-icon { width: 40px; height: 40px; }
-    .settings-section.expanded .section-content { padding: 0 14px 14px; }
-    .settings-item { flex-wrap: wrap; gap: 8px; }
-    .slider-item .item-left { width: 100%; }
-    .slider-control { width: 100%; padding-left: 0; }
-    .color-btn { width: 28px; height: 28px; }
-    .quick-links-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .quick-link-card { padding: 16px 12px; }
-    .quick-link-icon { font-size: 1.5rem; }
-    .quick-link-label { font-size: 0.8rem; }
-    .avatar-modal { max-width: 95vw; max-height: 70vh; }
-    .avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 16px; }
-    .avatar-option { font-size: 1.5rem; }
-    .confirm-modal { padding: 24px 16px; }
-    .confirm-icon { font-size: 2.5rem; }
-    .confirm-modal h3 { font-size: 1.1rem; }
-    .confirm-actions { flex-direction: column; gap: 8px; }
-    .btn-secondary, .btn-danger { width: 100%; padding: 14px; }
-    .toast-container { bottom: 80px; width: calc(100% - 24px); left: 12px; transform: none; }
-    .toast-item { padding: 12px 40px 12px 14px; font-size: 0.85rem; }
-    .toast-close { width: 24px; height: 24px; right: 8px; }
-    body.rtl .toast-item { padding: 12px 14px 12px 40px; }
-    body.rtl .toast-close { left: 8px; }
+    .settings-container {
+        padding: 0 12px 100px;
+    }
+
+    .settings-header {
+        padding: 16px 0;
+    }
+
+    .settings-back-btn,
+    .settings-reset-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .settings-header-title h1 {
+        font-size: 1.3rem;
+    }
+
+    .settings-profile-card {
+        padding: 20px 16px;
+    }
+
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+    }
+
+    .profile-stats {
+        gap: 8px;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .section-header {
+        padding: 14px;
+    }
+
+    .section-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .settings-section.expanded .section-content {
+        padding: 0 14px 14px;
+    }
+
+    .settings-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .slider-item .item-left {
+        width: 100%;
+    }
+
+    .slider-control {
+        width: 100%;
+        padding-left: 0;
+    }
+
+    .color-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .quick-links-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .quick-link-card {
+        padding: 16px 12px;
+    }
+
+    .quick-link-icon {
+        font-size: 1.5rem;
+    }
+
+    .quick-link-label {
+        font-size: 0.8rem;
+    }
+
+    .avatar-modal {
+        max-width: 95vw;
+        max-height: 70vh;
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        padding: 16px;
+    }
+
+    .avatar-option {
+        font-size: 1.5rem;
+    }
+
+    .confirm-modal {
+        padding: 24px 16px;
+    }
+
+    .confirm-icon {
+        font-size: 2.5rem;
+    }
+
+    .confirm-modal h3 {
+        font-size: 1.1rem;
+    }
+
+    .confirm-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .toast-container {
+        bottom: 80px;
+        width: calc(100% - 24px);
+        left: 12px;
+        transform: none;
+    }
+
+    .toast-item {
+        padding: 12px 40px 12px 14px;
+        font-size: 0.85rem;
+    }
+
+    .toast-close {
+        width: 24px;
+        height: 24px;
+        right: 8px;
+    }
+
+    body.rtl .toast-item {
+        padding: 12px 14px 12px 40px;
+    }
+
+    body.rtl .toast-close {
+        left: 8px;
+    }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-    .settings-container { padding: 0 20px 60px; }
-    .quick-links-grid { grid-template-columns: repeat(4, 1fr); }
-    .avatar-grid { grid-template-columns: repeat(6, 1fr); }
+    .settings-container {
+        padding: 0 20px 60px;
+    }
+
+    .quick-links-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
 @supports (padding: max(0px)) {
@@ -1671,22 +2002,65 @@ body:not(.dark-mode) .toast-close:hover {
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
     }
-    .settings-header { padding-top: max(20px, env(safe-area-inset-top)); }
-    .settings-footer { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+
+    .settings-header {
+        padding-top: max(20px, env(safe-area-inset-top));
+    }
+
+    .settings-footer {
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
 }
 
 @media (hover: none) and (pointer: coarse) {
-    .settings-back-btn, .settings-reset-btn, .color-btn, .font-btn, .goal-btn, .test-btn, .quick-link-card, .settings-item.clickable, .recommendation-item {
+
+    .settings-back-btn,
+    .settings-reset-btn,
+    .color-btn,
+    .font-btn,
+    .goal-btn,
+    .test-btn,
+    .quick-link-card,
+    .settings-item.clickable,
+    .recommendation-item {
         min-height: 44px;
         min-width: 44px;
     }
-    .toggle-switch { min-width: 52px; min-height: 32px; }
-    .section-header { min-height: 80px; padding: 20px 0; }
-    .settings-back-btn:hover, .color-btn:hover, .recommendation-item:hover { transform: none; }
-    .settings-back-btn:active, .settings-reset-btn:active { transform: scale(0.95); background: var(--settings-primary); }
-    .color-btn:active { transform: scale(0.9); }
-    .quick-link-card:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.15); }
-    .settings-item.clickable:active { background: rgba(255, 255, 255, 0.1); }
+
+    .toggle-switch {
+        min-width: 52px;
+        min-height: 32px;
+    }
+
+    .section-header {
+        min-height: 80px;
+        padding: 20px 0;
+    }
+
+    .settings-back-btn:hover,
+    .color-btn:hover,
+    .recommendation-item:hover {
+        transform: none;
+    }
+
+    .settings-back-btn:active,
+    .settings-reset-btn:active {
+        transform: scale(0.95);
+        background: var(--settings-primary);
+    }
+
+    .color-btn:active {
+        transform: scale(0.9);
+    }
+
+    .quick-link-card:active {
+        transform: scale(0.98);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .settings-item.clickable:active {
+        background: rgba(255, 255, 255, 0.1);
+    }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
@@ -1696,25 +2070,58 @@ body:not(.dark-mode) .toast-close:hover {
         text-align: left;
         gap: 20px;
     }
-    .profile-avatar-wrapper { margin-bottom: 0; }
-    .profile-info { flex: 1; margin-bottom: 0; }
-    .profile-stats { border: none; padding: 0; margin: 0; }
-    .profile-progress { display: none; }
-    .settings-orb { display: none; }
+
+    .profile-avatar-wrapper {
+        margin-bottom: 0;
+    }
+
+    .profile-info {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .profile-stats {
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .profile-progress {
+        display: none;
+    }
+
+    .settings-orb {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .settings-orb, .profile-avatar::after { animation: none; }
-    .settings-section { animation: none; }
-    * { transition-duration: 0.01ms !important; }
+
+    .settings-orb,
+    .profile-avatar::after {
+        animation: none;
+    }
+
+    .settings-section {
+        animation: none;
+    }
+
+    * {
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .settings-section {
@@ -1722,12 +2129,29 @@ body:not(.dark-mode) .toast-close:hover {
     animation-fill-mode: both;
 }
 
-.settings-section:nth-child(1) { animation-delay: 0.1s; }
-.settings-section:nth-child(2) { animation-delay: 0.15s; }
-.settings-section:nth-child(3) { animation-delay: 0.2s; }
-.settings-section:nth-child(4) { animation-delay: 0.25s; }
-.settings-section:nth-child(5) { animation-delay: 0.3s; }
-.settings-section:nth-child(6) { animation-delay: 0.35s; }
+.settings-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.settings-section:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.settings-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.settings-section:nth-child(4) {
+    animation-delay: 0.25s;
+}
+
+.settings-section:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+.settings-section:nth-child(6) {
+    animation-delay: 0.35s;
+}
 
 /* ============================================================
    VOICE & LANGUAGE SELECTORS
@@ -1875,8 +2299,19 @@ body:not(.dark-mode) .toast-close:hover {
 }
 
 @media (max-width: 480px) {
-    .language-grid-premium { gap: 10px; }
-    .lang-card-premium { padding: 15px 5px; }
-    .lang-flag-large { font-size: 2rem; }
-    .lang-name-large { font-size: 0.9rem; }
+    .language-grid-premium {
+        gap: 10px;
+    }
+
+    .lang-card-premium {
+        padding: 15px 5px;
+    }
+
+    .lang-flag-large {
+        font-size: 2rem;
+    }
+
+    .lang-name-large {
+        font-size: 0.9rem;
+    }
 }

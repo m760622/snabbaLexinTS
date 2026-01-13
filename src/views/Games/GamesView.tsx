@@ -143,13 +143,13 @@ const GamesView: React.FC = () => {
     }
 
     return (
-        <div style={{ padding: '20px', paddingBottom: '100px', color: 'white' }}>
+        <div style={{ padding: '20px', paddingBottom: '100px', color: 'white', overflowY: 'auto', WebkitOverflowScrolling: 'touch' as any, touchAction: 'pan-y' as any }}>
             <h2 style={{ fontSize: '1.8rem', marginBottom: '20px', textAlign: 'center', color: '#fbbf24' }}>Spelzon</h2>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '15px' }}>
                 {GAMES.map(game => (
-                    <div 
-                        key={game.id} 
+                    <div
+                        key={game.id}
                         onClick={() => handleGameSelect(game.id)}
                         style={{
                             background: 'rgba(30, 41, 59, 0.6)',
@@ -163,7 +163,8 @@ const GamesView: React.FC = () => {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '10px'
+                            gap: '10px',
+                            touchAction: 'pan-y' as any
                         }}
                     >
                         <div style={{ fontSize: '3rem' }}>{game.icon}</div>

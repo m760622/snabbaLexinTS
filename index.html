@@ -7,28 +7,101 @@
     <title>SnabbaLexin - Svensk-Arabiskt Lexikon</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
     <!-- Unified CSS -->
-    <link rel="stylesheet" href="assets/css/style.css?v=100">
-    <link rel="stylesheet" href="assets/css/mobile-enhancements.css?v=100">
-    <link rel="stylesheet" href="assets/css/search-cards.css?v=100">
-    <link rel="stylesheet" href="assets/css/settings.css?v=100">
-    <link rel="stylesheet" href="assets/css/premium-v2.css?v=100">
-    
+    <link rel="stylesheet" href="assets/css/style.css?v=101">
+    <link rel="stylesheet" href="assets/css/mobile-enhancements.css?v=101">
+    <link rel="stylesheet" href="assets/css/search-cards.css?v=101">
+    <link rel="stylesheet" href="assets/css/settings.css?v=101">
+    <link rel="stylesheet" href="assets/css/premium-v2.css?v=101">
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1f2937">
     <link rel="icon" type="image/svg+xml" href="assets/images/icon.svg">
     <link rel="apple-touch-icon" href="assets/images/icon.png">
-    
+
     <style>
-        body { margin: 0; padding: 0; background: #0a0a0a; overflow: hidden; }
-        #react-root { width: 100vw; height: 100vh; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        #react-root {
+            width: 100vw;
+            height: 100vh;
+        }
     </style>
 </head>
 
 <body>
-    <div id="react-root"></div>
+    <div id="react-root">
+        <!-- Instant Splash Screen (shown before React loads) -->
+        <div id="instant-splash" style="
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+            background-size: 400% 400%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: gradientShift 8s ease infinite;
+        ">
+            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 1.5s ease-in-out infinite;">📚</div>
+            <h1 style="
+                font-family: 'Inter', sans-serif;
+                font-size: clamp(1.5rem, 8vw, 2.2rem);
+                font-weight: 800;
+                color: #fff;
+                margin: 0 0 0.5rem 0;
+                letter-spacing: 2px;
+                text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            ">SnabbaLexin</h1>
+            <p style="
+                font-family: 'Tajawal', sans-serif;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1rem;
+                text-align: center;
+                margin: 0;
+            ">
+                Svensk-Arabiskt Lexikon<br>
+                القاموس السويدي العربي
+            </p>
+        </div>
+        <style>
+            @keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @keyframes bounce {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+        </style>
+    </div>
 
     <!-- Background Elements -->
     <div class="ambient-background">

@@ -225,7 +225,7 @@ main {
 }
 
 .performance {
-    color: #8b5cf6;
+    color: #090972;
 }
 
 .test {
@@ -247,13 +247,13 @@ main {
     color: rgba(255, 255, 255, 0.7) !important;
     padding: 0 !important;
     font-size: 20px !important;
-    
+
     /* 3D Effect - Raised State */
-    box-shadow: 
+    box-shadow:
         5px 5px 10px rgba(0, 0, 0, 0.5),
         -2px -2px 6px rgba(255, 255, 255, 0.05),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-        
+
     transition: all 0.15s ease !important;
     position: relative !important;
     margin-left: 0.5rem !important;
@@ -263,7 +263,7 @@ main {
 #mobileToggle:hover {
     color: #fff !important;
     transform: translateY(-1px) !important;
-    box-shadow: 
+    box-shadow:
         6px 6px 12px rgba(0, 0, 0, 0.6),
         -2px -2px 8px rgba(255, 255, 255, 0.08) !important;
 }
@@ -272,12 +272,12 @@ main {
 #mobileToggle.active {
     background: linear-gradient(145deg, #151525, #1e1e2f) !important;
     color: #4ade80 !important;
-    
+
     /* 3D Effect - Pressed State */
-    box-shadow: 
+    box-shadow:
         inset 5px 5px 10px rgba(0, 0, 0, 0.6),
         inset -2px -2px 6px rgba(255, 255, 255, 0.05) !important;
-        
+
     transform: translateY(2px) !important;
 }
 
@@ -285,12 +285,12 @@ main {
 #mobileToggle svg {
     width: 24px !important;
     height: 24px !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
 }
 
 .mobile-toggle-btn.active svg,
 #mobileToggle.active svg {
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transform: scale(0.95);
 }

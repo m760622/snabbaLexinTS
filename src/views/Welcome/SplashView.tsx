@@ -25,7 +25,7 @@ const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
         const initData = async () => {
             try {
                 await DictionaryDB.init();
-                
+
                 // Check if data is already cached and valid
                 const hasDataReady = localStorage.getItem('snabbaLexin_dataReady') === 'true';
                 const storedVersion = localStorage.getItem('snabbaLexin_version');
@@ -50,17 +50,17 @@ const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
 
         const startWorker = () => {
             const worker = new DBWorker();
-            
+
             worker.onmessage = async (e: MessageEvent) => {
                 const { type, value, status: workerStatus, error } = e.data;
-                
+
                 if (type === 'progress') {
                     setProgress(value);
                     if (workerStatus) setStatus(workerStatus);
                 } else if (type === 'complete') {
                     localStorage.setItem('snabbaLexin_dataReady', 'true');
                     localStorage.setItem('snabbaLexin_version', AppConfig.DATA_VERSION);
-                    
+
                     // Fetch the data we just saved to provide to the app
                     const freshData = await DictionaryDB.getAllWords();
                     setProgress(100);
@@ -73,7 +73,7 @@ const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
                     worker.terminate();
                 }
             };
-            
+
             worker.postMessage({ type: 'init', url: AppConfig.DATA_PATH.root });
         };
 
@@ -112,8 +112,8 @@ const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
 
                 <div className="splash-progress-container" style={{ width: '80%', margin: '2rem auto' }}>
                     <div className="splash-loader" style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div 
-                            className="splash-loader-bar" 
+                        <div
+                            className="splash-loader-bar"
                             style={{ width: `${progress}%`, height: '100%', background: '#3b82f6', transition: 'width 0.3s ease' }}
                         ></div>
                     </div>
