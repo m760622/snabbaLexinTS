@@ -27,10 +27,20 @@
  .learn-view-container,
  .lessons-grid,
  .special-cards {
-     -webkit-overflow-scrolling: touch;
-     touch-action: pan-y;
-     will-change: scroll-position;
-     overscroll-behavior: contain;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+    will-change: scroll-position;
+    max-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+
+   /*   
+
+        will-change: scroll-position;
+
+   overflow-y: auto; 
+     max-height: 100vh;
+   
+   */
  }
 
  body {
@@ -39,6 +49,18 @@
      color: var(--text-color);
      min-height: 100vh;
      overflow-y: auto !important;
+
+
+        /*   
+             overflow-y: auto !important;
+
+
+     overscroll-behavior: contain;
+     touch-action: pan-y;
+   
+   */
+
+
  }
 
  html.iphone-mode {

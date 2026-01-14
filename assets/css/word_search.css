@@ -471,7 +471,7 @@ h1 {
     padding: 8px;
     border-radius: 12px;
     margin-bottom: 15px;
-    touch-action: none;
+    touch-action: pan-y;
     flex-shrink: 0;
     position: relative;
     z-index: 10;

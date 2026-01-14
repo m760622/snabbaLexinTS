@@ -143,7 +143,7 @@ const GamesView: React.FC = () => {
     }
 
     return (
-        <div style={{ padding: '20px', paddingBottom: '100px', color: 'white', overflowY: 'auto', WebkitOverflowScrolling: 'touch' as any, touchAction: 'pan-y' as any }}>
+        <div style={{ padding: '20px', paddingBottom: '100px', color: 'white', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch' as any, touchAction: 'pan-y' as any, overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
             <h2 style={{ fontSize: '1.8rem', marginBottom: '20px', textAlign: 'center', color: '#fbbf24' }}>Spelzon</h2>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '15px' }}>

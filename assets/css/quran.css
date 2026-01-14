@@ -269,6 +269,8 @@ body {
         sans-serif;
     min-height: 100vh;
     transition: background 0.5s ease;
+    overscroll-behavior: contain;
+
 }
 
 main {
@@ -1737,7 +1739,7 @@ input:checked+.slider:before {
 body.mobile-view .quran-list,
 body.mobile-view .search-container,
 body.mobile-view .mode-tabs {
-    max-width: 480px;
+    max-width: 400px;
     /* Constrain width to mobile size center */
 }
 

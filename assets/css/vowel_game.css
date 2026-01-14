@@ -542,7 +542,7 @@ body.boss-mode .missing-vowel {
     position: relative;
     top: 0;
     z-index: 2;
-    touch-action: none;
+    touch-action: pan-y;
     box-shadow: 0 6px 0 #0f172a, 0 10px 10px rgba(0, 0, 0, 0.3);
     /* Fix: Half width */
     max-width: 140px;

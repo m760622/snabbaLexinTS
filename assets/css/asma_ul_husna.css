@@ -157,7 +157,7 @@
 
         /* Asma ul Husna Specific Styles */
         .asma-container {
-            max-width: 900px;
+            max-width: 400px;
             margin: 0 auto;
             padding: 1rem;
             padding-top: 120px;
@@ -2317,6 +2317,8 @@
             padding-top: 160px;
             padding-bottom: 120px;
             border-radius: 25px;
+            overscroll-behavior: contain;
+            max-height: 100vh;
         }
 
         body.iphone-view .asma-container::-webkit-scrollbar {
