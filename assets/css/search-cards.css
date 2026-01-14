@@ -41,6 +41,8 @@
     transition: all 0.2s ease;
     touch-action: pan-y;
     /* Allow vertical scrolling */
+    will-change: scroll-position;
+    overscroll-behavior: contain;
 }
 
 .smart-card:hover {

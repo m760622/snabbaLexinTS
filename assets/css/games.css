@@ -255,6 +255,8 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    will-change: scroll-position;
+    overscroll-behavior: contain;
 }
 
 .game-menu-container {
