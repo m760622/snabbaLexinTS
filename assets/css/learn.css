@@ -29,6 +29,8 @@
  .special-cards {
      -webkit-overflow-scrolling: touch;
      touch-action: pan-y;
+     will-change: scroll-position;
+     overscroll-behavior: contain;
  }
 
  body {

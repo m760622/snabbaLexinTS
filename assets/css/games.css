@@ -991,6 +991,7 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 html[data-theme="light"] body {
     background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 50%, #bcccdc 100%) !important;
     background-attachment: fixed !important;
+    overflow-y: auto !important;
 }
 
 /* Game Cards - Light Theme (Glassmorphism - Transparent Glass) */
