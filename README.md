@@ -145,7 +145,7 @@ To ensure a native-app feel on mobile devices, specific rules are applied:
 
 1.  **Touch Scrolling:**
     *   **Single Scroll Source:** Only one container (usually the list view) handles scrolling to prevent conflicts.
-    *   **Ghost Click Prevention:** `user-select: none` is applied to interactive cards (`.smart-card`, `.games-view-card`) to prevent text selection from intercepting scroll gestures.
+    *   **Ghost Click Prevention:** `user-select: none` is applied to key interactive controls (e.g. buttons inside `.smart-card`, `.games-view-card`) to prevent text selection from intercepting scroll gestures, مع الحفاظ على إمكانية التمرير عند السحب فوق البطاقة نفسها.
     *   **Touch Action:** `touch-action: pan-y` is strictly enforced on scrollable areas.
 
 2.  **View Management:**

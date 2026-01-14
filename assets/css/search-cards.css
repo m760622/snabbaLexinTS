@@ -39,9 +39,6 @@
     overflow: visible;
     cursor: pointer;
     transition: all 0.2s ease;
-    touch-action: pan-y;
-    -webkit-user-select: none;
-    user-select: none;
 }
 
 .smart-card:hover {
@@ -58,9 +55,9 @@
     /* Delay before showing active state */
 }
 
-/* Prevent text selection and touch callout on mobile */
-.smart-card,
-.smart-card * {
+/* Keep interactive elements responsive but DO NOT block native scrolling */
+.smart-card .smart-btn,
+.smart-card .smart-btn * {
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;

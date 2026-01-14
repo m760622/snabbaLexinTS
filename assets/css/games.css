@@ -277,8 +277,6 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 .games-view-grid,
 .games-view-card {
     touch-action: pan-y;
-    -webkit-user-select: none;
-    user-select: none;
 }
 
 .games-view-container {

@@ -92,7 +92,6 @@ const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }:
                     <div className="smart-actions">
                         <button className={`smart-btn icon-only ${isPlaying ? 'active' : ''}`}
                             onClick={(e) => handleSpeak(e as any)}
-                            onTouchEnd={(e) => { e.stopPropagation(); handleSpeak(e as any); }}
                             title="استمع">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -101,7 +100,6 @@ const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }:
                         </button>
                         <button className="smart-btn icon-only"
                             onClick={(e) => handleCopy(e as any)}
-                            onTouchEnd={(e) => { e.stopPropagation(); handleCopy(e as any); }}
                             title="نسخ">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -110,7 +108,6 @@ const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }:
                         </button>
                         <button className={`smart-btn icon-only ${isFav ? 'active' : ''}`}
                             onClick={(e) => handleFav(e as any)}
-                            onTouchEnd={(e) => { e.stopPropagation(); handleFav(e as any); }}
                             title={isFav ? 'محفوظ' : 'حفظ'}
                             style={isFav ? { background: '#f59e0b', borderColor: '#f59e0b', color: '#fff' } : {}}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
