@@ -7,14 +7,13 @@ import { showToast } from '../../utils/utils';
  */
 
 interface FullSettingsProps {
-  onClose: () => void;
   accentColor: string;
   onAccentChange: (color: string) => void;
   onOpenChangelog: () => void;
   onOpenDeviceInfo: () => void;
 }
 
-const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAccentChange, onOpenChangelog, onOpenDeviceInfo }) => {
+const FullSettings: React.FC<FullSettingsProps> = ({ accentColor, onAccentChange, onOpenChangelog, onOpenDeviceInfo }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>('general');
   const [language, setLanguage] = useState('both');
   const [darkMode, setDarkMode] = useState(false);

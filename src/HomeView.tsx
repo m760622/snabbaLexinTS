@@ -400,7 +400,6 @@ const HomeViewInner: React.FC = () => {
                         {activeTab === 'add' && <AddWordView onBack={() => setActiveTab('search')} />}
                         {activeTab === 'settings' && (
                             <FullSettings
-                                onClose={() => setActiveTab('search')}
                                 accentColor={accentColor}
                                 onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }}
                                 onOpenChangelog={() => setActiveTab('changelog' as any)}
