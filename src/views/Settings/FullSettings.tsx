@@ -152,10 +152,10 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
   );
 
   return (
-    <div className="full-settings-modal" style={styles.modalOverlay} onClick={onClose}>
-      <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
+    <div className="full-settings-view" style={styles.viewContainer}>
+      <div style={styles.modalContent}>
         <div style={styles.headerRow}>
-          <h2 style={styles.header}>Inställningar</h2>
+          <h2 style={styles.header}>Inställningar / الإعدادات</h2>
         </div>
 
         <div style={styles.scrollArea}>
@@ -271,8 +271,8 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  modalOverlay: { position: 'absolute', inset: 0, zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', touchAction: 'pan-y' },
-  modalContent: { background: '#1c1c1e', width: '95%', maxWidth: '420px', maxHeight: '85vh', borderRadius: '28px', padding: '25px', border: '1px solid #333', display: 'flex', flexDirection: 'column' },
+  viewContainer: { width: '100%', padding: '10px 20px', display: 'flex', flexDirection: 'column' },
+  modalContent: { background: 'transparent', width: '100%', borderRadius: '28px', border: 'none', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' },
   headerRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
   header: { fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', margin: 0 },
   closeCircle: { width: '32px', height: '32px', borderRadius: '50%', border: 'none', background: '#333', color: '#fff', fontSize: '1.2rem', cursor: 'pointer' },

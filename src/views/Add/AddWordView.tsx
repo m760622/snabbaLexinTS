@@ -59,7 +59,7 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
             exSwe: formData.exSwe,
             exArb: formData.exArb,
             raw: [
-                id, formData.type, formData.swe, formData.arb, 
+                id, formData.type, formData.swe, formData.arb,
                 formData.arbDef, formData.sweDef, '', formData.exSwe, formData.exArb, '', ''
             ]
         };
@@ -72,19 +72,16 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
     };
 
     return (
-        <div className="add-word-container" style={{ padding: '20px', paddingBottom: '100px', color: 'white', maxWidth: '600px', margin: '0 auto' }}>
-            <header style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-                <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>
-                    ⬅️
-                </button>
-                <h2 style={{ margin: 0 }}>{editId ? 'Redigera ord' : 'Lägg till ord'}</h2>
+        <div className="add-word-container" style={{ padding: '20px', paddingBottom: '20px', color: 'white', maxWidth: '600px', margin: '0 auto' }}>
+            <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+                <h2 style={{ margin: 0 }}>{editId ? 'Redigera ord / تعديل كلمة' : 'Lägg till ord / إضافة كلمة'}</h2>
             </header>
 
             <form onSubmit={handleSubmit} className="add-form" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <div className="form-group">
                     <label style={{ display: 'block', marginBottom: '5px', color: '#aaa' }}>Svenska *</label>
-                    <input 
-                        type="text" id="swe" required 
+                    <input
+                        type="text" id="swe" required
                         value={formData.swe} onChange={handleChange}
                         placeholder="T.ex. Bok"
                         style={styles.input}
@@ -93,8 +90,8 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
 
                 <div className="form-group">
                     <label style={{ display: 'block', marginBottom: '5px', color: '#aaa' }}>Arabiska *</label>
-                    <input 
-                        type="text" id="arb" required 
+                    <input
+                        type="text" id="arb" required
                         value={formData.arb} onChange={handleChange}
                         placeholder="مثلاً: كتاب" dir="rtl"
                         style={styles.input}
@@ -115,8 +112,8 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
 
                 <div className="form-group">
                     <label style={{ display: 'block', marginBottom: '5px', color: '#aaa' }}>Exempel (Svenska)</label>
-                    <input 
-                        type="text" id="exSwe" 
+                    <input
+                        type="text" id="exSwe"
                         value={formData.exSwe} onChange={handleChange}
                         placeholder="Mening..."
                         style={styles.input}
@@ -125,8 +122,8 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
 
                 <div className="form-group">
                     <label style={{ display: 'block', marginBottom: '5px', color: '#aaa' }}>Exempel (Arabiska)</label>
-                    <input 
-                        type="text" id="exArb" 
+                    <input
+                        type="text" id="exArb"
                         value={formData.exArb} onChange={handleChange}
                         placeholder="ترجمة..." dir="rtl"
                         style={styles.input}
@@ -145,9 +142,9 @@ const AddWordView: React.FC<AddWordViewProps> = ({ onBack, editId }) => {
                     </div>
                 </div>
 
-                <button type="submit" className="submit-btn" style={{ 
-                    marginTop: '20px', padding: '15px', borderRadius: '12px', background: '#3b82f6', 
-                    border: 'none', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1.1rem' 
+                <button type="submit" className="submit-btn" style={{
+                    marginTop: '20px', padding: '15px', borderRadius: '12px', background: '#3b82f6',
+                    border: 'none', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1.1rem'
                 }}>
                     Spara / حفظ
                 </button>

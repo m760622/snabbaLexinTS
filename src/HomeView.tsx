@@ -162,7 +162,6 @@ const HomeViewInner: React.FC = () => {
     const [favoritesSet, setFavoritesSet] = useState<Set<string>>(new Set());
     const [selectedWordId, setSelectedWordId] = useState<number | null>(null);
     const [dailyContent, setDailyContent] = useState<DailyContent | null>(null);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [accentColor, setAccentColor] = useState('#3b82f6');
     const [stats, setStats] = useState({ streak: 0, unlocked: 0, total: 0 });
     const [quizConfig, setQuizConfig] = useState<{ mode: 'normal' | 'review', words: string[] }>({ mode: 'normal', words: [] });
@@ -325,8 +324,8 @@ const HomeViewInner: React.FC = () => {
                 <div style={styles.header}>
                     <div style={styles.topBar}>
                         {/* Settings moved to dock */}
-                        <div style={{ ...styles.brandCapsule, boxShadow: `0 0 20px ${accentColor}33`, borderColor: `${accentColor}44` }}>Snabba Lexin</div>
-                        <div style={{ ...styles.statsBadge, borderColor: `${accentColor}44`, gap: '8px' }} className="premium-card">
+                        <div style={{ ...styles.brandCapsule, boxShadow: `0 0 20px ${accentColor}33` }}>Snabba Lexin</div>
+                        <div style={{ ...styles.statsBadge, gap: '8px' }} className="premium-card">
                             <span className="fire-active" title="Streak" aria-label={`Streak: ${stats.streak}`}>🔥 {stats.streak}</span>
                             <span style={{ opacity: 0.3 }}>|</span>
                             <span title="Achievements" aria-label={`Achievements: ${stats.unlocked}/${stats.total}`}>🏆 {stats.unlocked}</span>
@@ -347,7 +346,7 @@ const HomeViewInner: React.FC = () => {
                         {activeTab === 'search' && !searchTerm && (
                             <div style={{ marginBottom: '20px', padding: '0 20px' }} className="tab-content-active">
                                 <MistakesView />
-                                {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setIsSettingsOpen(true)} />}
+                                {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setActiveTab('settings')} />}
 
                                 {history.length > 0 && (
                                     <div style={{ marginTop: '20px' }}>
@@ -399,8 +398,17 @@ const HomeViewInner: React.FC = () => {
                         {activeTab === 'learn' && <LearnView />}
                         {activeTab === 'profile' && <ProfileView />}
                         {activeTab === 'add' && <AddWordView onBack={() => setActiveTab('search')} />}
-                        {activeTab === 'changelog' && <ChangelogView onBack={() => setActiveTab('settings' as any)} />}
-                        {activeTab === 'device' && <DeviceInfoView onBack={() => setActiveTab('settings' as any)} />}
+                        {activeTab === 'settings' && (
+                            <FullSettings
+                                onClose={() => setActiveTab('search')}
+                                accentColor={accentColor}
+                                onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }}
+                                onOpenChangelog={() => setActiveTab('changelog' as any)}
+                                onOpenDeviceInfo={() => setActiveTab('device' as any)}
+                            />
+                        )}
+                        {activeTab === 'changelog' && <ChangelogView onBack={() => setActiveTab('settings')} />}
+                        {activeTab === 'device' && <DeviceInfoView onBack={() => setActiveTab('settings')} />}
                     </div>
                 </div>
             </>
@@ -415,7 +423,11 @@ const HomeViewInner: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                marginBottom: '85px'  /* Dock: bottom 20px + height 65px = 85px */
+                marginBottom: '85px',  /* Dock: bottom 20px + height 65px = 85px */
+                border: '2px solid green',
+                transform: 'scale(0.99)',
+                transformOrigin: 'center',
+                backgroundColor: 'rgba(0, 255, 0, 0.3)'
             }}>
                 {renderContent()}
             </div>
@@ -425,29 +437,21 @@ const HomeViewInner: React.FC = () => {
                 <div style={styles.dock}>
                     {(['search', 'games', 'learn', 'add', 'profile', 'settings'] as const).map(tab => {
                         const icons = { search: '🔍', games: '🎮', learn: '📚', add: '➕', profile: '👤', settings: '⚙️' };
-                        const isActive = (activeTab === tab && !selectedWordId && !isSettingsOpen) || (tab === 'settings' && isSettingsOpen);
+                        const isActive = (activeTab === tab && !selectedWordId);
                         return (
                             <button key={tab}
                                 onClick={() => {
-                                    if (tab !== 'settings') {
-                                        setIsSettingsOpen(false);
-                                    }
-
                                     if (selectedWordId) {
                                         // Coming from DetailsView - close it and go to the tab
                                         setSelectedWordId(null);
                                         window.history.back();
-                                        if (tab !== 'settings' && tab !== activeTab) {
+                                        if (tab !== activeTab) {
                                             handleTabChange(tab);
                                         }
-                                    } else if (tab === 'settings') {
-                                        HapticManager.light();
-                                        setIsSettingsOpen(true);
                                     } else if (tab !== activeTab) {
-                                        // Only change tab if different from current
+                                        // Change tab if different from current
                                         handleTabChange(tab);
                                     }
-                                    // If same tab and not in DetailsView, do nothing (preserve search results)
                                 }}
                                 style={{ ...styles.dockItem, backgroundColor: isActive ? `${accentColor}33` : 'transparent', color: isActive ? accentColor : '#fff', transform: isActive ? 'scale(1.1) translateY(-5px)' : 'scale(1)' }}
                                 aria-label={tab === 'settings' ? 'Inställningar' : tab}
@@ -459,29 +463,20 @@ const HomeViewInner: React.FC = () => {
                 </div>
             </div>
 
-            {isSettingsOpen && (
-                <FullSettings
-                    onClose={() => setIsSettingsOpen(false)}
-                    accentColor={accentColor}
-                    onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }}
-                    onOpenChangelog={() => { setIsSettingsOpen(false); setActiveTab('changelog' as any); }}
-                    onOpenDeviceInfo={() => { setIsSettingsOpen(false); setActiveTab('device' as any); }}
-                />
-            )}
         </div>
     );
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y', overscrollBehavior: 'contain' },
+    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y', overscrollBehavior: 'contain', border: '5px solid yellow', boxSizing: 'border-box' },
     header: { flexShrink: 0, paddingBottom: '10px' },
     topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' },
-    brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
-    statsBadge: { background: 'rgba(28, 28, 30, 0.6)', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center' },
+    brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '2px solid red', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
+    statsBadge: { background: 'rgba(28, 28, 30, 0.6)', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', border: '2px solid red', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center' },
     iconBtn: { background: 'transparent', border: 'none', fontSize: '22px', cursor: 'pointer' },
     searchRow: { display: 'flex', padding: '0 20px', gap: '12px', alignItems: 'center' },
     searchBox: { position: 'relative', flex: 1, display: 'flex', alignItems: 'center' },
-    premiumInput: { width: '100%', padding: '14px 15px 14px 45px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(28, 28, 30, 0.6)', color: '#fff', fontSize: '1rem', outline: 'none', backdropFilter: 'blur(15px)' },
+    premiumInput: { width: '100%', padding: '14px 15px 14px 45px', borderRadius: '18px', border: '2px solid red', backgroundColor: 'rgba(28, 28, 30, 0.6)', color: '#fff', fontSize: '1rem', outline: 'none', backdropFilter: 'blur(15px)' },
     searchIconInside: { position: 'absolute', left: '15px', color: '#8e8e93', fontSize: '18px' },
     resultCounterInside: { position: 'absolute', right: '15px', color: '#636366', fontSize: '0.8rem' },
     contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
@@ -495,7 +490,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     swedish: { fontWeight: '800', color: '#fff' },
     arabic: { color: '#eee', textAlign: 'right' },
     dockContainer: { position: 'fixed', bottom: '20px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10000 },
-    dock: { display: 'flex', background: 'rgba(28, 28, 30, 0.8)', backdropFilter: 'blur(20px)', padding: '10px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.1)', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
+    dock: { display: 'flex', background: 'rgba(28, 28, 30, 0.8)', backdropFilter: 'blur(20px)', padding: '10px', borderRadius: '25px', border: '2px solid blue', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
     dockItem: { width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', borderRadius: '15px', cursor: 'pointer', border: 'none', color: '#fff', background: 'transparent', position: 'relative', transition: 'all 0.3s' }
 };
 
