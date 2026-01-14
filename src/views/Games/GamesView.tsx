@@ -19,6 +19,7 @@ import FillBlankGame from './FillBlank/FillBlankGame';
 import PronunciationGame from './Pronunciation/PronunciationGame';
 import WordWheelGame from './WordWheel/WordWheelGame';
 import { HapticManager } from '../../utils/utils';
+import '../../../assets/css/games.css';
 
 const GAMES = [
     { id: 'flashcards', name: 'Minneskort', ar: 'بطاقات الذاكرة', icon: '🃏', description: 'Träna ord med repetitionsmetod' },
@@ -143,34 +144,20 @@ const GamesView: React.FC = () => {
     }
 
     return (
-        <div style={{ padding: '20px', paddingBottom: '100px', color: 'white', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch' as any, touchAction: 'pan-y' as any, overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
-            <h2 style={{ fontSize: '1.8rem', marginBottom: '20px', textAlign: 'center', color: '#fbbf24' }}>Spelzon</h2>
+        <div className="games-view-container">
+            <h2 className="games-view-title">Spelzon</h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '15px' }}>
+            <div className="games-view-grid">
                 {GAMES.map(game => (
                     <div
                         key={game.id}
+                        className="games-view-card"
                         onClick={() => handleGameSelect(game.id)}
-                        style={{
-                            background: 'rgba(30, 41, 59, 0.6)',
-                            borderRadius: '24px',
-                            padding: '20px',
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            backdropFilter: 'blur(10px)',
-                            transition: 'transform 0.2s',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '10px',
-                            touchAction: 'pan-y' as any
-                        }}
                     >
-                        <div style={{ fontSize: '3rem' }}>{game.icon}</div>
+                        <div className="games-view-icon">{game.icon}</div>
                         <div>
-                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{game.name}</div>
-                            <div style={{ fontSize: '0.8rem', color: '#aaa', marginTop: '4px' }}>{game.ar}</div>
+                            <div className="games-view-name">{game.name}</div>
+                            <div className="games-view-name-ar">{game.ar}</div>
                         </div>
                     </div>
                 ))}

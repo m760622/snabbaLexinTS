@@ -260,10 +260,95 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     touch-action: pan-y;
     will-change: scroll-position;
     overscroll-behavior: contain;
+    max-height: 100vh;
 }
 
 .game-menu-container {
     padding-bottom: 2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Games View Container - React Component Styles  
+   حاوية شاشة الألعاب - استبدال inline styles
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Touch Scrolling Fix for Mobile - مثل شاشة التعلم */
+.games-view-container,
+.games-view-grid,
+.games-view-card {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    will-change: scroll-position;
+    overscroll-behavior: contain;
+}
+
+.games-view-container {
+    padding: 20px;
+    padding-bottom: 100px;
+    color: white;
+    overflow-y: auto;
+    max-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+    will-change: scroll-position;
+}
+
+.games-view-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+.games-view-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.games-view-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 24px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    touch-action: pan-y;
+}
+
+.games-view-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.games-view-card:active {
+    transform: scale(0.97);
+}
+
+.games-view-icon {
+    font-size: 3rem;
+}
+
+.games-view-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.games-view-name-ar {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 4px;
+    font-family: 'Tajawal', sans-serif;
 }
 
 
