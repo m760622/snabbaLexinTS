@@ -36,13 +36,12 @@
     background: var(--smart-bg);
     border: 1px solid var(--smart-border);
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
     cursor: pointer;
     transition: all 0.2s ease;
     touch-action: pan-y;
-    /* Allow vertical scrolling */
-    will-change: scroll-position;
-    overscroll-behavior: contain;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .smart-card:hover {

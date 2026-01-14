@@ -46,7 +46,7 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         const savedFav = JSON.parse(localStorage.getItem('asma_favorites') || '[]');
         const savedMem = JSON.parse(localStorage.getItem('asma_memorized') || '[]');
         const savedLang = localStorage.getItem('asma_lang') as 'ar' | 'sv' || 'ar';
-        
+
         setFavorites(savedFav);
         setMemorized(savedMem);
         setCurrentLang(savedLang);
@@ -73,7 +73,7 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
         if (searchQuery) {
             const query = normalizeArabic(searchQuery).toLowerCase();
-            result = result.filter(n => 
+            result = result.filter(n =>
                 normalizeArabic(n.nameAr).includes(query) ||
                 n.nameSv.toLowerCase().includes(query) ||
                 normalizeArabic(n.meaningAr).includes(query) ||
@@ -136,9 +136,9 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     };
 
     return (
-        <div className="asma-view-container" style={{ padding: '1rem', paddingBottom: '5rem', minHeight: '100vh', background: '#0f172a', maxWidth: '800px', margin: '0 auto' }}>
-             {/* Header */}
-             <div className="asma-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="asma-view-container" style={{ padding: '1rem', paddingBottom: '5rem', minHeight: '100vh', background: '#0f172a', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
+            {/* Header */}
+            <div className="asma-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>
                         ⬅️
@@ -167,10 +167,10 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <>
                     {/* Search */}
                     <div className="nav-search-wrapper" style={{ marginBottom: '1.5rem' }}>
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             className="nav-search-input"
-                            placeholder="🔍 Sök / ابحث..." 
+                            placeholder="🔍 Sök / ابحث..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: 'white', fontSize: '1rem' }}
@@ -189,13 +189,13 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                     {/* Grid */}
                     <div className="asma-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
-                         {filteredNames.length === 0 ? (
+                        {filteredNames.length === 0 ? (
                             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem', color: '#94a3b8', background: 'rgba(255,255,255,0.02)', borderRadius: '20px' }}>
                                 Inga resultat / لا توجد نتائج
                             </div>
                         ) : (
                             filteredNames.slice(0, displayedCount).map(name => (
-                                <AsmaCard 
+                                <AsmaCard
                                     key={name.nr}
                                     name={name}
                                     isFavorite={favorites.includes(name.nr)}
@@ -218,7 +218,7 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'flashcard' && (
-                <AsmaFlashcards 
+                <AsmaFlashcards
                     names={filteredNames.length > 0 ? filteredNames : allNames}
                     onComplete={handleFlashcardComplete}
                     onBack={() => setMode('browse')}
@@ -226,7 +226,7 @@ const AsmaUlHusnaView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'quiz' && (
-                <AsmaQuiz 
+                <AsmaQuiz
                     names={allNames}
                     onBack={() => setMode('browse')}
                 />

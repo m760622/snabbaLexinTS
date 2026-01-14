@@ -18,9 +18,11 @@ An interactive, gamified language learning application for Swedish and Arabic sp
 
 ## 🛠️ Tech Stack
 
+* **Framework:** React 18+ (Migrated from Vanilla JS)
 * **Language:** TypeScript / HTML5 / CSS3
 * **Build Tool:** Vite
 * **Styling:** Native CSS with Variables (No frameworks like Tailwind, ensuring custom premium design).
+* **State Management:** React Hooks (`useState`, `useContext`) + Custom Managers (`FavoritesManager`, `SearchHistoryManager`).
 * **Icons:** SVG & Google Fonts
 
 ## 🎨 Design & Typography Rules
@@ -114,6 +116,8 @@ The dictionary search interface uses a highly optimized compact card layout (`12
 ├── games/              # HTML entry points for individual games
 ├── learn/              # Learning modules (Cognates, Lists)
 ├── src/                # TypeScript Source Code
+│   ├── components/     # Reusable React components (DailyCard, WordCard)
+│   ├── views/          # Main Views (HomeView, GamesView, ProfileView)
 │   ├── games/          # Game logic implementations
 │   ├── utils/          # Helper functions (XP, Sound, Text)
 │   ├── data/           # Dictionary and word data
@@ -134,3 +138,17 @@ The app supports **Swedish** (sv) and **Arabic** (ar).
 * **State Management:** Uses a custom `GameState` interface to track score, levels, and progress.
 * **XP System:** Centralized XP handling (`xpSystem.ts`) that persists progress to `localStorage`.
 * **Audio:** Sound manager (`sound-utils.ts`) handles SFX and TTS (Text-to-Speech) for pronuncations.
+
+## 📱 Mobile Optimization & Touch System
+
+To ensure a native-app feel on mobile devices, specific rules are applied:
+
+1.  **Touch Scrolling:**
+    *   **Single Scroll Source:** Only one container (usually the list view) handles scrolling to prevent conflicts.
+    *   **Ghost Click Prevention:** `user-select: none` is applied to interactive cards (`.smart-card`, `.games-view-card`) to prevent text selection from intercepting scroll gestures.
+    *   **Touch Action:** `touch-action: pan-y` is strictly enforced on scrollable areas.
+
+2.  **View Management:**
+    *   **Dock Navigation:** A persistent bottom dock handles view switching.
+    *   **Smart Overlays:** Settings and other modals use intelligent overlay state (`isSettingsOpen`) to manage z-index and auto-closing behavior on navigation.
+

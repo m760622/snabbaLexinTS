@@ -24,7 +24,7 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [learnedWords, setLearnedWords] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
-    
+
     // Lazy Loading State
     const [displayedCount, setDisplayedCount] = useState(ITEMS_PER_BATCH);
 
@@ -54,7 +54,7 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         // Search Filter
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
-            result = result.filter(c => 
+            result = result.filter(c =>
                 c.swe.toLowerCase().includes(lowerQuery) ||
                 c.arb.includes(lowerQuery)
             );
@@ -108,7 +108,7 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }, [cognates]);
 
     return (
-        <div className="cognates-view-container" style={{ padding: '1rem', paddingBottom: '5rem', maxWidth: '800px', margin: '0 auto' }}>
+        <div className="cognates-view-container" style={{ padding: '1rem', paddingBottom: '5rem', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
             {/* Header / Nav */}
             <div className="cognates-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>
@@ -131,9 +131,9 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <>
                     {/* Search & Filter */}
                     <div className="search-filter-row" style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <input 
-                            type="text" 
-                            placeholder="Sök ord..." 
+                        <input
+                            type="text"
+                            placeholder="Sök ord..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: 'white', fontSize: '1rem' }}
@@ -143,13 +143,13 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     {/* Category Chips */}
                     <div className="filter-chips" style={{ display: 'flex', overflowX: 'auto', gap: '0.5rem', paddingBottom: '0.8rem', marginBottom: '1.5rem', scrollbarWidth: 'none' }}>
                         {categories.map(cat => (
-                            <button 
+                            <button
                                 key={cat}
                                 className={`chip ${categoryFilter === cat ? 'active' : ''}`}
                                 onClick={() => setCategoryFilter(cat)}
-                                style={{ 
-                                    padding: '0.6rem 1.2rem', 
-                                    borderRadius: '24px', 
+                                style={{
+                                    padding: '0.6rem 1.2rem',
+                                    borderRadius: '24px',
                                     border: '1px solid rgba(255,255,255,0.1)',
                                     background: categoryFilter === cat ? '#3b82f6' : 'rgba(255,255,255,0.05)',
                                     color: 'white',
@@ -171,8 +171,8 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             </div>
                         ) : (
                             filteredCognates.slice(0, displayedCount).map((cognate, idx) => (
-                                <CognateCard 
-                                    key={`${cognate.swe}-${idx}`} 
+                                <CognateCard
+                                    key={`${cognate.swe}-${idx}`}
                                     cognate={cognate}
                                     isSaved={savedWords.includes(cognate.swe)}
                                     isLearned={learnedWords.includes(cognate.swe)}
@@ -191,7 +191,7 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'flashcard' && (
-                <CognatesFlashcards 
+                <CognatesFlashcards
                     cognates={filteredCognates.length > 0 ? filteredCognates : cognates}
                     onComplete={handleFlashcardComplete}
                     onBack={() => setMode('browse')}
@@ -199,7 +199,7 @@ const CognatesView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'quiz' && (
-                <CognatesQuiz 
+                <CognatesQuiz
                     cognates={filteredCognates.length > 0 ? filteredCognates : cognates}
                     onBack={() => setMode('browse')}
                 />

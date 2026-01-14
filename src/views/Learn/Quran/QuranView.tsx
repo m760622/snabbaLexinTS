@@ -53,7 +53,7 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         const cleanSurahName = (name: string) => name ? name.replace(/\s*\(\d+\)$/, '').trim() : '';
 
         return allData.filter(item => {
-            const matchesSearch = 
+            const matchesSearch =
                 item.word.includes(query) ||
                 item.word_sv.toLowerCase().includes(query) ||
                 item.meaning_ar.includes(query) ||
@@ -120,7 +120,7 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }, [filteredData]);
 
     return (
-        <div className="quran-view-container" style={{ padding: '1rem', paddingBottom: '5rem', minHeight: '100vh', background: '#064e3b', maxWidth: '800px', margin: '0 auto' }}>
+        <div className="quran-view-container" style={{ padding: '1rem', paddingBottom: '5rem', minHeight: '100vh', background: '#064e3b', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
             {/* Header */}
             <div className="quran-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>
@@ -146,10 +146,10 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <>
                     {/* Search & Filter */}
                     <div className="search-container" style={{ marginBottom: '1.5rem' }}>
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             className="glass-input"
-                            placeholder="Sök ord, surah..." 
+                            placeholder="Sök ord, surah..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: 'white', fontSize: '1rem' }}
@@ -157,9 +157,9 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     </div>
 
                     <div className="filter-bar" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                        <select 
-                            className="glass-select" 
-                            value={surahFilter} 
+                        <select
+                            className="glass-select"
+                            value={surahFilter}
                             onChange={(e) => setSurahFilter(e.target.value)}
                             style={{ flex: 1, padding: '0.8rem', borderRadius: '12px', background: '#1e293b', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
                         >
@@ -169,7 +169,7 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <option key={surah} value={surah}>{surah}</option>
                             ))}
                         </select>
-                        <select 
+                        <select
                             className="glass-select"
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
@@ -190,7 +190,7 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             </div>
                         ) : (
                             filteredData.slice(0, displayedCount).map(item => (
-                                <QuranCard 
+                                <QuranCard
                                     key={item.id}
                                     item={item}
                                     isFavorite={favorites.includes(item.id)}
@@ -199,7 +199,7 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 />
                             ))
                         )}
-                        
+
                         {displayedCount < filteredData.length && (
                             <div id="load-more-sentinel" style={{ height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--quran-gold)' }}>
                                 <span style={{ animation: 'pulse 1.5s infinite' }}>⏳ Laddar mer...</span>
@@ -210,14 +210,14 @@ const QuranView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'flashcard' && (
-                <QuranFlashcards 
+                <QuranFlashcards
                     items={filteredData.length > 0 ? filteredData : allData}
                     onBack={() => setMode('browse')}
                 />
             )}
 
             {mode === 'quiz' && (
-                <QuranQuiz 
+                <QuranQuiz
                     items={allData}
                     onBack={() => setMode('browse')}
                 />

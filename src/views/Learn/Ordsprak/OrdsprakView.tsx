@@ -18,7 +18,7 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [learnedProverbs, setLearnedProverbs] = useState<number[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'saved' | 'learned' | 'notLearned'>('all');
-    
+
     // Lazy Loading State
     const [displayedCount, setDisplayedCount] = useState(ITEMS_PER_BATCH);
 
@@ -52,7 +52,7 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         // Search Filter
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
-            result = result.filter(p => 
+            result = result.filter(p =>
                 p.swedishProverb.toLowerCase().includes(lowerQuery) ||
                 p.arabicEquivalent.includes(lowerQuery) ||
                 p.literalMeaning.toLowerCase().includes(lowerQuery) ||
@@ -111,7 +111,7 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     };
 
     return (
-        <div className="ordsprak-view-container" style={{ padding: '1rem', paddingBottom: '5rem', maxWidth: '800px', margin: '0 auto' }}>
+        <div className="ordsprak-view-container" style={{ padding: '1rem', paddingBottom: '5rem', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
             {/* Header / Nav */}
             <div className="ordsprak-header" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>
@@ -134,15 +134,15 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <>
                     {/* Search & Filter */}
                     <div className="search-filter-row" style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <input 
-                            type="text" 
-                            placeholder="Sök ordspråk..." 
+                        <input
+                            type="text"
+                            placeholder="Sök ordspråk..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: 'white', fontSize: '1rem' }}
                         />
-                        <select 
-                            value={statusFilter} 
+                        <select
+                            value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as any)}
                             style={{ padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: '#1e293b', color: 'white', fontSize: '1rem' }}
                         >
@@ -161,8 +161,8 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             </div>
                         ) : (
                             filteredProverbs.slice(0, displayedCount).map(proverb => (
-                                <ProverbCard 
-                                    key={proverb.id} 
+                                <ProverbCard
+                                    key={proverb.id}
                                     proverb={proverb}
                                     isSaved={savedProverbs.includes(proverb.id)}
                                     isLearned={learnedProverbs.includes(proverb.id)}
@@ -171,7 +171,7 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 />
                             ))
                         )}
-                        
+
                         {displayedCount < filteredProverbs.length && (
                             <div id="load-more-sentinel" style={{ height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#64748b' }}>
                                 <span style={{ animation: 'pulse 1.5s infinite' }}>Laddar fler ordspråk...</span>
@@ -182,16 +182,16 @@ const OrdsprakView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
 
             {mode === 'flashcard' && (
-                <OrdsprakFlashcards 
-                    proverbs={filteredProverbs.length > 0 ? filteredProverbs : proverbs} 
+                <OrdsprakFlashcards
+                    proverbs={filteredProverbs.length > 0 ? filteredProverbs : proverbs}
                     onComplete={handleFlashcardComplete}
                     onBack={() => setMode('browse')}
                 />
             )}
 
             {mode === 'quiz' && (
-                <OrdsprakQuiz 
-                    proverbs={proverbs} 
+                <OrdsprakQuiz
+                    proverbs={proverbs}
                     onBack={() => setMode('browse')}
                 />
             )}

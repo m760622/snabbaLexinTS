@@ -317,7 +317,7 @@ const HomeViewInner: React.FC = () => {
     const renderContent = () => {
         if (selectedWordId) {
             return (
-                <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+                <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
                     <ErrorBoundary><DetailsView wordId={selectedWordId} onBack={() => { setSelectedWordId(null); window.history.back(); }} /></ErrorBoundary>
                 </div>
             );
@@ -414,7 +414,6 @@ const HomeViewInner: React.FC = () => {
         <div style={styles.container}>
             {/* DEBUG: Yellow border - bottom aligns with Dock top */}
             <div style={{
-                border: '3px solid yellow',
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
@@ -429,10 +428,14 @@ const HomeViewInner: React.FC = () => {
                 <div style={styles.dock}>
                     {(['search', 'games', 'learn', 'add', 'profile', 'settings'] as const).map(tab => {
                         const icons = { search: '🔍', games: '🎮', learn: '📚', add: '➕', profile: '👤', settings: '⚙️' };
-                        const isActive = activeTab === tab && !selectedWordId;
+                        const isActive = (activeTab === tab && !selectedWordId && !isSettingsOpen) || (tab === 'settings' && isSettingsOpen);
                         return (
                             <button key={tab}
                                 onClick={() => {
+                                    if (tab !== 'settings') {
+                                        setIsSettingsOpen(false);
+                                    }
+
                                     if (selectedWordId) {
                                         // Coming from DetailsView - close it and go to the tab
                                         setSelectedWordId(null);
@@ -473,7 +476,7 @@ const HomeViewInner: React.FC = () => {
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y' },
+    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y', overscrollBehavior: 'contain' },
     header: { flexShrink: 0, paddingBottom: '10px' },
     topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' },
     brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
@@ -485,7 +488,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     searchIconInside: { position: 'absolute', left: '15px', color: '#8e8e93', fontSize: '18px' },
     resultCounterInside: { position: 'absolute', right: '15px', color: '#636366', fontSize: '0.8rem' },
     contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
-    scrollList: { flex: 1, overflowY: 'auto', padding: '10px 0', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', minHeight: 0 },
+    scrollList: { flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', padding: '10px 0', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', minHeight: 0, willChange: 'scroll-position', overscrollBehavior: 'contain' },
     emptyState: { textAlign: 'center', padding: '40px', color: '#8e8e93' },
     card: { backgroundColor: 'rgba(28, 28, 30, 0.6)', borderRadius: '20px', marginBottom: '15px', display: 'flex', flexDirection: 'column', padding: '18px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', margin: '0 20px 15px 20px', backdropFilter: 'blur(10px)', minHeight: '120px', touchAction: 'pan-y' },
     menuCard: { flex: 1, background: 'rgba(28, 28, 30, 0.6)', borderRadius: '24px', padding: '25px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(10px)', touchAction: 'pan-y' },

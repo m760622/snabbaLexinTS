@@ -29,16 +29,16 @@ const ProfileView: React.FC<ProfileViewProps> = ({ onBack }) => {
 
     if (isEditing) {
         return (
-            <EditProfileView 
-                profile={profile} 
-                onSave={handleSave} 
-                onCancel={() => setIsEditing(false)} 
+            <EditProfileView
+                profile={profile}
+                onSave={handleSave}
+                onCancel={() => setIsEditing(false)}
             />
         );
     }
 
     return (
-        <div className="profile-view-container" style={{ padding: '20px', paddingBottom: '100px', color: 'white' }}>
+        <div className="profile-view-container" style={{ padding: '20px', paddingBottom: '100px', color: 'white', overflowY: 'auto', maxHeight: '100vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
             {onBack && (
                 <button onClick={onBack} className="back-btn" style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer', marginBottom: '1rem' }}>
                     ⬅️ Tillbaka
@@ -57,7 +57,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ onBack }) => {
 
             {/* Actions */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '2rem' }}>
-                <button 
+                <button
                     onClick={() => setIsEditing(true)}
                     style={{ padding: '8px 20px', borderRadius: '20px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer' }}
                 >

@@ -159,6 +159,32 @@ body {
   will-change: scroll-position;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   Touch Scrolling Fix for Mobile - إصلاح التمرير للموبايل
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Search View Elements - عناصر شاشة البحث */
+.smart-card,
+.tab-content-active,
+.search-results,
+.word-card {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: scroll-position;
+  overscroll-behavior: contain;
+}
+
+/* Home View Containers - حاويات الشاشة الرئيسية */
+.home-container,
+.content-area,
+.scroll-list,
+.card-container {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: scroll-position;
+  overscroll-behavior: contain;
+}
+
 /* ========================================
    MOBILE VIEW SIMULATION (iPhone Mode)
    ======================================== */

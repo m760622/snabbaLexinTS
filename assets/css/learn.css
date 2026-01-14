@@ -27,13 +27,13 @@
  .learn-view-container,
  .lessons-grid,
  .special-cards {
-    touch-action: pan-y;
-    overscroll-behavior: contain;
-    will-change: scroll-position;
-    max-height: 100vh;
-    -webkit-overflow-scrolling: touch;
+     -webkit-overflow-scrolling: touch;
+     touch-action: pan-y;
+     /* Removed potential scroll blockers from children */
+     /* will-change: scroll-position; */
+     /* overscroll-behavior: contain; */
 
-   /*   
+     /*   
 
         will-change: scroll-position;
 
@@ -51,7 +51,7 @@
      overflow-y: auto !important;
 
 
-        /*   
+     /*   
              overflow-y: auto !important;
 
 

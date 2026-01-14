@@ -276,10 +276,9 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 .games-view-container,
 .games-view-grid,
 .games-view-card {
-    -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
-    will-change: scroll-position;
-    overscroll-behavior: contain;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .games-view-container {

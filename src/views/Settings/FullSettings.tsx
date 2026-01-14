@@ -156,7 +156,6 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
       <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div style={styles.headerRow}>
           <h2 style={styles.header}>Inställningar</h2>
-          <button onClick={onClose} style={styles.closeCircle}>×</button>
         </div>
 
         <div style={styles.scrollArea}>
@@ -265,7 +264,7 @@ const FullSettings: React.FC<FullSettingsProps> = ({ onClose, accentColor, onAcc
           </Section>
         </div>
 
-        <button onClick={onClose} style={{ ...styles.finalBtn, background: accentColor }}>Klar / تم</button>
+
       </div>
     </div>
   );
