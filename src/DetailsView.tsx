@@ -111,13 +111,10 @@ const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, col
     useEffect(() => { TTSManager.speak(swe, 'sv'); }, [swe]);
     return (
         <div style={{
-            position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at center, #0a0a0f 0%, #000 100%)', zIndex: 1000,
+            position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px'
         }}>
-            <button onClick={onClose} style={{
-                position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)',
-                border: 'none', color: '#fff', width: '50px', height: '50px', borderRadius: '50%', fontSize: '1.5rem', cursor: 'pointer'
-            }}>✕</button>
+
             <div style={{ fontSize: '4rem', fontWeight: '900', color: '#fff', textAlign: 'center', textShadow: `0 0 80px ${color}55`, marginBottom: '25px' }}>{swe}</div>
             <div style={{ width: '80px', height: '4px', background: `linear-gradient(90deg, transparent, ${color}, transparent)`, borderRadius: '10px', marginBottom: '25px' }} />
             <div dir="rtl" style={{ fontSize: '2.5rem', fontWeight: '700', color: 'rgba(255,255,255,0.85)', fontFamily: '"Tajawal", sans-serif', textAlign: 'center' }}>{arb}</div>
@@ -131,6 +128,15 @@ const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, col
                     padding: '15px 30px', borderRadius: '30px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer'
                 }}>🔊 العربية</button>
             </div>
+            <button onClick={onClose} style={{
+                marginTop: '40px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff', width: '60px', height: '60px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                backdropFilter: 'blur(10px)', boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                fontSize: '1.2rem', transition: 'transform 0.2s'
+            }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+            </button>
         </div>
     );
 };
@@ -139,8 +145,8 @@ const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, col
 const FlipCard = ({ swe, arb, color, onClose }: { swe: string, arb: string, color: string, onClose: () => void }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '45px', height: '45px', borderRadius: '50%', fontSize: '1.3rem', cursor: 'pointer' }}>✕</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+
             <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '25px', fontSize: '0.95rem' }}>اضغط على البطاقة لقلبها</p>
             <div onClick={() => { setIsFlipped(!isFlipped); HapticManager.medium(); }} style={{ width: '320px', height: '220px', perspective: '1000px', cursor: 'pointer' }}>
                 <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transition: 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)', transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0)' }}>
@@ -156,6 +162,15 @@ const FlipCard = ({ swe, arb, color, onClose }: { swe: string, arb: string, colo
                 <button onClick={() => TTSManager.speak(swe, 'sv')} style={{ background: `${color}25`, border: `1px solid ${color}50`, color: color, padding: '14px 28px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>🔊 Svenska</button>
                 <button onClick={() => TTSManager.speak(arb, 'ar')} style={{ background: 'rgba(251,191,36,0.2)', border: '1px solid rgba(251,191,36,0.45)', color: '#fbbf24', padding: '14px 28px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>🔊 العربية</button>
             </div>
+            <button onClick={onClose} style={{
+                marginTop: '30px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff', width: '60px', height: '60px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                backdropFilter: 'blur(10px)', boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                fontSize: '1.2rem', transition: 'transform 0.2s'
+            }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+            </button>
         </div>
     );
 };
@@ -166,8 +181,8 @@ const QuickQuiz = ({ swe, arb, options, color, onClose }: { swe: string, arb: st
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const handleSelect = (opt: string) => { setSelected(opt); setIsCorrect(opt === arb); HapticManager.medium(); setTimeout(() => onClose(), 1800); };
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '45px', height: '45px', borderRadius: '50%', fontSize: '1.3rem', cursor: 'pointer' }}>✕</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+
             <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '15px' }}>⚡ تحدي سريع</div>
             <div style={{ fontSize: getSwedishFontSize(swe), fontWeight: '800', color: '#fff', marginBottom: '35px', textShadow: `0 0 40px ${color}40` }}>{swe}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '320px' }}>
@@ -182,6 +197,15 @@ const QuickQuiz = ({ swe, arb, options, color, onClose }: { swe: string, arb: st
                 ))}
             </div>
             {isCorrect !== null && <div style={{ marginTop: '30px', fontSize: '2rem', color: isCorrect ? '#10b981' : '#ef4444' }}>{isCorrect ? '✅ أحسنت!' : '❌ حاول مرة أخرى'}</div>}
+            <button onClick={onClose} style={{
+                marginTop: '30px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff', width: '60px', height: '60px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                backdropFilter: 'blur(10px)', boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                fontSize: '1.2rem', transition: 'transform 0.2s'
+            }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+            </button>
         </div>
     );
 };
@@ -508,24 +532,12 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
                 </div>
             </div>
 
-            {/* Modals (Moved Here) */}
             {showFlipCard && <FlipCard swe={swe} arb={arb} color={primaryColor} onClose={() => setShowFlipCard(false)} />}
             {showQuickQuiz && <QuickQuiz swe={swe} arb={arb} options={quizOptions} color={primaryColor} onClose={() => setShowQuickQuiz(false)} />}
             {showFocusMode && <FocusMode swe={swe} arb={arb} color={primaryColor} onClose={() => setShowFocusMode(false)} />}
 
-            {/* Content Container (Moved Here) */}
-            {/* Content Container (Moved Here) */}
+            {/* Content Container */}
             <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1, marginTop: '10px' }}>
-
-
-
-
-
-
-
-
-
-
                 {activeTab === 'info' ? (
                     <>
                         {/* Smart Knowledge Bar (Inside Info Tab) */}

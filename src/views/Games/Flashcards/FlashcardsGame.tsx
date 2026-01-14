@@ -22,6 +22,7 @@ const FlashcardsGame: React.FC<FlashcardsGameProps> = ({ onBack, mode = 'normal'
     const [animating, setAnimating] = useState<'left' | 'right' | null>(null);
 
     const touchStartX = useRef(0);
+    const touchStartY = useRef(0);
 
     // Initialize Game
     useEffect(() => {
@@ -105,14 +106,23 @@ const FlashcardsGame: React.FC<FlashcardsGameProps> = ({ onBack, mode = 'normal'
         HapticManager.selection();
     };
 
+
+
     // Touch Handlers
     const handleTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
+        touchStartY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        const diff = e.touches[0].clientX - touchStartX.current;
-        setSwipeDiff(diff);
+        const diffX = e.touches[0].clientX - touchStartX.current;
+        const diffY = e.touches[0].clientY - touchStartY.current;
+
+        // If horizontal swipe is dominant, prevent vertical scrolling
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            if (e.cancelable) e.preventDefault();
+            setSwipeDiff(diffX);
+        }
     };
 
     const handleTouchEnd = () => {
@@ -139,7 +149,7 @@ const FlashcardsGame: React.FC<FlashcardsGameProps> = ({ onBack, mode = 'normal'
                 <p style={{ fontSize: '1.2rem', color: '#ccc' }}>Du klarade {score} av {cards.length} ord.</p>
                 <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                     <button onClick={onBack} style={styles.actionBtn}>Meny</button>
-                    <button onClick={() => window.location.reload()} style={{...styles.actionBtn, background: '#3b82f6'}}>Spela igen</button>
+                    <button onClick={() => window.location.reload()} style={{ ...styles.actionBtn, background: '#3b82f6' }}>Spela igen</button>
                 </div>
             </div>
         );
@@ -174,7 +184,7 @@ const FlashcardsGame: React.FC<FlashcardsGameProps> = ({ onBack, mode = 'normal'
 
             {/* Card Area */}
             <div style={styles.cardArea}>
-                <div 
+                <div
                     style={cardStyle}
                     onClick={handleFlip}
                     onTouchStart={handleTouchStart}
@@ -185,7 +195,7 @@ const FlashcardsGame: React.FC<FlashcardsGameProps> = ({ onBack, mode = 'normal'
                         <span style={styles.typeBadge}>{currentCard.type}</span>
                         <h1 style={styles.word}>{currentCard.swedish}</h1>
                         <p style={styles.hint}>Tryck för att vända / اضغط للقلب</p>
-                        <button 
+                        <button
                             onClick={(e) => { e.stopPropagation(); TTSManager.speak(currentCard.swedish, 'sv'); }}
                             style={styles.speakerBtn}
                         >🔊</button>

@@ -98,7 +98,7 @@ if (!navigator.onLine) {
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
 window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
+  // e.preventDefault();
   deferredPrompt = e as BeforeInstallPromptEvent;
 
   // Show install button or prompt
