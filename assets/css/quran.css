@@ -1904,8 +1904,10 @@ body.mobile-view .quran-header {
     transition: transform 0.3s ease;
 }
 
-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-transform: scale(0.95);
+.mobile-toggle-btn.active svg,
+#mobileToggle.active svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    transform: scale(0.95);
 }
 
 /* Large Icon Style for Emojis */
