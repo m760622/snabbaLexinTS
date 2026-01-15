@@ -313,7 +313,7 @@ const HomeViewInner: React.FC = () => {
     const renderContent = () => {
         if (selectedWordId) {
             return (
-                <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain', willChange: 'scroll-position' }}>
+                <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden', zIndex: 50 }}>
                     <ErrorBoundary><DetailsView wordId={selectedWordId} onBack={() => { setSelectedWordId(null); window.history.back(); }} /></ErrorBoundary>
                 </div>
             );

@@ -281,14 +281,26 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
 
 .games-view-container {
     padding: 20px;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
+    /* Improved Padding */
     color: white;
-    overflow-y: auto;
-    max-height: 100vh;
+    /* overflow-y: auto;  <-- Removed to prevent nested scroll */
+    /* max-height: 100vh; <-- Removed to allow outer scrollList to handle scrolling */
+    min-height: calc(100% + 1px);
+    /* Force scroll activation */
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     overscroll-behavior: contain;
     will-change: scroll-position;
+
+    /* Hide Scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    pointer-events: none !important;
+}
+
+.games-view-container::-webkit-scrollbar {
+    display: none;
 }
 
 .games-view-title {
@@ -320,6 +332,8 @@ body.iphone-view .games-container::-webkit-scrollbar-thumb {
     align-items: center;
     gap: 10px;
     touch-action: pan-y;
+    pointer-events: auto !important;
+    /* Restore clickability */
 }
 
 .games-view-card:hover {

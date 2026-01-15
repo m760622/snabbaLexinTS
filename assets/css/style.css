@@ -189,14 +189,25 @@ body {
    ═══════════════════════════════════════════════════════════════════ */
 
 /* Search View Elements - عناصر شاشة البحث */
-.smart-card,
+/* Re-enabling Magic Fix for Search with strict child rules */
 .tab-content-active,
-.search-results,
+.search-results {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: scroll-position;
+  overscroll-behavior: contain;
+  pointer-events: none !important;
+  /* Forces scroll events to bubble to parent */
+}
+
+/* Restore interactions for cards */
+.smart-card,
 .word-card {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   will-change: scroll-position;
   overscroll-behavior: contain;
+  pointer-events: auto !important;
 }
 
 /* Home View Containers - حاويات الشاشة الرئيسية */
@@ -358,8 +369,25 @@ textarea,
 .clickable,
 .card,
 .btn,
-button:not([disabled]) {
-  touch-action: pan-y pinch-zoom;
+button:not([disabled]),
+.smart-card,
+.word-card,
+.game-card-item,
+.smart-btn,
+.action-btn,
+.dock-item,
+a {
+  touch-action: pan-y !important;
+  /* Allow vertical scroll while touching buttons */
+  pointer-events: auto !important;
+  /* Ensure they are clickable */
+}
+
+/* Prevent icons from capturing events inside buttons */
+.smart-btn svg,
+.action-btn svg,
+.dock-item svg {
+  pointer-events: none !important;
 }
 
 /* ========================================
