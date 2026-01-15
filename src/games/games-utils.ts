@@ -3,7 +3,7 @@
  * TypeScript Version
  */
 
-console.log("games-utils.ts LOADED and EXECUTING");
+
 
 import { AppConfig } from '../config';
 import '../i18n'; // Initialize LanguageManager
@@ -34,7 +34,7 @@ function initGameTheme(): void {
         document.documentElement.classList.remove('dark-mode');
     }
 
-    console.log(`[Games] Theme initialized: ${savedTheme}, color: ${savedColorTheme}`);
+
 }
 
 // Initialize theme immediately
@@ -86,7 +86,7 @@ export function showToast(message: string, type: 'default' | 'error' | 'success'
 // ========================================
 export function startGame(gameType: string): void {
     try {
-        console.log("startGame called with:", gameType);
+
         const gameMenu = document.getElementById('gameMenu');
 
         // Hide all active game containers
@@ -393,7 +393,7 @@ function trackGameUsage(gameId: string): void {
         const usageData = JSON.parse(localStorage.getItem('gameUsageCounts') || '{}');
         usageData[gameId] = (usageData[gameId] || 0) + 1;
         localStorage.setItem('gameUsageCounts', JSON.stringify(usageData));
-        console.log(`Tracked usage for ${gameId}: ${usageData[gameId]}`);
+
     } catch (e) {
         console.error("Error tracking game usage:", e);
     }

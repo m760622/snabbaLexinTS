@@ -52,7 +52,7 @@ const WordCard = React.memo(({ word, isFav, onClick, onToggleFav, accentColor }:
         if (isPlaying) return;
         HapticManager.light();
         setIsPlaying(true);
-        try { await TTSManager.speak(word.swedish, 'sv'); } catch (err) { }
+        try { await TTSManager.speak(word.swedish, 'sv'); } catch { /* TTS may fail on some devices, ignore */ }
         finally { setTimeout(() => setIsPlaying(false), 1500); }
     };
 
@@ -342,73 +342,76 @@ const HomeViewInner: React.FC = () => {
                     )}
                 </div>
                 <div style={styles.contentArea}>
-                    <div style={styles.scrollList} key={activeTab} ref={scrollContainerRef} onScroll={handleScroll}>
-                        {activeTab === 'search' && !searchTerm && (
-                            <div style={{ marginBottom: '20px' }} className="tab-content-active">
-                                <MistakesView />
-                                {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setActiveTab('settings')} />}
+                    {['search', 'favorites', 'games', 'learn', 'profile', 'add'].includes(activeTab) && (
+                        <div style={styles.scrollList} key={activeTab} ref={scrollContainerRef} onScroll={handleScroll}>
+                            {activeTab === 'search' && !searchTerm && (
+                                <div style={{ marginBottom: '20px' }} className="tab-content-active">
+                                    <MistakesView />
+                                    {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setActiveTab('settings')} />}
 
-                                {history.length > 0 && (
-                                    <div style={{ marginTop: '20px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                            <h3 style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Senaste sökningar</h3>
-                                            <button
-                                                onClick={() => { SearchHistoryManager.clear(); setHistory([]); }}
-                                                style={{ background: 'transparent', border: 'none', color: accentColor, fontSize: '0.8rem', cursor: 'pointer' }}
-                                            >
-                                                Rensa
-                                            </button>
-                                        </div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                            {history.map((h, i) => (
+                                    {history.length > 0 && (
+                                        <div style={{ marginTop: '20px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                                <h3 style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>Senaste sökningar</h3>
                                                 <button
-                                                    key={i}
-                                                    onClick={() => setSearchTerm(h)}
-                                                    style={{
-                                                        background: 'rgba(255,255,255,0.05)',
-                                                        border: '1px solid rgba(255,255,255,0.1)',
-                                                        padding: '8px 15px',
-                                                        borderRadius: '12px',
-                                                        color: '#fff',
-                                                        fontSize: '0.9rem',
-                                                        cursor: 'pointer'
-                                                    }}
+                                                    onClick={() => { SearchHistoryManager.clear(); setHistory([]); }}
+                                                    style={{ background: 'transparent', border: 'none', color: accentColor, fontSize: '0.8rem', cursor: 'pointer' }}
                                                 >
-                                                    {h}
+                                                    Rensa
                                                 </button>
-                                            ))}
+                                            </div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                {history.map((h, i) => (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => setSearchTerm(h)}
+                                                        style={{
+                                                            background: 'rgba(255,255,255,0.05)',
+                                                            border: '1px solid rgba(255,255,255,0.1)',
+                                                            padding: '8px 15px',
+                                                            borderRadius: '12px',
+                                                            color: '#fff',
+                                                            fontSize: '0.9rem',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {h}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                        {(activeTab === 'search' || activeTab === 'favorites') && (
-                            <div className="tab-content-active">
-                                {isLoading ? Array(5).fill(0).map((_, i) => <div key={i} style={{ ...styles.card, background: '#222', opacity: 0.5 }} className="shimmer"></div>) : (
-                                    <>
-                                        {results.slice(0, visibleCount).map((word) => (
-                                            <WordCard key={word.id} word={word} isFav={favoritesSet.has(word.id.toString())} onClick={() => handleWordClick(word.id, word.swedish)} onToggleFav={(id: string) => FavoritesManager.toggle(id)} accentColor={accentColor} />
-                                        ))}
-                                        {isDataReady && results.length === 0 && searchTerm && <div style={styles.emptyState}>Inga resultat</div>}
-                                    </>
-                                )}
-                            </div>
-                        )}
-                        {activeTab === 'games' && <GamesView />}
-                        {activeTab === 'learn' && <LearnView />}
-                        {activeTab === 'profile' && <ProfileView />}
-                        {activeTab === 'add' && <AddWordView onBack={() => setActiveTab('search')} />}
-                        {activeTab === 'settings' && (
-                            <FullSettings
-                                accentColor={accentColor}
-                                onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }}
-                                onOpenChangelog={() => setActiveTab('changelog' as any)}
-                                onOpenDeviceInfo={() => setActiveTab('device' as any)}
-                            />
-                        )}
-                        {activeTab === 'changelog' && <ChangelogView onBack={() => setActiveTab('settings')} />}
-                        {activeTab === 'device' && <DeviceInfoView onBack={() => setActiveTab('settings')} />}
-                    </div>
+                                    )}
+                                </div>
+                            )}
+                            {(activeTab === 'search' || activeTab === 'favorites') && (
+                                <div className="tab-content-active">
+                                    {isLoading ? Array(5).fill(0).map((_, i) => <div key={i} style={{ ...styles.card, background: '#222', opacity: 0.5 }} className="shimmer"></div>) : (
+                                        <>
+                                            {results.slice(0, visibleCount).map((word) => (
+                                                <WordCard key={word.id} word={word} isFav={favoritesSet.has(word.id.toString())} onClick={() => handleWordClick(word.id, word.swedish)} onToggleFav={(id: string) => FavoritesManager.toggle(id)} accentColor={accentColor} />
+                                            ))}
+                                            {isDataReady && results.length === 0 && searchTerm && <div style={styles.emptyState}>Inga resultat</div>}
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            {activeTab === 'games' && <GamesView />}
+                            {activeTab === 'learn' && <LearnView />}
+                            {activeTab === 'profile' && <ProfileView />}
+                            {activeTab === 'add' && <AddWordView onBack={() => setActiveTab('search')} />}
+                        </div>
+                    )}
+                    {/* Settings views outside scrollList to prevent nested scroll on iOS */}
+                    {activeTab === 'settings' && (
+                        <FullSettings
+                            accentColor={accentColor}
+                            onAccentChange={(c: string) => { setAccentColor(c); localStorage.setItem('snabba_accent_color', c); }}
+                            onOpenChangelog={() => setActiveTab('changelog' as any)}
+                            onOpenDeviceInfo={() => setActiveTab('device' as any)}
+                        />
+                    )}
+                    {activeTab === 'changelog' && <ChangelogView onBack={() => setActiveTab('settings')} />}
+                    {activeTab === 'device' && <DeviceInfoView onBack={() => setActiveTab('settings')} />}
                 </div>
             </>
         );

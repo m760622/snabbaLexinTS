@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { showToast } from '../../utils/utils';
+import '../../../assets/css/settings.css';
 
 /**
  * FullSettings Component
@@ -151,13 +152,13 @@ const FullSettings: React.FC<FullSettingsProps> = ({ accentColor, onAccentChange
   );
 
   return (
-    <div className="full-settings-view" style={styles.viewContainer}>
+    <div className="full-settings-view">
       <div style={styles.modalContent}>
         <div style={styles.headerRow}>
           <h2 style={styles.header}>Inställningar / الإعدادات</h2>
         </div>
 
-        <div style={styles.scrollArea}>
+        <div className="settings-scroll-area">
           <Section id="general" icon="🌍" titleSv="Allmänt" titleAr="عام">
             <div style={styles.grid}>
               {['sv', 'ar', 'both'].map(l => (
@@ -271,11 +272,19 @@ const FullSettings: React.FC<FullSettingsProps> = ({ accentColor, onAccentChange
 
 const styles: { [key: string]: React.CSSProperties } = {
   viewContainer: { width: '100%', padding: '10px 20px', display: 'flex', flexDirection: 'column' },
-  modalContent: { background: 'transparent', width: '100%', borderRadius: '28px', border: 'none', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' },
-  headerRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
+  modalContent: { background: 'transparent', width: '100%', height: '100%', flex: 1, minHeight: 0, overflow: 'hidden', borderRadius: '28px', border: 'none', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' },
+  headerRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexShrink: 0 },
   header: { fontSize: '1.2rem', fontWeight: 'bold', color: '#fff', margin: 0 },
   closeCircle: { width: '32px', height: '32px', borderRadius: '50%', border: 'none', background: '#333', color: '#fff', fontSize: '1.2rem', cursor: 'pointer' },
-  scrollArea: { flex: 1, overflowY: 'auto', marginBottom: '20px' },
+  scrollArea: {
+    flex: 1,
+    overflowY: 'scroll' as const,
+    marginBottom: '20px',
+    paddingBottom: '100px',
+    WebkitOverflowScrolling: 'touch' as const,
+    touchAction: 'pan-y' as const,
+    overscrollBehaviorY: 'contain' as const,
+  },
   section: { marginBottom: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '18px', border: '1px solid', transition: '0.3s' },
   sectionHeader: { padding: '12px 15px', display: 'flex', alignItems: 'center', cursor: 'pointer' },
   sectionIconContainer: { width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '12px', fontSize: '1.1rem' },

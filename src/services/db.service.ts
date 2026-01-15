@@ -33,7 +33,7 @@ export const DictionaryDB = {
             request.onsuccess = (event: any) => {
                 this.db = event.target.result;
                 this.isReady = true;
-                console.log('[DB] Database opened successfully');
+
                 resolve(true);
             };
 
@@ -46,19 +46,19 @@ export const DictionaryDB = {
                     wordStore.createIndex('swedish', 'swe', { unique: false });
                     wordStore.createIndex('arabic', 'arb', { unique: false });
                     wordStore.createIndex('type', 'type', { unique: false });
-                    console.log('[DB] Words store created');
+
                 }
 
                 // Create meta store for version tracking
                 if (!db.objectStoreNames.contains(this.META_STORE)) {
                     db.createObjectStore(this.META_STORE, { keyPath: 'key' });
-                    console.log('[DB] Meta store created');
+
                 }
 
                 // Create notes store for personal markings
                 if (!db.objectStoreNames.contains(this.NOTES_STORE)) {
                     db.createObjectStore(this.NOTES_STORE, { keyPath: 'id' });
-                    console.log('[DB] Notes store created');
+
                 }
             };
         });
@@ -134,7 +134,7 @@ export const DictionaryDB = {
         const BATCH_SIZE = 1000;
         const totalBatches = Math.ceil(words.length / BATCH_SIZE);
 
-        console.log(`[DB] Saving ${words.length} words in ${totalBatches} batches...`);
+
 
         for (let batch = 0; batch < totalBatches; batch++) {
             const start = batch * BATCH_SIZE;
@@ -149,7 +149,7 @@ export const DictionaryDB = {
             }
         }
 
-        console.log('[DB] All words saved successfully');
+
         return true;
     },
 
@@ -201,7 +201,7 @@ export const DictionaryDB = {
             request.onsuccess = () => {
                 const words = request.result.map((w: any) => w.raw);
                 if (onProgress) onProgress(100);
-                console.log(`[DB] Retrieved ${words.length} words from cache`);
+
                 resolve(words);
             };
 
@@ -233,7 +233,7 @@ export const DictionaryDB = {
             tx.objectStore(this.META_STORE).clear();
 
             tx.oncomplete = () => {
-                console.log('[DB] Cache cleared');
+
                 resolve(true);
             };
             tx.onerror = (e) => reject(e);
@@ -356,12 +356,12 @@ export const DataLoader = {
 
             if (hasCached && cachedVersion === AppConfig.DATA_VERSION) {
                 if (onStatusChange) onStatusChange('Laddar från cache... / جاري التحميل من الذاكرة...');
-                console.log('[DataLoader] Using cached data (version:', cachedVersion, ')');
+
                 return await DictionaryDB.getAllWords(onProgress);
             }
 
             if (onStatusChange) onStatusChange('Laddar ordbok... / جاري تحميل القاموس...');
-            console.log('[DataLoader] Loading fresh data from data.js');
+
 
             const dictionaryData = (window as any).dictionaryData;
             if (typeof dictionaryData === 'undefined' || !dictionaryData.length) {
@@ -372,7 +372,7 @@ export const DataLoader = {
             await DictionaryDB.saveWords(dictionaryData, onProgress);
             await DictionaryDB.setDataVersion(AppConfig.DATA_VERSION);
 
-            console.log('[DataLoader] Data cached successfully');
+
             return dictionaryData;
 
         } catch (error) {

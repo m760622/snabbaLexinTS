@@ -8,43 +8,70 @@ interface ChangelogViewProps {
 
 const ChangelogView: React.FC<ChangelogViewProps> = ({ onBack }) => {
     return (
-        <div className="changelog-container" style={{ padding: '20px', paddingBottom: '100px', color: 'white', maxWidth: '800px', margin: '0 auto' }}>
-            <header style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
-                <button onClick={onBack} className="back-btn" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer' }}>
-                    ⬅️
+        <div className="changelog-page">
+            {/* Sticky Header with Blur */}
+            <header className="changelog-header">
+                <button onClick={onBack} className="changelog-back-btn" aria-label="Go back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>عودة</span>
                 </button>
-                <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Changelog</h1>
+                <h1 className="changelog-header-title">Nyheter</h1>
+                <div className="changelog-header-spacer"></div>
             </header>
 
-            <div className="hero" style={{ textAlign: 'center', marginBottom: '40px', background: 'rgba(59, 130, 246, 0.1)', padding: '30px', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>📋 Nyheter</h2>
-                <p style={{ color: '#aaa' }}>Alla uppdateringar och förbättringar</p>
-                <div className="version-badge" style={{ marginTop: '15px', display: 'inline-block', padding: '5px 15px', background: '#3b82f6', borderRadius: '20px', fontWeight: 'bold' }}>v3.0.1</div>
-            </div>
-
-            <div className="timeline">
-                {CHANGELOG_DATA.map((entry, index) => (
-                    <div key={index} className="timeline-item" style={{ marginBottom: '40px', borderLeft: '2px solid rgba(59, 130, 246, 0.3)', paddingLeft: '25px', position: 'relative' }}>
-                        <div style={{ position: 'absolute', left: '-9px', top: '0', width: '16px', height: '16px', background: '#3b82f6', borderRadius: '50%', boxShadow: '0 0 10px #3b82f6' }}></div>
-                        <span className="timeline-date" style={{ color: '#64748b', fontSize: '0.9rem' }}>{entry.date}</span>
-                        <div className="timeline-version" style={{ fontWeight: 'bold', color: '#3b82f6', margin: '5px 0' }}>{entry.version}</div>
-                        <div className="timeline-title" style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '15px' }}>
-                            {entry.titleSv} <br />
-                            <small style={{ color: '#aaa', fontWeight: 'normal' }}>{entry.titleAr}</small>
-                        </div>
-                        <ul className="change-list" style={{ listStyle: 'none', padding: 0 }}>
-                            {entry.changes.map((change, i) => (
-                                <li key={i} style={{ marginBottom: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                                    <span style={{ fontSize: '1.2rem' }}>{getTypeIcon(change.type)}</span>
-                                    <div>
-                                        <strong style={{ display: 'block' }}>{change.sv} / {change.ar}</strong>
-                                        {change.detailSv && <span style={{ fontSize: '0.9rem', color: '#aaa' }}>{change.detailSv}</span>}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+            {/* Scrollable Content Area */}
+            <div className="changelog-content">
+                {/* Hero Section */}
+                <div className="changelog-hero">
+                    <div className="changelog-hero-icon">📋</div>
+                    <h2 className="changelog-hero-title">Nyheter</h2>
+                    <p className="changelog-hero-subtitle">Alla uppdateringar och förbättringar</p>
+                    <p className="changelog-hero-subtitle-ar">جميع التحديثات والتحسينات</p>
+                    <div className="changelog-version-badge">
+                        {CHANGELOG_DATA[0]?.version || 'v3.0.0'}
                     </div>
-                ))}
+                </div>
+
+                {/* Timeline */}
+                <div className="changelog-timeline">
+                    {CHANGELOG_DATA.map((entry, index) => (
+                        <div
+                            key={index}
+                            className="changelog-timeline-item"
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                            <div className="changelog-timeline-dot"></div>
+                            <div className="changelog-timeline-card">
+                                <span className="changelog-date">{entry.date}</span>
+                                <div className="changelog-version">{entry.version}</div>
+                                <div className="changelog-title">
+                                    <span className="changelog-title-sv">{entry.titleSv}</span>
+                                    <span className="changelog-title-ar">{entry.titleAr}</span>
+                                </div>
+                                <ul className="changelog-changes">
+                                    {entry.changes.map((change, i) => (
+                                        <li key={i} className="changelog-change-item">
+                                            <span className="changelog-change-icon">{getTypeIcon(change.type)}</span>
+                                            <div className="changelog-change-content">
+                                                <strong className="changelog-change-label">
+                                                    {change.sv} / <span className="ar-text">{change.ar}</span>
+                                                </strong>
+                                                {change.detailSv && (
+                                                    <span className="changelog-change-detail">{change.detailSv}</span>
+                                                )}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Bottom Safe Area Spacer */}
+                <div className="changelog-safe-area"></div>
             </div>
         </div>
     );

@@ -57,6 +57,37 @@
 }
 
 /* ============================================================
+   iOS SAFARI SCROLL FIX - Critical for one-finger touch scroll
+   ============================================================ */
+.settings-scroll-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+    padding: 0 0 150px 0;
+    /* Force hardware acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Prevent text selection during scroll */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.full-settings-view {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 10px 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* ============================================================
    ANIMATED LIQUID BACKGROUND
    ============================================================ */
 .settings-bg {

@@ -139,8 +139,10 @@ export function renderMistakesReview(containerId: string): void {
 // Global functions
 (window as any).renderMistakesReview = renderMistakesReview;
 (window as any).practiceMistake = (word: string) => {
-    // TODO: Navigate to flashcard with this word
-    console.log('Practice:', word);
+    // Dispatch event to open quiz with this specific word for practice
+    window.dispatchEvent(new CustomEvent('openQuiz', {
+        detail: { mode: 'review', words: [word] }
+    }));
 };
 (window as any).markLearned = (word: string) => {
     mistakesManager.markAsLearned(word);

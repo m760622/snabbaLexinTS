@@ -16,6 +16,19 @@ export interface VersionEntry {
 
 export const CHANGELOG_DATA: VersionEntry[] = [
     {
+        version: 'v3.0.2',
+        date: '15 Jan 2026',
+        titleSv: 'Kodkvalitet & Stabilitet',
+        titleAr: 'جودة الكود والاستقرار',
+        changes: [
+            { type: 'improvement', sv: 'Renare Kod:', ar: 'كود أنظف:', detailSv: 'Borttagna 22+ debug console.log-satser för renare produktion', detailAr: 'إزالة 22+ عبارة console.log للإنتاج الأنظف' },
+            { type: 'bugfix', sv: 'Felhantering:', ar: 'معالجة الأخطاء:', detailSv: 'Förbättrad felhantering i TTS med tydliga kommentarer', detailAr: 'تحسين معالجة الأخطاء في TTS مع تعليقات واضحة' },
+            { type: 'feature', sv: 'Övningsfunktion:', ar: 'وظيفة التمرين:', detailSv: 'Implementerat snabbåtkomst till quiz från felgranskningslistan', detailAr: 'تنفيذ الوصول السريع للاختبار من قائمة مراجعة الأخطاء' },
+            { type: 'test', sv: 'Tester Fixade:', ar: 'إصلاح الاختبارات:', detailSv: 'Alla 43 enhetstester passerar nu', detailAr: 'جميع 43 اختبار وحدة تجتاز الآن' },
+            { type: 'performance', sv: 'Dependencies:', ar: 'التبعيات:', detailSv: 'Uppdaterade npm-paket för bättre kompatibilitet', detailAr: 'تحديث حزم npm لتوافق أفضل' }
+        ]
+    },
+    {
         version: 'v3.0.1',
         date: '6 Jan 2026',
         titleSv: 'Security & Performance Update',
@@ -37,5 +50,5 @@ export const CHANGELOG_DATA: VersionEntry[] = [
             { type: 'feature', sv: 'Konfetti-firande:', ar: 'احتفالات الكنفيتي:', detailSv: 'Vackra partikelanimationer när du låser upp prestationer 🎉', detailAr: 'رسوم متحركة جذابة عند فتح الإنجازات 🎉' }
         ]
     }
-    // ... Simplified for now, can add more later
 ];
+

@@ -42,11 +42,7 @@ export const TTSManager = {
         if (this.isInitialized) return;
         this.isInitialized = true;
 
-        console.log('🔊 TTSManager initializing...', {
-            isIOS: this.isIOS,
-            isSafari: this.isSafari,
-            isAndroid: this.isAndroid
-        });
+
 
         this._loadVoices();
 
@@ -64,7 +60,7 @@ export const TTSManager = {
         document.addEventListener('touchstart', unlockOnInteraction, { passive: true });
         document.addEventListener('click', unlockOnInteraction, { passive: true });
 
-        console.log('🔊 TTSManager initialized successfully');
+
     },
 
     _loadVoices() {
@@ -105,7 +101,7 @@ export const TTSManager = {
             silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
             silentAudio.volume = 0.01;
             silentAudio.play().then(() => silentAudio.pause()).catch(() => { });
-        } catch (e) { }
+        } catch { /* Silently ignore audio unlock errors */ }
 
         // Method 2: Web Audio API
         try {
@@ -119,7 +115,7 @@ export const TTSManager = {
             oscillator.start(0);
             oscillator.stop(0.001);
             setTimeout(() => audioContext.close(), 100);
-        } catch (e) { }
+        } catch { /* Silently ignore WebAudio unlock errors */ }
 
         // Method 3: SpeechSynthesis
         if (window.speechSynthesis) {
@@ -128,7 +124,7 @@ export const TTSManager = {
                 silentUtterance.volume = 0;
                 window.speechSynthesis.speak(silentUtterance);
                 window.speechSynthesis.cancel();
-            } catch (e) { }
+            } catch { /* Silently ignore speechSynthesis unlock errors */ }
         }
 
         this.audioUnlocked = true;
@@ -207,7 +203,7 @@ export const TTSManager = {
 
     async speak(text: string, lang = 'sv', options: TTSOptions & { slow?: boolean } = {}) {
         if (!this.isInitialized) this.init();
-        
+
         if (!text || text.trim() === '') return;
 
         const cleanText = text.replace(/['']/g, "'").trim();
@@ -308,7 +304,7 @@ export const TTSManager = {
             const speed = options.speed || this.getSpeed();
 
             this.audio.oncanplay = () => {
-                try { this.audio!.playbackRate = speed; } catch (e) { }
+                try { this.audio!.playbackRate = speed; } catch { /* Rate not supported */ }
             };
 
             this.audio.onended = () => {
@@ -360,7 +356,7 @@ export const TTSManager = {
             const speed = options.speed || this.getSpeed();
 
             this.audio.oncanplay = () => {
-                try { this.audio!.playbackRate = speed; } catch (e) { }
+                try { this.audio!.playbackRate = speed; } catch { /* Rate not supported */ }
             };
 
             this.audio.onended = () => {
@@ -564,7 +560,7 @@ export const TTSManager = {
             .sort((a, b) => b.score - a.score);
 
         if (scored.length > 0) {
-            console.log(`🔊 Best voice for ${langCode}: ${scored[0].voice.name} (score: ${scored[0].score})`);
+
             return scored[0].voice;
         }
 
@@ -577,8 +573,8 @@ export const TTSManager = {
     },
 
     stop() {
-        if (this.audio) { try { this.audio.pause(); this.audio.currentTime = 0; } catch (e) { } }
-        if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { } }
+        if (this.audio) { try { this.audio.pause(); this.audio.currentTime = 0; } catch { /* Ignore cleanup errors */ } }
+        if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch { /* Ignore cleanup errors */ } }
         if (this.timeoutId) { clearTimeout(this.timeoutId); this.timeoutId = null; }
         this.isPlaying = false;
         window.dispatchEvent(new CustomEvent('tts-stop'));
