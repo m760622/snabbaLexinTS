@@ -422,11 +422,9 @@ const HomeViewInner: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                marginBottom: '85px',  /* Dock: bottom 20px + height 65px = 85px */
-                border: '2px solid green',
-                transform: 'scale(0.99)',
-                transformOrigin: 'center',
-                backgroundColor: 'rgba(0, 255, 0, 0.3)'
+                marginBottom: 'var(--dock-height)',
+                transform: 'none',
+                backgroundColor: 'transparent'
             }}>
                 {renderContent()}
             </div>
@@ -467,29 +465,29 @@ const HomeViewInner: React.FC = () => {
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-    container: { height: '100dvh', width: '100%', maxWidth: '414px', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: '#0a0a0a', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 9999, touchAction: 'pan-y', overscrollBehavior: 'contain', border: '5px solid yellow', boxSizing: 'border-box' },
-    header: { flexShrink: 0, paddingBottom: '10px' },
+    container: { height: '100dvh', width: '100%', maxWidth: 'var(--app-max-width)', position: 'fixed', inset: 0, margin: '0 auto', overflow: 'hidden', backgroundColor: 'var(--bg-app)', color: '#fff', display: 'flex', flexDirection: 'column', zIndex: 0, touchAction: 'pan-y', overscrollBehavior: 'contain', boxSizing: 'border-box' },
+    header: { flexShrink: 0, paddingBottom: '10px', zIndex: 100, position: 'relative' },
     topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' },
-    brandCapsule: { background: 'rgba(255,255,255,0.05)', border: '2px solid red', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
-    statsBadge: { background: 'rgba(28, 28, 30, 0.6)', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', border: '2px solid red', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center' },
+    brandCapsule: { background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 25px', borderRadius: '50px', fontSize: '1.2rem', fontWeight: 'bold', backdropFilter: 'blur(10px)' },
+    statsBadge: { background: 'var(--bg-glass)', padding: '6px 12px', borderRadius: '10px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center' },
     iconBtn: { background: 'transparent', border: 'none', fontSize: '22px', cursor: 'pointer' },
     searchRow: { display: 'flex', padding: '0 20px', gap: '12px', alignItems: 'center' },
     searchBox: { position: 'relative', flex: 1, display: 'flex', alignItems: 'center' },
-    premiumInput: { width: '100%', padding: '14px 15px 14px 45px', borderRadius: '18px', border: '2px solid red', backgroundColor: 'rgba(28, 28, 30, 0.6)', color: '#fff', fontSize: '1rem', outline: 'none', backdropFilter: 'blur(15px)' },
+    premiumInput: { width: '100%', padding: '14px 15px 14px 45px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'var(--bg-glass)', color: '#fff', fontSize: '1rem', outline: 'none', backdropFilter: 'blur(15px)' },
     searchIconInside: { position: 'absolute', left: '15px', color: '#8e8e93', fontSize: '18px' },
     resultCounterInside: { position: 'absolute', right: '15px', color: '#636366', fontSize: '0.8rem' },
-    contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
+    contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0, zIndex: 10 },
     scrollList: { flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', padding: '10px 0', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', minHeight: 0, willChange: 'scroll-position', overscrollBehavior: 'contain' },
     emptyState: { textAlign: 'center', padding: '40px', color: '#8e8e93' },
-    card: { backgroundColor: 'rgba(28, 28, 30, 0.6)', borderRadius: '20px', marginBottom: '15px', display: 'flex', flexDirection: 'column', padding: '18px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', margin: '0 20px 15px 20px', backdropFilter: 'blur(10px)', minHeight: '120px', touchAction: 'pan-y' },
-    menuCard: { flex: 1, background: 'rgba(28, 28, 30, 0.6)', borderRadius: '24px', padding: '25px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(10px)', touchAction: 'pan-y' },
+    card: { backgroundColor: 'var(--bg-glass)', borderRadius: '20px', marginBottom: '15px', display: 'flex', flexDirection: 'column', padding: '18px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', margin: '0 20px 15px 20px', backdropFilter: 'blur(10px)', minHeight: '120px', touchAction: 'pan-y' },
+    menuCard: { flex: 1, background: 'var(--bg-glass)', borderRadius: '24px', padding: '25px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(10px)', touchAction: 'pan-y' },
     actionRow: { display: 'flex', gap: '12px', alignItems: 'center' },
     actionBtn: { background: 'transparent', border: 'none', color: '#8e8e93', cursor: 'pointer', display: 'flex', alignItems: 'center', fontSize: '20px' },
     cardMainContent: { display: 'flex', flexDirection: 'column', gap: '4px' },
     swedish: { fontWeight: '800', color: '#fff' },
     arabic: { color: '#eee', textAlign: 'right' },
-    dockContainer: { position: 'fixed', bottom: '20px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10000 },
-    dock: { display: 'flex', background: 'rgba(28, 28, 30, 0.8)', backdropFilter: 'blur(20px)', padding: '10px', borderRadius: '25px', border: '2px solid blue', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
+    dockContainer: { position: 'fixed', bottom: '20px', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 300 },
+    dock: { display: 'flex', background: 'var(--bg-glass-strong)', backdropFilter: 'blur(20px)', padding: '10px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.1)', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
     dockItem: { width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', borderRadius: '15px', cursor: 'pointer', border: 'none', color: '#fff', background: 'transparent', position: 'relative', transition: 'all 0.3s' }
 };
 

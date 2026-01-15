@@ -60,7 +60,8 @@ const BubblesBackground = ({ color, usePortal = true }: { color: string, usePort
                     '--bubble-opacity': b.opacity,
                     animation: `heavyRise ${b.duration} infinite linear`,
                     animationDelay: b.delay,
-                    boxShadow: `0 0 10px ${bubbleColor}40`
+                    boxShadow: `0 0 10px ${bubbleColor}40`,
+                    zIndex: 'var(--z-background)'
                 } as any} />
             ))}
         </div>
@@ -111,7 +112,7 @@ const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, col
     useEffect(() => { TTSManager.speak(swe, 'sv'); }, [swe]);
     return (
         <div style={{
-            position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000,
+            position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 'var(--z-modal)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px'
         }}>
 
@@ -145,7 +146,7 @@ const FocusMode = ({ swe, arb, color, onClose }: { swe: string, arb: string, col
 const FlipCard = ({ swe, arb, color, onClose }: { swe: string, arb: string, color: string, onClose: () => void }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 'var(--z-modal)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
 
             <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '25px', fontSize: '0.95rem' }}>اضغط على البطاقة لقلبها</p>
             <div onClick={() => { setIsFlipped(!isFlipped); HapticManager.medium(); }} style={{ width: '320px', height: '220px', perspective: '1000px', cursor: 'pointer' }}>
@@ -181,7 +182,7 @@ const QuickQuiz = ({ swe, arb, options, color, onClose }: { swe: string, arb: st
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const handleSelect = (opt: string) => { setSelected(opt); setIsCorrect(opt === arb); HapticManager.medium(); setTimeout(() => onClose(), 1800); };
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 15, 20, 0.97)', backdropFilter: 'blur(90px)', zIndex: 'var(--z-modal)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
 
             <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '15px' }}>⚡ تحدي سريع</div>
             <div style={{ fontSize: getSwedishFontSize(swe), fontWeight: '800', color: '#fff', marginBottom: '35px', textShadow: `0 0 40px ${color}40` }}>{swe}</div>
@@ -355,12 +356,13 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
     return (
         <div ref={containerRef} onScroll={handleScroll} className="details-page-container" style={{
             height: '100%', width: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch',
-            background: 'rgba(5, 16, 36, 0.25)', display: 'flex', flexDirection: 'column',
+            background: 'var(--bg-glass)', display: 'flex', flexDirection: 'column',
             maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             overscrollBehavior: 'contain',
             touchAction: 'pan-y', // Fix for mobile scrolling
-            minHeight: 0
+            minHeight: 0,
+            zIndex: 'var(--z-content)'
         }}>
             <style>{`
                 @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -375,7 +377,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
 
             {/* Fluid Header */}
             <div style={{
-                display: 'flex', justifyContent: 'space-between', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 100,
+                display: 'flex', justifyContent: 'space-between', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 'var(--z-header)',
                 background: `rgba(10,10,12,${headerOpacity})`, backdropFilter: 'blur(30px) saturate(180%)',
                 borderBottom: `1px solid ${primaryColor}15`, transition: 'background 0.3s'
             }}>
@@ -405,7 +407,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             <div style={{
                 padding: '30px 16px 40px',
                 background: `linear-gradient(180deg, ${primaryColor}08 0%, transparent 100%)`,
-                zIndex: 1
+                zIndex: 'var(--z-floating)'
             }}>
                 {/* Main Floating Card */}
                 <div style={{
@@ -523,7 +525,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             </div>
 
             {/* 3. Tabs System (Moved Here) */}
-            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', marginBottom: '0', marginTop: '-20px', position: 'sticky', top: '65px', zIndex: 90 }}>
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', marginBottom: '0', marginTop: '-20px', position: 'sticky', top: '65px', zIndex: 'var(--z-floating)' }}>
                 <div style={{ display: 'flex', background: 'rgba(20, 20, 25, 0.85)', backdropFilter: 'blur(15px)', borderRadius: '16px 16px 0 0', padding: '4px', border: `1px solid ${primaryColor}25`, borderBottom: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
                     <button onClick={() => { HapticManager.light(); setActiveTab('info'); }}
                         style={{ flex: 1, padding: '12px', background: activeTab === 'info' ? `${primaryColor}25` : 'transparent', border: activeTab === 'info' ? `1px solid ${primaryColor}30` : 'none', color: activeTab === 'info' ? '#fff' : 'rgba(255,255,255,0.4)', borderRadius: '12px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.3s' }}>📋 معلومات</button>
@@ -537,7 +539,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             {showFocusMode && <FocusMode swe={swe} arb={arb} color={primaryColor} onClose={() => setShowFocusMode(false)} />}
 
             {/* Content Container */}
-            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1, marginTop: '10px' }}>
+            <div style={{ padding: '0 16px', maxWidth: '600px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 'var(--z-content)', marginTop: '10px' }}>
                 {activeTab === 'info' ? (
                     <>
                         {/* Smart Knowledge Bar (Inside Info Tab) */}

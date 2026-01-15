@@ -29,6 +29,25 @@
   --radius: 1rem;
   --header-font: "Inter", sans-serif;
   --body-font: "Inter", sans-serif;
+  /* Dimensions */
+  --app-max-width: 414px;
+  --dock-height: 85px;
+
+  /* Z-Indices */
+  --z-background: -1;
+  --z-root: 0;
+  --z-content: 10;
+  --z-floating: 20;
+  --z-header: 100;
+  --z-modal: 200;
+  --z-dock: 300;
+  --z-toast: 400;
+
+  /* Layer Colors */
+  --bg-app: #0a0a0a;
+  --bg-glass: rgba(28, 28, 30, 0.6);
+  --bg-glass-strong: rgba(28, 28, 30, 0.85);
+
   font-family: "Tajawal", sans-serif;
 }
 
@@ -149,14 +168,20 @@ body {
   /* Prevent tap highlight flicker */
   -webkit-tap-highlight-color: transparent;
 
-  /* Prevent pull-to-refresh but allow scroll */
-  overscroll-behavior-y: contain;
+  /* Prevent pull-to-refresh but allow scroll  overscroll-behavior-y: contain;*/
 
-  /* Allow natural touch scrolling */
+
+  touch-action: manipulation;
+  /* أو اتركها بدون touch-action */
+  overflow: hidden !important;
+  /* ✅ مهم */
+  overscroll-behavior-y: none;
+  /* Allow natural touch scrolling
   touch-action: pan-y;
   overflow-y: auto !important;
   overflow-x: hidden;
   will-change: scroll-position;
+ */
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1310,11 +1335,11 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Prevent pull-to-refresh on PWA */
+/* Prevent pull-to-refresh on PWA 
 body {
   overscroll-behavior-y: contain;
 }
-
+*/
 /* ===== End PWA Enhancements ===== */
 
 * {
