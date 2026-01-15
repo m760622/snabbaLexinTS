@@ -200,14 +200,18 @@ body {
 }
 
 /* Home View Containers - حاويات الشاشة الرئيسية */
+
 .home-container,
 .content-area,
 .scroll-list,
-.card-container {
+.card-container,
+.details-page-container {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   will-change: scroll-position;
   overscroll-behavior: contain;
+  /* Fix #3: Force scroll activation */
+  min-height: calc(100% + 1px);
 }
 
 /* ========================================

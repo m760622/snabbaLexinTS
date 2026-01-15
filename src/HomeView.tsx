@@ -477,7 +477,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     searchIconInside: { position: 'absolute', left: '15px', color: '#8e8e93', fontSize: '18px' },
     resultCounterInside: { position: 'absolute', right: '15px', color: '#636366', fontSize: '0.8rem' },
     contentArea: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0, zIndex: 10 },
-    scrollList: { flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', padding: '10px 0', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', minHeight: 0, willChange: 'scroll-position', overscrollBehavior: 'contain' },
+    scrollList: { flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', padding: '10px 0 120px 0', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', minHeight: 'calc(100% + 1px)', willChange: 'scroll-position', overscrollBehavior: 'contain' },
     emptyState: { textAlign: 'center', padding: '40px', color: '#8e8e93' },
     card: { backgroundColor: 'var(--bg-glass)', borderRadius: '20px', marginBottom: '15px', display: 'flex', flexDirection: 'column', padding: '18px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', margin: '0 20px 15px 20px', backdropFilter: 'blur(10px)', minHeight: '120px', touchAction: 'pan-y' },
     menuCard: { flex: 1, background: 'var(--bg-glass)', borderRadius: '24px', padding: '25px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', backdropFilter: 'blur(10px)', touchAction: 'pan-y' },

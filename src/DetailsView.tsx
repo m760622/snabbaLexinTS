@@ -361,8 +361,9 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
             WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
             overscrollBehavior: 'contain',
             touchAction: 'pan-y', // Fix for mobile scrolling
-            minHeight: 0,
-            zIndex: 'var(--z-content)'
+            minHeight: 'calc(100% + 1px)', // Fix #3: Always allow scroll
+            zIndex: 'var(--z-content)',
+            paddingBottom: '40px' // Fix #2 basic padding, plus the spacer below
         }}>
             <style>{`
                 @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -657,7 +658,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({ wordId, onBack }) => {
 
 
 
-            <div style={{ height: '100px', flexShrink: 0 }} />
+            <div style={{ height: '120px', flexShrink: 0 }} />
         </div>
     );
 };
