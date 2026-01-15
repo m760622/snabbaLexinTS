@@ -1,0 +1,19 @@
+/**
+ * Color Theme Overrides
+ * Extracted from index.html inline styles
+ */
+
+/* Dark Blue Theme (was blue) */
+[data-color-theme="darkblue"] {
+    --primary: #1e3a8a;
+    --primary-hover: #1e40af;
+    --accent: #1e3a8a;
+    --theme-gradient-start: #1e3a8a;
+    --theme-gradient-end: #172554;
+}
+
+[data-color-theme="darkblue"][data-theme="dark"] {
+    --background: #0f172a;
+    --surface: #1e293b;
+    --border: rgba(30, 58, 138, 0.2);
+}

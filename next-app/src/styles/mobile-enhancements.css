@@ -1,0 +1,1183 @@
+/* ============================================================
+   MOBILE-FIRST DESIGN ENHANCEMENTS
+   تحسينات التصميم للموبايل أولاً
+   ============================================================ */
+
+/* ============================================================
+   SPLASH SCREEN - شاشة التحميل
+   ============================================================ */
+
+.splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+    overflow: visible;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.splash-logo-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.splash-logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, transparent 70%);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.splash-logo {
+    font-size: 4rem;
+    position: relative;
+    z-index: 1;
+    animation: bounce-logo 1.5s ease-in-out infinite;
+}
+
+.splash-title {
+    font-family: "Inter", sans-serif !important;
+    font-size: clamp(1.5rem, 8vw, 2rem) !important;
+    /* Responsive sizing - MUCH smaller for mobile */
+    font-weight: 800 !important;
+    color: #fff !important;
+    /* Solid white - no transparency */
+    margin: 0 0 0.5rem !important;
+    letter-spacing: 1px !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    white-space: nowrap !important;
+    /* Keep on one line */
+    overflow: visible !important;
+    width: 100% !important;
+    text-align: center !important;
+}
+
+.splash-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    margin: 0 0 2rem;
+}
+
+.splash-loader {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.splash-loader-bar {
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, #dc2626, #3b82f6, #ec4899);
+    border-radius: 4px;
+    animation: loading-slide 1.5s ease-in-out infinite;
+}
+
+.splash-progress-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+    }
+}
+
+@keyframes bounce-logo {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes loading-slide {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(250%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Default to mobile view mode */
+body {
+    --viewport-max-width: 420px;
+}
+
+/* Auto-enable mobile mode look */
+body:not(.desktop-explicit) {
+    max-width: var(--viewport-max-width);
+    margin: 0 auto;
+}
+
+/* ============================================================
+   PSYCHOLOGICAL COMFORT COLORS
+   ألوان مريحة نفسياً
+   ============================================================ */
+:root {
+    /* Calming colors that reduce eye strain */
+    --comfort-bg: #0a0a0f;
+    --comfort-surface: #12121a;
+    --comfort-card: #1a1a25;
+    --comfort-hover: #22222f;
+
+    /* Soothing accent colors */
+    --accent-calm-blue: #4facfe;
+    --accent-calm-blue: #9f7aea;
+    --accent-calm-teal: #38b2ac;
+    --accent-success: #48bb78;
+    --accent-warning: #f6ad55;
+
+    /* Smooth transitions for relaxed feel */
+    --smooth-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bounce-transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Reduced harsh contrasts */
+    --text-primary: #f0f0f5;
+    --text-secondary: #a0a0b0;
+    --text-muted: #707080;
+
+    /* Soft shadows for depth without harshness */
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 30px rgba(79, 172, 254, 0.15);
+}
+
+/* ============================================================
+   ENHANCED CARD INTERACTIONS
+   تفاعلات بطاقات محسنة
+   ============================================================ */
+
+/* Smooth hover animations */
+.game-card-item {
+    transition:
+        transform var(--bounce-transition),
+        box-shadow var(--smooth-transition),
+        border-color var(--smooth-transition);
+}
+
+.game-card-item:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-elevated), var(--shadow-glow);
+}
+
+.game-card-item:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/* Touch feedback - essential for mobile */
+@media (hover: none) {
+    .game-card-item:active {
+        background: var(--comfort-hover);
+        transform: scale(0.95);
+    }
+}
+
+/* ============================================================
+   RELAXING ICON ANIMATIONS
+   رسوميات متحركة مريحة
+   ============================================================ */
+
+.game-icon-large {
+    font-size: 2.8rem;
+    transition: transform var(--bounce-transition);
+}
+
+.game-card-item:hover .game-icon-large {
+    transform: scale(1.1);
+    animation: gentleFloat 2s ease-in-out infinite;
+}
+
+@keyframes gentleFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1.1);
+    }
+
+    50% {
+        transform: translateY(-4px) scale(1.1);
+    }
+}
+
+/* ============================================================
+   IMPROVED READABILITY
+   قراءة محسنة
+   ============================================================ */
+
+/* Better spacing and font weights */
+.game-card-item h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.25rem;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+.game-card-item p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    font-family: var(--font-arabic), sans-serif;
+}
+
+/* ============================================================
+   HAPTIC FEEDBACK VISUAL CUES
+   إشارات بصرية للمس
+   ============================================================ */
+
+/* Ripple effect on tap */
+.tap-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.tap-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+.tap-ripple:active::after {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+}
+
+/* ============================================================
+   SMOOTH SCROLL BEHAVIOR
+   تمرير سلس
+   ============================================================ */
+
+.games-container,
+.game-menu-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* iOS momentum scrolling */
+    overscroll-behavior: contain;
+}
+
+/* Hide scrollbar but keep functionality */
+.games-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.games-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.games-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.games-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================
+   REDUCED MOTION SUPPORT
+   دعم تقليل الحركة للراحة
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   FOCUS STATES - Accessibility
+   حالات التركيز - إمكانية الوصول
+   ============================================================ */
+
+.game-card-item:focus-visible {
+    outline: none;
+    box-shadow:
+        var(--shadow-soft),
+        0 0 0 3px rgba(79, 172, 254, 0.5);
+}
+
+/* ============================================================
+   LOADING STATES - Smooth experience
+   حالات التحميل - تجربة سلسة
+   ============================================================ */
+
+.skeleton-card {
+    background: linear-gradient(90deg,
+            var(--comfort-card) 0%,
+            var(--comfort-hover) 50%,
+            var(--comfort-card) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 1.5rem;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ============================================================
+   BADGE IMPROVEMENTS
+   تحسينات الشارات
+   ============================================================ */
+
+.game-badge,
+.high-score {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.badge-popular {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+.high-score {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+/* ============================================================
+   STAR RATINGS - Game progress
+   تقييم النجوم - تقدم اللعبة
+   ============================================================ */
+
+.game-stars {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.game-stars::before {
+    content: '☆☆☆';
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+}
+
+.game-stars[data-stars="1"]::before {
+    content: '★☆☆';
+    color: #fbbf24;
+}
+
+.game-stars[data-stars="2"]::before {
+    content: '★★☆';
+    color: #fbbf24;
+}
+
+.game-stars[data-stars="3"]::before {
+    content: '★★★';
+    color: #fbbf24;
+}
+
+/* ============================================================
+   BETTER HEADER LAYOUT
+   تخطيط رأس الصفحة أفضل
+   ============================================================ */
+
+.memory-hud,
+.gr-hud {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(12, 12, 20, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.hud-stats {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.stat-pill-icon {
+    font-size: 0.9rem;
+}
+
+.stat-pill-value {
+    font-weight: 700;
+    color: var(--accent-calm-blue);
+}
+
+/* ============================================================
+   STICKY HEADER & STATS
+   الرأس الثابت والإحصائيات
+   ============================================================ */
+
+.games-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 20, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0.75rem 1rem;
+    margin: -0.2rem -1.5rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stats-hero {
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+    background: rgba(10, 10, 20, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    margin: 0 -1.5rem;
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================================
+   BUTTONS - Better touch targets
+   أزرار - مناطق لمس أفضل   
+   ============================================================ */
+
+.hud-btn,
+button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--smooth-transition);
+}
+
+.hud-btn:active {
+    transform: scale(0.92);
+}
+
+/* ============================================================
+   SAFE AREA INSETS - iPhone notch support
+   دعم شقوق الآيفون
+   ============================================================ */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+
+    .memory-hud,
+    .gr-hud,
+    .games-header {
+        padding-top: calc(0.75rem + env(safe-area-inset-top));
+    }
+
+    .games-container {
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+}
+
+/* ============================================================
+   DARK MODE REFINEMENTS
+   تحسينات الوضع الداكن
+   ============================================================ */
+
+[data-theme="dark"] {
+    /* Reduce blue light for night comfort */
+    --text-primary: #e8e8f0;
+    --text-secondary: #9898a8;
+}
+
+/* Subtle warm tint at night */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-image:
+            radial-gradient(at 0% 0%, rgba(30, 20, 40, 0.8) 0, transparent 50%),
+            radial-gradient(at 50% 0%, rgba(25, 35, 60, 0.8) 0, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(40, 20, 35, 0.8) 0, transparent 50%);
+    }
+}
+
+/* ============================================================
+   MOBILE VIEW MODE ENHANCEMENTS
+   تحسينات وضع الموبايل
+   ============================================================ */
+
+.mobile-view-mode .game-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+}
+
+.mobile-view-mode .game-card-item {
+    padding: 1rem;
+    aspect-ratio: 1 / 1.05;
+}
+
+.mobile-view-mode .game-icon-large {
+    font-size: 2.4rem;
+}
+
+.mobile-view-mode .game-card-item h3 {
+    font-size: 0.85rem;
+}
+
+.mobile-view-mode .game-card-item p {
+    font-size: 0.72rem;
+}
+
+/* ============================================================
+   TOAST NOTIFICATIONS - Better visibility
+   إشعارات منبثقة - رؤية أفضل
+   ============================================================ */
+
+.toast-notification {
+    position: fixed;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(30, 30, 45, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    transition: transform 0.4s var(--bounce-transition);
+    z-index: 9999;
+}
+
+.toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   PERFORMANCE OPTIMIZATIONS
+   تحسينات الأداء
+   ============================================================ */
+
+.game-card-item {
+    will-change: transform;
+    contain: layout style paint;
+}
+
+/* GPU acceleration for animations */
+.games-container {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* ============================================================
+   SKELETON LOADING CARDS
+   بطاقات التحميل الهيكلي
+   ============================================================ */
+
+.skeleton-game-card {
+    background: rgba(30, 30, 45, 0.6);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-title {
+    width: 70%;
+    height: 14px;
+    border-radius: 7px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite 0.1s;
+}
+
+.skeleton-subtitle {
+    width: 50%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite 0.2s;
+}
+
+@keyframes skeleton-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* ============================================================
+   CONFETTI PARTICLES
+   جزيئات الاحتفال
+   ============================================================ */
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    animation: confetti-fall 3s ease-out forwards;
+    border-radius: 2px;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Star particles */
+.star-particle {
+    position: fixed;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: star-burst 0.8s ease-out forwards;
+    transform-origin: center;
+}
+
+@keyframes star-burst {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(calc(-50% + cos(var(--angle)) * 80px), calc(-50% + sin(var(--angle)) * 80px)) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   SUCCESS OVERLAY
+   تراكب النجاح
+   ============================================================ */
+
+.success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-content {
+    text-align: center;
+    animation: scaleIn 0.4s var(--bounce-transition);
+}
+
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+}
+
+.success-checkmark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.success-checkmark circle {
+    stroke-dasharray: 157;
+    stroke-dashoffset: 157;
+    animation: draw-circle 0.6s ease forwards;
+}
+
+.success-checkmark path {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: draw-check 0.4s ease forwards 0.4s;
+}
+
+@keyframes draw-circle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes draw-check {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-message {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ============================================================
+   LEVEL UP OVERLAY
+   تراكب ارتقاء المستوى
+   ============================================================ */
+
+.level-up-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(168, 85, 247, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.level-up-content {
+    text-align: center;
+    animation: bounceIn 0.6s var(--bounce-transition);
+}
+
+.level-up-icon {
+    font-size: 4rem;
+    animation: levelUp-pulse 0.5s ease infinite;
+}
+
+.level-up-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 1rem 0 0.5rem;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.level-up-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+@keyframes levelUp-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================================
+   STREAK OVERLAY
+   تراكب الـ Streak
+   ============================================================ */
+
+.streak-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.95), rgba(234, 88, 12, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.streak-content {
+    text-align: center;
+    animation: scaleIn 0.4s var(--bounce-transition);
+}
+
+.streak-fire {
+    font-size: 4rem;
+    animation: fire-dance 0.3s ease infinite;
+}
+
+.streak-days {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0.5rem 0;
+}
+
+.streak-text {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+@keyframes fire-dance {
+
+    0%,
+    100% {
+        transform: rotate(-3deg);
+    }
+
+    50% {
+        transform: rotate(3deg);
+    }
+}
+
+/* ============================================================
+   ONBOARDING TOUR
+   الجولة التعريفية
+   ============================================================ */
+
+.tour-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.tour-spotlight {
+    position: absolute;
+    border-radius: 16px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--accent-calm-blue);
+    animation: spotlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlight-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8), 0 0 20px var(--accent-calm-blue);
+    }
+
+    50% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-calm-blue);
+    }
+}
+
+.tour-tooltip {
+    position: absolute;
+    width: 300px;
+    background: rgba(25, 25, 40, 0.98);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: scaleIn 0.3s var(--bounce-transition);
+}
+
+.tour-tooltip h3 {
+    color: white;
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+}
+
+.tour-tooltip p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin: 0 0 1rem;
+    line-height: 1.5;
+}
+
+.tour-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.tour-skip {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.tour-next {
+    background: linear-gradient(135deg, var(--accent-calm-blue), var(--accent-calm-blue));
+    border: none;
+    color: white;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+.tour-next:active {
+    transform: scale(0.95);
+}
+
+.tour-progress {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tour-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.tour-dot.active {
+    background: var(--accent-calm-blue);
+    transform: scale(1.3);
+}
+
+/* ============================================================
+   RIPPLE EFFECT
+   تأثير التموج
+   ============================================================ */
+
+.ripple-effect {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple-expand 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes ripple-expand {
+    to {
+        transform: translate(-50%, -50%) scale(15);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   PULL TO REFRESH
+   سحب للتحديث
+   ============================================================ */
+
+.pull-refresh-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: height 0.2s ease;
+}
+
+.pull-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--accent-calm-blue);
+    border-radius: 50%;
+}
+
+.pull-refresh-indicator.refreshing .pull-spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================================
+   UTILITY ANIMATIONS
+   حركات مساعدة
+   ============================================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}

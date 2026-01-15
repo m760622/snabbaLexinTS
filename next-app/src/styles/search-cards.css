@@ -1,0 +1,330 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Smart Card Design - SnabbaLexin Search Cards
+   Interactive cards with progress indicators and learning features
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS Variables ─── */
+:root {
+    --smart-bg: #18181B;
+    --smart-surface: #27272A;
+    --smart-border: rgba(255, 255, 255, 0.08);
+
+    /* Status Colors */
+    --status-new: #EF4444;
+    --status-learning: #FBBF24;
+    --status-mastered: #22C55E;
+
+    /* Type Colors */
+    --type-verb: #34D399;
+    --type-noun: #60A5FA;
+    --type-adj: #FBBF24;
+    --type-phrase: #F472B6;
+    --type-default: #A78BFA;
+
+    /* Text */
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+}
+
+/* ─── Card Container ─── */
+.smart-card {
+    position: relative;
+    width: calc(100% - 30px);
+    max-width: 420px;
+    margin: 0 auto 8px auto;
+    background: var(--smart-bg);
+    border: 1px solid var(--smart-border);
+    border-radius: 12px;
+    overflow: visible;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.smart-card:hover {
+    background: var(--smart-surface);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Delay active state to allow scroll to be detected first */
+.smart-card:active {
+    transform: scale(0.99);
+    transition-delay: 100ms;
+    /* Delay before showing active state */
+}
+
+/* Keep interactive elements responsive but DO NOT block native scrolling */
+.smart-card .smart-btn,
+.smart-card .smart-btn * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* ─── Progress Bar (Top) ─── */
+.progress-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--glow-color, var(--type-default));
+    width: 30%;
+    transition: width 0.5s ease;
+}
+
+/* ─── Card Content ─── */
+.smart-inner {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ─── Header Row ─── */
+.smart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.smart-header .smart-actions {
+    margin-left: auto;
+}
+
+/* Status Indicator */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--status-learning);
+    box-shadow: 0 0 8px var(--status-learning);
+    flex-shrink: 0;
+}
+
+.status-dot.new {
+    background: var(--status-new);
+    box-shadow: 0 0 8px var(--status-new);
+}
+
+.status-dot.learning {
+    background: var(--status-learning);
+    box-shadow: 0 0 8px var(--status-learning);
+}
+
+.status-dot.mastered {
+    background: var(--status-mastered);
+    box-shadow: 0 0 8px var(--status-mastered);
+}
+
+/* Type Label */
+.type-label {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--glow-color, var(--type-default));
+}
+
+/* ─── Main Content ─── */
+.smart-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Swedish Text */
+.swedish-text {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Forms */
+.forms-text {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+}
+
+/* ─── Divider ─── */
+.smart-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--smart-border), transparent);
+}
+
+/* ─── Arabic Section ─── */
+.arabic-text {
+    font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: right;
+    direction: rtl;
+    line-height: 1.3;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Light mode Arabic text */
+[data-theme="light"] .arabic-text,
+:root:not([data-theme="dark"]) .arabic-text {
+    color: #1a1a1a;
+    text-shadow: none;
+}
+
+/* ─── Action Buttons (Text + Icon) ─── */
+.smart-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+.smart-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--smart-border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.smart-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}
+
+.smart-btn.active {
+    background: var(--glow-color, var(--type-default));
+    border-color: var(--glow-color, var(--type-default));
+    color: #fff;
+}
+
+.smart-btn svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+/* Icon-only compact buttons */
+.smart-btn.icon-only {
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.smart-btn.icon-only svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ─── Definition ─── */
+.definition-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border-left: 2px solid var(--glow-color, var(--type-default));
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+    .smart-card {
+        margin: 0 12px 12px 12px;
+        width: calc(100% - 24px);
+    }
+
+    .smart-inner {
+        padding: 14px 16px;
+    }
+
+    .swedish-text {
+        font-size: 1.3rem;
+    }
+
+    .arabic-text {
+        font-size: 1.15rem;
+    }
+
+    .smart-btn {
+        padding: 7px 12px;
+        font-size: 0.7rem;
+    }
+}
+
+/* ─── Loading State ─── */
+.smart-card.loading {
+    min-height: 120px;
+}
+
+.smart-card.loading .smart-inner {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.02) 25%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.02) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ─── Focus States ─── */
+.smart-card:focus-visible {
+    outline: 2px solid var(--glow-color, var(--type-default));
+    outline-offset: 2px;
+}
+
+.smart-btn:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 1px;
+}

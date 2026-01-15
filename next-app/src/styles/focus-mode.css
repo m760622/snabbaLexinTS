@@ -1,0 +1,118 @@
+/* ========================================
+   FOCUS MODE - Distraction-Free Learning
+   ======================================== */
+
+/* When body has .focus-mode class */
+.focus-mode {
+    /* Disable ALL animations */
+    --animation-decorative: paused !important;
+    --animation-pulse: paused !important;
+}
+
+/* Hide decorative elements */
+.focus-mode .particle,
+.focus-mode .sp-particle,
+.focus-mode .wc-particle,
+.focus-mode .wc-grid-overlay,
+.focus-mode .sp-grid-overlay,
+.focus-mode .wc-wheel-ring,
+.focus-mode .wc-wheel-glow,
+.focus-mode .sp-card-glow,
+.focus-mode #wcParticles {
+    display: none !important;
+}
+
+/* Simplified backgrounds */
+.focus-mode {
+    background: #f8fafc !important;
+    background-image: none !important;
+}
+
+.focus-mode[data-theme="dark"] {
+    background: #0f172a !important;
+}
+
+/* Larger, clearer text */
+.focus-mode .wc-slot,
+.focus-mode .sp-hint-text,
+.focus-mode .wc-letter-node,
+.focus-mode .sp-option-btn {
+    font-size: 1.3em !important;
+    font-weight: 600 !important;
+}
+
+/* Simplified colors - blue only */
+.focus-mode .wc-letter-node {
+    background: linear-gradient(135deg, #3b82f6, #1e40af) !important;
+    border-color: #60a5fa !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
+}
+
+.focus-mode .wc-letter-node.selected {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border-color: #34d399 !important;
+}
+
+/* Remove all glows */
+.focus-mode * {
+    text-shadow: none !important;
+}
+
+.focus-mode .game-card-item,
+.focus-mode .stat-pill,
+.focus-mode .sp-question-card,
+.focus-mode .wc-word-row {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Cleaner cards */
+.focus-mode .game-card-item {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.focus-mode[data-theme="dark"] .game-card-item {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+}
+
+/* Hide non-essential UI */
+.focus-mode .wc-streak-pill,
+.focus-mode .wc-stats-btn,
+.focus-mode .wc-achievements-btn,
+.focus-mode .wc-sound-toggle {
+    opacity: 0.5;
+}
+
+/* Focus Mode Toggle Button Style */
+#focusModeToggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+#focusModeToggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.focus-mode #focusModeToggle {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+/* Accessibility: Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+    body {
+        --animation-decorative: paused !important;
+        --animation-pulse: paused !important;
+    }
+
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

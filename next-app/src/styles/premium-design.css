@@ -1,0 +1,2001 @@
+/**
+ * ============================================================
+ * PREMIUM DESIGN SYSTEM - نظام تصميم فاخر
+ * Version: 2.0
+ * ============================================================
+ * 
+ * Features:
+ * - Glassmorphism Effects
+ * - Neumorphism Buttons
+ * - Focus Mode (Calm Colors)
+ * - Animated Gradient Mesh
+ * - Premium Shadows & Transitions
+ */
+
+/* ============================================================
+   CSS CUSTOM PROPERTIES - متغيرات التصميم
+   ============================================================ */
+
+:root {
+    /* Focus Mode Colors - ألوان وضع التركيز */
+    --focus-bg: linear-gradient(135deg, #e0f4f7 0%, #d4edda 50%, #e8f5e9 100%);
+    --focus-surface: rgba(255, 255, 255, 0.95);
+    --focus-text: #2d4a5e;
+    --focus-accent: #4db6ac;
+
+    /* Glassmorphism - تأثير الزجاج */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: blur(20px);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* Neumorphism - تأثير النيومورفيزم */
+    --neumorphic-bg: #e0e5ec;
+    --neumorphic-shadow-light: #ffffff;
+    --neumorphic-shadow-dark: #a3b1c6;
+
+    /* Premium Transitions - انتقالات سلسة */
+    --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Premium Shadows - ظلال متميزة */
+    --shadow-premium-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-premium-md: 0 10px 25px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    --shadow-premium-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.3);
+
+    /* XP System Colors - ألوان نظام الخبرة */
+    --xp-bronze: linear-gradient(135deg, #cd7f32, #8b4513);
+    --xp-silver: linear-gradient(135deg, #c0c0c0, #808080);
+    --xp-gold: linear-gradient(135deg, #ffd700, #ffb300);
+    --xp-platinum: linear-gradient(135deg, #e5e4e2, #b4b4b4);
+    --xp-diamond: linear-gradient(135deg, #b9f2ff, #00d4ff);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(31, 41, 55, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    --neumorphic-bg: #1a1a2e;
+    --neumorphic-shadow-light: #252545;
+    --neumorphic-shadow-dark: #0f0f1a;
+
+    --focus-bg: linear-gradient(135deg, #0d2818 0%, #1a3a2a 50%, #0f2a20 100%);
+    --focus-surface: rgba(30, 40, 50, 0.95);
+    --focus-text: #a8d5ba;
+    --focus-accent: #4ade80;
+}
+
+/* ============================================================
+   FOCUS MODE - وضع التركيز الهادئ
+   ============================================================ */
+
+body.focus-mode {
+    background: var(--focus-bg) !important;
+    transition: background 0.8s ease;
+}
+
+body.focus-mode * {
+    transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease !important;
+}
+
+body.focus-mode .games-container,
+body.focus-mode .main-container {
+    filter: saturate(0.8);
+}
+
+body.focus-mode .game-card-item {
+    background: var(--focus-surface);
+    border-color: var(--focus-accent);
+    animation: none !important;
+    box-shadow: var(--shadow-premium-md);
+}
+
+body.focus-mode .game-card-item:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-premium-lg);
+}
+
+/* Focus Mode Toggle Button */
+.focus-mode-toggle {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4db6ac, #26a69a);
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(77, 182, 172, 0.4);
+    transition: var(--transition-spring);
+}
+
+.focus-mode-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(77, 182, 172, 0.5);
+}
+
+.focus-mode-toggle svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+body.focus-mode .focus-mode-toggle {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    box-shadow: 0 4px 20px rgba(255, 152, 0, 0.4);
+}
+
+/* ============================================================
+   GLASSMORPHISM EFFECTS - تأثيرات الزجاج
+   ============================================================ */
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: var(--glass-shadow);
+}
+
+.glass-card-strong {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+/* Game Card Glassmorphism */
+.game-card-item.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-smooth);
+}
+
+.game-card-item.glass-effect:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 60px rgba(37, 99, 235, 0.15);
+}
+
+/* Stats Hero Glassmorphism */
+.stats-hero.glass-effect {
+    background: linear-gradient(135deg,
+            rgba(37, 99, 235, 0.2),
+            rgba(236, 72, 153, 0.2));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow:
+        0 8px 32px rgba(37, 99, 235, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================
+   NEUMORPHISM BUTTONS - أزرار نيومورفيزم
+   ============================================================ */
+
+.btn-neumorphic {
+    background: var(--neumorphic-bg);
+    border: none;
+    border-radius: 16px;
+    padding: 16px 32px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow:
+        8px 8px 16px var(--neumorphic-shadow-dark),
+        -8px -8px 16px var(--neumorphic-shadow-light);
+}
+
+.btn-neumorphic:hover {
+    box-shadow:
+        6px 6px 12px var(--neumorphic-shadow-dark),
+        -6px -6px 12px var(--neumorphic-shadow-light);
+}
+
+.btn-neumorphic:active,
+.btn-neumorphic.pressed {
+    box-shadow:
+        inset 4px 4px 8px var(--neumorphic-shadow-dark),
+        inset -4px -4px 8px var(--neumorphic-shadow-light);
+}
+
+.btn-neumorphic-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Neumorphic Toggle Switch */
+.switch-neumorphic {
+    width: 70px;
+    height: 36px;
+    background: var(--neumorphic-bg);
+    border-radius: 18px;
+    position: relative;
+    cursor: pointer;
+    box-shadow:
+        inset 4px 4px 8px var(--neumorphic-shadow-dark),
+        inset -4px -4px 8px var(--neumorphic-shadow-light);
+    transition: var(--transition-smooth);
+}
+
+.switch-neumorphic::before {
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border-radius: 50%;
+    top: 4px;
+    left: 4px;
+    transition: var(--transition-spring);
+    box-shadow:
+        3px 3px 6px var(--neumorphic-shadow-dark),
+        -3px -3px 6px var(--neumorphic-shadow-light);
+}
+
+.switch-neumorphic.active::before {
+    left: calc(100% - 32px);
+    background: linear-gradient(145deg, #3b82f6, #2563eb);
+}
+
+/* ============================================================
+   ANIMATED GRADIENT MESH BACKGROUND - خلفية متحركة
+   ============================================================ */
+
+.gradient-mesh-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+        radial-gradient(at 0% 0%, hsla(253, 70%, 60%, 0.3) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(225, 70%, 50%, 0.3) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(339, 70%, 50%, 0.3) 0, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(180, 70%, 50%, 0.3) 0, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(45, 70%, 50%, 0.3) 0, transparent 50%);
+    animation: meshMove 20s ease-in-out infinite;
+}
+
+@keyframes meshMove {
+
+    0%,
+    100% {
+        background-position: 0% 0%, 50% 0%, 100% 0%, 0% 100%, 100% 100%;
+    }
+
+    25% {
+        background-position: 50% 50%, 0% 50%, 50% 50%, 50% 0%, 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 0%, 50% 100%, 0% 50%, 100% 50%, 50% 0%;
+    }
+
+    75% {
+        background-position: 0% 100%, 100% 50%, 100% 100%, 0% 0%, 100% 50%;
+    }
+}
+
+[data-theme="dark"] .gradient-mesh-bg {
+    background:
+        radial-gradient(at 0% 0%, hsla(253, 60%, 30%, 0.5) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(225, 60%, 25%, 0.5) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(339, 60%, 25%, 0.5) 0, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(180, 60%, 25%, 0.4) 0, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(45, 60%, 25%, 0.4) 0, transparent 50%);
+}
+
+/* ============================================================
+   CONFETTI CELEBRATION - احتفال الكونفيتي
+   ============================================================ */
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: -20px;
+    animation: confettiFall 3s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotateX(0) rotateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotateX(720deg) rotateY(720deg);
+        opacity: 0;
+    }
+}
+
+.confetti-piece:nth-child(odd) {
+    border-radius: 50%;
+}
+
+.confetti-piece:nth-child(even) {
+    border-radius: 4px;
+}
+
+.confetti-piece:nth-child(3n) {
+    width: 8px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+/* ============================================================
+   PROGRESS RING - حلقة التقدم
+   ============================================================ */
+
+.progress-ring-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-ring-circle-bg {
+    stroke: rgba(255, 255, 255, 0.2);
+}
+
+.progress-ring-circle-progress {
+    stroke: url(#progress-gradient);
+    filter: drop-shadow(0 0 6px currentColor);
+}
+
+.progress-ring-text {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* XP Progress Bar */
+.xp-progress-container {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.xp-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #dc2626, #ec4899, #f59e0b);
+    background-size: 200% 100%;
+    border-radius: 6px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: xpShimmer 2s linear infinite;
+}
+
+@keyframes xpShimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.xp-progress-glow {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5));
+    animation: xpGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes xpGlow {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ============================================================
+   STREAK FLAMES ANIMATION - نيران السلسلة
+   ============================================================ */
+
+.streak-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border-radius: 24px;
+    color: white;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.streak-badge::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    animation: flameHeat 2s ease-in-out infinite;
+}
+
+@keyframes flameHeat {
+
+    0%,
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.streak-flame {
+    width: 24px;
+    height: 24px;
+    animation: flameDance 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes flameDance {
+    0% {
+        transform: scale(1) rotate(-3deg);
+    }
+
+    100% {
+        transform: scale(1.1) rotate(3deg);
+    }
+}
+
+.streak-number {
+    font-size: 1.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Streak Fire Particles */
+.streak-particles {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+}
+
+.streak-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #ffcc00;
+    border-radius: 50%;
+    animation: particleRise 1s ease-out infinite;
+}
+
+.streak-particle:nth-child(1) {
+    left: 0;
+    animation-delay: 0s;
+}
+
+.streak-particle:nth-child(2) {
+    left: 30%;
+    animation-delay: 0.2s;
+}
+
+.streak-particle:nth-child(3) {
+    left: 60%;
+    animation-delay: 0.4s;
+}
+
+.streak-particle:nth-child(4) {
+    left: 90%;
+    animation-delay: 0.6s;
+}
+
+@keyframes particleRise {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-30px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   DAILY GOALS WIDGET - ودجة الأهداف اليومية
+   ============================================================ */
+
+.daily-goals-widget {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 24px;
+    margin: 16px 0;
+}
+
+.daily-goals-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.daily-goals-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.daily-goals-progress {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.daily-goal-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    margin-bottom: 12px;
+    transition: var(--transition-smooth);
+}
+
+.daily-goal-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+}
+
+.daily-goal-item.completed {
+    background: rgba(74, 222, 128, 0.2);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.daily-goal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.daily-goal-info {
+    flex: 1;
+}
+
+.daily-goal-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.daily-goal-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.daily-goal-reward {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+/* ============================================================
+   ACHIEVEMENT BADGES - شارات الإنجازات
+   ============================================================ */
+
+.achievement-badge {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: var(--transition-spring);
+}
+
+.achievement-badge:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.achievement-badge.locked {
+    filter: grayscale(1) opacity(0.5);
+}
+
+.achievement-badge.unlocked {
+    animation: badgeUnlock 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes badgeUnlock {
+    0% {
+        transform: scale(0) rotate(-180deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+.achievement-badge-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 40%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 60%);
+    animation: badgeShine 3s ease-in-out infinite;
+}
+
+@keyframes badgeShine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+.achievement-badge-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #ffd700, #ffb300);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+/* Achievement Popup */
+.achievement-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: 24px;
+    padding: 32px 48px;
+    z-index: 10001;
+    text-align: center;
+    animation: achievementAppear 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    box-shadow:
+        0 0 60px rgba(255, 215, 0, 0.3),
+        0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes achievementAppear {
+    0% {
+        transform: translateX(-50%) scale(0) rotate(-10deg);
+    }
+
+    60% {
+        transform: translateX(-50%) scale(1.1) rotate(3deg);
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1) rotate(0);
+    }
+}
+
+.achievement-popup-badge {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+}
+
+.achievement-popup-title {
+    color: #ffd700;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.achievement-popup-desc {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+}
+
+/* ============================================================
+   LEVEL UP ANIMATION - رفع المستوى
+   ============================================================ */
+
+.level-up-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+    animation: fadeIn 0.3s ease;
+}
+
+.level-up-content {
+    text-align: center;
+    animation: levelUpBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes levelUpBounce {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.level-up-icon {
+    font-size: 5rem;
+    margin-bottom: 16px;
+    animation: levelUpFloat 2s ease-in-out infinite;
+}
+
+@keyframes levelUpFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.level-up-title {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    margin-bottom: 8px;
+}
+
+.level-up-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.25rem;
+}
+
+/* Level Stars */
+.level-stars {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.level-star {
+    font-size: 2rem;
+    animation: starPop 0.4s ease backwards;
+}
+
+.level-star:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.level-star:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.level-star:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.level-star:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.level-star:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes starPop {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================================
+   MYSTERY BOX - صندوق الغموض
+   ============================================================ */
+
+.mystery-box {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition-spring);
+    box-shadow:
+        0 10px 30px rgba(37, 99, 235, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.mystery-box:hover {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow:
+        0 15px 40px rgba(37, 99, 235, 0.5),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.mystery-box-icon {
+    font-size: 3rem;
+    animation: boxFloat 2s ease-in-out infinite;
+}
+
+@keyframes boxFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-8px) rotate(5deg);
+    }
+}
+
+.mystery-box-sparkles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.mystery-box-sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #ffd700;
+    border-radius: 50%;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.mystery-box-sparkle:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.mystery-box-sparkle:nth-child(2) {
+    top: 30%;
+    right: 15%;
+    animation-delay: 0.3s;
+}
+
+.mystery-box-sparkle:nth-child(3) {
+    bottom: 20%;
+    left: 10%;
+    animation-delay: 0.6s;
+}
+
+.mystery-box-sparkle:nth-child(4) {
+    bottom: 10%;
+    right: 20%;
+    animation-delay: 0.9s;
+}
+
+@keyframes sparkle {
+
+    0%,
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Mystery Box Opening Animation */
+.mystery-box.opening {
+    animation: boxShake 0.5s ease-in-out;
+}
+
+@keyframes boxShake {
+
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+
+    25% {
+        transform: rotate(-10deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+/* ============================================================
+   SOUND TOGGLE - التحكم بالصوت
+   ============================================================ */
+
+.sound-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    z-index: 999;
+}
+
+.sound-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.sound-toggle svg {
+    width: 24px;
+    height: 24px;
+    color: var(--text-main);
+}
+
+.sound-toggle.muted svg {
+    opacity: 0.5;
+}
+
+.sound-toggle.muted::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 30px;
+    background: #ef4444;
+    transform: rotate(45deg);
+    border-radius: 2px;
+}
+
+/* ============================================================
+   MUSIC PLAYER BAR - شريط الموسيقى
+   ============================================================ */
+
+.music-player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    z-index: 998;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.music-player-bar.visible {
+    transform: translateY(0);
+}
+
+.music-player-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: var(--transition-smooth);
+}
+
+.music-player-btn:hover {
+    transform: scale(1.1);
+}
+
+.music-player-title {
+    flex: 1;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.music-player-progress {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.music-player-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #dc2626, #ec4899);
+    width: 0%;
+    transition: width 0.3s linear;
+}
+
+/* ============================================================
+   POMODORO TIMER - مؤقت بومودورو
+   ============================================================ */
+
+.pomodoro-widget {
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 24px;
+    z-index: 997;
+    min-width: 200px;
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pomodoro-widget.visible {
+    transform: scale(1);
+}
+
+.pomodoro-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.pomodoro-title {
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pomodoro-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: var(--transition-smooth);
+}
+
+.pomodoro-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-main);
+}
+
+.pomodoro-timer {
+    font-size: 3rem;
+    font-weight: 800;
+    text-align: center;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: linear-gradient(135deg, #dc2626, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+}
+
+.pomodoro-controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.pomodoro-btn {
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.pomodoro-btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    color: white;
+}
+
+.pomodoro-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.pomodoro-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.pomodoro-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.pomodoro-sessions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.pomodoro-session-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.pomodoro-session-dot.completed {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.pomodoro-session-dot.active {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    animation: pulseDot 1s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* ============================================================
+   RIPPLE EFFECT - تأثير التموج
+   ============================================================ */
+
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: rippleExpand 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes rippleExpand {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   SUCCESS OVERLAY - شاشة النجاح
+   ============================================================ */
+
+.success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10003;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.success-content {
+    text-align: center;
+    animation: successBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes successBounce {
+    0% {
+        transform: scale(0);
+    }
+
+    60% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+}
+
+.success-checkmark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.success-checkmark circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: checkCircle 0.6s ease-out forwards;
+}
+
+@keyframes checkCircle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-checkmark path {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkPath 0.3s ease-out 0.3s forwards;
+}
+
+@keyframes checkPath {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-message {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.success-overlay.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   STAR PARTICLES - جزيئات النجوم
+   ============================================================ */
+
+.star-particle {
+    position: fixed;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 10000;
+    animation: starBurst 0.8s ease-out forwards;
+}
+
+@keyframes starBurst {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(calc(cos(var(--angle)) * 100px), calc(sin(var(--angle)) * 100px)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   STREAK OVERLAY - شاشة السلسلة
+   ============================================================ */
+
+.streak-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+    animation: fadeIn 0.3s ease;
+}
+
+.streak-content {
+    text-align: center;
+    animation: streakPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes streakPop {
+    0% {
+        transform: scale(0) rotate(-20deg);
+    }
+
+    60% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+.streak-fire {
+    font-size: 5rem;
+    animation: fireGlow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fireGlow {
+    0% {
+        text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+        transform: scale(1);
+    }
+
+    100% {
+        text-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
+        transform: scale(1.1);
+    }
+}
+
+.streak-days {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #ff6b35;
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    margin-bottom: 8px;
+}
+
+.streak-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.25rem;
+}
+
+/* ============================================================
+   ONBOARDING TOUR STYLES - أنماط الجولة التعريفية
+   ============================================================ */
+
+.tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 10004;
+    animation: fadeIn 0.3s ease;
+}
+
+.tour-spotlight {
+    position: absolute;
+    border-radius: 16px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+    background: transparent;
+    transition: all 0.4s ease;
+}
+
+.tour-tooltip {
+    position: absolute;
+    width: 300px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    animation: tooltipAppear 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes tooltipAppear {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.tour-tooltip h3 {
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+}
+
+.tour-tooltip p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.tour-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.tour-skip {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.tour-skip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.tour-next {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+}
+
+.tour-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.tour-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.tour-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.tour-dot.active {
+    background: #dc2626;
+    width: 24px;
+    border-radius: 4px;
+}
+
+.tour-overlay.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+/* ============================================================
+   PULL TO REFRESH - سحب للتحديث
+   ============================================================ */
+
+.pull-refresh-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: height 0.2s ease;
+}
+
+.pull-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(37, 99, 235, 0.2);
+    border-top-color: #dc2626;
+    border-radius: 50%;
+}
+
+.pull-refresh-indicator.refreshing .pull-spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================================
+   SKELETON GAME CARD - هيكل بطاقة اللعبة
+   ============================================================ */
+
+.skeleton-game-card {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.skeleton-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    border-radius: 16px;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-title {
+    width: 80%;
+    height: 20px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-subtitle {
+    width: 60%;
+    height: 16px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+[data-theme="dark"] .skeleton-icon,
+[data-theme="dark"] .skeleton-title,
+[data-theme="dark"] .skeleton-subtitle {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+}
+
+.skeleton-fade-out {
+    animation: skeletonFadeOut 0.3s ease forwards;
+}
+
+@keyframes skeletonFadeOut {
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* ============================================================
+   DAY MODE SUBTLE PULSE - نبض خفيف للوضع النهاري
+   ============================================================ */
+
+@keyframes cardPulseDay {
+
+    0%,
+    100% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.05),
+            0 0 8px rgba(0, 0, 0, 0.02),
+            inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    }
+
+    50% {
+        box-shadow:
+            0 6px 16px rgba(0, 0, 0, 0.08),
+            0 0 12px rgba(37, 99, 235, 0.05),
+            inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS - تعديلات متجاوبة
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .focus-mode-toggle {
+        width: 48px;
+        height: 48px;
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .sound-toggle {
+        width: 40px;
+        height: 40px;
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .pomodoro-widget {
+        right: 16px;
+        bottom: 70px;
+        min-width: 180px;
+        padding: 16px;
+    }
+
+    .pomodoro-timer {
+        font-size: 2.5rem;
+    }
+
+    .achievement-popup {
+        width: 90%;
+        max-width: 320px;
+        padding: 24px;
+    }
+
+    .level-up-icon {
+        font-size: 4rem;
+    }
+
+    .level-up-title {
+        font-size: 2rem;
+    }
+
+    .mystery-box {
+        width: 100px;
+        height: 100px;
+    }
+
+    .tour-tooltip {
+        width: 90%;
+        max-width: 280px;
+        padding: 20px;
+    }
+}
+
+/* ============================================================
+   ACCESSIBILITY - إمكانية الوصول
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .gradient-mesh-bg {
+        animation: none;
+    }
+
+    .game-card-item {
+        animation: none;
+    }
+}
+
+/* ============================================================
+   PRINT STYLES - أنماط الطباعة
+   ============================================================ */
+
+@media print {
+
+    .focus-mode-toggle,
+    .sound-toggle,
+    .pomodoro-widget,
+    .music-player-bar,
+    .confetti-container,
+    .tour-overlay {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   FILTER PILLS - كبسولات التصفية
+   ============================================================ */
+
+.filter-pills-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 12px 4px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+    width: 100%;
+}
+
+.filter-pills-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.filter-pill {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.filter-pill:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-pill.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme="dark"] .filter-pill {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .filter-pill:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+[data-theme="dark"] .filter-pill.active {
+    background: var(--primary);
+    color: white;
+}
+
+.filter-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    flex: 0 0 auto;
+    margin: 0 4px;
+}
+
+/* ============================================================
+   SKELETON SEARCH RESULTS - تحميل الهيكل
+   ============================================================ */
+
+.skeleton-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    width: 100%;
+    padding: 16px;
+}
+
+.skeleton-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    height: 120px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.skeleton-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        transparent 100%);
+    animation: shimmer 1.5s infinite;
+    transform: translateX(-100%);
+}
+
+[data-theme="dark"] .skeleton-shimmer {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.05) 50%, 
+        transparent 100%);
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.skeleton-line {
+    height: 12px;
+    background: var(--border);
+    border-radius: 6px;
+    opacity: 0.6;
+}
+
+.skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.skeleton-badge {
+    width: 60px;
+    height: 20px;
+    border-radius: 10px;
+    background: var(--border);
+}
+
+.skeleton-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.skeleton-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.skeleton-title {
+    width: 60%;
+    height: 24px;
+    margin-bottom: 8px;
+}
+
+.skeleton-subtitle {
+    width: 40%;
+}

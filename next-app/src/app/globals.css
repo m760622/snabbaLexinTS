@@ -1,0 +1,18 @@
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  overflow: hidden;
+  /* Prevent body scroll, let app handle it (like original) */
+  height: 100dvh;
+  width: 100vw;
+}
+
+/* Ensure #next-app context (usually body's direct child) fills screen if needed, 
+   but in App Router, children are directly in body. */
