@@ -207,7 +207,12 @@ body {
   touch-action: pan-y;
   will-change: scroll-position;
   overscroll-behavior: contain;
-  pointer-events: auto !important;
+  pointer-events: none !important;
+
+  /*   pointer-events: auto !important;
+ */
+
+
 }
 
 /* Home View Containers - حاويات الشاشة الرئيسية */
@@ -376,7 +381,14 @@ button:not([disabled]),
 .smart-btn,
 .action-btn,
 .dock-item,
-a {
+.dock-item,
+a,
+/* Deep touch fix for card internals */
+.smart-inner,
+.smart-header,
+.smart-body,
+.smart-actions,
+.progress-bar {
   touch-action: pan-y !important;
   /* Allow vertical scroll while touching buttons */
   pointer-events: auto !important;

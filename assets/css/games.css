@@ -61,9 +61,8 @@
     --color-pronunciation: #ef4444;
 }
 
-body {
+/* body {
     background-color: #0f172a;
-    /* Fallback */
     background-image:
         radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
         radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
@@ -74,12 +73,11 @@ body {
     margin: 0;
     font-family: var(--font-main);
     color: var(--text-main-dark);
-    /* Default to dark mode text for this dark theme */
     transition: background 0.5s ease;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x pan-y;
-}
+} */
 
 /* iPhone View Mode - Realistic Bezel */
 body.iphone-view {
