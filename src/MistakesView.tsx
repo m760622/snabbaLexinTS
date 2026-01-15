@@ -5,16 +5,20 @@ import { HapticManager } from './utils/utils';
 
 const MistakeCard = ({ entry, onLearned, onSpeak }: { entry: MistakeEntry, onLearned: (w: string) => void, onSpeak: (w: string) => void }) => {
     return (
-        <div className="card compact-card premium-card" style={{ 
-            marginBottom: '12px', 
+        <div className="card compact-card premium-card" style={{
+            marginBottom: '12px',
             borderLeft: '7px solid #ef4444',
             background: 'rgba(28, 28, 30, 0.6)',
             backdropFilter: 'blur(10px)',
             padding: '12px 16px',
+            width: '100%',
+            boxSizing: 'border-box',
             minHeight: 'auto',
-            height: 'auto'
+            height: 'auto',
+            overflow: 'visible', // Match smart-card behavior
+            touchAction: 'pan-y' // Ensure scrolling works on the card itself
         }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="mistake-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span className="grammar-badge" style={{ color: '#ef4444', borderColor: '#ef4444', fontSize: '0.65rem' }}>
                     MISSTAG ({entry.attempts}x)
                 </span>
@@ -27,7 +31,7 @@ const MistakeCard = ({ entry, onLearned, onSpeak }: { entry: MistakeEntry, onLea
                     </button>
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div className="mistake-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <div className="word-swe" style={{ fontSize: '1.1rem', color: '#fff' }}>{entry.word}</div>
                 <div className="word-arb" dir="rtl" style={{ fontSize: '1rem', color: '#fff', opacity: 0.9 }}>{entry.translation}</div>
                 <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '4px' }}>Från: {entry.game}</div>
@@ -78,8 +82,8 @@ export const MistakesView: React.FC = () => {
 
     if (!isExpanded) {
         return (
-            <div style={{ marginBottom: '20px' }}>
-                <button 
+            <div style={{ marginBottom: '20px', marginLeft: '20px', marginRight: '20px' }}>
+                <button
                     onClick={() => { HapticManager.light(); setIsExpanded(true); }}
                     style={{
                         width: '100%',
@@ -107,13 +111,13 @@ export const MistakesView: React.FC = () => {
     }
 
     return (
-        <div style={{ marginBottom: '25px', animation: 'fadeIn 0.3s ease-out' }}>
+        <div style={{ marginBottom: '25px', animation: 'fadeIn 0.3s ease-out', marginLeft: '20px', marginRight: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <h3 style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Mina Fel</h3>
                     <span style={{ background: '#ef4444', color: '#fff', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>{mistakes.length}</span>
                 </div>
-                <button 
+                <button
                     onClick={() => { HapticManager.light(); setIsExpanded(false); }}
                     style={{ background: 'transparent', border: 'none', color: '#666', fontSize: '0.8rem', cursor: 'pointer' }}
                 >
@@ -121,9 +125,9 @@ export const MistakesView: React.FC = () => {
                 </button>
             </div>
 
-            <button 
-                onClick={() => { 
-                    HapticManager.medium(); 
+            <button
+                onClick={() => {
+                    HapticManager.medium();
                     // Dispatch event to open Quiz with review mode
                     window.dispatchEvent(new CustomEvent('openQuiz', { detail: { mode: 'review', words: mistakes.map(m => m.word) } }));
                 }}

@@ -344,7 +344,7 @@ const HomeViewInner: React.FC = () => {
                 <div style={styles.contentArea}>
                     <div style={styles.scrollList} key={activeTab} ref={scrollContainerRef} onScroll={handleScroll}>
                         {activeTab === 'search' && !searchTerm && (
-                            <div style={{ marginBottom: '20px', padding: '0 20px' }} className="tab-content-active">
+                            <div style={{ marginBottom: '20px' }} className="tab-content-active">
                                 <MistakesView />
                                 {dailyContent && <DailyCard content={dailyContent} onOpenSettings={() => setActiveTab('settings')} />}
 

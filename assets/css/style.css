@@ -388,7 +388,17 @@ a,
 .smart-header,
 .smart-body,
 .smart-actions,
-.progress-bar {
+.progress-bar,
+/* Mistakes View Interactives */
+.grammar-badge,
+.action-button,
+.audio-btn,
+.learned-btn,
+/* Deep Fix for Mistakes Card */
+.mistake-card-header,
+.mistake-card-body,
+.word-swe,
+.word-arb {
   touch-action: pan-y !important;
   /* Allow vertical scroll while touching buttons */
   pointer-events: auto !important;
